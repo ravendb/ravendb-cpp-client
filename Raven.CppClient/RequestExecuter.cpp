@@ -1,4 +1,3 @@
-#pragma once
 
 #include "stdafx.h"
 
@@ -36,24 +35,33 @@ std::optional<raven::RavenError> raven::RequestExecutor::first_topology_update()
 }
 
 
-raven::RequestExecutor::RequestExecutor(std::vector<std::string> initialUrls, std::string db, std::string certificate, std::unique_ptr<raven::impl::CurlHolder> curl_holder)
+raven::RequestExecutor::RequestExecutor(std::vector<std::string>&& initialUrls, std::string db, std::string certificate, std::unique_ptr<raven::impl::CurlHolder> curl_holder)
 	: _initialUrls(initialUrls), _certificate(certificate), _dbName(db), _curl_holder(std::move(curl_holder))
 {
 	_topology = std::make_shared<Topology>();
-	for (auto url : initialUrls) {
+	for (const auto& url : initialUrls) {
 		_topology->nodes.push_back(ServerNode(url, db, "?"));
 	}
 	_topology->etag = -1;
 }
 
 std::optional<raven::RavenError> raven::RequestExecutor::validate_urls() {
-	bool certificateHasHttps = _certificate.empty() == false;
-	for (auto & url : _initialUrls) {
+	const bool certificateHasHttps = (_certificate.empty() == false);
+
+	if (_initialUrls.empty())
+		return { { "No urls has been defined", RavenError::bad_url } };
+
+	for (const auto & url : _initialUrls) {
 		if (url.empty()) {
 			return { { "Empty url is not supported", RavenError::bad_url } };
 		}
-		if (url[url.size() - 1] == '/') {
-			return { { "Url '" + url + "' must not end with '/'", RavenError::bad_url } };
+		if (url.back() == '/') {
+			return { {[&](auto url_str) -> std::string {
+					std::ostringstream oss;
+					oss << "Url '" << url_str << "' must not end with '/'";
+					return oss.str();
+					}(url),RavenError::bad_url } };
+				//{ "Url '" + url + "' must not end with '/'", RavenError::bad_url } };
 		}
 
 		if (certificateHasHttps) {
@@ -66,24 +74,22 @@ std::optional<raven::RavenError> raven::RequestExecutor::validate_urls() {
 		}
 	}
 
-	if (_initialUrls.size() == 0)
-		return { { "No urls has been defined", RavenError::bad_url } };
-
 	return {};
 }
 
 
 raven::Result<std::unique_ptr<raven::RequestExecutor>> raven::RequestExecutor::create(
-	std::vector<std::string> urls, 
+	std::vector<std::string>&& urls, 
 	std::string db,
 	std::string certificate,
-	std::pair<raven::impl::create_curl_instance, void*> create_curl) {
+	std::pair<raven::impl::create_curl_instance, void*> create_curl)
+{
 	if (create_curl.first == NULL)
 		create_curl.first = default_create_curl_instance;
 
 	auto holder = std::make_unique<raven::impl::CurlHolder>(create_curl.first, create_curl.second);
 
-	auto rq = std::make_unique<RequestExecutor>(urls, db, certificate, std::move(holder));
+	auto rq = std::unique_ptr<RequestExecutor>(new RequestExecutor(std::move(urls), db, certificate, std::move(holder)));
 
 	auto status = rq->validate_urls();
 	if (status.has_value())

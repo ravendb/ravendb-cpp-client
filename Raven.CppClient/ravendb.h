@@ -149,19 +149,19 @@ namespace raven {
 			return Result<TResult>(result, RavenError::success);
 		}
 
-
-
-	public:
-		RequestExecutor(const RequestExecutor& other) = delete;
-
-		RequestExecutor(RequestExecutor&& other) = delete;
-
 		RequestExecutor(
-			std::vector<std::string> initialUrls,
+			std::vector<std::string>&& initialUrls,
 			std::string db,
 			std::string certificate,
 			std::unique_ptr<impl::CurlHolder> curl_holder);
 
+		RequestExecutor(const RequestExecutor& other) = delete;
+		RequestExecutor(RequestExecutor&& other) = delete;
+
+		RequestExecutor& operator=(const RequestExecutor& other) = delete;
+		RequestExecutor& operator=(RequestExecutor&& other) = delete;
+
+	public:
 
 		template<typename TCommand, typename TResult>
 		Result<TResult> execute(TCommand& cmd) {
@@ -191,7 +191,7 @@ namespace raven {
 
 
 		static Result<std::unique_ptr<RequestExecutor>> create(
-			std::vector<std::string> urls,
+			std::vector<std::string>&& urls,
 			std::string db,
 			std::string certificate = "",
 			std::pair<raven::impl::create_curl_instance, void*> create_curl = {});

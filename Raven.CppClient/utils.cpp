@@ -43,7 +43,7 @@ size_t raven::impl::Utils::push_to_buffer(char* contents, size_t size, size_t nm
 }
 
 std::string raven::impl::Utils::url_escape(CURL* curl, std::string& val) {
-	auto result = curl_easy_escape(curl, val.c_str(), val.length());
+	auto result = curl_easy_escape(curl, val.c_str(), (int)val.length());
 	if (result == NULL) {
 		throw "url escape failure on: " + val; // TODO: Is there anything better here?
 	}

@@ -60,15 +60,16 @@ namespace raven {
 	void from_json(const nlohmann::json& j, ServerNode& p);
 
 
-	struct Topology {
+	struct Topology
+	{
 		std::vector<ServerNode> nodes;
 		long etag;
-
-		Topology(const Topology& other) : nodes(other.nodes), etag(etag) {
+/*
+		Topology(const Topology& other) : nodes(other.nodes), etag(other.etag) {
 
 		}
 
-		Topology(Topology&& other) : nodes(std::move(other.nodes)), etag(etag) {
+		Topology(Topology&& other) : nodes(std::move(other.nodes)), etag(other.etag) {
 
 		}
 
@@ -81,6 +82,7 @@ namespace raven {
 			etag = other.etag;
 			return *this;
 		}
+*/
 	};
 
 
