@@ -18,19 +18,19 @@ std::string raven::GetDocumentsCommand::create_request(ServerNode& node, CURL* c
 
 	if (_start.has_value())
 		url += "&start=" + std::to_string(_start.value());
-	if (_page_size.has_value())
-		url += "&pageSize=" + std::to_string(_page_size.value());
-	if (_metadata_only)
+	if (_pageSize.has_value())
+		url += "&pageSize=" + std::to_string(_pageSize.value());
+	if (_metadataOnly)
 		url += "&metadataOnly=true";
 
-	if (_starts_with.empty() == false) {
-		url += "&startsWith=" + raven::impl::Utils::url_escape(curl, _starts_with);
+	if (_startWith.empty() == false) {
+		url += "&startsWith=" + raven::impl::Utils::url_escape(curl, _startWith);
 		if (_matches.empty() == false) 
 			url += "&matches=" + raven::impl::Utils::url_escape(curl, _matches);
 		if(_exclude.empty() == false)
 			url += "&exclude=" + raven::impl::Utils::url_escape(curl, _exclude);
-		if (_starts_after.empty() == false)
-			url += "&startAfter=" + raven::impl::Utils::url_escape(curl, _starts_after);
+		if (_startAfter.empty() == false)
+			url += "&startAfter=" + raven::impl::Utils::url_escape(curl, _startAfter);
 	}
 
 	for (auto include : _includes) {
@@ -60,7 +60,8 @@ std::string raven::GetDocumentsCommand::create_request(ServerNode& node, CURL* c
 	return url;
 }
 
-void raven::GetDocumentsCommand::set_response(CURL* curl, const nlohmann::json& response) {
+void raven::GetDocumentsCommand::set_response(CURL* curl/*what for ?*/, const nlohmann::json& response)
+{
 	_result = response;
 }
 

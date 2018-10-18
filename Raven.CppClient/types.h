@@ -20,42 +20,40 @@ namespace raven {
 	};
 
 	template<typename T>
-	struct Result {
+	struct Result 
+	{
 		std::optional<RavenError> error;
 		T value;
 
-		Result(RavenError err) : error(err) {
+		Result(RavenError err) : error(std::move(err))
+		{}
 
-		}
-
-		Result(T value, RavenError::ErrorType _) : value(std::move(value)) {
+		Result(T value, RavenError::ErrorType /*???*/_) : value(std::move(value))
+		{
 
 		}
 	};
 
-	struct ServerNode {
+	struct ServerNode 
+	{
 		std::string url, database, cluster_tag;
-
+/*
 		ServerNode(const ServerNode& other) = default;
 		ServerNode(ServerNode&& other) = default;
-
-		ServerNode() {
-
-		}
+*/
+		ServerNode() = default;
 
 		ServerNode(std::string url, std::string db, std::string tag) :
-			url(url), database(db), cluster_tag(tag) {
-
-		}
-
+			url(url), database(db), cluster_tag(tag) {}
+/*
 		ServerNode operator=(const ServerNode& other) {
 			url = other.url;
 			database = other.database;
 			cluster_tag = other.cluster_tag;
 			return *this;
 		}
+*/
 	};
-
 
 	void from_json(const nlohmann::json& j, ServerNode& p);
 
@@ -64,7 +62,7 @@ namespace raven {
 	{
 		std::vector<ServerNode> nodes;
 		long etag;
-/*
+/*/
 		Topology(const Topology& other) : nodes(other.nodes), etag(other.etag) {
 
 		}

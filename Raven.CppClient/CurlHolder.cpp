@@ -18,11 +18,10 @@ raven::impl::CurlHolder::ReturnCurl raven::impl::CurlHolder::checkout_curl() {
 		auto r = ReturnCurl(std::move(std::unique_ptr<CURL, CurlCleanup>(curl)), this);
 		return r;
 	}
-	else {
-		auto curl = std::move(_curl_instances.back());
-		_curl_instances.pop_back();
-		return CurlHolder::ReturnCurl(std::move(curl), this);
-	}
+
+	auto curl = std::move(_curl_instances.back());
+	_curl_instances.pop_back();
+	return CurlHolder::ReturnCurl(std::move(curl), this);
 }
 
 raven::impl::CurlHolder::CurlHolder(raven::impl::create_curl_instance create_curl_instance, void* state) :

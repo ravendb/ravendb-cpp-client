@@ -8,7 +8,7 @@ static CURL* default_create_curl_instance(void* state) {
 
 std::optional<raven::RavenError> raven::RequestExecutor::first_topology_update() {
 
-	auto getTopology = GetDatabaseTopologyCommand();
+	GetDatabaseTopologyCommand getTopology;
 	std::string errors;
 
 	for (auto url : _initialUrls) {

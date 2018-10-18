@@ -16,7 +16,7 @@ namespace raven {
 			struct CurlCleanup {
 				void operator () (CURL* curl);
 			};
-			create_curl_instance _create_curl_instance;
+			std::function<CURL*(void*)> _create_curl_instance;
 			void* _state;
 
 			std::mutex _curl_guard;
