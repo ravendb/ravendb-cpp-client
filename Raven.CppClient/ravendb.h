@@ -89,7 +89,10 @@ namespace raven {
 
 			std::shared_ptr<Topology> topology_local = std::atomic_load(&_topology);
 
-			std::string url = cmd.create_request(node, curl);
+			std::string url;
+			cmd.createRequest(node, url, curl);
+
+			//std::cout << "new created url is " << url << std::endl;
 
 			curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 			curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, error_buffer);
@@ -124,11 +127,11 @@ namespace raven {
 			case 201:
 			{
 				auto result = nlohmann::json::parse(output_buffer);
-				cmd.set_response(curl, result);
+				cmd.setResponse(curl, result);
 				break;
 			}
 			case 404:
-				cmd.set_response_not_found(curl);
+				cmd.setResponseNotFound(curl);
 				break;
 			case 503:
 				if (headers.find("Database-Missing") != headers.end()) {
@@ -145,7 +148,7 @@ namespace raven {
 				return Result<TResult>(err);
 			}
 
-			auto result = cmd.get_result();
+			auto result = cmd.getResult();
 			return Result<TResult>(result, RavenError::success);
 		}
 

@@ -1,19 +1,24 @@
 #include "stdafx.h"
 
 
-std::string raven::GetDatabaseTopologyCommand::create_request(raven::ServerNode& node, CURL* curl) {
+/*void raven::GetDatabaseTopologyCommand::createRequest(raven::ServerNode& node, std::string& url, CURL* curl)
+{
 	curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-	return node.url + "/topology?name=" + node.database;
+	url = node.url + "/topology?name=" + node.database;
 }
-void raven::GetDatabaseTopologyCommand::set_response(CURL* curl, const nlohmann::json& response) {
+*/
+
+/*void raven::GetDatabaseTopologyCommand::setResponse(CURL* curl, const nlohmann::json& response) {
 	long statusCode;
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode);
 	if (statusCode == 200)
 		_topology = response;
 }
+*/
 
-
-std::string raven::GetDocumentsCommand::create_request(ServerNode& node, CURL* curl) {
+/*
+std::string raven::GetDocumentsCommand::createRequest(ServerNode& node, CURL* curl)
+{
 	auto url = node.url + "/databases/" + node.database + "/docs?";
 
 	if (_start.has_value())
@@ -60,8 +65,9 @@ std::string raven::GetDocumentsCommand::create_request(ServerNode& node, CURL* c
 	return url;
 }
 
-void raven::GetDocumentsCommand::set_response(CURL* curl/*what for ?*/, const nlohmann::json& response)
+void raven::GetDocumentsCommand::set_response(CURL* curl, const nlohmann::json& response)
 {
 	_result = response;
 }
+*/
 

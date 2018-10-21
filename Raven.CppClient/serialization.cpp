@@ -4,7 +4,7 @@
 void raven::from_json(const nlohmann::json& j, raven::ServerNode& p) {
 	p.url = j.at("Url").get<std::string>();
 	p.database = j.at("Database").get<std::string>();
-	p.cluster_tag = j.at("ClusterTag").get<std::string>();
+	p.clusterTag = j.at("ClusterTag").get<std::string>();
 }
 
 
