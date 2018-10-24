@@ -8,25 +8,48 @@
 
 namespace raven {
 
+	struct CurlGlobalRAII final
+	{
+		CurlGlobalRAII()
+		{
+			auto res = curl_global_init(CURL_GLOBAL_ALL);
+			if(res)
+			{
+				throw std::runtime_error("curl_global_init failed !");
+			}
+		}
+		~CurlGlobalRAII() { curl_global_cleanup(); }
+	};
+
 	namespace impl {
 		// used when user wants to customize curl settings
-		typedef CURL*(*create_curl_instance)(void*);
+		using CreateCurlHandleMethod_t =  CURL*(*)(void*);
 
-		class CurlHolder {
-			struct CurlCleanup {
-				void operator () (CURL* curl);
+		class CurlHolder 
+		{
+			struct CurlCleanup 
+			{
+				void operator () (CURL* curl) const {curl_easy_cleanup(curl);}
 			};
-			std::function<CURL*(void*)> _create_curl_instance;
-			void* _state;
 
-			std::mutex _curl_guard;
-			// protected by _curl_guard
-			std::vector<std::unique_ptr<CURL, CurlCleanup>> _curl_instances;
+			using CurlHandleUPtr = std::unique_ptr<CURL, CurlCleanup>;
 
-			void return_curl(std::unique_ptr<CURL, CurlCleanup> curl);
+			CreateCurlHandleMethod_t _createCurlHandleMethod;
+			void* _state = nullptr;
+
+			std::mutex _curlHandlesLock;
+			// protected by _curlHandlesLock
+			std::vector<CurlHandleUPtr> _curlHandles;
+
+			void returnCurlToHolder(CurlHandleUPtr curl)
+			{
+				std::lock_guard<std::mutex> lg(_curlHandlesLock);
+				_curlHandles.push_back(std::move(curl));
+			}
 		public:
 
-			struct ReturnCurl {
+			struct ReturnCurl 
+			{
 				std::unique_ptr<CURL, CurlCleanup> curl;
 				CurlHolder* parent;
 
@@ -34,7 +57,7 @@ namespace raven {
 					return curl.operator->();
 				}
 
-				CURL * get() {
+				CURL* get() {
 					return curl.get();
 				}
 
@@ -49,7 +72,7 @@ namespace raven {
 				~ReturnCurl() {
 					if (parent)
 					{
-						parent->return_curl(std::move(curl));
+						parent->returnCurlToHolder(std::move(curl));
 						parent = NULL;
 					}
 				}
@@ -57,7 +80,7 @@ namespace raven {
 
 			ReturnCurl checkout_curl();
 
-			CurlHolder(create_curl_instance create_curl_instance, void* state);
+			CurlHolder(CreateCurlHandleMethod_t create_curl_instance, void* state);
 		};
 	}
 
@@ -76,7 +99,8 @@ namespace raven {
 		std::optional<RavenError> first_topology_update();
 
 		template<typename TCommand, typename TResult>
-		Result<TResult> execute(ServerNode& node, TCommand& cmd) {
+		Result<TResult> execute(ServerNode& node, TCommand& cmd)
+		{
 			static_assert(std::is_base_of<RavenCommand<TResult>, TCommand>::value, "type parameter of this class must derive from RavenCommand");
 
 			char error_buffer[CURL_ERROR_SIZE];
@@ -103,6 +127,7 @@ namespace raven {
 
 			RavenError err;
 			CURLcode res = curl_easy_perform(curl);
+
 			if (res != CURLE_OK) {
 				long statusCode;
 				curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode);
@@ -153,7 +178,7 @@ namespace raven {
 		}
 
 		RequestExecutor(
-			std::vector<std::string>&& initialUrls,
+			std::vector<std::string> initialUrls,
 			std::string db,
 			std::string certificate,
 			std::unique_ptr<impl::CurlHolder> curl_holder);
@@ -194,10 +219,10 @@ namespace raven {
 
 
 		static Result<std::unique_ptr<RequestExecutor>> create(
-			std::vector<std::string>&& urls,
+			std::vector<std::string> urls,
 			std::string db,
-			std::string certificate = "",
-			std::pair<raven::impl::create_curl_instance, void*> create_curl = {});
+			std::string certificate = {},
+			std::pair<raven::impl::CreateCurlHandleMethod_t, void*> create_curl = {});
 	};
 
 }

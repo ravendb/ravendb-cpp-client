@@ -1,13 +1,14 @@
 
 #include "stdafx.h"
+#include "GetDatabaseTopologyCommand.h"
 
 
 static CURL* default_create_curl_instance(void* state) {
 	return curl_easy_init();
 }
 
-std::optional<raven::RavenError> raven::RequestExecutor::first_topology_update() {
-
+std::optional<raven::RavenError> raven::RequestExecutor::first_topology_update()
+{
 	GetDatabaseTopologyCommand getTopology;
 	std::string errors;
 
@@ -35,7 +36,7 @@ std::optional<raven::RavenError> raven::RequestExecutor::first_topology_update()
 }
 
 
-raven::RequestExecutor::RequestExecutor(std::vector<std::string>&& initialUrls, std::string db, std::string certificate, std::unique_ptr<raven::impl::CurlHolder> curl_holder)
+raven::RequestExecutor::RequestExecutor(std::vector<std::string> initialUrls, std::string db, std::string certificate, std::unique_ptr<raven::impl::CurlHolder> curl_holder)
 	: _initialUrls(initialUrls), _certificate(certificate), _dbName(db), _curl_holder(std::move(curl_holder))
 {
 	_topology = std::make_shared<Topology>();
@@ -45,8 +46,9 @@ raven::RequestExecutor::RequestExecutor(std::vector<std::string>&& initialUrls, 
 	_topology->etag = -1;
 }
 
-std::optional<raven::RavenError> raven::RequestExecutor::validate_urls() {
-	const bool certificateHasHttps = (_certificate.empty() == false);
+std::optional<raven::RavenError> raven::RequestExecutor::validate_urls() 
+{
+	const bool certificateHasHttps = not _certificate.empty() ;
 
 	if (_initialUrls.empty())
 		return { { "No urls has been defined", RavenError::bad_url } };
@@ -79,17 +81,17 @@ std::optional<raven::RavenError> raven::RequestExecutor::validate_urls() {
 
 
 raven::Result<std::unique_ptr<raven::RequestExecutor>> raven::RequestExecutor::create(
-	std::vector<std::string>&& urls, 
+	std::vector<std::string> urls, 
 	std::string db,
 	std::string certificate,
-	std::pair<raven::impl::create_curl_instance, void*> create_curl)
+	std::pair<raven::impl::CreateCurlHandleMethod_t, void*> create_curl)
 {
 	if (create_curl.first == NULL)
 		create_curl.first = default_create_curl_instance;
 
 	auto holder = std::make_unique<raven::impl::CurlHolder>(create_curl.first, create_curl.second);
 
-	auto rq = std::unique_ptr<RequestExecutor>(new RequestExecutor(std::move(urls), db, certificate, std::move(holder)));
+	auto rq = std::unique_ptr<RequestExecutor>(new RequestExecutor(std::move(urls), std::move(db), std::move(certificate), std::move(holder)));
 
 	auto status = rq->validate_urls();
 	if (status.has_value())

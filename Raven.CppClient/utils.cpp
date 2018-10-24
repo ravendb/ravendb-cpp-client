@@ -47,7 +47,7 @@ std::string raven::impl::Utils::url_escape(CURL* curl, const std::string& val)
 	auto result = curl_easy_escape(curl, val.c_str(), (int)val.length());
 	if (result == nullptr)
 	{
-		throw "url escape failure on: " + val; // TODO: Is there anything better here?
+		throw "url escape failure on: " + val; // TODO: Is there anything better here?like return optional?
 	}
 	auto str = std::string(result);
 	curl_free(result);
