@@ -1,95 +1,125 @@
 
 #include "stdafx.h"
 #include "GetDatabaseTopologyCommand.h"
+#include "RequestExecutor.h"
 
 
-static CURL* default_create_curl_instance(void* state) {
-	return curl_easy_init();
-}
 
-std::optional<raven::RavenError> raven::RequestExecutor::first_topology_update()
+
+void raven::RequestExecutor::first_topology_update()
 {
 	GetDatabaseTopologyCommand getTopology;
-	std::string errors;
 
-	for (auto url : _initialUrls) {
-		auto serverNode = ServerNode(url, _dbName, "?");
-		auto result = execute<GetDatabaseTopologyCommand, Topology>(serverNode, getTopology);
-		if (result.error.has_value())
+	std::ostringstream errors;
+
+	for (const auto& url : _initialUrls)
+	{
+		Topology result;
+		try
 		{
-			errors.append(result.error.value().text).append("\n");
-
-			if (result.error.value().type == RavenError::database_does_not_exists)
-				return { { errors, RavenError::database_does_not_exists } };
-
+			auto serverNode = ServerNode(url, _dbName, "?");
+			result = std::move(execute<GetDatabaseTopologyCommand, Topology>(serverNode, getTopology));
+		}
+		catch (RavenError& re)
+		{
+			errors << re.what() << '\n';
+			if(re.get_error_type() == RavenError::ErrorType::database_does_not_exists)
+			{
+				throw RavenError(errors.str(), RavenError::ErrorType::database_does_not_exists);
+			}
 			continue;
 		}
 
-		auto topology = std::move(result.value);
+		//if (result.error.has_value())
+		//{
+		//	errors.append(result.error.value().text).append("\n");
 
-		std::atomic_store(&_topology, std::make_shared<Topology>(topology));
+		//	if (result.error.value().type == RavenError::database_does_not_exists)
+		//		return { { errors, RavenError::database_does_not_exists } };
 
-		return {}; // success
+		//	continue;
+		//}
+
+		//auto topology = std::move(result.value);
+
+		// success
+		std::atomic_store(&_topology, std::make_shared<Topology>(result));
+		return;
 	}
 
-	return { { errors, RavenError::generic } };
+	throw RavenError(errors.str(), RavenError::ErrorType::generic);
 }
 
 
-raven::RequestExecutor::RequestExecutor(std::vector<std::string> initialUrls, std::string db, std::string certificate, std::unique_ptr<raven::impl::CurlHolder> curl_holder)
-	: _initialUrls(initialUrls), _certificate(certificate), _dbName(db), _curl_holder(std::move(curl_holder))
+raven::RequestExecutor::RequestExecutor (
+	std::string db_name,
+	std::vector<std::string> initialUrls,
+	std::string certificate,
+	std::unique_ptr<raven::impl::CurlHandlesHolder> curl_holder)
+	: _db_name(std::move(db_name))
+	, _initial_urls(std::move(initialUrls))
+	, _topology(std::make_shared<Topology>())
+	, _certificate(std::move(certificate))
+	, _curl_holder(std::move(curl_holder))
 {
-	_topology = std::make_shared<Topology>();
-	for (const auto& url : initialUrls) {
-		_topology->nodes.push_back(ServerNode(url, db, "?"));
+	_topology->nodes.reserve(_initial_urls.size());
+
+	for (const auto& url : _initial_urls) 
+	{
+		_topology->nodes.emplace_back(url, _db_name, "?");
 	}
 	_topology->etag = -1;
 }
 
-std::optional<raven::RavenError> raven::RequestExecutor::validate_urls() 
+void raven::RequestExecutor::validate_urls()
 {
-	const bool certificateHasHttps = not _certificate.empty() ;
+	const bool certificateHasHttps = not _certificate.empty();
 
 	if (_initialUrls.empty())
-		return { { "No urls has been defined", RavenError::bad_url } };
+		throw RavenError("No urls has been defined", RavenError::ErrorType::bad_url);
 
-	for (const auto & url : _initialUrls) {
-		if (url.empty()) {
-			return { { "Empty url is not supported", RavenError::bad_url } };
+	for (auto & url : _initialUrls) 
+	{
+		if (url.empty()) 
+		{
+			throw RavenError("Empty url is not supported", RavenError::ErrorType::bad_url);
 		}
-		if (url.back() == '/') {
-			return { {[&](auto url_str) -> std::string {
-					std::ostringstream oss;
-					oss << "Url '" << url_str << "' must not end with '/'";
-					return oss.str();
-					}(url),RavenError::bad_url } };
-				//{ "Url '" + url + "' must not end with '/'", RavenError::bad_url } };
+		if (url.back() == '/')
+		{
+			url.pop_back();
 		}
+		//{
+		//	return { {[&](auto url_str) -> std::string {
+		//			std::ostringstream oss;
+		//			oss << "Url '" << url_str << "' must not end with '/'";
+		//			return oss.str();
+		//			}(url),RavenError::bad_url } };
+		//	//{ "Url '" + url + "' must not end with '/'", RavenError::bad_url } };
+		//}
 
-		if (certificateHasHttps) {
-			if (url.compare(0, 5, "https") != 0) { // not a match
-				return { { "Unable to use url '" + url + "', a certificate was specified, so url must use 'https' as the url scheme.", RavenError::bad_url } };
+		if (certificateHasHttps)
+		{
+			if (url.compare(0, 5, "https") != 0) // not a match
+			{
+				throw RavenError("Unable to use url '" + url + "', a certificate was specified, so url must use 'https' as the url scheme.",
+					RavenError::ErrorType::bad_url);
 			}
-		}
-		else if (url.compare(0, 5, "http:") != 0) { // not a match
-			return { { "Unable to use url '" + url + "', a certificate was NOT specified, so url must use 'http' as the url scheme.", RavenError::bad_url } };
+		}else if (url.compare(0, 5, "http:") != 0) // not a match
+		{
+			throw RavenError("Unable to use url '" + url + "', a certificate was NOT specified, so url must use 'http' as the url scheme.",
+				RavenError::ErrorType::bad_url);
 		}
 	}
-
-	return {};
 }
 
 
-raven::Result<std::unique_ptr<raven::RequestExecutor>> raven::RequestExecutor::create(
-	std::vector<std::string> urls, 
+std::unique_ptr<raven::RequestExecutor> raven::RequestExecutor::create(
+	std::vector<std::string> urls,
 	std::string db,
 	std::string certificate,
 	std::pair<raven::impl::CreateCurlHandleMethod_t, void*> create_curl)
 {
-	if (create_curl.first == NULL)
-		create_curl.first = default_create_curl_instance;
-
-	auto holder = std::make_unique<raven::impl::CurlHolder>(create_curl.first, create_curl.second);
+	auto holder = std::make_unique<raven::impl::CurlHandlesHolder>(create_curl.first, create_curl.second);
 
 	auto rq = std::unique_ptr<RequestExecutor>(new RequestExecutor(std::move(urls), std::move(db), std::move(certificate), std::move(holder)));
 

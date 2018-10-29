@@ -4,9 +4,12 @@
 #include "ServerNode.h"
 
 namespace raven {
-	struct RavenError
+	
+
+	class RavenError : public std::runtime_error
 	{
-		enum ErrorType {
+	public:
+		enum class ErrorType {
 			success,
 			generic,
 			database_does_not_exists,
@@ -15,26 +18,38 @@ namespace raven {
 			service_not_available,
 			unexpected_response
 		};
+	private:
+		ErrorType _error_type = ErrorType::generic;
 
-		std::string text;
-		ErrorType type = generic;
-
-	};
-
-	template<typename T>
-	struct Result 
-	{
-		std::optional<RavenError> error;
-		T value;
-
-		Result(RavenError err) : error(std::move(err))
+	public:
+		RavenError(const std::string& what_arg, ErrorType error_type = ErrorType::generic)
+			: std::runtime_error(what_arg)
+			, _error_type(error_type)
+		{}
+		RavenError(const char* what_arg, ErrorType error_type)
+			: RavenError(std::string(what_arg), error_type)
 		{}
 
-		Result(T value, RavenError::ErrorType /*???*/_) : value(std::move(value))
+		const ErrorType& get_error_type() const noexcept
 		{
-
+			return _error_type;
 		}
 	};
+
+	//template<typename T>
+	//struct Result 
+	//{
+	//	std::optional<RavenError> error;
+	//	T value;
+
+	//	Result(RavenError err) : error(std::move(err))
+	//	{}
+
+	//	Result(T value, RavenError::ErrorType /*???*/_) : value(std::move(value))
+	//	{
+
+	//	}
+	//};
 
 
 	struct GetDocumentsResult 

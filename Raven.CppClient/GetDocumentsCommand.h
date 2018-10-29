@@ -1,4 +1,6 @@
 #pragma once
+#include "RavenCommand.h"
+#include "CurlHandlesHolder.h"
 
 namespace raven
 {
@@ -45,7 +47,7 @@ namespace raven
 		{}
 
 		GetDocumentsCommand
-			( std::string startWith
+		(std::string startWith
 			, std::string startAfter
 			, std::string matches
 			, std::string exclude
@@ -54,11 +56,11 @@ namespace raven
 			, bool metadataOnly)
 			: _metadataOnly(metadataOnly)
 			, _startWith([&]
-			{
-				if (startWith.empty())
-					throw std::invalid_argument("startWith cannot be empty");
-				else return std::move(startWith);
-			}())
+		{
+			if (startWith.empty())
+				throw std::invalid_argument("startWith cannot be empty");
+			else return std::move(startWith);
+		}())
 			, _startAfter(std::move(startAfter))
 			, _matches(std::move(matches))
 			, _exclude(std::move(exclude))
@@ -67,7 +69,7 @@ namespace raven
 
 		{}
 
-		void createRequest(const ServerNode& node, std::string& url, CURL* curl) const override
+		void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
 		{
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/databases/" << node.database << "/docs?";
@@ -124,12 +126,9 @@ namespace raven
 			}
 
 			url = pathBuilder.str();
-
-			//TEST
-			curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 		}
 
-		static void prepareRequestWithMultipleIds(std::ostringstream& pathBuilder, CURL* curl, const std::vector<std::string> ids ) 
+		static void prepareRequestWithMultipleIds(std::ostringstream& pathBuilder, CURL* curl, const std::vector<std::string> ids)
 		{
 			std::size_t totalLen = 0;
 			auto uniqueIds = std::set<std::string>(ids.cbegin(), ids.cend());
@@ -160,9 +159,14 @@ namespace raven
 
 		}
 
-		void setResponse(CURL* curl, const nlohmann::json& response) override
+		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 		{
 			_result = response;
+		}
+
+		bool is_read_request() const noexcept override
+		{
+			return true;
 		}
 	};
 }

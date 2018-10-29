@@ -5,7 +5,7 @@ namespace raven
 	struct Topology
 	{
 		std::vector<ServerNode> nodes;
-		int64_t etag = -1;//TODO : set default value ! 
+		int64_t etag = -1;
 
 		//Topology() = default;
 		//Topology(const Topology& other) = default;

@@ -150,11 +150,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="commands.h" />
     <ClInclude Include="GetDatabaseTopologyCommand.h" />
+    <ClInclude Include="RavenCommand.h" />
     <ClInclude Include="GetDocumentsCommand.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="ravendb.h" />
+    <ClInclude Include="RequestExecutor.h" />
     <ClInclude Include="ServerNode.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -163,9 +164,8 @@
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="commands.cpp" />
+    <ClCompile Include="CurlHandlesHolder.h" />
     <ClCompile Include="tryout.cpp" />
-    <ClCompile Include="CurlHolder.cpp" />
     <ClCompile Include="RequestExecuter.cpp" />
     <ClCompile Include="serialization.cpp" />
     <ClCompile Include="stdafx.cpp">
