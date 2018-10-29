@@ -20,24 +20,15 @@ namespace raven
 
 		void first_topology_update();
 
-		//what's the point to use "static polymorphism through template ?
-		//template <typename TCommand, typename TResult>
-		//decltype(auto) execute_internal(ServerNode& node, TCommand& cmd)
 		template<typename Result_t>
 		Result_t execute_internal(ServerNode& node, RavenCommand<Result_t>& cmd)
 
 		{
-			//static_assert(std::is_base_of<RavenCommand<TResult>, TCommand>::value,
-			//	"type parameter of this class must derive from RavenCommand");
-
 			char error_buffer[CURL_ERROR_SIZE] = { '\0' };
 			std::string output_buffer;
 			std::map<std::string, std::string> headers;
 			auto ch = _curl_holder->checkout_curl();
 			auto curl = ch.get();
-
-			//what's is this for ?
-			//std::shared_ptr<Topology> topology_local = std::atomic_load(&_topology);
 
 			std::string url;
 			cmd.create_request(curl, node, url);
@@ -49,7 +40,6 @@ namespace raven
 			curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, raven::impl::Utils::push_headers);
 			curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headers);
 
-			//RavenError err;
 			auto res = curl_easy_perform(curl);
 
 			long statusCode;
@@ -65,7 +55,7 @@ namespace raven
 					<< error_buffer
 					<< "\n";
 
-				throw std::runtime_error(error_builder.str());
+				throw RavenError(error_builder.str(), RavenError::ErrorType::generic);
 			}
 
 			cmd.status_code = statusCode;
@@ -73,28 +63,24 @@ namespace raven
 			{
 				case 200:
 				case 201:
-					{
-						auto result = nlohmann::json::parse(output_buffer);
-						cmd.set_response(curl, result, false);
-						break;
-					}
+				{
+					auto result = nlohmann::json::parse(output_buffer);
+					cmd.set_response(curl, result, false);
+					break;
+				}
 				case 404:
 					cmd.set_response_not_found(curl);
 					break;
 				case 503:
 					if (headers.find("Database-Missing") != headers.end())
 					{
-						err = { output_buffer, RavenError::database_does_not_exists };
-						return Result<TResult>(err);
+						throw RavenError(output_buffer, RavenError::ErrorType::database_does_not_exists);
 					}
-					err = { output_buffer, RavenError::service_not_available };
-					return Result<TResult>(err);
+					throw RavenError(output_buffer, RavenError::ErrorType::service_not_available);
 				case 500:
-					err = { output_buffer, RavenError::internal_server_error };
-					return Result<TResult>(err);
+					throw RavenError(output_buffer, RavenError::ErrorType::internal_server_error);
 				default:
-					err = { output_buffer, RavenError::unexpected_response };
-					return Result<TResult>(err);
+					throw RavenError(output_buffer, RavenError::ErrorType::unexpected_response);
 			}
 
 			return cmd.get_result();
@@ -116,32 +102,34 @@ namespace raven
 
 		~RequestExecutor() = default;
 
-		//what's the point to use "static polymorphism through template ?
-		//template <typename TCommand, typename TResult>
 		template<typename Result_t>
 		Result_t execute(RavenCommand<Result_t>& cmd)
 		{
-			std::string errors;
+			std::ostringstream errors;
 
 			std::shared_ptr<Topology> topology_local = std::atomic_load(&_topology);
 
 			for (auto& node : topology_local->nodes)
 			{
-				auto result = execute_internal(node, cmd);
-
-				if (result.error.has_value())
+				Result_t result;
+				try
 				{
-					errors.append(result.error.value().text).append("\n");
-					if (result.error.value().type == RavenError::database_does_not_exists)
-						return result;
+					 result = execute_internal(node, cmd);
+				}
+				catch (RavenError& re)
+				{
+					errors << re.what() << '\n';
+					if (re.get_error_type() == RavenError::ErrorType::database_does_not_exists)
+					{
+						throw RavenError(errors.str(), RavenError::ErrorType::database_does_not_exists);
+					}
 					continue;
 				}
 
 				return result;
 			}
 
-			RavenError err = { errors, RavenError::generic };
-			return Result<TResult>(err);
+			throw RavenError(errors.str(), RavenError::ErrorType::generic);
 		}
 
 
