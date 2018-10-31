@@ -22,7 +22,7 @@ namespace raven
 
 	public:
 
-		//~GetDocumentsCommand() override = default;
+		~GetDocumentsCommand() override = default;
 
 		GetDocumentsCommand(int32_t start, int32_t pageSize)
 			: _start(start)
@@ -161,7 +161,10 @@ namespace raven
 
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 		{
-			_result = response;
+			long statusCode;
+			curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode);
+			if (statusCode == 200)
+				_result = response;
 		}
 
 		bool is_read_request() const noexcept override

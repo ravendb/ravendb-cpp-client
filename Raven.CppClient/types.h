@@ -9,7 +9,8 @@ namespace raven {
 	class RavenError : public std::runtime_error
 	{
 	public:
-		enum class ErrorType {
+		enum class ErrorType : uint8_t
+		{
 			success,
 			generic,
 			database_does_not_exists,
@@ -36,29 +37,23 @@ namespace raven {
 		}
 	};
 
-	//template<typename T>
-	//struct Result 
-	//{
-	//	std::optional<RavenError> error;
-	//	T value;
-
-	//	Result(RavenError err) : error(std::move(err))
-	//	{}
-
-	//	Result(T value, RavenError::ErrorType /*???*/_) : value(std::move(value))
-	//	{
-
-	//	}
-	//};
-
-
 	struct GetDocumentsResult 
 	{
 		nlohmann::json::object_t includes;
 		nlohmann::json::array_t results;
-		int next_page_start;
+		int32_t next_page_start = 0;
 	};
 	
 
 	void from_json(const nlohmann::json& j, GetDocumentsResult& p);
+
+	struct PutResult
+	{
+		std::string id;
+		std::string change_vector;
+	};
+
+	void from_json(const nlohmann::json& j, PutResult& p);
+
+
 }

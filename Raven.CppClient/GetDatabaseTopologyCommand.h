@@ -16,17 +16,6 @@ namespace raven
 			std::ostringstream urlBuilder;
 			urlBuilder << node.url << "/topology?name=" << node.database;
 
-			//WON'T WORK WITH CURL !!!
-			//{
-			//	std::string lowCaseUrl = node.url;
-			//	std::transform(lowCaseUrl.begin(), lowCaseUrl.end(), lowCaseUrl.begin(), [](std::string::value_type c) {return std::tolower(c); });
-			//	if (std::string::npos != lowCaseUrl.find(".fiddler"))
-			//	{
-			//		// we want to keep the '.fiddler' stuff there so we'll keep tracking request
-			//		// so we are going to ask the server to respect it
-			//		urlBuilder << "&localUrl=" << raven::impl::Utils::url_escape(curl, node.url);
-			//	}
-			//}
 			curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 
 			url = urlBuilder.str();

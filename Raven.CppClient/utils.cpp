@@ -37,8 +37,8 @@ size_t raven::impl::Utils::push_headers(char *buffer, size_t size, size_t nitems
 
 size_t raven::impl::Utils::push_to_buffer(char* contents, size_t size, size_t nmemb, void* output_buffer_void) {
 	auto real_size = size * nmemb;
-	auto output_buffer = static_cast<std::string*>(output_buffer_void);
-	output_buffer->append((char*)contents, real_size);
+	auto& output_buffer = *static_cast<std::string*>(output_buffer_void);
+	output_buffer.append((char*)contents, real_size);
 	return real_size;
 }
 

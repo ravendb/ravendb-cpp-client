@@ -151,6 +151,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GetDatabaseTopologyCommand.h" />
+    <ClInclude Include="PutDocumentCommand.h" />
     <ClInclude Include="RavenCommand.h" />
     <ClInclude Include="GetDocumentsCommand.h" />
     <ClInclude Include="json.hpp" />

@@ -17,7 +17,7 @@ void raven::from_json(const nlohmann::json& j, raven::Topology& p)
 	p.nodes.clear();
 	p.nodes.reserve(nodes.size());
 
-	for (auto node : nodes) {
+	for (auto& node : nodes) {
 		p.nodes.emplace(p.nodes.end(),node);
 	}
 
@@ -31,4 +31,10 @@ void raven::from_json(const nlohmann::json& j, raven::GetDocumentsResult& p)
 	auto next_page_start = j.find("NextPageStart");
 	if (next_page_start != j.end())
 		p.next_page_start = next_page_start->get<int32_t>();
+}
+
+void raven::from_json(const nlohmann::json& j, raven::PutResult& p)
+{
+	p.id = j.at("Id").get<std::string>();
+	p.change_vector = j.at("ChangeVector").get<std::string>();
 }
