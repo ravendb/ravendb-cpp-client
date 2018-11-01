@@ -94,7 +94,7 @@ namespace raven
 					{
 						throw std::runtime_error("_create_curl_handle_method failed");
 					}
-					return ReturnCurl(std::move(std::unique_ptr<CURL, CurlCleanup>(curl)), *this);
+					return ReturnCurl(std::move(CurlHandleUniquePtr(curl)), *this);
 				}
 
 				auto curl = std::move(_curl_handles.front());

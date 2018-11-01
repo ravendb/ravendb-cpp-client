@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "utils.h"
 
 static inline void ltrim(std::string &s) {
 	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
@@ -13,7 +14,8 @@ static inline void rtrim(std::string &s) {
 }
 
 
-size_t raven::impl::Utils::push_headers(char *buffer, size_t size, size_t nitems, void *userdata) {
+size_t raven::impl::Utils::push_headers(char *buffer, size_t size, size_t nitems, void *userdata)
+{
 	auto real_size = size * nitems;
 	auto headers = static_cast<std::map<std::string, std::string>*>(userdata);
 	auto result = static_cast<char*>(memchr(buffer, ':', real_size));
@@ -47,9 +49,18 @@ std::string raven::impl::Utils::url_escape(CURL* curl, const std::string& val)
 	auto result = curl_easy_escape(curl, val.c_str(), (int)val.length());
 	if (result == nullptr)
 	{
-		throw "url escape failure on: " + val; // TODO: Is there anything better here?like return optional?
+		throw std::invalid_argument("url escape failure on: " + val);
 	}
 	auto str = std::string(result);
 	curl_free(result);
 	return str;
+}
+
+size_t raven::impl::Utils::read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
+{
+	auto str = static_cast<const std::string*>(stream);
+	size_t length = str->length();
+
+	std::memcpy(ptr, str->c_str(), length);
+	return length;
 }

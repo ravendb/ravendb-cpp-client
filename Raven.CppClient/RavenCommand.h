@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "utils.h"
+#include "ServerNode.h"
 
 namespace raven
 {
@@ -14,13 +15,14 @@ namespace raven
 
 
 	template<typename Result_t>
+	//abstract
 	class RavenCommand
 	{
 	private:
 		std::map<ServerNode, std::exception> _failed_nodes;
 
 	protected:
-		Result_t _result;
+		Result_t _result; 
 		RavenCommandResponseType _response_type = RavenCommandResponseType::OBJECT;
 		bool _can_cache = true;
 		bool _can_cache_aggressively = true;
@@ -56,10 +58,10 @@ namespace raven
 
 		virtual void set_response(CURL* curl, const nlohmann::json& response, bool from_cache = false) = 0;
 
-		//do we need it ?
 		virtual void set_response_not_found(CURL* curl)
 		{
-			/*_result = TResult();*/
+			//_result.reset();
+			_response_type = RavenCommandResponseType::EMPTY;
 		}
 
 		//do we need it ? should we use it ?

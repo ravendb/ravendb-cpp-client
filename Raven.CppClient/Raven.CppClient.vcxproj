@@ -150,6 +150,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CreateDatabaseCommand.h" />
+    <ClInclude Include="DeleteDocumentCommand.h" />
+    <ClInclude Include="RavenErrors.h" />
+    <ClInclude Include="GetDatabaseRecordCommand.h" />
     <ClInclude Include="GetDatabaseTopologyCommand.h" />
     <ClInclude Include="PutDocumentCommand.h" />
     <ClInclude Include="RavenCommand.h" />

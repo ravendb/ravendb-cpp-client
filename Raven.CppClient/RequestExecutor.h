@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 #include "CurlHandlesHolder.h"
+#include "Topology.h"
+#include "types.h"
 
 namespace raven
 {
@@ -22,7 +24,6 @@ namespace raven
 
 		template<typename Result_t>
 		Result_t execute_internal(ServerNode& node, RavenCommand<Result_t>& cmd)
-
 		{
 			char error_buffer[CURL_ERROR_SIZE] = { '\0' };
 			std::string output_buffer;

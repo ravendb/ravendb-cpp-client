@@ -1,6 +1,7 @@
 #pragma once
 #include "RavenCommand.h"
 #include "CurlHandlesHolder.h"
+#include "types.h"
 
 namespace raven
 {
