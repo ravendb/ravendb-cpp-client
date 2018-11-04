@@ -3,9 +3,9 @@
 #include "types.h"
 #include "Topology.h"
 
-namespace raven
+namespace ravenDB
 {
-	void raven::from_json(const nlohmann::json& j, ServerNode& p)
+	void ravenDB::from_json(const nlohmann::json& j, ServerNode& p)
 	{
 		p.url = j.at("Url").get<std::string>();
 		p.database = j.at("Database").get<std::string>();
@@ -13,7 +13,7 @@ namespace raven
 	}
 
 
-	void raven::from_json(const nlohmann::json& j, Topology& p)
+	void ravenDB::from_json(const nlohmann::json& j, Topology& p)
 	{
 		p.etag = j.at("Etag").get<int64_t>();
 		auto&& nodes = j.at("Nodes").get<nlohmann::json::array_t>();
@@ -27,7 +27,7 @@ namespace raven
 	}
 
 
-	void raven::from_json(const nlohmann::json& j, GetDocumentsResult& p)
+	void ravenDB::from_json(const nlohmann::json& j, GetDocumentsResult& p)
 	{
 		p.includes = j.at("Includes").get<nlohmann::json::object_t>();
 		p.results = j.at("Results").get<nlohmann::json::array_t>();
@@ -36,14 +36,14 @@ namespace raven
 			p.next_page_start = next_page_start->get<int32_t>();
 	}
 
-	void raven::from_json(const nlohmann::json& j, PutResult& p)
+	void ravenDB::from_json(const nlohmann::json& j, PutResult& p)
 	{
 		p.id = j.at("Id").get<std::string>();
 		p.change_vector = j.at("ChangeVector").get<std::string>();
 	}
 
 
-	//void from_json(const nlohmann::json& j, raven::DatabaseRecord& p)
+	//void from_json(const nlohmann::json& j, ravenDB::DatabaseRecord& p)
 	//{	
 	//}
 

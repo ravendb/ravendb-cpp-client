@@ -6,7 +6,7 @@
 #include "Topology.h"
 #include "types.h"
 
-namespace raven
+namespace ravenDB
 {
 
 	class RequestExecutor
@@ -36,9 +36,9 @@ namespace raven
 
 			curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 			curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, error_buffer);
-			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, raven::impl::Utils::push_to_buffer);
+			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ravenDB::impl::Utils::push_to_buffer);
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output_buffer);
-			curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, raven::impl::Utils::push_headers);
+			curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, ravenDB::impl::Utils::push_headers);
 			curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headers);
 
 			auto res = curl_easy_perform(curl);
@@ -138,6 +138,6 @@ namespace raven
 			std::vector<std::string> urls,
 			std::string db,
 			std::string certificate = {},
-			std::pair<raven::impl::CreateCurlHandleMethod_t, void*> create_curl = { impl::CurlHandlesHolder::default_create_curl_instance, nullptr });
+			std::pair<ravenDB::impl::CreateCurlHandleMethod_t, void*> create_curl = { impl::CurlHandlesHolder::default_create_curl_instance, nullptr });
 	};
 }

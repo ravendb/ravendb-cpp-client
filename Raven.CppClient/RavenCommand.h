@@ -5,9 +5,9 @@
 #include "utils.h"
 #include "ServerNode.h"
 
-namespace raven
+namespace ravenDB
 {
-	enum class RavenCommandResponseType
+	enum class RavenCommandResponseType : uint8_t
 	{
 		EMPTY,
 		OBJECT,
@@ -22,10 +22,16 @@ namespace raven
 		std::map<ServerNode, std::exception> _failed_nodes;
 
 	protected:
-		Result_t _result; 
+		Result_t _result;
 		RavenCommandResponseType _response_type = RavenCommandResponseType::OBJECT;
 		bool _can_cache = true;
 		bool _can_cache_aggressively = true;
+
+		RavenCommand()
+			: _response_type(RavenCommandResponseType::OBJECT)
+			, _can_cache(true)
+			, _can_cache_aggressively(true)
+		{}
 
 	public:
 		int32_t status_code = -1;

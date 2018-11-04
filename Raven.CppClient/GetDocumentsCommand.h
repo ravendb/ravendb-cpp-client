@@ -3,7 +3,7 @@
 #include "CurlHandlesHolder.h"
 #include "types.h"
 
-namespace raven
+namespace ravenDB
 {
 	class GetDocumentsCommand : public RavenCommand<GetDocumentsResult>
 	{
@@ -57,11 +57,11 @@ namespace raven
 			, bool metadataOnly)
 			: _metadataOnly(metadataOnly)
 			, _startWith([&]
-		{
-			if (startWith.empty())
-				throw std::invalid_argument("startWith cannot be empty");
-			else return std::move(startWith);
-		}())
+			{
+				if (startWith.empty())
+					throw std::invalid_argument("startWith cannot be empty");
+				else return std::move(startWith);
+			}())
 			, _startAfter(std::move(startAfter))
 			, _matches(std::move(matches))
 			, _exclude(std::move(exclude))
@@ -92,21 +92,21 @@ namespace raven
 
 			if (not _startWith.empty())
 			{
-				pathBuilder << "&startsWith=" << raven::impl::Utils::url_escape(curl, _startWith);
+				pathBuilder << "&startsWith=" << ravenDB::impl::Utils::url_escape(curl, _startWith);
 
 				if (not _matches.empty())
 				{
-					pathBuilder << "&matches=" << raven::impl::Utils::url_escape(curl, _matches);
+					pathBuilder << "&matches=" << ravenDB::impl::Utils::url_escape(curl, _matches);
 				}
 
 				if (not _exclude.empty())
 				{
-					pathBuilder << "&exclude=" << raven::impl::Utils::url_escape(curl, _exclude);
+					pathBuilder << "&exclude=" << ravenDB::impl::Utils::url_escape(curl, _exclude);
 				}
 
 				if (not _startAfter.empty())
 				{
-					pathBuilder << "&startAfter=" << raven::impl::Utils::url_escape(curl, _startAfter);
+					pathBuilder << "&startAfter=" << ravenDB::impl::Utils::url_escape(curl, _startAfter);
 				}
 			}
 
@@ -119,7 +119,7 @@ namespace raven
 
 			if (not _id.empty())
 			{
-				pathBuilder << "&id=" << raven::impl::Utils::url_escape(curl, _id);
+				pathBuilder << "&id=" << ravenDB::impl::Utils::url_escape(curl, _id);
 			}
 			else if (not _ids.empty())
 			{
@@ -146,7 +146,7 @@ namespace raven
 				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 				for (const auto& id : uniqueIds)
 				{
-					pathBuilder << "&id=" << raven::impl::Utils::url_escape(curl, id);
+					pathBuilder << "&id=" << ravenDB::impl::Utils::url_escape(curl, id);
 				}
 			}
 			else // ids too big, must use POST

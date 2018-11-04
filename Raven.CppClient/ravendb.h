@@ -7,7 +7,7 @@
 #include "Topology.h"
 #include "RavenCommand.h"
 
-namespace raven
+namespace ravenDB
 {
 	struct CurlGlobalRAII final
 	{

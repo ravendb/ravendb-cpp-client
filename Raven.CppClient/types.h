@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "ServerNode.h"
 
-namespace raven 
+namespace ravenDB 
 {
 	struct GetDocumentsResult 
 	{

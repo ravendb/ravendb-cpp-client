@@ -167,6 +167,7 @@
     <ClInclude Include="Topology.h" />
     <ClInclude Include="types.h" />
     <ClInclude Include="utils.h" />
+    <ClInclude Include="VoidRavenCommand.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CurlHandlesHolder.h" />

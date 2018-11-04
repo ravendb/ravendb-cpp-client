@@ -1,6 +1,6 @@
 #pragma once
 
-namespace raven {
+namespace ravenDB {
 	namespace impl {
 		class Utils {
 		public:

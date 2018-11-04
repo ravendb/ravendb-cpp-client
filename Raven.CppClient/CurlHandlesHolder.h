@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include <queue>
 
-namespace raven
+namespace ravenDB
 {
 	namespace impl
 	{
@@ -32,15 +32,7 @@ namespace raven
 			void return_curl_handle_to_holder(CurlHandleUniquePtr curl)
 			{
 				std::lock_guard<std::mutex> lg(_curl_handles_lock);
-				try
-				{
-					_curl_handles.push(std::move(curl));
-				}
-				catch (std::bad_alloc)
-				{
-					//perhaps should dispose the curl handle ?
-					throw std::runtime_error("return_curl_handle_to_holder failed - out of memory");
-				}
+				_curl_handles.push(std::move(curl));
 			}
 
 		public:
@@ -69,14 +61,9 @@ namespace raven
 
 				~ReturnCurl()
 				{
+					curl_easy_reset(this->get());
 					_holder.return_curl_handle_to_holder(std::move(_curl));
 				}
-
-				//Not GOOD ! treats CURL* as a class with members/methods
-				//CURL* operator->() const
-				//{
-				//	return curl.operator->();
-				//}
 
 				CURL* get() const
 				{
