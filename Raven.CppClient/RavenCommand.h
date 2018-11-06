@@ -22,7 +22,7 @@ namespace ravenDB
 		std::map<ServerNode, std::exception> _failed_nodes;
 
 	protected:
-		Result_t _result;
+		Result_t _result{};
 		RavenCommandResponseType _response_type = RavenCommandResponseType::OBJECT;
 		bool _can_cache = true;
 		bool _can_cache_aggressively = true;
@@ -66,7 +66,6 @@ namespace ravenDB
 
 		virtual void set_response_not_found(CURL* curl)
 		{
-			//_result.reset();
 			_response_type = RavenCommandResponseType::EMPTY;
 		}
 

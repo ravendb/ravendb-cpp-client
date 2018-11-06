@@ -1,4 +1,5 @@
 #pragma once
+#include "ServerNode.h"
 
 namespace ravenDB
 {

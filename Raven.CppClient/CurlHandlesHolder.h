@@ -46,28 +46,40 @@ namespace ravenDB
 				friend CurlHandlesHolder;
 			private:
 				CurlHandleUniquePtr _curl;
-				CurlHandlesHolder& _holder;
+				CurlHandlesHolder* _holder;
 
-				ReturnCurl(CurlHandleUniquePtr curl, CurlHandlesHolder& h)
+				ReturnCurl(CurlHandleUniquePtr curl, CurlHandlesHolder& h) noexcept
 					: _curl(std::move(curl))
-					, _holder(h)
+					, _holder(&h)
 				{}
 
 			public:
 				ReturnCurl(const ReturnCurl& other) = delete;
-				ReturnCurl(ReturnCurl&& other) = delete;
 				ReturnCurl& operator=(const ReturnCurl& other) = delete;
 				ReturnCurl& operator=(ReturnCurl&& other) = delete;
+
+				ReturnCurl(ReturnCurl&& other) noexcept
+					: _curl(std::move(other._curl))
+					, _holder(other._holder)
+				{
+					_holder = nullptr;
+				}
 
 				~ReturnCurl()
 				{
 					curl_easy_reset(this->get());
-					_holder.return_curl_handle_to_holder(std::move(_curl));
+					_holder->return_curl_handle_to_holder(std::move(_curl));
 				}
 
 				CURL* get() const
 				{
-					return _curl.get();
+					if (_curl)
+					{
+						return _curl.get();
+					}else
+					{
+						throw std::runtime_error("ReturnCurl object does not contain valid curl handle");
+					}
 				}
 			};
 
@@ -81,7 +93,7 @@ namespace ravenDB
 					{
 						throw std::runtime_error("_create_curl_handle_method failed");
 					}
-					return ReturnCurl(std::move(CurlHandleUniquePtr(curl)), *this);
+					return { CurlHandleUniquePtr(curl), *this };
 				}
 
 				auto curl = std::move(_curl_handles.front());

@@ -5,6 +5,7 @@
 #include "CurlHandlesHolder.h"
 #include "Topology.h"
 #include "types.h"
+#include "RavenCommand.h"
 
 namespace ravenDB
 {
@@ -75,7 +76,7 @@ namespace ravenDB
 				case 503:
 					if (headers.find("Database-Missing") != headers.end())
 					{
-						throw RavenError(output_buffer, RavenError::ErrorType::database_does_not_exists);
+						throw RavenError(output_buffer, RavenError::ErrorType::database_does_not_exist);
 					}
 					throw RavenError(output_buffer, RavenError::ErrorType::service_not_available);
 				case 500:
@@ -120,9 +121,9 @@ namespace ravenDB
 				catch (RavenError& re)
 				{
 					errors << re.what() << '\n';
-					if (re.get_error_type() == RavenError::ErrorType::database_does_not_exists)
+					if (re.get_error_type() == RavenError::ErrorType::database_does_not_exist)
 					{
-						throw RavenError(errors.str(), RavenError::ErrorType::database_does_not_exists);
+						throw RavenError(errors.str(), RavenError::ErrorType::database_does_not_exist);
 					}
 					continue;
 				}

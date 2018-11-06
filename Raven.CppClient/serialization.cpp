@@ -2,6 +2,9 @@
 #include "stdafx.h"
 #include "types.h"
 #include "Topology.h"
+#include "GetNextOperationIdCommand.h"
+
+//#include "DeleteDatabaseCommand.h"
 
 namespace ravenDB
 {
@@ -58,18 +61,31 @@ namespace ravenDB
 		//p.conflict_solver_config = j.at("Settings").get<decltype(p.conflict_solver_config)>();
 	}
 
-	void from_json(const nlohmann::json& j, DatabaseTopology& p)
-	{
-		
-	}
+	//void from_json(const nlohmann::json& j, DatabaseTopology& p)
+	//{
+	//	
+	//}
 
 	void from_json(const nlohmann::json& j, DatabasePutResult& dpr)
 	{
-		dpr.raftCommandIndex = j.at("RaftCommandIndex").get<int64_t>();
+		dpr.raft_command_index = j.at("RaftCommandIndex").get<int64_t>();
 		dpr.name = j.at("Name").get<std::string>();
 		//dpr.topology = j.at("Topology").get<DatabaseTopology>();
 		dpr.nodesAddedTo = j.at("NodesAddedTo").get<std::vector<std::string>>();
+	}
 
+	//void to_json(const nlohmann::json& j, DeleteDatabaseCommand::Parameters& p)
+	//{
+	//	//j["DatabaseNames"] = p.database_names;
+
+	//}
+
+	void from_json(const nlohmann::json& j, OperationId& res)
+	{
+		if(auto id = j.find("Id"); id not_eq j.end())
+		{
+			res = id->get<std::remove_reference_t<decltype(res)>>();
+		}
 	}
 
 

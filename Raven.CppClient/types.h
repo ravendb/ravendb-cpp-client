@@ -91,15 +91,18 @@ namespace ravenDB
 
 	struct DatabasePutResult
 	{
-		int64_t raftCommandIndex{};
+		int64_t raft_command_index{};
 		std::string name{};
 		DatabaseTopology topology{};
 		std::vector<std::string> nodesAddedTo{};
 	};
-
-	
 	void from_json(const nlohmann::json& j, DatabasePutResult& p);
 
 
-
+	struct DeleteDatabaseResult
+	{
+		int64_t raft_command_index{};
+		std::vector<std::string> pending_deletes{};
+	};
+	void from_json(const nlohmann::json& j, DeleteDatabaseResult& p);
 }
