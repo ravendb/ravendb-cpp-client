@@ -58,12 +58,12 @@ namespace ravenDB
 				ReturnCurl& operator=(const ReturnCurl& other) = delete;
 				ReturnCurl& operator=(ReturnCurl&& other) = delete;
 
-				ReturnCurl(ReturnCurl&& other) noexcept
+				ReturnCurl(ReturnCurl&& other) = delete;/*noexcept
 					: _curl(std::move(other._curl))
 					, _holder(other._holder)
 				{
 					_holder = nullptr;
-				}
+				}*/
 
 				~ReturnCurl()
 				{

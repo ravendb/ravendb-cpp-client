@@ -14,8 +14,8 @@ namespace ravenDB
 
 		bool _metadataOnly = false;
 
-		std::string _startWith;
-		std::string _startAfter;
+		std::string _start_with;
+		std::string _start_after;
 		std::string _matches;
 		std::string _exclude;
 		std::optional<int32_t> _start;
@@ -56,13 +56,13 @@ namespace ravenDB
 			, int32_t pageSize
 			, bool metadataOnly)
 			: _metadataOnly(metadataOnly)
-			, _startWith([&]
+			, _start_with([&]
 			{
 				if (startWith.empty())
 					throw std::invalid_argument("startWith cannot be empty");
 				else return std::move(startWith);
 			}())
-			, _startAfter(std::move(startAfter))
+			, _start_after(std::move(startAfter))
 			, _matches(std::move(matches))
 			, _exclude(std::move(exclude))
 			, _start(start)
@@ -90,9 +90,9 @@ namespace ravenDB
 				pathBuilder << "&metadataOnly=true";
 			}
 
-			if (not _startWith.empty())
+			if (not _start_with.empty())
 			{
-				pathBuilder << "&startsWith=" << ravenDB::impl::Utils::url_escape(curl, _startWith);
+				pathBuilder << "&startsWith=" << ravenDB::impl::Utils::url_escape(curl, _start_with);
 
 				if (not _matches.empty())
 				{
@@ -104,9 +104,9 @@ namespace ravenDB
 					pathBuilder << "&exclude=" << ravenDB::impl::Utils::url_escape(curl, _exclude);
 				}
 
-				if (not _startAfter.empty())
+				if (not _start_after.empty())
 				{
-					pathBuilder << "&startAfter=" << ravenDB::impl::Utils::url_escape(curl, _startAfter);
+					pathBuilder << "&startAfter=" << ravenDB::impl::Utils::url_escape(curl, _start_after);
 				}
 			}
 

@@ -5,11 +5,15 @@
 
 namespace ravenDB
 {
-	using OperationId = int64_t;
 
-	void from_json(const nlohmann::json& j, OperationId& p);
+	struct OperationId_t
+	{
+		int64_t value;
+	};
 
-	class GetNextOperationIdCommand :public RavenCommand<OperationId>
+	void from_json(const nlohmann::json& j, OperationId_t& p);
+
+	class GetNextOperationIdCommand :public RavenCommand<int64_t>
 	{
 	public:
 
@@ -29,7 +33,8 @@ namespace ravenDB
 
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 		{
-			_result = response;
+			OperationId_t res = response;
+			_result = res.value;
 		}
 
 		bool is_read_request() const noexcept override
@@ -37,4 +42,13 @@ namespace ravenDB
 			return false;// disable caching
 		}
 	};
+
+	inline void from_json(const nlohmann::json& j, OperationId_t& res)
+	{
+		if (auto id = j.find("Id"); id not_eq j.end())
+		{
+			res.value = id->get<int64_t>();
+		}
+	}
+
 }

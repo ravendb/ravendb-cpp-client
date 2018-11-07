@@ -87,6 +87,11 @@ namespace ravenDB
 	};
 
 
-	void to_json(const nlohmann::json& j, DeleteDatabaseCommand::Parameters& p);
+	inline void to_json(nlohmann::json& j, const DeleteDatabaseCommand::Parameters& p)
+	{
+		j["DatabaseNames"] = p.database_names;
+		j["HardDelete"] = p.hard_delete;
+		j["FromNodes"] = p.from_nodes;
+	}
 
 }

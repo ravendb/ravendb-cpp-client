@@ -4,8 +4,6 @@
 #include "Topology.h"
 #include "GetNextOperationIdCommand.h"
 
-//#include "DeleteDatabaseCommand.h"
-
 namespace ravenDB
 {
 	void ravenDB::from_json(const nlohmann::json& j, ServerNode& p)
@@ -73,20 +71,4 @@ namespace ravenDB
 		//dpr.topology = j.at("Topology").get<DatabaseTopology>();
 		dpr.nodesAddedTo = j.at("NodesAddedTo").get<std::vector<std::string>>();
 	}
-
-	//void to_json(const nlohmann::json& j, DeleteDatabaseCommand::Parameters& p)
-	//{
-	//	//j["DatabaseNames"] = p.database_names;
-
-	//}
-
-	void from_json(const nlohmann::json& j, OperationId& res)
-	{
-		if(auto id = j.find("Id"); id not_eq j.end())
-		{
-			res = id->get<std::remove_reference_t<decltype(res)>>();
-		}
-	}
-
-
 }
