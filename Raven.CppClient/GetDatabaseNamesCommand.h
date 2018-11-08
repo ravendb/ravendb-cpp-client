@@ -1,7 +1,7 @@
 #pragma once
 #include "RavenCommand.h"
 
-namespace ravenDB
+namespace ravendb
 {
 	struct DatabaseNames_t
 	{
@@ -56,7 +56,15 @@ namespace ravenDB
 	inline void from_json(const nlohmann::json& j, DatabaseNames_t& result)
 	{
 		auto&& res = result.value;
-		res = j.at("Databases").get<std::decay_t<decltype(res)>>();
+		auto&& it = j.find("Databases");
+		if(it == j.end() or not it->is_array())
+		{
+			throw RavenError({}, RavenError::ErrorType::invalid_response);
+		}
+		else
+		{
+			res = it->get<std::decay_t<decltype(res)>>();
+		}
 	}
 
 }

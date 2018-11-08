@@ -4,7 +4,7 @@
 #include  "Topology.h"
 #include "ServerNode.h"
 
-namespace ravenDB
+namespace ravendb
 {
 	class GetDatabaseTopologyCommand :public RavenCommand<Topology>
 	{

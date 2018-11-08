@@ -174,7 +174,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CurlHandlesHolder.h" />
-    <ClCompile Include="tryout.cpp" />
     <ClCompile Include="RequestExecutor.cpp" />
     <ClCompile Include="serialization.cpp" />
     <ClCompile Include="stdafx.cpp">

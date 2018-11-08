@@ -3,7 +3,7 @@
 #include "types.h"
 #include "RavenCommand.h"
 
-namespace ravenDB
+namespace ravendb
 {
 	class GetDatabaseRecordCommand : public RavenCommand<DatabaseRecordWithEtag>
 	{

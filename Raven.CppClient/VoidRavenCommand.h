@@ -1,9 +1,9 @@
 #pragma once
 #include "RavenCommand.h"
 
-namespace ravenDB
+namespace ravendb
 {
-	class VoidRavenCommand : public RavenCommand<int>
+	class VoidRavenCommand : public RavenCommand<void*>
 	{
 	protected:
 		VoidRavenCommand()

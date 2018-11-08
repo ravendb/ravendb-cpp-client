@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "ServerNode.h"
 
-namespace ravenDB 
+namespace ravendb 
 {
 	struct GetDocumentsResult 
 	{
@@ -104,5 +104,7 @@ namespace ravenDB
 		int64_t raft_command_index{};
 		std::vector<std::string> pending_deletes{};
 	};
-	void from_json(const nlohmann::json& j, DeleteDatabaseResult& p);
+
+	void from_json(const nlohmann::json& j, DeleteDatabaseResult& ddr);
+
 }

@@ -14,7 +14,7 @@ static inline void rtrim(std::string &s) {
 }
 
 
-size_t ravenDB::impl::Utils::push_headers(char *buffer, size_t size, size_t nitems, void *userdata)
+size_t ravendb::impl::Utils::push_headers(char *buffer, size_t size, size_t nitems, void *userdata)
 {
 	auto real_size = size * nitems;
 	auto headers = static_cast<std::map<std::string, std::string>*>(userdata);
@@ -37,7 +37,7 @@ size_t ravenDB::impl::Utils::push_headers(char *buffer, size_t size, size_t nite
 	return real_size;
 }
 
-size_t ravenDB::impl::Utils::push_to_buffer(char* contents, size_t size, size_t nmemb, void* output_buffer_void)
+size_t ravendb::impl::Utils::push_to_buffer(char* contents, size_t size, size_t nmemb, void* output_buffer_void)
 {
 	auto real_size = size * nmemb;
 	auto& output_buffer = *static_cast<std::string*>(output_buffer_void);
@@ -45,7 +45,7 @@ size_t ravenDB::impl::Utils::push_to_buffer(char* contents, size_t size, size_t 
 	return real_size;
 }
 
-std::string ravenDB::impl::Utils::url_escape(CURL* curl, const std::string& val)
+std::string ravendb::impl::Utils::url_escape(CURL* curl, const std::string& val)
 {
 	auto result = curl_easy_escape(curl, val.c_str(), (int)val.length());
 	if (result == nullptr)
@@ -57,7 +57,7 @@ std::string ravenDB::impl::Utils::url_escape(CURL* curl, const std::string& val)
 	return str;
 }
 
-size_t ravenDB::impl::Utils::read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
+size_t ravendb::impl::Utils::read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
 	auto str = static_cast<const std::string*>(stream);
 	size_t length = str->length();

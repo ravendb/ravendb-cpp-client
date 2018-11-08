@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ravenDB
+namespace ravendb
 {
 	struct ServerNode
 	{
@@ -18,10 +18,6 @@ namespace ravenDB
 		Role serverRole = NONE;
 
 		ServerNode() = default;
-		//ServerNode(const ServerNode& other) = default;
-		//ServerNode(ServerNode&& other) = default;
-		//ServerNode& operator=(const ServerNode& other) = default;
-		//ServerNode& operator=(ServerNode&& other) = default;
 
 		ServerNode(std::string url, std::string db, std::string tag, Role role = NONE)
 			: url(std::move(url))

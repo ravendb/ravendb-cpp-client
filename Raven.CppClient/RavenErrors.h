@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ravenDB
+namespace ravendb
 {
 	class RavenError : public std::runtime_error
 	{
@@ -13,7 +13,8 @@ namespace ravenDB
 			bad_url,
 			internal_server_error,
 			service_not_available,
-			unexpected_response
+			unexpected_response,
+			invalid_response
 		};
 	private:
 		ErrorType _error_type = ErrorType::generic;

@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include <queue>
 
-namespace ravenDB
+namespace ravendb
 {
 	namespace impl
 	{
@@ -14,6 +14,30 @@ namespace ravenDB
 		class CurlHandlesHolder
 		{
 		private:
+			struct CurlGlobalInit final
+			{
+				CurlGlobalInit()
+				{
+					auto res = curl_global_init(CURL_GLOBAL_ALL);
+					if (res not_eq CURLE_OK)
+					{
+						throw std::runtime_error("curl_global_init failed !");
+					}
+				}
+
+				~CurlGlobalInit()
+				{
+					curl_global_cleanup();
+				}
+
+				CurlGlobalInit(const CurlGlobalInit& other) = delete;
+				CurlGlobalInit(CurlGlobalInit&& other) noexcept = delete;
+				CurlGlobalInit& operator=(const CurlGlobalInit& other) = delete;
+				CurlGlobalInit& operator=(CurlGlobalInit&& other) noexcept = delete;
+			};
+
+			inline static CurlGlobalInit _cgr{};
+
 			struct CurlCleanup
 			{
 				void operator ()(CURL* curl) const { curl_easy_cleanup(curl); }

@@ -2,10 +2,10 @@
 #include "stdafx.h"
 #include "GetDatabaseTopologyCommand.h"
 #include "RequestExecutor.h"
-#include "types.h"
+#include "Topology.h"
 
 
-void ravenDB::RequestExecutor::first_topology_update()
+void ravendb::RequestExecutor::first_topology_update()
 {
 	GetDatabaseTopologyCommand getTopology;
 
@@ -37,11 +37,11 @@ void ravenDB::RequestExecutor::first_topology_update()
 }
 
 
-ravenDB::RequestExecutor::RequestExecutor (
+ravendb::RequestExecutor::RequestExecutor (
 	std::string db_name,
 	std::vector<std::string> initialUrls,
 	std::string certificate,
-	std::unique_ptr<ravenDB::impl::CurlHandlesHolder> curl_holder)
+	std::unique_ptr<ravendb::impl::CurlHandlesHolder> curl_holder)
 	: _db_name(std::move(db_name))
 	, _initial_urls(std::move(initialUrls))
 	, _topology(std::make_shared<Topology>())
@@ -57,7 +57,7 @@ ravenDB::RequestExecutor::RequestExecutor (
 	_topology->etag = -1;
 }
 
-void ravenDB::RequestExecutor::validate_urls()
+void ravendb::RequestExecutor::validate_urls()
 {
 	const bool certificateHasHttps = not _certificate.empty();
 
@@ -91,13 +91,13 @@ void ravenDB::RequestExecutor::validate_urls()
 }
 
 
-std::unique_ptr<ravenDB::RequestExecutor> ravenDB::RequestExecutor::create(
+std::unique_ptr<ravendb::RequestExecutor> ravendb::RequestExecutor::create(
 	std::vector<std::string> urls,
 	std::string db,
 	std::string certificate,
-	std::pair<ravenDB::impl::CreateCurlHandleMethod_t, void*> create_curl)
+	std::pair<ravendb::impl::CreateCurlHandleMethod_t, void*> create_curl)
 {
-	auto holder = std::make_unique<ravenDB::impl::CurlHandlesHolder>(create_curl.first, create_curl.second);
+	auto holder = std::make_unique<ravendb::impl::CurlHandlesHolder>(create_curl.first, create_curl.second);
 
 	//using explicit call to PRIVATE ctor
 	auto rq =std::unique_ptr<RequestExecutor>(

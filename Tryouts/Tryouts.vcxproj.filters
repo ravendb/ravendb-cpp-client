@@ -26,5 +26,8 @@
     <ClCompile Include="Tryouts.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Raven.CppClient\old_tryout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

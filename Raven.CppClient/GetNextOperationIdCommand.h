@@ -3,7 +3,7 @@
 #include "RavenCommand.h"
 #include "ServerNode.h"
 
-namespace ravenDB
+namespace ravendb
 {
 
 	struct OperationId_t

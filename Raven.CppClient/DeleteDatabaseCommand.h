@@ -2,33 +2,50 @@
 #include "RavenCommand.h"
 #include "types.h"
 
-namespace ravenDB
+namespace ravendb
 {
-	using namespace std::chrono_literals;
-	
-	using TimeToWaitForConfirmation_t = std::chrono::duration<double>;//which units should we use ?
+	using TimeToWaitForConfirmation_t = std::chrono::milliseconds; //which units should we use ?
+
+	struct DeleteDatabaseParameters
+	{
+		std::vector<std::string> database_names{};
+		bool hard_delete = true;
+		std::vector<std::string> from_nodes{};
+		TimeToWaitForConfirmation_t time_to_wait_for_confirmation{};
+	};
+
+	inline void to_json(nlohmann::json& j, const DeleteDatabaseParameters& dbp)
+	{
+		j["DatabaseNames"] = dbp.database_names;
+		j["FromNodes"] = dbp.from_nodes;
+		j["HardDelete"] = dbp.hard_delete;
+
+		using namespace  std::chrono;
+		std::ostringstream time_dur;
+		uint64_t h, m, s, ms;
+		h = duration_cast<hours>(dbp.time_to_wait_for_confirmation).count();
+		m = duration_cast<minutes>(dbp.time_to_wait_for_confirmation%hours(1)).count();
+		s = duration_cast<seconds>(dbp.time_to_wait_for_confirmation%minutes(1)).count();
+		ms = (dbp.time_to_wait_for_confirmation%seconds(1)).count();
+		time_dur << h << ':' << m << ':' << s << ".00" << ms;
+
+		j["TimeToWaitForConfirmation"] = time_dur.str();
+	}
 
 	class DeleteDatabaseCommand : public RavenCommand<DeleteDatabaseResult>
 	{
-	public:
-		struct Parameters
-		{
-			std::vector<std::string> database_names{};
-			bool hard_delete = true;
-			std::vector<std::string> from_nodes{};
-			TimeToWaitForConfirmation_t time_to_wait_for_confirmation{};
-		};
-
 	private:
-		Parameters _parameters{};
-		nlohmann::json _parameters_json{};
+		DeleteDatabaseParameters _parameters{};
+		std::string _parameters_str{};
 
 	public:
+
+		inline static TimeToWaitForConfirmation_t default_wait_time = std::chrono::seconds(5);
 
 		~DeleteDatabaseCommand() override = default;
 
 		DeleteDatabaseCommand(std::string database_name, bool hard_delete, std::string from_node = {},
-			TimeToWaitForConfirmation_t time_to_wait_for_confirmation = 0s)
+			TimeToWaitForConfirmation_t time_to_wait_for_confirmation = default_wait_time)
 		{
 			if (database_name.empty())
 			{
@@ -42,42 +59,32 @@ namespace ravenDB
 			}
 			_parameters.time_to_wait_for_confirmation = time_to_wait_for_confirmation;
 
-			_parameters_json = _parameters;
+			_parameters_str = nlohmann::json(_parameters).dump();
 		}
 
-		DeleteDatabaseCommand(Parameters parameters)
+		DeleteDatabaseCommand(DeleteDatabaseParameters parameters)
 			: _parameters(std::move(parameters))
-			, _parameters_json(_parameters)
+			, _parameters_str(nlohmann::json(_parameters).dump())
 		{}
 
 		void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
 		{
-			//std::ostringstream pathBuilder;
-			//pathBuilder << node.url << "/databases/" << node.database
-			//	<< "/docs?id=" << ravenDB::impl::Utils::url_escape(curl, _id);
+			std::ostringstream pathBuilder;
+			pathBuilder << node.url << "/admin/databases"; 
 
-			//curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+			curl_easy_setopt(curl, CURLOPT_READFUNCTION, ravendb::impl::Utils::read_callback);
+			curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+			curl_easy_setopt(curl, CURLOPT_READDATA, &_parameters_str);
+			curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_parameters_str.length());
+			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 
-			//if (not _change_vector.empty())
-			//{
-			//	std::ostringstream change_vector_header;
-			//	change_vector_header << "If-Match:" << '"' << _change_vector << '"';
-
-			//	_headers_list = curl_slist_append(_headers_list, change_vector_header.str().c_str());
-			//	if (_headers_list == nullptr)
-			//	{
-			//		throw std::runtime_error("error in curl_slist_append");
-			//	}
-			//}
-			//curl_easy_setopt(curl, CURLOPT_HTTPHEADER, _headers_list);
-
-			//url = pathBuilder.str();
+			url = pathBuilder.str();
 		}
 
 
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 		{
-			//_result = response;
+			_result = response;
 		}
 
 		bool is_read_request() const noexcept override
@@ -85,13 +92,5 @@ namespace ravenDB
 			return false;
 		}
 	};
-
-
-	inline void to_json(nlohmann::json& j, const DeleteDatabaseCommand::Parameters& p)
-	{
-		j["DatabaseNames"] = p.database_names;
-		j["HardDelete"] = p.hard_delete;
-		j["FromNodes"] = p.from_nodes;
-	}
 
 }

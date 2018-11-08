@@ -3,7 +3,7 @@
 #include "CurlHandlesHolder.h"
 #include "types.h"
 
-namespace ravenDB
+namespace ravendb
 {
 	class GetDocumentsCommand : public RavenCommand<GetDocumentsResult>
 	{
@@ -92,21 +92,21 @@ namespace ravenDB
 
 			if (not _start_with.empty())
 			{
-				pathBuilder << "&startsWith=" << ravenDB::impl::Utils::url_escape(curl, _start_with);
+				pathBuilder << "&startsWith=" << ravendb::impl::Utils::url_escape(curl, _start_with);
 
 				if (not _matches.empty())
 				{
-					pathBuilder << "&matches=" << ravenDB::impl::Utils::url_escape(curl, _matches);
+					pathBuilder << "&matches=" << ravendb::impl::Utils::url_escape(curl, _matches);
 				}
 
 				if (not _exclude.empty())
 				{
-					pathBuilder << "&exclude=" << ravenDB::impl::Utils::url_escape(curl, _exclude);
+					pathBuilder << "&exclude=" << ravendb::impl::Utils::url_escape(curl, _exclude);
 				}
 
 				if (not _start_after.empty())
 				{
-					pathBuilder << "&startAfter=" << ravenDB::impl::Utils::url_escape(curl, _start_after);
+					pathBuilder << "&startAfter=" << ravendb::impl::Utils::url_escape(curl, _start_after);
 				}
 			}
 
@@ -119,7 +119,7 @@ namespace ravenDB
 
 			if (not _id.empty())
 			{
-				pathBuilder << "&id=" << ravenDB::impl::Utils::url_escape(curl, _id);
+				pathBuilder << "&id=" << ravendb::impl::Utils::url_escape(curl, _id);
 			}
 			else if (not _ids.empty())
 			{
@@ -146,7 +146,7 @@ namespace ravenDB
 				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 				for (const auto& id : uniqueIds)
 				{
-					pathBuilder << "&id=" << ravenDB::impl::Utils::url_escape(curl, id);
+					pathBuilder << "&id=" << ravendb::impl::Utils::url_escape(curl, id);
 				}
 			}
 			else // ids too big, must use POST

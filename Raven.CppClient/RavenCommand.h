@@ -5,7 +5,7 @@
 #include "utils.h"
 #include "ServerNode.h"
 
-namespace ravenDB
+namespace ravendb
 {
 	enum class RavenCommandResponseType : uint8_t
 	{

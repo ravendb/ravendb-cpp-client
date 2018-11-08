@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
-namespace ravenDB 
+namespace ravendb 
 {
 	namespace impl 
 	{
