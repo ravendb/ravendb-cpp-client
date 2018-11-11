@@ -1,7 +1,7 @@
 #pragma once
 #include "RavenCommand.h"
 
-namespace ravendb
+namespace ravendb::client
 {
 	struct DatabaseNames_t
 	{

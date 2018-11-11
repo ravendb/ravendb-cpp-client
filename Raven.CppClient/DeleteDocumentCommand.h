@@ -2,7 +2,7 @@
 #include "RavenCommand.h"
 #include "VoidRavenCommand.h"
 
-namespace ravendb
+namespace ravendb::client
 {
 	class DeleteDocumentCommand : public VoidRavenCommand
 	{
@@ -31,7 +31,7 @@ namespace ravendb
 		{
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/databases/" << node.database
-				<< "/docs?id=" << ravendb::impl::Utils::url_escape(curl, _id);
+				<< "/docs?id=" << ravendb::client::impl::Utils::url_escape(curl, _id);
 
 			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 

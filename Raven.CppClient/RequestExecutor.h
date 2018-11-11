@@ -7,8 +7,9 @@
 #include "types.h"
 #include "RavenCommand.h"
 
-namespace ravendb
+namespace ravendb::client::http
 {
+
 
 	class RequestExecutor
 	{
@@ -37,9 +38,9 @@ namespace ravendb
 
 			curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 			curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, error_buffer);
-			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ravendb::impl::Utils::push_to_buffer);
+			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ravendb::client::impl::Utils::push_to_buffer);
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output_buffer);
-			curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, ravendb::impl::Utils::push_headers);
+			curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, ravendb::client::impl::Utils::push_headers);
 			curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headers);
 
 			auto res = curl_easy_perform(curl);
@@ -139,7 +140,7 @@ namespace ravendb
 			std::vector<std::string> urls,
 			std::string db,
 			std::string certificate = {},
-			std::pair<ravendb::impl::CreateCurlHandleMethod_t, void*> create_curl = 
+			std::pair<ravendb::client::impl::CreateCurlHandleMethod_t, void*> create_curl = 
 				{ impl::CurlHandlesHolder::default_create_curl_instance, nullptr });
 	};
 }

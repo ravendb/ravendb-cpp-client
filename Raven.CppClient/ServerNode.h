@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ravendb
+namespace ravendb::client::http
 {
 	struct ServerNode
 	{
@@ -33,5 +33,10 @@ namespace ravendb
 
 	};
 
-	void from_json(const nlohmann::json& j, ServerNode& p);
+	inline void from_json(const nlohmann::json& j, ServerNode& sn)
+	{
+		sn.url = j.at("Url").get<std::string>();
+		sn.database = j.at("Database").get<std::string>();
+		sn.clusterTag = j.at("ClusterTag").get<std::string>();
+	}
 }

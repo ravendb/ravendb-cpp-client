@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ravendb
+namespace ravendb::client
 {
 	class RavenError : public std::runtime_error
 	{

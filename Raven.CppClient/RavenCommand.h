@@ -5,7 +5,7 @@
 #include "utils.h"
 #include "ServerNode.h"
 
-namespace ravendb
+namespace ravendb::client::http
 {
 	enum class RavenCommandResponseType : uint8_t
 	{
@@ -15,8 +15,7 @@ namespace ravendb
 
 
 	template<typename Result_t>
-	//abstract
-	class RavenCommand
+	class RavenCommand //abstract
 	{
 	private:
 		std::map<ServerNode, std::exception> _failed_nodes;

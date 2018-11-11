@@ -1,11 +1,15 @@
 #pragma once
-#include "CurlHandlesHolder.h"
+
 #include "RavenCommand.h"
 #include  "Topology.h"
 #include "ServerNode.h"
 
-namespace ravendb
+namespace ravendb::client
 {
+	using http::RavenCommand;
+	using http::Topology;
+	using http::ServerNode;
+
 	class GetDatabaseTopologyCommand :public RavenCommand<Topology>
 	{
 	public:
@@ -24,10 +28,14 @@ namespace ravendb
 		}
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 		{
-			long statusCode;
-			curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode);
-			if (statusCode == 200)
+			if (status_code == 200)
+			{
 				_result = response;
+			}
+			else
+			{
+				set_response_not_found(curl);
+			}
 		}
 
 		bool is_read_request() const noexcept override

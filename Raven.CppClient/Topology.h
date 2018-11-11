@@ -1,7 +1,7 @@
 #pragma once
 #include "ServerNode.h"
 
-namespace ravendb
+namespace ravendb::client::http
 {
 	struct Topology
 	{

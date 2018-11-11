@@ -2,7 +2,7 @@
 #include "RavenCommand.h"
 #include "types.h"
 
-namespace ravendb
+namespace ravendb::client
 {
 	using TimeToWaitForConfirmation_t = std::chrono::milliseconds; //which units should we use ?
 
@@ -72,7 +72,7 @@ namespace ravendb
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/admin/databases"; 
 
-			curl_easy_setopt(curl, CURLOPT_READFUNCTION, ravendb::impl::Utils::read_callback);
+			curl_easy_setopt(curl, CURLOPT_READFUNCTION, ravendb::client::impl::Utils::read_callback);
 			curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 			curl_easy_setopt(curl, CURLOPT_READDATA, &_parameters_str);
 			curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_parameters_str.length());

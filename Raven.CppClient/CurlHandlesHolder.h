@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include <queue>
 
-namespace ravendb
+namespace ravendb::client
 {
 	namespace impl
 	{
@@ -122,7 +122,7 @@ namespace ravendb
 
 				auto curl = std::move(_curl_handles.front());
 				_curl_handles.pop();
-				return ReturnCurl(std::move(curl), *this);
+				return { std::move(curl), *this };
 			}
 
 			CurlHandlesHolder()

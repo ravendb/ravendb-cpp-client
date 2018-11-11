@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "ServerNode.h"
 
-namespace ravendb 
+namespace ravendb::client 
 {
 	struct GetDocumentsResult 
 	{

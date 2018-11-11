@@ -1,7 +1,7 @@
 #pragma once
 #include "RavenCommand.h"
 
-namespace ravendb
+namespace ravendb::client
 {
 	class PutDocumentCommand : public RavenCommand<PutResult>
 	{
@@ -28,9 +28,9 @@ namespace ravendb
 		{
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/databases/" << node.database
-				<< "/docs?id=" << ravendb::impl::Utils::url_escape(curl, _id);
+				<< "/docs?id=" << ravendb::client::impl::Utils::url_escape(curl, _id);
 
-			curl_easy_setopt(curl, CURLOPT_READFUNCTION, ravendb::impl::Utils::read_callback);
+			curl_easy_setopt(curl, CURLOPT_READFUNCTION, ravendb::client::impl::Utils::read_callback);
 			curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 			curl_easy_setopt(curl, CURLOPT_PUT, 1L);
 			curl_easy_setopt(curl, CURLOPT_READDATA, &_document);

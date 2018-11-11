@@ -3,18 +3,21 @@
 #include "types.h"
 #include "RavenCommand.h"
 
-namespace ravendb
+namespace ravendb::client
 {
+	using http::RavenCommand;
+	using http::ServerNode;
+
+
 	class GetDatabaseRecordCommand : public RavenCommand<DatabaseRecordWithEtag>
 	{
 	private:
-		//DocumentConventions _conventions;
 		std::string _database;
 
 	public:
 
 		~GetDatabaseRecordCommand() override = default;
-		GetDatabaseRecordCommand(/*DocumentConventions conventions,*/ std::string database)
+		GetDatabaseRecordCommand(std::string database)
 			: _database(std::move(database))
 		{}
 

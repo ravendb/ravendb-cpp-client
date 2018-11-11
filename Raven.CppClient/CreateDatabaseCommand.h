@@ -7,7 +7,7 @@
 #pragma once
 #include "RavenCommand.h"
 
-namespace ravendb
+namespace ravendb::client
 {
 	class CreateDatabaseCommand : public RavenCommand<DatabasePutResult>
 	{
@@ -38,7 +38,7 @@ namespace ravendb
 			pathBuilder << node.url << "/admin/databases?name=" << _database_name
 				<< "&replicationFactor=" << _replication_factor;
 
-			curl_easy_setopt(curl, CURLOPT_READFUNCTION, ravendb::impl::Utils::read_callback);
+			curl_easy_setopt(curl, CURLOPT_READFUNCTION, ravendb::client::impl::Utils::read_callback);
 			curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 			curl_easy_setopt(curl, CURLOPT_PUT, 1L);
 			curl_easy_setopt(curl, CURLOPT_READDATA, &_database_document);
@@ -59,7 +59,7 @@ namespace ravendb
 		}
 	};
 
-	inline void to_json(nlohmann::json& j, const DatabaseRecord& dbr)
+	inline void to_json(nlohmann::json& j, const ravendb::client::DatabaseRecord& dbr)
 	{
 		j["DatabaseName"] = dbr.database_name;
 		j["Disabled"] = dbr.disabled;

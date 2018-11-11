@@ -1,7 +1,7 @@
 #pragma once
 #include "RavenCommand.h"
 
-namespace ravendb
+namespace ravendb::client::http
 {
 	class VoidRavenCommand : public RavenCommand<void*>
 	{
