@@ -5,8 +5,7 @@
 
 namespace ravendb::client
 {
-	using http::RavenCommand;
-	using http::ServerNode;
+	using http::RavenCommand, http::ServerNode;
 
 	class GetDocumentsCommand : public RavenCommand<GetDocumentsResult>
 	{
@@ -156,7 +155,7 @@ namespace ravendb::client
 			{
 				curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
 
-				auto json_str = nlohmann::json({ {"Ids", uniqueIds} }).dump();
+				auto&& json_str = nlohmann::json({ {"Ids", uniqueIds} }).dump();
 
 				curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, json_str.c_str());
 			}

@@ -3,7 +3,7 @@
 
 namespace ravendb::client
 {
-	struct DatabaseNames_t
+	struct DatabaseNames_t//used for to/from json
 	{
 		std::vector<std::string> value;
 	};

@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Raven.CppClient\old_tryout.cpp" />
@@ -169,6 +170,9 @@
     <ProjectReference Include="..\Raven.CppClient\Raven.CppClient.vcxproj">
       <Project>{5e8f32b4-d233-4c66-97fb-380b1b52ff64}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Tryouts.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

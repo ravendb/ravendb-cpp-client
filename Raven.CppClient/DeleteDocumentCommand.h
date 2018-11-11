@@ -4,6 +4,8 @@
 
 namespace ravendb::client
 {
+	using  http::VoidRavenCommand, http::ServerNode;
+
 	class DeleteDocumentCommand : public VoidRavenCommand
 	{
 	private:
@@ -11,11 +13,17 @@ namespace ravendb::client
 		std::string _change_vector;
 		mutable struct curl_slist * _headers_list = nullptr;
 
+		void reset_headers_list() const
+		{
+			curl_slist_free_all(_headers_list);
+			_headers_list = nullptr;
+		}
+
 	public:
 
 		~DeleteDocumentCommand() override
 		{
-			curl_slist_free_all(_headers_list);
+			reset_headers_list();
 		}
 
 		DeleteDocumentCommand(std::string id, std::string change_vector = {})
@@ -31,10 +39,11 @@ namespace ravendb::client
 		{
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/databases/" << node.database
-				<< "/docs?id=" << ravendb::client::impl::Utils::url_escape(curl, _id);
+				<< "/docs?id=" << impl::Utils::url_escape(curl, _id);
 
 			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 
+			reset_headers_list();
 			if (not _change_vector.empty())
 			{
 				std::ostringstream change_vector_header;

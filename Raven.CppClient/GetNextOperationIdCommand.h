@@ -5,6 +5,7 @@
 
 namespace ravendb::client
 {
+	using http::RavenCommand, http::ServerNode;
 
 	struct OperationId_t
 	{

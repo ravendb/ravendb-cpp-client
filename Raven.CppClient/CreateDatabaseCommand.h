@@ -2,13 +2,12 @@
 
 #include "stdafx.h"
 #include "types.h"
-
-
-#pragma once
 #include "RavenCommand.h"
 
 namespace ravendb::client
 {
+	using http::RavenCommand , http::ServerNode;
+
 	class CreateDatabaseCommand : public RavenCommand<DatabasePutResult>
 	{
 	private:

@@ -6,7 +6,7 @@
 
 namespace ravendb::client::http
 {
-	void ravendb::client::http::RequestExecutor::first_topology_update()
+	void RequestExecutor::first_topology_update()
 	{
 		GetDatabaseTopologyCommand getTopology;
 

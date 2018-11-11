@@ -1,6 +1,7 @@
 #pragma once
-#include "RavenCommand.h"
+
 #include "types.h"
+#include "RavenCommand.h"
 
 namespace ravendb::client
 {
@@ -20,7 +21,7 @@ namespace ravendb::client
 		j["FromNodes"] = dbp.from_nodes;
 		j["HardDelete"] = dbp.hard_delete;
 
-		using namespace  std::chrono;
+		using namespace std::chrono;
 		std::ostringstream time_dur;
 		uint64_t h, m, s, ms;
 		h = duration_cast<hours>(dbp.time_to_wait_for_confirmation).count();
@@ -72,7 +73,7 @@ namespace ravendb::client
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/admin/databases"; 
 
-			curl_easy_setopt(curl, CURLOPT_READFUNCTION, ravendb::client::impl::Utils::read_callback);
+			curl_easy_setopt(curl, CURLOPT_READFUNCTION, impl::Utils::read_callback);
 			curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 			curl_easy_setopt(curl, CURLOPT_READDATA, &_parameters_str);
 			curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_parameters_str.length());

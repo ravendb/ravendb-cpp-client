@@ -5,10 +5,10 @@
 #include "CreateDatabaseCommand.h"
 #include "DeleteDatabaseCommand.h"
 
-
-const std::string RAVEN_SERVER_URL = "http://localhost:8080";
-
-static const std::string test_prefix{ "TEST__" };
+namespace
+{
+	const std::string RAVEN_SERVER_URL = "http://localhost:8080";
+}
 
 class RequestExecutorTests : public ::testing::Test
 {
@@ -17,6 +17,7 @@ class RequestExecutorTests : public ::testing::Test
 		return (str.compare(0, test_prefix.length(), test_prefix) == 0);
 	};
 public:
+	static const std::string test_prefix;
 	static const std::string cgdr_db;
 	static const std::string cdd_db;
 protected:
@@ -24,7 +25,7 @@ protected:
 	static void SetUpTestCase() //make TEST DB(s)
 	{
 		
-		auto&& executor = ravendb::client::http::RequestExecutor::create({ RAVEN_SERVER_URL }, {});
+		auto executor = ravendb::client::http::RequestExecutor::create({ RAVEN_SERVER_URL }, {});
 		ravendb::client::DatabaseRecord rec;
 		rec.database_name = cdd_db;
 		ravendb::client::CreateDatabaseCommand cmd1(rec, 1);
@@ -52,6 +53,7 @@ protected:
 	}
 };
 
+const std::string RequestExecutorTests::test_prefix{ "TEST__" };
 const std::string RequestExecutorTests::cgdr_db{ "TEST__CanGetDatabaseRecord" };
 const std::string RequestExecutorTests::cdd_db{ "TEST__CanDeleteDatabase" };
 
@@ -61,7 +63,7 @@ TEST_F(RequestExecutorTests, CanGetDatabaseRecord)
 
 	ravendb::client::GetDatabaseRecordCommand cmd(cgdr_db);
 
-	auto&& rec = executor->execute<ravendb::client::DatabaseRecordWithEtag>(cmd);
+	auto rec = executor->execute<ravendb::client::DatabaseRecordWithEtag>(cmd);
 	ASSERT_EQ(rec.database_name, cgdr_db);
 }
 
@@ -137,10 +139,5 @@ TEST_F (RequestExecutorTests, CanCreateDatabase)
 
 
 
-int main(int argc, char* argv[])
-{
-	::testing::InitGoogleTest(&argc, argv);
 
-	RUN_ALL_TESTS();
-}
 

@@ -4,13 +4,10 @@
 #include "stdafx.h"
 #include "CurlHandlesHolder.h"
 #include "Topology.h"
-#include "types.h"
 #include "RavenCommand.h"
 
 namespace ravendb::client::http
 {
-
-
 	class RequestExecutor
 	{
 	private:
@@ -71,6 +68,8 @@ namespace ravendb::client::http
 					cmd.set_response(curl, result, false);
 					break;
 				}
+				case 204:
+					break;
 				case 404:
 					cmd.set_response_not_found(curl);
 					break;

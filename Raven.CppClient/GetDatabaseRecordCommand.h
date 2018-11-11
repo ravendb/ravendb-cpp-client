@@ -5,8 +5,7 @@
 
 namespace ravendb::client
 {
-	using http::RavenCommand;
-	using http::ServerNode;
+	using http::RavenCommand, http::ServerNode;
 
 
 	class GetDatabaseRecordCommand : public RavenCommand<DatabaseRecordWithEtag>

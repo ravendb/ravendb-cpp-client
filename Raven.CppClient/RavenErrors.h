@@ -14,7 +14,7 @@ namespace ravendb::client
 			internal_server_error,
 			service_not_available,
 			unexpected_response,
-			invalid_response
+			invalid_response,
 		};
 	private:
 		ErrorType _error_type = ErrorType::generic;

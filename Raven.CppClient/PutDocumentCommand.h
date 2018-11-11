@@ -3,6 +3,8 @@
 
 namespace ravendb::client
 {
+	using http::RavenCommand;
+
 	class PutDocumentCommand : public RavenCommand<PutResult>
 	{
 	private:

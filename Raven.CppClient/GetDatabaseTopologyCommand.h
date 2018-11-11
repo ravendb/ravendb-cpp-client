@@ -6,9 +6,7 @@
 
 namespace ravendb::client
 {
-	using http::RavenCommand;
-	using http::Topology;
-	using http::ServerNode;
+	using http::RavenCommand, http::Topology, http::ServerNode;
 
 	class GetDatabaseTopologyCommand :public RavenCommand<Topology>
 	{
