@@ -1,8 +1,6 @@
 #pragma once
 
-
 #include "stdafx.h"
-#include "utils.h"
 #include "ServerNode.h"
 
 namespace ravendb::client::http

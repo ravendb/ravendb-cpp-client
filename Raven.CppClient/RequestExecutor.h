@@ -1,10 +1,10 @@
 #pragma once
 
-
 #include "stdafx.h"
 #include "CurlHandlesHolder.h"
 #include "Topology.h"
 #include "RavenCommand.h"
+#include "utils.h"
 
 namespace ravendb::client::http
 {
@@ -35,9 +35,9 @@ namespace ravendb::client::http
 
 			curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 			curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, error_buffer);
-			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ravendb::client::impl::Utils::push_to_buffer);
+			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ravendb::client::impl::utils::push_to_buffer);
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output_buffer);
-			curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, ravendb::client::impl::Utils::push_headers);
+			curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, ravendb::client::impl::utils::push_headers);
 			curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headers);
 
 			auto res = curl_easy_perform(curl);

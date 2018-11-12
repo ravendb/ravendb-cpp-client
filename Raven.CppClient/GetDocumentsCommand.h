@@ -1,11 +1,12 @@
 #pragma once
+#include "stdafx.h"
 #include "RavenCommand.h"
-#include "CurlHandlesHolder.h"
-#include "types.h"
+#include "GetDocumentsResult.h"
+#include "utils.h"
 
-namespace ravendb::client
+namespace ravendb::client::documents::commands
 {
-	using http::RavenCommand, http::ServerNode;
+	using ravendb::client::http::RavenCommand, ravendb::client::http::ServerNode;
 
 	class GetDocumentsCommand : public RavenCommand<GetDocumentsResult>
 	{
@@ -94,21 +95,21 @@ namespace ravendb::client
 
 			if (not _start_with.empty())
 			{
-				pathBuilder << "&startsWith=" << ravendb::client::impl::Utils::url_escape(curl, _start_with);
+				pathBuilder << "&startsWith=" << ravendb::client::impl::utils::url_escape(curl, _start_with);
 
 				if (not _matches.empty())
 				{
-					pathBuilder << "&matches=" << ravendb::client::impl::Utils::url_escape(curl, _matches);
+					pathBuilder << "&matches=" << ravendb::client::impl::utils::url_escape(curl, _matches);
 				}
 
 				if (not _exclude.empty())
 				{
-					pathBuilder << "&exclude=" << ravendb::client::impl::Utils::url_escape(curl, _exclude);
+					pathBuilder << "&exclude=" << ravendb::client::impl::utils::url_escape(curl, _exclude);
 				}
 
 				if (not _start_after.empty())
 				{
-					pathBuilder << "&startAfter=" << ravendb::client::impl::Utils::url_escape(curl, _start_after);
+					pathBuilder << "&startAfter=" << ravendb::client::impl::utils::url_escape(curl, _start_after);
 				}
 			}
 
@@ -121,7 +122,7 @@ namespace ravendb::client
 
 			if (not _id.empty())
 			{
-				pathBuilder << "&id=" << ravendb::client::impl::Utils::url_escape(curl, _id);
+				pathBuilder << "&id=" << ravendb::client::impl::utils::url_escape(curl, _id);
 			}
 			else if (not _ids.empty())
 			{
@@ -148,7 +149,7 @@ namespace ravendb::client
 				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 				for (const auto& id : uniqueIds)
 				{
-					pathBuilder << "&id=" << ravendb::client::impl::Utils::url_escape(curl, id);
+					pathBuilder << "&id=" << ravendb::client::impl::utils::url_escape(curl, id);
 				}
 			}
 			else // ids too big, must use POST

@@ -1,12 +1,15 @@
 #pragma once
 
 #include "stdafx.h"
-#include "types.h"
 #include "RavenCommand.h"
+#include "DatabasePutResult.h"
+#include "DatabaseRecord.h"
+#include "utils.h"
 
-namespace ravendb::client
+namespace ravendb::client::serverwide::operations
 {
-	using http::RavenCommand , http::ServerNode;
+	using  ravendb::client::http::RavenCommand,
+		ravendb::client::http::ServerNode;
 
 	class CreateDatabaseCommand : public RavenCommand<DatabasePutResult>
 	{
@@ -37,7 +40,7 @@ namespace ravendb::client
 			pathBuilder << node.url << "/admin/databases?name=" << _database_name
 				<< "&replicationFactor=" << _replication_factor;
 
-			curl_easy_setopt(curl, CURLOPT_READFUNCTION, ravendb::client::impl::Utils::read_callback);
+			curl_easy_setopt(curl, CURLOPT_READFUNCTION, ravendb::client::impl::utils::read_callback);
 			curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 			curl_easy_setopt(curl, CURLOPT_PUT, 1L);
 			curl_easy_setopt(curl, CURLOPT_READDATA, &_database_document);
@@ -57,12 +60,4 @@ namespace ravendb::client
 			return false;
 		}
 	};
-
-	inline void to_json(nlohmann::json& j, const ravendb::client::DatabaseRecord& dbr)
-	{
-		j["DatabaseName"] = dbr.database_name;
-		j["Disabled"] = dbr.disabled;
-		j["Settings"] = dbr.settings;
-		//to be continued ...
-	}
 }

@@ -1,18 +1,24 @@
 #pragma once
-#include "CurlHandlesHolder.h"
+#include "stdafx.h"
 #include "RavenCommand.h"
 #include "ServerNode.h"
 
-namespace ravendb::client
+namespace ravendb::client::documents::commands
 {
-	using http::RavenCommand, http::ServerNode;
+	using ravendb::client::http::RavenCommand, ravendb::client::http::ServerNode;
 
-	struct OperationId_t
+	struct OperationId_t //used with to/from json
 	{
 		int64_t value;
 	};
 
-	void from_json(const nlohmann::json& j, OperationId_t& p);
+	inline void from_json(const nlohmann::json& j, OperationId_t& res)
+	{
+		if (auto&& id = j.find("Id"); id not_eq j.end())
+		{
+			res.value = id->get<int64_t>();
+		}
+	}
 
 	class GetNextOperationIdCommand :public RavenCommand<int64_t>
 	{
@@ -43,13 +49,4 @@ namespace ravendb::client
 			return false;// disable caching
 		}
 	};
-
-	inline void from_json(const nlohmann::json& j, OperationId_t& res)
-	{
-		if (auto id = j.find("Id"); id not_eq j.end())
-		{
-			res.value = id->get<int64_t>();
-		}
-	}
-
 }

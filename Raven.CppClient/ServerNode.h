@@ -1,4 +1,5 @@
 #pragma once
+#include "stdafx.h"
 
 namespace ravendb::client::http
 {

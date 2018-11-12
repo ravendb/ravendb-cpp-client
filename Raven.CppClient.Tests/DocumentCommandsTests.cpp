@@ -6,8 +6,11 @@
 #include "GetDocumentsCommand.h"
 #include "DeleteDocumentCommand.h"
 #include "GetDatabaseNamesCommand.h"
+#include "GetNextOperationIdCommand.h"
 
 //TODO change vector/concurrency error delDoc test.
+
+using namespace ravendb::client;
 
 namespace
 {
@@ -51,17 +54,17 @@ protected:
 
 	static void SetUpTestCase() //make TEST DB(s)
 	{
-		auto executor = ravendb::client::http::RequestExecutor::create({ RAVEN_SERVER_URL }, {});
-		ravendb::client::DatabaseRecord rec;
+		auto executor = http::RequestExecutor::create({ RAVEN_SERVER_URL }, {});
+		serverwide::DatabaseRecord rec;
 		rec.database_name = db;
-		ravendb::client::CreateDatabaseCommand cmd(rec, 1);
-		executor->execute<ravendb::client::DatabasePutResult>(cmd);
+		serverwide::operations::CreateDatabaseCommand cmd(rec, 1);
+		executor->execute<serverwide::operations::DatabasePutResult>(cmd);
 	}
 
 	static void TearDownTestCase() //delete all TEST DBs
 	{
-		auto executor = ravendb::client::http::RequestExecutor::create({ RAVEN_SERVER_URL }, {});
-		ravendb::client::GetDatabaseNamesCommand cmd(0, 100);
+		auto executor = http::RequestExecutor::create({ RAVEN_SERVER_URL }, {});
+		serverwide::operations::GetDatabaseNamesCommand cmd(0, 100);
 		auto res = executor->execute<std::vector<std::string>>(cmd);
 		for (const auto& dbname : res)
 		{
@@ -69,8 +72,8 @@ protected:
 			{
 				continue;
 			}
-			ravendb::client::DeleteDatabaseCommand cmd2(dbname, true, {}, std::chrono::seconds(10));
-			executor->execute<ravendb::client::DeleteDatabaseResult>(cmd2);
+			serverwide::operations::DeleteDatabaseCommand cmd2(dbname, true, {}, std::chrono::seconds(10));
+			executor->execute<serverwide::operations::DeleteDatabaseResult>(cmd2);
 		}
 	}
 };
@@ -80,8 +83,8 @@ const std::string DocumentCommandsTests::db{ "TEST__DocumentCommandsTests" };
 
 static bool does_document_exist(const std::string& db_name, const std::string& doc_id)
 {
-	auto executor = ravendb::client::http::RequestExecutor::create({ RAVEN_SERVER_URL }, db_name);
-	ravendb::client::GetDocumentsCommand cmd(doc_id, {}, true);
+	auto executor = http::RequestExecutor::create({ RAVEN_SERVER_URL }, db_name);
+	documents::commands::GetDocumentsCommand cmd(doc_id, {}, true);
 	auto&& res = executor->execute(cmd);
 
 	bool docExists = false;
@@ -105,9 +108,9 @@ TEST_F(DocumentCommandsTests, CanCreateNewDocument)
 	User user{ "Alexander","Timoshenko" };
 	nlohmann::json j = user;
 	std::string newID{ "newID" };
-	ravendb::client::PutDocumentCommand cmd(newID, {}, j);
+	documents::commands::PutDocumentCommand cmd(newID, {}, j);
 
-	auto executor = ravendb::client::http::RequestExecutor::create({ RAVEN_SERVER_URL }, db);
+	auto executor = http::RequestExecutor::create({ RAVEN_SERVER_URL }, db);
 
 	auto&& res = executor->execute(cmd);
 	ASSERT_EQ(res.id, newID);
@@ -120,13 +123,13 @@ TEST_F(DocumentCommandsTests, CanGetDocument)
 	User user{ "Alexander","Timoshenko" };
 	nlohmann::json j = user;
 	std::string id{ "newID" };
-	auto executor = ravendb::client::http::RequestExecutor::create({ RAVEN_SERVER_URL }, db);
+	auto executor = http::RequestExecutor::create({ RAVEN_SERVER_URL }, db);
 	{
-		ravendb::client::PutDocumentCommand cmd(id, {}, j);
+		documents::commands::PutDocumentCommand cmd(id, {}, j);
 		executor->execute(cmd);
 	}
 
-	ravendb::client::GetDocumentsCommand cmd(id, {}, false);
+	documents::commands::GetDocumentsCommand cmd(id, {}, false);
 	auto&& res = executor->execute(cmd);
 	bool doc_exists = false;
 	for (auto& doc : res.results)
@@ -151,21 +154,28 @@ TEST_F(DocumentCommandsTests, CanDeleteDocument)
 	User user{ "Alexander","Timoshenko" };
 	nlohmann::json j = user;
 	std::string id{ "newID123" };
-	auto executor = ravendb::client::http::RequestExecutor::create({ RAVEN_SERVER_URL }, db, {});
+	auto executor = http::RequestExecutor::create({ RAVEN_SERVER_URL }, db, {});
 	{
-		ravendb::client::PutDocumentCommand cmd(id, {}, j);
+		documents::commands::PutDocumentCommand cmd(id, {}, j);
 		executor->execute(cmd);
 	}
 	ASSERT_TRUE(does_document_exist(db, id));
 
 	{
-		ravendb::client::DeleteDocumentCommand cmd(id);
+		documents::commands::DeleteDocumentCommand cmd(id);
 		executor->execute(cmd);
 	}
 	ASSERT_FALSE(does_document_exist(db, id));
 }
 
+TEST_F(DocumentCommandsTests, CanGetNextOperationId)
+{
+	auto executor =http::RequestExecutor::create({ RAVEN_SERVER_URL }, db, {});
+	documents::commands::GetNextOperationIdCommand cmd{};
+	auto&& res = executor->execute(cmd);
 
+	ASSERT_GE(res, 0);
+}
 
 
 

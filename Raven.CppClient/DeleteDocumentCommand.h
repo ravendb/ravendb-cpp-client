@@ -1,10 +1,10 @@
 #pragma once
-#include "RavenCommand.h"
+#include "stdafx.h"
 #include "VoidRavenCommand.h"
 
-namespace ravendb::client
+namespace ravendb::client::documents::commands
 {
-	using  http::VoidRavenCommand, http::ServerNode;
+	using  ravendb::client::http::VoidRavenCommand, ravendb::client::http::ServerNode;
 
 	class DeleteDocumentCommand : public VoidRavenCommand
 	{
@@ -20,7 +20,6 @@ namespace ravendb::client
 		}
 
 	public:
-
 		~DeleteDocumentCommand() override
 		{
 			reset_headers_list();
@@ -39,23 +38,23 @@ namespace ravendb::client
 		{
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/databases/" << node.database
-				<< "/docs?id=" << impl::Utils::url_escape(curl, _id);
+				<< "/docs?id=" << impl::utils::url_escape(curl, _id);
 
 			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-
 			reset_headers_list();
+
 			if (not _change_vector.empty())
 			{
 				std::ostringstream change_vector_header;
 				change_vector_header << "If-Match:" << '"' << _change_vector << '"';
-				
+
 				_headers_list = curl_slist_append(_headers_list, change_vector_header.str().c_str());
 				if (_headers_list == nullptr)
 				{
 					throw std::runtime_error("error in curl_slist_append");
 				}
+				curl_easy_setopt(curl, CURLOPT_HTTPHEADER, _headers_list);
 			}
-			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, _headers_list);
 
 			url = pathBuilder.str();
 		}

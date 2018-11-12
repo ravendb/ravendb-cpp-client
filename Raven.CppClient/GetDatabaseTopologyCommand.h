@@ -1,12 +1,14 @@
 #pragma once
-
+#include "stdafx.h"
 #include "RavenCommand.h"
 #include  "Topology.h"
 #include "ServerNode.h"
 
-namespace ravendb::client
+namespace ravendb::client::serverwide::commands
 {
-	using http::RavenCommand, http::Topology, http::ServerNode;
+	using ravendb::client::http::RavenCommand,
+		ravendb::client::http::Topology,
+		ravendb::client::http::ServerNode;
 
 	class GetDatabaseTopologyCommand :public RavenCommand<Topology>
 	{

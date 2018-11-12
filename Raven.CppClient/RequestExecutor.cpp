@@ -1,11 +1,12 @@
 
 #include "stdafx.h"
-#include "GetDatabaseTopologyCommand.h"
 #include "RequestExecutor.h"
-#include "Topology.h"
+#include "GetDatabaseTopologyCommand.h"
 
 namespace ravendb::client::http
 {
+	using  ravendb::client::serverwide::commands::GetDatabaseTopologyCommand;
+
 	void RequestExecutor::first_topology_update()
 	{
 		GetDatabaseTopologyCommand getTopology;

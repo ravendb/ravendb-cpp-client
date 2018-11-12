@@ -1,12 +1,12 @@
 #pragma once
-
-#include "types.h"
+#include "stdafx.h"
 #include "RavenCommand.h"
+#include "DatabaseRecordWithEtag.h"
 
-namespace ravendb::client
+namespace ravendb::client::serverwide::operations
 {
-	using http::RavenCommand, http::ServerNode;
-
+	using ravendb::client::http::RavenCommand,
+		ravendb::client::http::ServerNode;
 
 	class GetDatabaseRecordCommand : public RavenCommand<DatabaseRecordWithEtag>
 	{
@@ -40,7 +40,7 @@ namespace ravendb::client
 
 		bool is_read_request() const noexcept override
 		{
-			return false;//why ?
+			return false;
 		}
 	};
 }

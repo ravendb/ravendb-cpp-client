@@ -1,12 +1,30 @@
 #pragma once
+#include "stdafx.h"
 #include "RavenCommand.h"
 
-namespace ravendb::client
+namespace ravendb::client::serverwide::operations
 {
-	struct DatabaseNames_t//used for to/from json
+	namespace
 	{
-		std::vector<std::string> value;
-	};
+		struct DatabaseNames_t//used with to/from json
+		{
+			std::vector<std::string> value;
+		};
+
+		void from_json(const nlohmann::json& j, DatabaseNames_t& result)
+		{
+			auto&& res = result.value;
+			auto&& it = j.find("Databases");
+			if (it == j.end() or not it->is_array())
+			{
+				throw RavenError({}, RavenError::ErrorType::invalid_response);
+			}
+			else
+			{
+				res = it->get<std::decay_t<decltype(res)>>();
+			}
+		}
+	}
 
 	class GetDatabaseNamesCommand : public RavenCommand<std::vector<std::string>>
 	{
@@ -51,20 +69,4 @@ namespace ravendb::client
 			return true;
 		}
 	};
-
-
-	inline void from_json(const nlohmann::json& j, DatabaseNames_t& result)
-	{
-		auto&& res = result.value;
-		auto&& it = j.find("Databases");
-		if(it == j.end() or not it->is_array())
-		{
-			throw RavenError({}, RavenError::ErrorType::invalid_response);
-		}
-		else
-		{
-			res = it->get<std::decay_t<decltype(res)>>();
-		}
-	}
-
 }

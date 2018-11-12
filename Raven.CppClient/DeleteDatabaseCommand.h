@@ -1,13 +1,13 @@
 #pragma once
-
-#include "types.h"
+#include "stdafx.h"
 #include "RavenCommand.h"
+#include "DeleteDatabaseResult.h"
 
-namespace ravendb::client
+namespace ravendb::client::serverwide::operations
 {
 	using TimeToWaitForConfirmation_t = std::chrono::milliseconds; //which units should we use ?
 
-	struct DeleteDatabaseParameters
+	struct DeleteDatabaseParameters //will be inside the operation
 	{
 		std::vector<std::string> database_names{};
 		bool hard_delete = true;
@@ -73,7 +73,7 @@ namespace ravendb::client
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/admin/databases"; 
 
-			curl_easy_setopt(curl, CURLOPT_READFUNCTION, impl::Utils::read_callback);
+			curl_easy_setopt(curl, CURLOPT_READFUNCTION, impl::utils::read_callback);
 			curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 			curl_easy_setopt(curl, CURLOPT_READDATA, &_parameters_str);
 			curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_parameters_str.length());
