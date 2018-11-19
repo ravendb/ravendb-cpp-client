@@ -7,7 +7,7 @@ namespace ravendb::client::impl
 {
 	// used when user wants to customize curl settings
 	//(like using Fiddler)
-	using CreateCurlHandleMethod_t = CURL * (*)(void*);
+	using SetCurlOptions = std::function<void(CURL*)>;
 
 	class CurlHandlesHolder
 	{
@@ -17,7 +17,7 @@ namespace ravendb::client::impl
 			CurlGlobalInit()
 			{
 				auto res = curl_global_init(CURL_GLOBAL_ALL);
-				if (res not_eq CURLE_OK)
+				if (res != CURLE_OK)
 				{
 					throw std::runtime_error("curl_global_init failed !");
 				}
@@ -34,7 +34,7 @@ namespace ravendb::client::impl
 			CurlGlobalInit& operator=(CurlGlobalInit&& other) noexcept = delete;
 		};
 
-		inline static CurlGlobalInit _cgr{};
+		inline static CurlGlobalInit _curl_global_init{};
 
 		struct CurlCleanup
 		{
@@ -42,9 +42,6 @@ namespace ravendb::client::impl
 		};
 
 		using CurlHandleUniquePtr = std::unique_ptr<CURL, CurlCleanup>;
-
-		CreateCurlHandleMethod_t _create_curl_handle_method = default_create_curl_instance;
-		void* _state = nullptr;
 
 		std::mutex _curl_handles_lock{};
 
@@ -58,10 +55,6 @@ namespace ravendb::client::impl
 		}
 
 	public:
-		static CURL* default_create_curl_instance(void* state)
-		{
-			return curl_easy_init();
-		}
 
 		class ReturnCurl
 		{
@@ -70,22 +63,16 @@ namespace ravendb::client::impl
 			CurlHandleUniquePtr _curl;
 			CurlHandlesHolder* _holder;
 
-			ReturnCurl(CurlHandleUniquePtr curl, CurlHandlesHolder& h) noexcept
+			ReturnCurl(CurlHandleUniquePtr curl, CurlHandlesHolder& h)
 				: _curl(std::move(curl))
 				, _holder(&h)
 			{}
 
 		public:
 			ReturnCurl(const ReturnCurl& other) = delete;
+			ReturnCurl(ReturnCurl&& other) = delete;
 			ReturnCurl& operator=(const ReturnCurl& other) = delete;
 			ReturnCurl& operator=(ReturnCurl&& other) = delete;
-
-			ReturnCurl(ReturnCurl&& other) = delete;/*noexcept
-				: _curl(std::move(other._curl))
-				, _holder(other._holder)
-			{
-				_holder = nullptr;
-			}*/
 
 			~ReturnCurl()
 			{
@@ -98,7 +85,8 @@ namespace ravendb::client::impl
 				if (_curl)
 				{
 					return _curl.get();
-				}else
+				}
+				else
 				{
 					throw std::runtime_error("ReturnCurl object does not contain valid curl handle");
 				}
@@ -110,10 +98,10 @@ namespace ravendb::client::impl
 			std::lock_guard<std::mutex> lg(_curl_handles_lock);
 			if (_curl_handles.empty())
 			{
-				auto curl = _create_curl_handle_method(_state);
+				auto curl = curl_easy_init();
 				if (curl == nullptr)
 				{
-					throw std::runtime_error("_create_curl_handle_method failed");
+					throw std::runtime_error("curl handle creation failed");
 				}
 				return { CurlHandleUniquePtr(curl), *this };
 			}
@@ -123,13 +111,6 @@ namespace ravendb::client::impl
 			return { std::move(curl), *this };
 		}
 
-		CurlHandlesHolder()
-			: CurlHandlesHolder(default_create_curl_instance, nullptr)
-		{}
-
-		CurlHandlesHolder(CreateCurlHandleMethod_t create_curl_instance_method, void* state)
-			: _create_curl_handle_method(create_curl_instance_method)
-			, _state(state)
-		{}
+		CurlHandlesHolder() = default;
 	};
 }

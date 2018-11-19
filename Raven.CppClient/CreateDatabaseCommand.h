@@ -8,13 +8,13 @@
 
 namespace ravendb::client::serverwide::operations
 {
-	using  ravendb::client::http::RavenCommand,
-		ravendb::client::http::ServerNode;
+	using	ravendb::client::http::RavenCommand,
+			ravendb::client::http::ServerNode;
 
 	class CreateDatabaseCommand : public RavenCommand<DatabasePutResult>
 	{
 	private:
-		std::unique_ptr<DatabaseRecord> _database_record;//polymorphism is needed
+		DatabaseRecord _database_record;
 		int32_t _replication_factor;
 		std::string _database_name;
 		std::string _database_document;
@@ -23,15 +23,16 @@ namespace ravendb::client::serverwide::operations
 
 		~CreateDatabaseCommand() override = default;
 
-		CreateDatabaseCommand(const DatabaseRecord& database_record, int32_t replication_factor)
-			: _database_record(std::make_unique<DatabaseRecord>(database_record))
+		CreateDatabaseCommand(DatabaseRecord database_record, int32_t replication_factor)
+			: _database_record(std::move(database_record))
 			, _replication_factor(replication_factor)
 			, _database_name([this]()->const std::string&
 			{
-				if (_database_record->database_name.empty()) throw std::invalid_argument("Database name is required");
-				return _database_record->database_name;
+				if (_database_record.database_name.empty()) 
+					throw std::invalid_argument("Database name is required");
+				else return _database_record.database_name;
 			}())
-			, _database_document(nlohmann::json(*_database_record).dump())
+			, _database_document(nlohmann::json(_database_record).dump())
 		{}
 
 		void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
@@ -48,7 +49,6 @@ namespace ravendb::client::serverwide::operations
 
 			url = pathBuilder.str();
 		}
-
 
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 		{

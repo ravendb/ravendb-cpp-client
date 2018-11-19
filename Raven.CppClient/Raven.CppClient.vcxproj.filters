@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>ravendb.client</Filter>
-    </ClCompile>
     <ClCompile Include="RequestExecutor.cpp">
       <Filter>ravendb.client\http</Filter>
     </ClCompile>
@@ -13,21 +10,13 @@
     <ClCompile Include="CurlHandlesHolder.h">
       <Filter>ravendb.client\impl</Filter>
     </ClCompile>
+    <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="json.hpp">
-      <Filter>ravendb.client</Filter>
-    </ClInclude>
     <ClInclude Include="ravendb.h">
       <Filter>ravendb.client</Filter>
     </ClInclude>
     <ClInclude Include="RavenErrors.h">
-      <Filter>ravendb.client</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>ravendb.client</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
       <Filter>ravendb.client</Filter>
     </ClInclude>
     <ClInclude Include="VoidRavenCommand.h">
@@ -54,9 +43,6 @@
     <ClInclude Include="DatabaseTopology.h">
       <Filter>ravendb.client\serverwide</Filter>
     </ClInclude>
-    <ClInclude Include="DatabasePromotionStatus.h">
-      <Filter>ravendb.client\serverwide\operations</Filter>
-    </ClInclude>
     <ClInclude Include="LeaderStamp.h">
       <Filter>ravendb.client\serverwide</Filter>
     </ClInclude>
@@ -67,9 +53,6 @@
       <Filter>ravendb.client\serverwide</Filter>
     </ClInclude>
     <ClInclude Include="ScriptResolver.h">
-      <Filter>ravendb.client\serverwide</Filter>
-    </ClInclude>
-    <ClInclude Include="DatabaseRecordWithEtag.h">
       <Filter>ravendb.client\serverwide</Filter>
     </ClInclude>
     <ClInclude Include="CreateDatabaseCommand.h">
@@ -107,6 +90,16 @@
     </ClInclude>
     <ClInclude Include="DeleteDatabaseResult.h">
       <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="DatabasePromotionStatus.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp" />
+    <ClInclude Include="..\..\xxhash_cpp\xxhash\xxhash.hpp" />
+    <ClInclude Include="json_utils.h">
+      <Filter>ravendb.client\impl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

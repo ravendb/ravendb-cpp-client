@@ -16,6 +16,8 @@ namespace ravendb::client::documents::commands
 		p.results = j.at("Results").get<nlohmann::json::array_t>();
 		auto next_page_start = j.find("NextPageStart");
 		if (next_page_start != j.end())
+		{
 			p.next_page_start = next_page_start->get<int32_t>();
+		}
 	}
 }

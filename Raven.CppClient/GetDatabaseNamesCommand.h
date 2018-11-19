@@ -15,7 +15,7 @@ namespace ravendb::client::serverwide::operations
 		{
 			auto&& res = result.value;
 			auto&& it = j.find("Databases");
-			if (it == j.end() or not it->is_array())
+			if (it == j.end() || ! it->is_array())
 			{
 				throw RavenError({}, RavenError::ErrorType::invalid_response);
 			}
@@ -55,13 +55,8 @@ namespace ravendb::client::serverwide::operations
 
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 		{
-			long statusCode;
-			curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode);
-			if (statusCode == 200)
-			{
-				DatabaseNames_t res = response;
-				_result = std::move(res.value);
-			}
+			DatabaseNames_t res = response;
+			_result = std::move(res.value);
 		}
 
 		bool is_read_request() const noexcept override

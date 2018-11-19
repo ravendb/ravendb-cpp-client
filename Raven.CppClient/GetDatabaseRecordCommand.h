@@ -1,14 +1,14 @@
 #pragma once
 #include "stdafx.h"
 #include "RavenCommand.h"
-#include "DatabaseRecordWithEtag.h"
+#include "DatabaseRecord.h"
 
 namespace ravendb::client::serverwide::operations
 {
 	using ravendb::client::http::RavenCommand,
 		ravendb::client::http::ServerNode;
 
-	class GetDatabaseRecordCommand : public RavenCommand<DatabaseRecordWithEtag>
+	class GetDatabaseRecordCommand : public RavenCommand<DatabaseRecord>
 	{
 	private:
 		std::string _database;
@@ -32,10 +32,7 @@ namespace ravendb::client::serverwide::operations
 
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 		{
-			long statusCode;
-			curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode);
-			if (statusCode == 200)
-				_result = response;
+			_result = response;
 		}
 
 		bool is_read_request() const noexcept override

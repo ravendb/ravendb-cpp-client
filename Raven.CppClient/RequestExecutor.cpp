@@ -41,14 +41,17 @@ namespace ravendb::client::http
 
 	RequestExecutor::RequestExecutor(
 		std::string db_name,
-		std::vector<std::string> initialUrls,
+		std::vector<std::string> initial_urls,
 		std::string certificate,
-		std::unique_ptr<ravendb::client::impl::CurlHandlesHolder> curl_holder)
+		ravendb::client::impl::SetCurlOptions set_before_perform,
+		ravendb::client::impl::SetCurlOptions set_after_perform)
 		: _db_name(std::move(db_name))
-		, _initial_urls(std::move(initialUrls))
+		, _initial_urls(std::move(initial_urls))
 		, _topology(std::make_shared<Topology>())
 		, _certificate(std::move(certificate))
-		, _curl_holder(std::move(curl_holder))
+		, _curl_holder(new impl::CurlHandlesHolder)
+		, _set_before_perform(set_before_perform)
+		, _set_after_perform(set_after_perform)
 	{
 		_topology->nodes.reserve(_initial_urls.size());
 
@@ -61,12 +64,12 @@ namespace ravendb::client::http
 
 	void RequestExecutor::validate_urls()
 	{
-		const bool certificateHasHttps = not _certificate.empty();
+		const bool certificateHasHttps = ! _certificate.empty();
 
 		if (_initial_urls.empty())
 			throw RavenError("No urls has been defined", RavenError::ErrorType::bad_url);
 
-		for (auto & url : _initial_urls)
+		for (auto& url : _initial_urls)
 		{
 			if (url.empty())
 			{
@@ -98,17 +101,20 @@ namespace ravendb::client::http
 		std::vector<std::string> urls,
 		std::string db,
 		std::string certificate,
-		std::pair<ravendb::client::impl::CreateCurlHandleMethod_t, void*> create_curl)
+		ravendb::client::impl::SetCurlOptions set_before_perform,
+		ravendb::client::impl::SetCurlOptions set_after_perform)
 	{
-		auto holder = std::make_unique<ravendb::client::impl::CurlHandlesHolder>(create_curl.first, create_curl.second);
-
 		//using explicit call to PRIVATE ctor
-		auto rq = std::unique_ptr<RequestExecutor>(
-			new RequestExecutor(std::move(db), std::move(urls), std::move(certificate), std::move(holder)));
+		auto rq = std::unique_ptr<RequestExecutor>(new RequestExecutor(
+			std::move(db),
+			std::move(urls),
+			std::move(certificate),
+			set_before_perform,
+			set_after_perform));
 
 		rq->validate_urls();
 
-		if (not rq->_db_name.empty())
+		if (! rq->_db_name.empty())
 		{
 			rq->first_topology_update();
 		}

@@ -5,14 +5,12 @@
 
 namespace ravendb::client::serverwide::operations
 {
-	using TimeToWaitForConfirmation_t = std::chrono::milliseconds; //which units should we use ?
-
 	struct DeleteDatabaseParameters //will be inside the operation
 	{
 		std::vector<std::string> database_names{};
 		bool hard_delete = true;
 		std::vector<std::string> from_nodes{};
-		TimeToWaitForConfirmation_t time_to_wait_for_confirmation{};
+		std::chrono::milliseconds time_to_wait_for_confirmation{};
 	};
 
 	inline void to_json(nlohmann::json& j, const DeleteDatabaseParameters& dbp)
@@ -41,12 +39,12 @@ namespace ravendb::client::serverwide::operations
 
 	public:
 
-		inline static TimeToWaitForConfirmation_t default_wait_time = std::chrono::seconds(5);
+		inline static const std::chrono::milliseconds default_wait_time = std::chrono::seconds(5);
 
 		~DeleteDatabaseCommand() override = default;
 
 		DeleteDatabaseCommand(std::string database_name, bool hard_delete, std::string from_node = {},
-			TimeToWaitForConfirmation_t time_to_wait_for_confirmation = default_wait_time)
+			std::chrono::milliseconds time_to_wait_for_confirmation = default_wait_time)
 		{
 			if (database_name.empty())
 			{
@@ -54,7 +52,7 @@ namespace ravendb::client::serverwide::operations
 			}
 			_parameters.database_names.push_back(std::move(database_name));
 			_parameters.hard_delete = hard_delete;
-			if (not from_node.empty())
+			if (! from_node.empty())
 			{
 				_parameters.from_nodes.push_back(std::move(from_node));
 			}
@@ -64,9 +62,14 @@ namespace ravendb::client::serverwide::operations
 		}
 
 		DeleteDatabaseCommand(DeleteDatabaseParameters parameters)
-			: _parameters(std::move(parameters))
-			, _parameters_str(nlohmann::json(_parameters).dump())
-		{}
+			:_parameters(std::move(parameters))
+		{
+			if (_parameters.database_names.empty())
+			{
+				throw std::invalid_argument("database name can't be empty");
+			}
+			_parameters_str = nlohmann::json(_parameters).dump();
+		}
 
 		void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
 		{

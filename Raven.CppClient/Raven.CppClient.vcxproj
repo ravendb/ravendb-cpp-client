@@ -76,6 +76,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <CodeAnalysisRuleSet>NativeMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <IncludePath>C:\work\json\single_include\nlohmann;C:\work\xxhash_cpp\xxhash;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -150,12 +151,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp" />
+    <ClInclude Include="..\..\xxhash_cpp\xxhash\xxhash.hpp" />
     <ClInclude Include="ConflictSolver.h" />
     <ClInclude Include="CreateDatabaseCommand.h" />
     <ClInclude Include="DatabasePromotionStatus.h" />
     <ClInclude Include="DatabasePutResult.h" />
     <ClInclude Include="DatabaseRecord.h" />
-    <ClInclude Include="DatabaseRecordWithEtag.h" />
     <ClInclude Include="DatabaseTopology.h" />
     <ClInclude Include="DeleteDatabaseCommand.h" />
     <ClInclude Include="DeleteDatabaseResult.h" />
@@ -163,6 +165,7 @@
     <ClInclude Include="GetDatabaseNamesCommand.h" />
     <ClInclude Include="GetDocumentsResult.h" />
     <ClInclude Include="GetNextOperationIdCommand.h" />
+    <ClInclude Include="json_utils.h" />
     <ClInclude Include="LeaderStamp.h" />
     <ClInclude Include="PutResult.h" />
     <ClInclude Include="RavenErrors.h" />
@@ -171,7 +174,6 @@
     <ClInclude Include="PutDocumentCommand.h" />
     <ClInclude Include="RavenCommand.h" />
     <ClInclude Include="GetDocumentsCommand.h" />
-    <ClInclude Include="json.hpp" />
     <ClInclude Include="ravendb.h" />
     <ClInclude Include="RequestExecutor.h" />
     <ClInclude Include="ScriptResolver.h" />

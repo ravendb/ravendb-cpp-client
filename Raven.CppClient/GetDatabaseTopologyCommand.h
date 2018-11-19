@@ -28,14 +28,7 @@ namespace ravendb::client::serverwide::commands
 		}
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 		{
-			if (status_code == 200)
-			{
-				_result = response;
-			}
-			else
-			{
-				set_response_not_found(curl);
-			}
+			_result = response;
 		}
 
 		bool is_read_request() const noexcept override

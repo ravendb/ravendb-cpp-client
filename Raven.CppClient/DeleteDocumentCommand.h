@@ -41,21 +41,22 @@ namespace ravendb::client::documents::commands
 				<< "/docs?id=" << impl::utils::url_escape(curl, _id);
 
 			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-			reset_headers_list();
 
-			if (not _change_vector.empty())
+			reset_headers_list();
+			if (! _change_vector.empty())
 			{
 				std::ostringstream change_vector_header;
 				change_vector_header << "If-Match:" << '"' << _change_vector << '"';
 
-				_headers_list = curl_slist_append(_headers_list, change_vector_header.str().c_str());
-				if (_headers_list == nullptr)
+				auto temp_headers_list = curl_slist_append(_headers_list, change_vector_header.str().c_str());
+				if (temp_headers_list == nullptr)
 				{
+					reset_headers_list();
 					throw std::runtime_error("error in curl_slist_append");
 				}
-				curl_easy_setopt(curl, CURLOPT_HTTPHEADER, _headers_list);
+				_headers_list = temp_headers_list;
 			}
-
+			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, _headers_list);
 			url = pathBuilder.str();
 		}
 	};

@@ -14,8 +14,6 @@ using namespace ravendb::client;
 
 namespace
 {
-	const std::string RAVEN_SERVER_URL = "http://localhost:8080";
-
 	struct User
 	{
 		std::string FirstName;
@@ -81,6 +79,7 @@ protected:
 const std::string DocumentCommandsTests::test_prefix{ "TEST__" };
 const std::string DocumentCommandsTests::db{ "TEST__DocumentCommandsTests" };
 
+
 static bool does_document_exist(const std::string& db_name, const std::string& doc_id)
 {
 	auto executor = http::RequestExecutor::create({ RAVEN_SERVER_URL }, db_name);
@@ -105,6 +104,7 @@ static bool does_document_exist(const std::string& db_name, const std::string& d
 
 TEST_F(DocumentCommandsTests, CanCreateNewDocument)
 {
+	
 	User user{ "Alexander","Timoshenko" };
 	nlohmann::json j = user;
 	std::string newID{ "newID" };

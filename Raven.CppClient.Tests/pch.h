@@ -14,4 +14,5 @@
 #endif
 
 #include "gtest/gtest.h"
+#include "definitions.h"
 

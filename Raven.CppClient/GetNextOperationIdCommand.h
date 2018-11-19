@@ -14,7 +14,7 @@ namespace ravendb::client::documents::commands
 
 	inline void from_json(const nlohmann::json& j, OperationId_t& res)
 	{
-		if (auto&& id = j.find("Id"); id not_eq j.end())
+		if (auto&& id = j.find("Id"); id != j.end())
 		{
 			res.value = id->get<int64_t>();
 		}

@@ -16,6 +16,8 @@ namespace ravendb::client::http
 		std::shared_ptr<Topology> _topology;
 		std::string _certificate;
 		std::unique_ptr<impl::CurlHandlesHolder> _curl_holder;
+		impl::SetCurlOptions _set_before_perform = {};
+		impl::SetCurlOptions _set_after_perform = {};
 
 		void validate_urls();
 
@@ -40,6 +42,10 @@ namespace ravendb::client::http
 			curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, ravendb::client::impl::utils::push_headers);
 			curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headers);
 
+			if (_set_before_perform)
+			{
+				_set_before_perform(curl);
+			}
 			auto res = curl_easy_perform(curl);
 
 			long statusCode;
@@ -57,6 +63,11 @@ namespace ravendb::client::http
 
 				throw RavenError(error_builder.str(), RavenError::ErrorType::generic);
 			}
+			if(_set_after_perform)
+			{
+				_set_after_perform(curl);
+			}
+
 
 			cmd.status_code = statusCode;
 			switch (statusCode)
@@ -69,6 +80,8 @@ namespace ravendb::client::http
 					break;
 				}
 				case 204:
+					break;
+				case 304:
 					break;
 				case 404:
 					cmd.set_response_not_found(curl);
@@ -90,9 +103,10 @@ namespace ravendb::client::http
 
 		RequestExecutor(
 			std::string db_name,
-			std::vector<std::string> initial_url,
+			std::vector<std::string> initial_urls,
 			std::string certificate,
-			std::unique_ptr<impl::CurlHandlesHolder> curl_holder);
+			ravendb::client::impl::SetCurlOptions set_before_perform,
+			ravendb::client::impl::SetCurlOptions set_after_perform);
 
 	public:
 
@@ -107,31 +121,31 @@ namespace ravendb::client::http
 		template<typename Result_t>
 		Result_t execute(RavenCommand<Result_t>& cmd)
 		{
-			std::ostringstream errors;
+			std::optional<std::ostringstream> errors;
 
 			std::shared_ptr<Topology> topology_local = std::atomic_load(&_topology);
 
 			for (auto& node : topology_local->nodes)
 			{
-				Result_t result;
 				try
 				{
-					 result = execute_internal(node, cmd);
+					 return execute_internal(node, cmd);
 				}
 				catch (RavenError& re)
 				{
-					errors << re.what() << '\n';
+					if(! errors)
+					{
+						errors.emplace();
+					}
+					errors.value() << re.what() << '\n';
 					if (re.get_error_type() == RavenError::ErrorType::database_does_not_exist)
 					{
-						throw RavenError(errors.str(), RavenError::ErrorType::database_does_not_exist);
+						throw RavenError(errors->str(), RavenError::ErrorType::database_does_not_exist);
 					}
 					continue;
 				}
-
-				return result;
 			}
-
-			throw RavenError(errors.str(), RavenError::ErrorType::generic);
+			throw RavenError(errors->str(), RavenError::ErrorType::generic);
 		}
 
 
@@ -139,7 +153,7 @@ namespace ravendb::client::http
 			std::vector<std::string> urls,
 			std::string db,
 			std::string certificate = {},
-			std::pair<ravendb::client::impl::CreateCurlHandleMethod_t, void*> create_curl = 
-				{ impl::CurlHandlesHolder::default_create_curl_instance, nullptr });
+			ravendb::client::impl::SetCurlOptions set_before_perform = {},
+			ravendb::client::impl::SetCurlOptions set_after_perform = {});
 	};
 }
