@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="RequestExecutor.cpp">
+      <Filter>ravendb.client\http</Filter>
+    </ClCompile>
+    <ClCompile Include="utils.cpp">
+      <Filter>ravendb.client\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="CurlHandlesHolder.h">
+      <Filter>ravendb.client\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ravendb.h">
+      <Filter>ravendb.client</Filter>
+    </ClInclude>
+    <ClInclude Include="RavenErrors.h">
+      <Filter>ravendb.client</Filter>
+    </ClInclude>
+    <ClInclude Include="VoidRavenCommand.h">
+      <Filter>ravendb.client\http</Filter>
+    </ClInclude>
+    <ClInclude Include="Topology.h">
+      <Filter>ravendb.client\http</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerNode.h">
+      <Filter>ravendb.client\http</Filter>
+    </ClInclude>
+    <ClInclude Include="RequestExecutor.h">
+      <Filter>ravendb.client\http</Filter>
+    </ClInclude>
+    <ClInclude Include="RavenCommand.h">
+      <Filter>ravendb.client\http</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
+      <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="DatabasePutResult.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="DatabaseTopology.h">
+      <Filter>ravendb.client\serverwide</Filter>
+    </ClInclude>
+    <ClInclude Include="LeaderStamp.h">
+      <Filter>ravendb.client\serverwide</Filter>
+    </ClInclude>
+    <ClInclude Include="DatabaseRecord.h">
+      <Filter>ravendb.client\serverwide</Filter>
+    </ClInclude>
+    <ClInclude Include="ConflictSolver.h">
+      <Filter>ravendb.client\serverwide</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptResolver.h">
+      <Filter>ravendb.client\serverwide</Filter>
+    </ClInclude>
+    <ClInclude Include="CreateDatabaseCommand.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="DeleteDatabaseCommand.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="GetDatabaseNamesCommand.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="GetDatabaseRecordCommand.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="DeleteDocumentCommand.h">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="GetDatabaseTopologyCommand.h">
+      <Filter>ravendb.client\serverwide\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="GetDocumentsResult.h">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="GetDocumentsCommand.h">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="GetNextOperationIdCommand.h">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="PutResult.h">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClInclude>
+    <ClInclude Include="PutDocumentCommand.h">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="DeleteDatabaseResult.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="DatabasePromotionStatus.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp" />
+    <ClInclude Include="..\..\xxhash_cpp\xxhash\xxhash.hpp" />
+    <ClInclude Include="json_utils.h">
+      <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ravendb.client">
+      <UniqueIdentifier>{205cad75-485c-4624-8f49-9fb83e2ae2e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\http">
+      <UniqueIdentifier>{fde1868f-065b-4133-a445-900bb9420af0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\impl">
+      <UniqueIdentifier>{148b4786-012f-449c-8f26-76c96056b090}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\serverwide">
+      <UniqueIdentifier>{5a66cb10-06d5-4339-9c55-467954b9c960}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\serverwide\operations">
+      <UniqueIdentifier>{fbea63ef-9b00-4a69-bc13-d2594deea520}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents">
+      <UniqueIdentifier>{61f0210b-8617-450c-b655-6f8c6c4ed95e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\commands">
+      <UniqueIdentifier>{c1f5fb65-200e-4562-addb-8b08047b3cfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\serverwide\commands">
+      <UniqueIdentifier>{c3ec07f1-e6f1-45ec-a78b-24adaa40acc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\commands\batches">
+      <UniqueIdentifier>{09c4d4e2-3816-4176-9509-013dcd701c91}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
