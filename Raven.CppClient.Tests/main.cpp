@@ -6,10 +6,7 @@ public:
 	~MyEnv() override = default;
 
 	// Override this to define how to set up the environment.
-	void SetUp() override
-	{
-		
-	}
+	//void SetUp() override {}
 
 	// Override this to define how to tear down the environment.
 	//void TearDown() override {}
@@ -36,9 +33,9 @@ namespace
 	const GlobalEnvRegister GLOBAL_ENV_REGISTER;
 }
 
-//int main(int argc, char* argv[])
-//{
-//	::testing::InitGoogleTest(&argc, argv);
-//
-//	RUN_ALL_TESTS();
-//}
+int main(int argc, char* argv[])
+{
+	::testing::InitGoogleTest(&argc, argv);
+
+	RUN_ALL_TESTS();
+}

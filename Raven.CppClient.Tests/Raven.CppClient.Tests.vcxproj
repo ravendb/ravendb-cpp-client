@@ -32,20 +32,26 @@
   <ImportGroup Label="Shared" />
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Microsoft-googletest-v140-windesktop-msvcstl-static-rt-dyn-Disable-gtest_main>
+    </Microsoft-googletest-v140-windesktop-msvcstl-static-rt-dyn-Disable-gtest_main>
+  </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="definitions.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="User.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="definitions.cpp" />
     <ClCompile Include="DocumentCommandsTests.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="RequestExecutorAndDBsTests.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="RequestExecutorAndDBsTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

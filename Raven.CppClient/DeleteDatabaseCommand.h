@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "RavenCommand.h"
 #include "DeleteDatabaseResult.h"
+#include "utils.h"
 
 namespace ravendb::client::serverwide::operations
 {

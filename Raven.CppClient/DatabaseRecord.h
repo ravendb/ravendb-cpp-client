@@ -13,7 +13,7 @@ namespace  ravendb::client::serverwide
 		std::unordered_map<std::string, std::string> settings{};
 		ConflictSolver conflict_solver_config{};
 
-		std::optional<int64_t> etag;
+		std::optional<int64_t> etag{};
 	};
 
 	inline void to_json(nlohmann::json& j, const DatabaseRecord& dbr)

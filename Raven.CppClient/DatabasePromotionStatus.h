@@ -14,7 +14,7 @@ namespace ravendb::client::serverwide::operations::database_promotion_status
 		OK,
 	};
 
-	inline std::map<std::string, DatabasePromotionStatus> status_string_map =
+	inline static const std::map<std::string, DatabasePromotionStatus> status_string_map =
 	{
 		{"WaitingForFirstPromotion", DatabasePromotionStatus::WAITING_FOR_FIRST_PROMOTION},
 		{"NotResponding", DatabasePromotionStatus::NOT_RESPONDING},
