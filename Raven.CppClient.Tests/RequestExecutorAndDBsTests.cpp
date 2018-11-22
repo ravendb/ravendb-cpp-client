@@ -1,6 +1,6 @@
-
 #include "pch.h"
 #include "definitions.h"
+
 #include "GetDatabaseRecordCommand.h"
 #include "GetDatabaseNamesCommand.h"
 #include "GetDocumentsCommand.h"
@@ -12,6 +12,7 @@ TEST(RequestExecutorTests, CanGetDatabaseRecord)
 	auto test_suite_executor = GET_REQUEST_EXECUTOR();
 	serverwide::operations::GetDatabaseRecordCommand cmd(test_suite_executor->get_db_name());
 	auto rec = test_suite_executor->get()->execute(cmd);
+
 	ASSERT_EQ(rec.database_name, test_suite_executor->get_db_name());
 	ASSERT_GT(rec.etag.value(), -1);
 }
@@ -20,8 +21,8 @@ TEST(RequestExecutorTests, CanGetDatabaseName)
 {
 	auto test_suite_executor = GET_REQUEST_EXECUTOR();
 	serverwide::operations::GetDatabaseNamesCommand cmd(0, 100);
-
 	auto&& res = test_suite_executor->get()->execute(cmd);
+
 	ASSERT_NE(std::find(res.begin(), res.end(), test_suite_executor->get_db_name()), res.end());
 }
 
