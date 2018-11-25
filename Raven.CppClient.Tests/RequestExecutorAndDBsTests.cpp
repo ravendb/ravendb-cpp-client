@@ -28,10 +28,11 @@ TEST(RequestExecutorTests, CanGetDatabaseName)
 
 TEST(RequestExecutorTests, ThrowsWhenDatabaseDoesNotExist)
 {
-	auto test_suite_executor = get_raw_request_executor("no_such_db");
-	documents::commands::GetDocumentsCommand cmd("users/1-A", {}, false);
 	try
 	{
+		auto test_suite_executor = get_raw_request_executor("no_such_db");
+
+		documents::commands::GetDocumentsCommand cmd("users/1-A", {}, false);
 		test_suite_executor->execute(cmd);
 	}
 	catch (RavenError& exception)
