@@ -3,10 +3,14 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="DocumentCommandsTests.cpp">
+    <ClCompile Include="RequestExecutorAndDBsTests.cpp">
       <Filter>test_suits</Filter>
     </ClCompile>
-    <ClCompile Include="RequestExecutorAndDBsTests.cpp">
+    <ClCompile Include="definitions.cpp" />
+    <ClCompile Include="BasicDocumentCommandsTests.cpp">
+      <Filter>test_suits</Filter>
+    </ClCompile>
+    <ClCompile Include="GetDocumentsCommandTests.cpp">
       <Filter>test_suits</Filter>
     </ClCompile>
   </ItemGroup>
@@ -14,6 +18,7 @@
     <ClInclude Include="definitions.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="CreateSampleDataOperation.h" />
+    <ClInclude Include="User.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -8,7 +8,7 @@ namespace ravendb::client::impl::utils::json_utils
 	template<typename T>
 	bool get_val_from_json(const nlohmann::json& j, const std::string& key_name, T& field)
 	{
-		if(auto&& it = j.find(key_name); it != j.end() && (std::strcmp(it->type_name(), "null") != 0))
+		if(auto&& it = j.find(key_name); it != j.end() && ! it->is_null())
 		{
 			field = it->get<T>();
 			return true;
