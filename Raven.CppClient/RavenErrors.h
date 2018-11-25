@@ -24,7 +24,7 @@ namespace ravendb::client
 			: std::runtime_error(what_arg)
 			, _error_type(error_type)
 		{}
-		RavenError(const char* what_arg, ErrorType error_type)
+		RavenError(const char* what_arg, ErrorType error_type = ErrorType::generic)
 			: std::runtime_error(what_arg)
 			, _error_type(error_type)
 		{}

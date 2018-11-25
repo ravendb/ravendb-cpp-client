@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "DatabasePromotionStatus.h"
 #include "LeaderStamp.h"
+#include "json_utils.h"
 
 namespace  ravendb::client::serverwide
 {
@@ -21,26 +22,37 @@ namespace  ravendb::client::serverwide
 		LeaderStamp stamp{};
 	};
 
+	inline void to_json(nlohmann::json& j, const DatabaseTopology& dbt)
+	{
+		j["Members"] = dbt.members;
+		j["Promotables"] = dbt.promotables;
+		j["Rehabs"] = dbt.rehabs;
+		j["PredefinedMentors"] = dbt.predefined_mentors;
+		j["DemotionReasons"] = dbt.demotion_reasons;
+		j["PromotablesStatus"] = dbt.promotables_status;
+		j["ReplicationFactor"] = dbt.replication_factor;
+		j["DynamicNodesDistribution"] = dbt.dynamic_nodes_distribution;
+		j["Stamp"] = dbt.stamp;
+	}
+
 	inline void from_json(const nlohmann::json& j, DatabaseTopology& dbt)
 	{
-		dbt.members = j.at("Members").get<std::vector<std::string>>();
-		dbt.promotables = j.at("Promotables").get<std::vector<std::string>>();
-		dbt.rehabs = j.at("Rehabs").get<std::vector<std::string>>();
-		if (auto it = j.find("PredefinedMentors"); it != j.end())
-		{
-			dbt.predefined_mentors = it->get<std::unordered_map<std::string, std::string>>();
-		}
-		dbt.demotion_reasons = j.at("DemotionReasons").get<std::unordered_map<std::string, std::string>>();
+		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		auto&& temp =
-			j.at("PromotablesStatus").get<std::unordered_map<std::string, std::string>>();
+		get_val_from_json(j,"Members",dbt.members);
+		get_val_from_json(j, "Promotables", dbt.promotables);
+		get_val_from_json(j, "Rehabs", dbt.rehabs);
+		get_val_from_json(j, "PredefinedMentors", dbt.predefined_mentors);
+		get_val_from_json(j, "DemotionReasons", dbt.demotion_reasons);
+
+		std::unordered_map<std::string, std::string> temp{};
+		get_val_from_json(j, "PromotablesStatus", temp);
 		for(const auto& it : temp)
 		{
 			dbt.promotables_status.emplace(it.first, from_string(it.second));
 		}
-
-		dbt.replication_factor = j.at("ReplicationFactor").get<int32_t>();
-		dbt.dynamic_nodes_distribution = j.at("DynamicNodesDistribution").get<bool>();
-		dbt.stamp = j.at("Stamp").get<LeaderStamp>();
+		get_val_from_json(j, "ReplicationFactor", dbt.replication_factor);
+		get_val_from_json(j, "DynamicNodesDistribution", dbt.dynamic_nodes_distribution);
+		get_val_from_json(j, "Stamp", dbt.stamp);
 	}
 }

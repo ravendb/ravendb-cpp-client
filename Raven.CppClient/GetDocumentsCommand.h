@@ -16,7 +16,7 @@ namespace ravendb::client::documents::commands
 	{
 	private:
 		std::string _id;
-		std::unordered_set<std::string> _ids{};
+		std::vector<std::string> _ids{};
 		std::vector<std::string> _includes{};
 
 		bool _metadataOnly = false;
@@ -90,12 +90,20 @@ namespace ravendb::client::documents::commands
 		{}
 
 		GetDocumentsCommand(const std::vector<std::string>& ids, std::vector<std::string> includes, bool _metadataOnly)
-			: _ids([&]
+			: _ids([](const std::vector<std::string>& ids)
 		{
 			if (ids.empty())
 				throw std::invalid_argument("Please supply at least one id");
-			else return std::unordered_set<std::string>(ids.cbegin(),ids.cend());
-		}())
+			std::vector <std::string> no_dupl_ids;
+			for(const auto& id : ids)
+			{
+				if(std::find(no_dupl_ids.cbegin(),no_dupl_ids.cend(),id) == no_dupl_ids.cend())
+				{
+					no_dupl_ids.push_back(id);
+				}
+			}
+			return no_dupl_ids;
+		}(ids))
 			, _includes(std::move(includes))
 			, _metadataOnly(_metadataOnly)
 		{}
