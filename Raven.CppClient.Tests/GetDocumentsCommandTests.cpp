@@ -25,7 +25,7 @@ namespace ravendb::client::tests
 	{
 		GetDocumentsCommand cmd1(0, INT32_MAX);
 		auto all_docs = test_suite_executor->get()->execute(cmd1);
-		int32_t num_of_docs = all_docs.results.size();
+		int32_t num_of_docs = (int32_t)all_docs.results.size();
 		int32_t half_num_of_docs = num_of_docs / 2;
 
 		GetDocumentsCommand cmd2(0, half_num_of_docs);
@@ -41,7 +41,7 @@ namespace ravendb::client::tests
 	TEST_F(GetDocumentsCommandTests, CanGetMultipleDocumentsUsingPost)
 	{
 		const int NUM_OF_ORDERS = 500;
-		std::vector<std::string> orders_list;
+		std::vector<std::string> orders_list{};
 		for(int i=1; i <= NUM_OF_ORDERS; ++i)
 		{
 			orders_list.push_back(std::string("orders/") + std::to_string(i) + "-A");
@@ -54,7 +54,7 @@ namespace ravendb::client::tests
 	TEST_F(GetDocumentsCommandTests, CanGetMultipleDocumentsWithMissingDocuments)
 	{
 		const int NUM_OF_ORDERS = 50;
-		std::vector<std::string> orders_list;
+		std::vector<std::string> orders_list{};
 		for (int i = 1; i <= NUM_OF_ORDERS; ++i)
 		{
 			if (i % 2 != 0)
@@ -82,8 +82,31 @@ namespace ravendb::client::tests
 		}
 	}
 
-	TEST_F(GetDocumentsCommandTests, CanGetDocumentsWithIncludes)
+	TEST_F(GetDocumentsCommandTests, CanGetDocumentsByIdsWithIncludes)
 	{
+		const int NUM_OF_ORDERS = 10;
+		const int START_ORDER = 1;
+		std::vector<std::string> orders_list;
+		for (int i = START_ORDER; i < START_ORDER+NUM_OF_ORDERS; ++i) 
+		{
+			orders_list.push_back(std::string("orders/") + std::to_string(i) + "-A");
+		}
+		GetDocumentsCommand cmd(orders_list, {"Company"}, true);
+		auto res = test_suite_executor->get()->execute(cmd);
+		ASSERT_EQ(res.results.size(), NUM_OF_ORDERS);
+		ASSERT_EQ(res.includes.size(), NUM_OF_ORDERS-1);//there is a duplicate
+	}
 
+	TEST_F(GetDocumentsCommandTests, CanGetDocumentsByStartsWith)
+	{
+		const std::string starts_with = "or";
+		const std::string starts_after = "orders/100-A";
+		const std::string matches = "*10?-A";
+		const std::string exclude = "*5*";
+
+		GetDocumentsCommand cmd(starts_with, starts_after, matches, exclude, 0, 100, true);
+		auto res = test_suite_executor->get()->execute(cmd);
+		ASSERT_EQ(res.results.size(), 8);//101-A to 109-A without 105-A
+		ASSERT_EQ(res.includes.size(), 0);
 	}
 }
