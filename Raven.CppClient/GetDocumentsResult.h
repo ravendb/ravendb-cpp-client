@@ -1,5 +1,7 @@
 #pragma once
 #include "stdafx.h"
+#include "json_utils.h"
+
 
 namespace ravendb::client::documents::commands
 {
@@ -10,14 +12,12 @@ namespace ravendb::client::documents::commands
 		int32_t next_page_start = 0;
 	};
 
-	inline void from_json(const nlohmann::json& j, GetDocumentsResult& p)
+	inline void from_json(const nlohmann::json& j, GetDocumentsResult& gdr)
 	{
-		p.includes = j.at("Includes").get<nlohmann::json::object_t>();
-		p.results = j.at("Results").get<nlohmann::json::array_t>();
-		auto next_page_start = j.find("NextPageStart");
-		if (next_page_start != j.end())
-		{
-			p.next_page_start = next_page_start->get<int32_t>();
-		}
+		using ravendb::client::impl::utils::json_utils::get_val_from_json;
+
+		get_val_from_json(j, "Includes", gdr.includes);
+		get_val_from_json(j, "Results", gdr.results);
+		get_val_from_json(j, "NextPageStart", gdr.results);
 	}
 }

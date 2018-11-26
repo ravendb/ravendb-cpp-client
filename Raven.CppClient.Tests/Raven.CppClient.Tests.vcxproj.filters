@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="RequestExecutorAndDBsTests.cpp">
+      <Filter>test_suits</Filter>
+    </ClCompile>
+    <ClCompile Include="definitions.cpp" />
+    <ClCompile Include="BasicDocumentCommandsTests.cpp">
+      <Filter>test_suits</Filter>
+    </ClCompile>
+    <ClCompile Include="GetDocumentsCommandTests.cpp">
+      <Filter>test_suits</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="definitions.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="CreateSampleDataOperation.h" />
+    <ClInclude Include="User.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="test_suits">
+      <UniqueIdentifier>{e60f1d61-bd60-4c99-869a-6c04c738644c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -37,13 +37,15 @@
     </Microsoft-googletest-v140-windesktop-msvcstl-static-rt-dyn-Disable-gtest_main>
   </PropertyGroup>
   <ItemGroup>
+    <ClInclude Include="CreateSampleDataOperation.h" />
     <ClInclude Include="definitions.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="User.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="definitions.cpp" />
-    <ClCompile Include="DocumentCommandsTests.cpp" />
+    <ClCompile Include="BasicDocumentCommandsTests.cpp" />
+    <ClCompile Include="GetDocumentsCommandTests.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

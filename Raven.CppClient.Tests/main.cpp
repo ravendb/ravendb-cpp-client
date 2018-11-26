@@ -28,10 +28,8 @@ public:
 	GlobalEnvRegister& operator=(GlobalEnvRegister&& other) noexcept = delete;
 };
 
-namespace
-{
-	const GlobalEnvRegister GLOBAL_ENV_REGISTER;
-}
+static const GlobalEnvRegister GLOBAL_ENV_REGISTER;
+
 
 int main(int argc, char* argv[])
 {

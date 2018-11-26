@@ -3,7 +3,6 @@
 #include "RavenCommand.h"
 #include "GetDocumentsResult.h"
 #include "utils.h"
-#include <unordered_set>
 //TODO put in final project
 #include "C:\work\xxhash_cpp\xxhash\xxhash.hpp"
 
@@ -16,7 +15,7 @@ namespace ravendb::client::documents::commands
 	{
 	private:
 		std::string _id;
-		std::unordered_set<std::string> _ids{};
+		std::vector<std::string> _ids{};
 		std::vector<std::string> _includes{};
 
 		bool _metadataOnly = false;
@@ -27,6 +26,9 @@ namespace ravendb::client::documents::commands
 		std::string _exclude;
 		std::optional<int32_t> _start;
 		std::optional<int32_t> _pageSize;
+
+		bool _use_ids = false;
+		bool _use_start_with = false;
 
 		//using xxhash_cpp from https://github.com/RedSpah/xxhash_cpp
 		//TODO consider the endian issue
@@ -87,17 +89,27 @@ namespace ravendb::client::documents::commands
 			: _id(std::move(id))
 			, _includes(std::move(includes))
 			, _metadataOnly(_metadataOnly)
+			, _use_ids(true)
 		{}
 
 		GetDocumentsCommand(const std::vector<std::string>& ids, std::vector<std::string> includes, bool _metadataOnly)
-			: _ids([&]
+			: _ids([](const std::vector<std::string>& ids)
 		{
 			if (ids.empty())
 				throw std::invalid_argument("Please supply at least one id");
-			else return std::unordered_set<std::string>(ids.cbegin(),ids.cend());
-		}())
+			std::vector <std::string> no_dupl_ids;
+			for(const auto& id : ids)
+			{
+				if(std::find(no_dupl_ids.cbegin(),no_dupl_ids.cend(),id) == no_dupl_ids.cend())
+				{
+					no_dupl_ids.push_back(id);
+				}
+			}
+			return no_dupl_ids;
+		}(ids))
 			, _includes(std::move(includes))
 			, _metadataOnly(_metadataOnly)
+			, _use_ids(true)
 		{}
 
 		GetDocumentsCommand
@@ -109,18 +121,13 @@ namespace ravendb::client::documents::commands
 			, int32_t pageSize
 			, bool metadataOnly)
 			: _metadataOnly(metadataOnly)
-			, _start_with([&]
-			{
-				if (startWith.empty())
-					throw std::invalid_argument("startWith cannot be empty");
-				else return std::move(startWith);
-			}())
+			, _start_with(std::move(startWith))
 			, _start_after(std::move(startAfter))
 			, _matches(std::move(matches))
 			, _exclude(std::move(exclude))
 			, _start(start)
 			, _pageSize(pageSize)
-
+			, _use_start_with(true)
 		{}
 
 		void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
@@ -143,40 +150,31 @@ namespace ravendb::client::documents::commands
 				pathBuilder << "&metadataOnly=true";
 			}
 
-			if (! _start_with.empty())
+			if (_use_start_with)
 			{
 				pathBuilder << "&startsWith=" << ravendb::client::impl::utils::url_escape(curl, _start_with);
-
-				if (! _matches.empty())
-				{
-					pathBuilder << "&matches=" << ravendb::client::impl::utils::url_escape(curl, _matches);
-				}
-
-				if (! _exclude.empty())
-				{
-					pathBuilder << "&exclude=" << ravendb::client::impl::utils::url_escape(curl, _exclude);
-				}
-
-				if (! _start_after.empty())
-				{
-					pathBuilder << "&startAfter=" << ravendb::client::impl::utils::url_escape(curl, _start_after);
-				}
-			}
-
-			for (auto const& include : _includes)
-			{
-				pathBuilder << "&include=" << include;
+				pathBuilder << "&matches=" << ravendb::client::impl::utils::url_escape(curl, _matches);
+				pathBuilder << "&exclude=" << ravendb::client::impl::utils::url_escape(curl, _exclude);
+				pathBuilder << "&startAfter=" << ravendb::client::impl::utils::url_escape(curl, _start_after);
 			}
 
 			curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 
-			if (! _id.empty())
+			if (_use_ids)
 			{
-				pathBuilder << "&id=" << ravendb::client::impl::utils::url_escape(curl, _id);
-			}
-			else if (! _ids.empty())
-			{
-				prepareRequestWithMultipleIds(pathBuilder, curl);
+				if (!_id.empty())
+				{
+					pathBuilder << "&id=" << ravendb::client::impl::utils::url_escape(curl, _id);
+				}
+				else if (!_ids.empty())
+				{
+					prepareRequestWithMultipleIds(pathBuilder, curl);
+				}
+
+				for (auto const& include : _includes)
+				{
+					pathBuilder << "&include=" << include;
+				}
 			}
 
 			url = pathBuilder.str();

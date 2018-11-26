@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "json_utils.h"
 
 namespace  ravendb::client::serverwide
 {
@@ -12,8 +13,18 @@ namespace  ravendb::client::serverwide
 
 	inline void from_json(const nlohmann::json& j, LeaderStamp& ls)
 	{
-		ls.index = j.at("Index").get<int64_t>();
-		ls.term = j.at("Term").get<int64_t>();
-		ls.leaders_ticks = j.at("LeadersTicks").get<int64_t>();
+		using ravendb::client::impl::utils::json_utils::get_val_from_json;
+
+		get_val_from_json(j, "Index", ls.index);
+		get_val_from_json(j, "Term", ls.term);
+		get_val_from_json(j, "LeadersTicks", ls.leaders_ticks);
 	}
+
+	inline void to_json(nlohmann::json& j, const LeaderStamp& ls)
+	{
+		j["Index"] = ls.index;
+		j["Term"] = ls.term;
+		j["LeadersTicks"] = ls.leaders_ticks;
+	}
+
 }
