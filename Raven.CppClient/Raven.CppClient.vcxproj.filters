@@ -101,6 +101,42 @@
     <ClInclude Include="json_utils.h">
       <Filter>ravendb.client\impl</Filter>
     </ClInclude>
+    <ClInclude Include="IndexDefinition.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexPriority.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexLockMode.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexType.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexConfiguration.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexFieldOptions.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="FieldStorage.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="FieldIndexing.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="FieldTermVector.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialOptions.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="PutIndexesCommand.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="PutIndexResult.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
@@ -129,6 +165,12 @@
     </Filter>
     <Filter Include="ravendb.client\documents\commands\batches">
       <UniqueIdentifier>{09c4d4e2-3816-4176-9509-013dcd701c91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\indexes">
+      <UniqueIdentifier>{1f19fda7-12b4-4600-bed1-6eef8dcf37e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\operations">
+      <UniqueIdentifier>{a1a246e0-8146-48da-9439-5f8f84c28cd5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

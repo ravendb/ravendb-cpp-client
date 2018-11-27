@@ -31,7 +31,22 @@ namespace ravendb::client::impl::utils::json_utils
 		}
 	}
 
-	//TODO consider using : 
-	//void set_val_to_json(nlohmann::json& j, const std::string& key_name, const T& field)
-	//void set_val_to_json(nlohmann::json& j, const std::string& key_name, const std::optional<T>& field))
+	template<typename T>
+	void set_val_to_json(nlohmann::json& j, const std::string& key_name, const T& field)
+	{
+		j[key_name] = field;
+	}
+
+	template<typename T>
+	bool set_val_to_json(nlohmann::json& j, const std::string& key_name, const std::optional<T>& field)
+	{
+		if(field.has_value())
+		{
+			set_val_to_json(j, key_name, field.value());
+			return true;
+		}else
+		{
+			return false;
+		}
+	}
 }
