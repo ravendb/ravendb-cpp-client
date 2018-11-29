@@ -131,11 +131,17 @@
     <ClInclude Include="SpatialOptions.h">
       <Filter>ravendb.client\documents\indexes</Filter>
     </ClInclude>
-    <ClInclude Include="PutIndexesCommand.h">
-      <Filter>ravendb.client\documents\operations</Filter>
-    </ClInclude>
     <ClInclude Include="PutIndexResult.h">
       <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IMaintenanceOperation.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="DocumentConventions.h">
+      <Filter>ravendb.client\documents\conventions</Filter>
+    </ClInclude>
+    <ClInclude Include="PutIndexesOperation.h">
+      <Filter>ravendb.client\documents\operations</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -171,6 +177,9 @@
     </Filter>
     <Filter Include="ravendb.client\documents\operations">
       <UniqueIdentifier>{a1a246e0-8146-48da-9439-5f8f84c28cd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\conventions">
+      <UniqueIdentifier>{884d90df-d166-4ea3-9805-56767df2d865}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

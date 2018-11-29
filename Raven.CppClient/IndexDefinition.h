@@ -29,7 +29,12 @@ namespace ravendb::client::documents::indexes
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		//TODO it !
+		set_val_to_json(j, "Name", id.name);
+		//set_val_to_json(j, "Priority", id.priority);
+		//set_val_to_json(j, "LockMode", id.lock_mode);
+		//set_val_to_json(j, "AdditionalSources", id.additional_sources);
+		set_val_to_json(j, "Maps", id.maps);
+		//TODO continue !
 
 	}
 

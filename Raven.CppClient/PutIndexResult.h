@@ -12,7 +12,7 @@ namespace ravendb::client::documents::indexes
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		set_val_to_json(j, "IndexName", pir.index_name);
+		set_val_to_json(j, "Index", pir.index_name);
 		
 	}
 
@@ -20,6 +20,6 @@ namespace ravendb::client::documents::indexes
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 	
-		get_val_from_json(j, "IndexName", pir.index_name);
+		get_val_from_json(j, "Index", pir.index_name);
 	}
 }
