@@ -1,28 +1,27 @@
 #pragma once
 #include "stdafx.h"
-#include <unordered_set>
 #include "IndexPriority.h"
 #include "IndexLockMode.h"
 #include "IndexType.h"
 #include "IndexConfiguration.h"
 #include "IndexFieldOptions.h"
 #include "json_utils.h"
+#include <unordered_set>
 
 namespace ravendb::client::documents::indexes
 {
 	struct IndexDefinition
 	{
 		 std::string name{};
-		 IndexPriority priority{};
-		 IndexLockMode lock_mode{};
+		 IndexPriority priority = IndexPriority::Normal;
+		 IndexLockMode lock_mode;//what default should be ?
 		 std::unordered_map<std::string, std::string> additional_sources{};
 		 std::unordered_set<std::string> maps{};
 		 std::string reduce{};
 		 std::unordered_map <std::string, IndexFieldOptions> fields{};
 		 IndexConfiguration configuration{};
-		 IndexType indexType{};
-		//TBD 4.1 private boolean testIndex;
-		 std::string outputReduceToCollection{};
+		 IndexType index_type;//what default should be ?
+		 std::string output_reduce_to_collection{};
 	};
 
 	inline void to_json(nlohmann::json& j, const IndexDefinition& id)
@@ -32,8 +31,10 @@ namespace ravendb::client::documents::indexes
 		set_val_to_json(j, "Name", id.name);
 		//set_val_to_json(j, "Priority", id.priority);
 		//set_val_to_json(j, "LockMode", id.lock_mode);
-		//set_val_to_json(j, "AdditionalSources", id.additional_sources);
+		set_val_to_json(j, "AdditionalSources", id.additional_sources);
 		set_val_to_json(j, "Maps", id.maps);
+
+
 		//TODO continue !
 
 	}
@@ -42,7 +43,14 @@ namespace ravendb::client::documents::indexes
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		//TODO it !
+		get_val_from_json(j, "Name", id.name);
+		//get_val_from_json(j, "Priority", id.priority);
+		//get_val_from_json(j, "LockMode", id.lock_mode);
+		get_val_from_json(j, "AdditionalSources", id.additional_sources);
+		get_val_from_json(j, "Maps", id.maps);
+
+
+		//TODO continue !
 	}
 
 

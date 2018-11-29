@@ -5,6 +5,7 @@
 #include "ServerNode.h"
 #include "PutIndexResult.h"
 #include "IndexDefinition.h"
+#include "utils.h"
 
 namespace ravendb::client::documents::operations::indexes
 {
@@ -47,7 +48,7 @@ namespace ravendb::client::documents::operations::indexes
 		{
 		private:
 			const std::vector<nlohmann::json> _index_to_add;
-			const std::string _index_to_add_str{};
+			const std::string _index_to_add_str;
 
 		public:
 			~PutIndexesCommand() override = default;

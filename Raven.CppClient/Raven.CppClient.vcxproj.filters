@@ -141,7 +141,13 @@
       <Filter>ravendb.client\documents\conventions</Filter>
     </ClInclude>
     <ClInclude Include="PutIndexesOperation.h">
-      <Filter>ravendb.client\documents\operations</Filter>
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="GetIndexOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="GetIndexesOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +186,9 @@
     </Filter>
     <Filter Include="ravendb.client\documents\conventions">
       <UniqueIdentifier>{884d90df-d166-4ea3-9805-56767df2d865}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\operations\indexes">
+      <UniqueIdentifier>{adedf68a-4548-4041-977c-2af8bbe017f3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
