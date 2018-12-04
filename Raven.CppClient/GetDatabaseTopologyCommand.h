@@ -17,7 +17,7 @@ namespace ravendb::client::serverwide::commands
 		~GetDatabaseTopologyCommand() override = default;
 		GetDatabaseTopologyCommand() = default;
 
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
+		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 		{
 			std::ostringstream urlBuilder;
 			urlBuilder << node.url << "/topology?name=" << node.database;

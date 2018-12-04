@@ -47,7 +47,7 @@ namespace ravendb::client::documents::operations::indexes
 				, _page_size(page_size)
 			{}
 
-			void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
+			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 			{
 				std::ostringstream pathBuilder;
 				pathBuilder << node.url << "/databases/" << node.database

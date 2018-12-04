@@ -30,7 +30,7 @@ namespace ravendb::client::documents::commands
 			, _document(std::move(document))
 		{}
 
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
+		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 		{
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/databases/" << node.database

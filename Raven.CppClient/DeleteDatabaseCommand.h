@@ -72,7 +72,7 @@ namespace ravendb::client::serverwide::operations
 			_parameters_str = nlohmann::json(_parameters).dump();
 		}
 
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
+		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 		{
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/admin/databases"; 

@@ -35,7 +35,7 @@ namespace ravendb::client::serverwide::operations
 			, _database_document(nlohmann::json(_database_record).dump())
 		{}
 
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
+		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 		{
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/admin/databases?name=" << _database_name

@@ -57,7 +57,7 @@ namespace ravendb::client::http
 			return _can_cache_aggressively;
 		}
 
-		virtual void create_request(CURL* curl, const ServerNode& node, std::string& url) const = 0;
+		virtual void create_request(CURL* curl, const ServerNode& node, std::string& url) = 0;
 
 		virtual void set_response(CURL* curl, const nlohmann::json& response, bool from_cache = false) = 0;
 

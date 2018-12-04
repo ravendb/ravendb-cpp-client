@@ -20,7 +20,7 @@ namespace ravendb::client::serverwide::operations
 			: _database(std::move(database))
 		{}
 
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
+		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 		{
 			std::ostringstream urlBuilder;
 			urlBuilder << node.url << "/admin/databases?name=" << _database;

@@ -41,7 +41,7 @@ namespace ravendb::client::serverwide::operations
 			  _page_size(_page_size)
 		{}
 
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
+		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 		{
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/databases?start=" << _start

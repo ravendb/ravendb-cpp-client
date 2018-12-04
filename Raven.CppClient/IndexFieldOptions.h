@@ -10,7 +10,7 @@ namespace ravendb::client::documents::indexes
 	{
 		FieldStorage storage;//what default should be ?
 		FieldIndexing indexing;//what default should be ?
-		FieldTermVector termVector//what default should be ?;
+		FieldTermVector termVector;//what default should be ?;
 		SpatialOptions spatial{};
 		std::string analyzer{};
 		bool suggestions;//what default should be ?

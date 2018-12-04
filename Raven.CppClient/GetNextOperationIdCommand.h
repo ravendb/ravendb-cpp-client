@@ -27,7 +27,7 @@ namespace ravendb::client::documents::commands
 		~GetNextOperationIdCommand() override = default;
 		GetNextOperationIdCommand() = default;
 
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
+		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 		{
 			std::ostringstream urlBuilder;
 			urlBuilder << node.url << "/databases/" << node.database

@@ -9,7 +9,9 @@
 
 namespace ravendb::client::documents::commands
 {
-	using ravendb::client::http::RavenCommand, ravendb::client::http::ServerNode;
+	using 
+		ravendb::client::http::RavenCommand,
+		ravendb::client::http::ServerNode;
 
 	class GetDocumentsCommand : public RavenCommand<GetDocumentsResult>
 	{
@@ -130,7 +132,7 @@ namespace ravendb::client::documents::commands
 			, _use_start_with(true)
 		{}
 
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
+		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 		{
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/databases/" << node.database << "/docs?";
