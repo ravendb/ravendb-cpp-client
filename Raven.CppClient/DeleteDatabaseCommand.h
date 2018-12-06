@@ -1,8 +1,11 @@
 #pragma once
 #include "stdafx.h"
+#include <iomanip>
 #include "RavenCommand.h"
 #include "DeleteDatabaseResult.h"
 #include "utils.h"
+#include "json_utils.h"
+
 
 namespace ravendb::client::serverwide::operations
 {
@@ -16,9 +19,11 @@ namespace ravendb::client::serverwide::operations
 
 	inline void to_json(nlohmann::json& j, const DeleteDatabaseParameters& dbp)
 	{
-		j["DatabaseNames"] = dbp.database_names;
-		j["FromNodes"] = dbp.from_nodes;
-		j["HardDelete"] = dbp.hard_delete;
+		using ravendb::client::impl::utils::json_utils::set_val_to_json;
+
+		set_val_to_json(j, "DatabaseNames", dbp.database_names);
+		set_val_to_json(j, "FromNodes", dbp.from_nodes);
+		set_val_to_json(j, "HardDelete", dbp.hard_delete);
 
 		using namespace std::chrono;
 		std::ostringstream time_dur;
@@ -27,9 +32,13 @@ namespace ravendb::client::serverwide::operations
 		m = duration_cast<minutes>(dbp.time_to_wait_for_confirmation%hours(1)).count();
 		s = duration_cast<seconds>(dbp.time_to_wait_for_confirmation%minutes(1)).count();
 		ms = (dbp.time_to_wait_for_confirmation%seconds(1)).count();
-		time_dur << h << ':' << m << ':' << s << ".00" << ms;
+		time_dur << std::setfill('0') <<
+			std::setw(2) << h << ":" <<
+			std::setw(2) << m << ":" <<
+			std::setw(2) << s << "." <<
+			std::setw(3) << ms;
 
-		j["TimeToWaitForConfirmation"] = time_dur.str();
+		set_val_to_json(j, "TimeToWaitForConfirmation", time_dur.str());
 	}
 
 	class DeleteDatabaseCommand : public RavenCommand<DeleteDatabaseResult>

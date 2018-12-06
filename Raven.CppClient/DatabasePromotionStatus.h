@@ -4,7 +4,7 @@
 
 namespace ravendb::client::serverwide::operations::database_promotion_status
 {
-	enum class DatabasePromotionStatus : uint8_t
+	enum class DatabasePromotionStatus
 	{
 		WAITING_FOR_FIRST_PROMOTION,
 		NOT_RESPONDING,

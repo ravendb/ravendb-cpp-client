@@ -22,6 +22,8 @@ namespace ravendb::client::documents::commands
 		bool _index_entries_only = false;
 
 	public:
+		~QueryCommand() = default;
+
 		QueryCommand(DocumentConventions conventions, IndexQuery index_query, bool metadata_only, bool index_entries_only)
 			: _conventions(std::move(conventions))
 			, _index_query(std::move(index_query))

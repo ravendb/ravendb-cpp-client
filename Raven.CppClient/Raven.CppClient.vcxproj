@@ -159,6 +159,7 @@
     <ClInclude Include="DatabasePutResult.h" />
     <ClInclude Include="DatabaseRecord.h" />
     <ClInclude Include="DatabaseTopology.h" />
+    <ClInclude Include="DateTime.h" />
     <ClInclude Include="DeleteDatabaseCommand.h" />
     <ClInclude Include="DeleteDatabaseResult.h" />
     <ClInclude Include="DeleteDocumentCommand.h" />

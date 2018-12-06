@@ -10,7 +10,7 @@ namespace ravendb::client::documents::queries
 
 		std::optional<int32_t> page_size;
 		std::string query;
-		T queryParameters;
+		T query_parameters;
 		int32_t start = 0;
 		bool wait_for_non_stale_results = false;
 		std::chrono::milliseconds wait_for_non_stale_results_timeout;

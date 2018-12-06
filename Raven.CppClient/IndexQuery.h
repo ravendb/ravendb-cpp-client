@@ -26,6 +26,7 @@ namespace ravendb::client::documents::queries
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
 		set_val_to_json(j, "Query", id.query);
+		set_val_to_json(j, "QueryParameters", id.query_parameters);
 
 		//TODO continue !
 

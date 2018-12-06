@@ -21,7 +21,7 @@ namespace ravendb::client::documents::queries
 	GenericQueryResult<TResult, TInclude>::~GenericQueryResult() = default;
 
 	template<typename TResult, typename TInclude>
-	inline void from_json(const nlohmann::json& j, GenericQueryResult<TResult, TInclude>& gqr)
+	void from_json(const nlohmann::json& j, GenericQueryResult<TResult, TInclude>& gqr)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
@@ -32,7 +32,7 @@ namespace ravendb::client::documents::queries
 		//get_val_from_json(j, "HighLightings", gqr.highlightings);
 		get_val_from_json(j, "DurationInMs", gqr.duration_in_ms);
 		//get_val_from_json(j, "ScoreExplanations", gqr.score_explanations);
-		//get_val_from_json(j, "ResultSize", gqr.result_size);
+		get_val_from_json(j, "ResultSize", gqr.result_size);
 
 	}
 }

@@ -170,6 +170,9 @@
     <ClInclude Include="Parameters.h">
       <Filter>ravendb.client</Filter>
     </ClInclude>
+    <ClInclude Include="DateTime.h">
+      <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
