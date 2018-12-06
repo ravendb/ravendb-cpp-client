@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <ostream>
+#include <iomanip>
 
 namespace ravendb::client::impl
 {

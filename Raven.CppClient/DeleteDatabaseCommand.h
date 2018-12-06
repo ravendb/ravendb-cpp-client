@@ -1,6 +1,5 @@
 #pragma once
 #include "stdafx.h"
-#include <iomanip>
 #include "RavenCommand.h"
 #include "DeleteDatabaseResult.h"
 #include "utils.h"
@@ -24,21 +23,7 @@ namespace ravendb::client::serverwide::operations
 		set_val_to_json(j, "DatabaseNames", dbp.database_names);
 		set_val_to_json(j, "FromNodes", dbp.from_nodes);
 		set_val_to_json(j, "HardDelete", dbp.hard_delete);
-
-		using namespace std::chrono;
-		std::ostringstream time_dur;
-		uint64_t h, m, s, ms;
-		h = duration_cast<hours>(dbp.time_to_wait_for_confirmation).count();
-		m = duration_cast<minutes>(dbp.time_to_wait_for_confirmation%hours(1)).count();
-		s = duration_cast<seconds>(dbp.time_to_wait_for_confirmation%minutes(1)).count();
-		ms = (dbp.time_to_wait_for_confirmation%seconds(1)).count();
-		time_dur << std::setfill('0') <<
-			std::setw(2) << h << ":" <<
-			std::setw(2) << m << ":" <<
-			std::setw(2) << s << "." <<
-			std::setw(3) << ms;
-
-		set_val_to_json(j, "TimeToWaitForConfirmation", time_dur.str());
+		set_val_to_json(j, "TimeToWaitForConfirmation", dbp.time_to_wait_for_confirmation);
 	}
 
 	class DeleteDatabaseCommand : public RavenCommand<DeleteDatabaseResult>

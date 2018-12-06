@@ -29,9 +29,9 @@ namespace ravendb::client::documents::queries
 
 		get_val_from_json(j, "TotalResults", gqr.total_results);
 		get_val_from_json(j, "SkippedResults", gqr.skipped_results);
-		//get_val_from_json(j, "HighLightings", gqr.highlightings);
+		get_val_from_json(j, "Highlightings", gqr.highlightings);
 		get_val_from_json(j, "DurationInMs", gqr.duration_in_ms);
-		//get_val_from_json(j, "ScoreExplanations", gqr.score_explanations);
+		get_val_from_json(j, "ScoreExplanations", gqr.score_explanations);
 		get_val_from_json(j, "ResultSize", gqr.result_size);
 
 	}

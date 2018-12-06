@@ -9,7 +9,6 @@ namespace ravendb::client::documents::queries
 		~QueryResult() override = default;
 
 		QueryResult() = default;
-		QueryResult(const QueryResult& other) = default;//TODO check if OK
 
 		QueryResult create_snapshot() const
 		{

@@ -12,25 +12,17 @@ namespace ravendb::client::serverwide::operations::database_promotion_status
 		CHANGE_VECTOR_NOT_MERGED,
 		WAITING_FOR_RESPONSE,
 		OK,
+		INVALID_VALUE
 	};
 
-	inline static const std::map<std::string, DatabasePromotionStatus> status_string_map =
-	{
-		{"WaitingForFirstPromotion", DatabasePromotionStatus::WAITING_FOR_FIRST_PROMOTION},
-		{"NotResponding", DatabasePromotionStatus::NOT_RESPONDING},
-		{"IndexNotUpToDate", DatabasePromotionStatus::INDEX_NOT_UP_TO_DATE},
-		{"ChangeVectorNotMerged", DatabasePromotionStatus::CHANGE_VECTOR_NOT_MERGED},
-		{"WaitingForResponse", DatabasePromotionStatus::WAITING_FOR_RESPONSE},
-		{"OK",DatabasePromotionStatus::OK}
-	};
-
-	inline DatabasePromotionStatus from_string(const std::string& str)
-	{
-		const auto&& it = status_string_map.find(str);
-		if(it == status_string_map.end())
+	NLOHMANN_JSON_SERIALIZE_ENUM(DatabasePromotionStatus,
 		{
-			throw std::invalid_argument("wrong DatabasePromotionStatus");
-		}
-		return it->second;
-	}
+		{DatabasePromotionStatus::INVALID_VALUE, nullptr},
+		{DatabasePromotionStatus::WAITING_FOR_FIRST_PROMOTION, "WaitingForFirstPromotion"},
+		{DatabasePromotionStatus::NOT_RESPONDING , "NotResponding"},
+		{DatabasePromotionStatus::INDEX_NOT_UP_TO_DATE, "IndexNotUpToDate"},
+		{DatabasePromotionStatus::CHANGE_VECTOR_NOT_MERGED, "ChangeVectorNotMerged"},
+		{DatabasePromotionStatus::WAITING_FOR_RESPONSE, "WaitingForResponse"},
+		{DatabasePromotionStatus::OK, "OK"}
+		});
 }

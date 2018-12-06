@@ -1,7 +1,6 @@
 #pragma once
 #include "IndexQueryBase.h"
 #include "Parameters.h"
-#include "json_utils.h"
 
 namespace ravendb::client::documents::queries
 {
@@ -10,6 +9,10 @@ namespace ravendb::client::documents::queries
 		~IndexQuery() override = default;
 
 		bool skip_duplicate_checking = false;
+
+		bool explain_scores = false;
+
+		bool show_timings = false;
 
 		bool disable_caching = false;
 
@@ -21,14 +24,15 @@ namespace ravendb::client::documents::queries
 		}
 	};
 
-	inline void to_json(nlohmann::json& j, const IndexQuery& id)
+	inline void to_json(nlohmann::json& j, const IndexQuery& iq)
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		set_val_to_json(j, "Query", id.query);
-		set_val_to_json(j, "QueryParameters", id.query_parameters);
+		to_json(j, static_cast<const IndexQueryBase<Parameters>&>(iq));
 
-		//TODO continue !
-
+		set_val_to_json(j, "SkipDuplicateChecking", iq.skip_duplicate_checking);
+		set_val_to_json(j, "ExplainScores", iq.explain_scores);
+		set_val_to_json(j, "ShowTimings", iq.show_timings);
+		set_val_to_json(j, "DisableCaching", iq.disable_caching);
 	}
 }

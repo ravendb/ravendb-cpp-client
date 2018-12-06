@@ -1,8 +1,10 @@
 #pragma once
 #include "stdafx.h"
+#include <iomanip>
 
 namespace ravendb::client::impl::utils::json_utils
 {
+
 	//TODO consider using it everywhere
 	//safe if key_name does not exists and more convenient
 	template<typename T>
@@ -48,5 +50,27 @@ namespace ravendb::client::impl::utils::json_utils
 		{
 			return false;
 		}
+	}
+}
+
+namespace std::chrono
+{
+	inline void to_json(nlohmann::json& j, const std::chrono::milliseconds& msec)
+	{
+		using namespace std::chrono;
+
+		std::ostringstream time_dur;
+		uint64_t h, m, s, ms;
+		h = duration_cast<hours>(msec).count();
+		m = duration_cast<minutes>(msec%hours(1)).count();
+		s = duration_cast<seconds>(msec%minutes(1)).count();
+		ms = (msec%seconds(1)).count();
+		time_dur << std::setfill('0') <<
+			std::setw(2) << h << ":" <<
+			std::setw(2) << m << ":" <<
+			std::setw(2) << s << "." <<
+			std::setw(3) << ms;
+
+		j = time_dur.str();
 	}
 }
