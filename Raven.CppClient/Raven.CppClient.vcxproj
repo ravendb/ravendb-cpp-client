@@ -176,6 +176,7 @@
     <ClInclude Include="IndexConfiguration.h" />
     <ClInclude Include="IndexDefinition.h" />
     <ClInclude Include="IndexFieldOptions.h" />
+    <ClInclude Include="IndexHasChangedOperation.h" />
     <ClInclude Include="IndexLockMode.h" />
     <ClInclude Include="IndexPriority.h" />
     <ClInclude Include="IndexQuery.h" />
@@ -201,7 +202,10 @@
     <ClInclude Include="RequestExecutor.h" />
     <ClInclude Include="ScriptResolver.h" />
     <ClInclude Include="ServerNode.h" />
+    <ClInclude Include="SpatialFieldType.h" />
     <ClInclude Include="SpatialOptions.h" />
+    <ClInclude Include="SpatialSearchStrategy.h" />
+    <ClInclude Include="SpatialUnits.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Topology.h" />

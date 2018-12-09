@@ -128,9 +128,6 @@
     <ClInclude Include="FieldTermVector.h">
       <Filter>ravendb.client\documents\indexes</Filter>
     </ClInclude>
-    <ClInclude Include="SpatialOptions.h">
-      <Filter>ravendb.client\documents\indexes</Filter>
-    </ClInclude>
     <ClInclude Include="PutIndexResult.h">
       <Filter>ravendb.client\documents\indexes</Filter>
     </ClInclude>
@@ -172,6 +169,21 @@
     </ClInclude>
     <ClInclude Include="DateTime.h">
       <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialFieldType.h">
+      <Filter>ravendb.client\documents\indexes\spacial</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialOptions.h">
+      <Filter>ravendb.client\documents\indexes\spacial</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialSearchStrategy.h">
+      <Filter>ravendb.client\documents\indexes\spacial</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialUnits.h">
+      <Filter>ravendb.client\documents\indexes\spacial</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexHasChangedOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -216,6 +228,9 @@
     </Filter>
     <Filter Include="ravendb.client\documents\queries">
       <UniqueIdentifier>{b7013a9f-b50d-47d9-a2cd-aa57a5f1de90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\indexes\spacial">
+      <UniqueIdentifier>{5eaed6e9-3163-4e30-ba67-6c03511ef765}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

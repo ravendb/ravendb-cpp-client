@@ -5,7 +5,7 @@ namespace ravendb::client::http
 {
 	struct ServerNode
 	{
-		enum Role
+		enum class Role
 		{
 			NONE,
 			PROMOTABLE,
@@ -16,11 +16,11 @@ namespace ravendb::client::http
 		std::string url{};
 		std::string database{};
 		std::string clusterTag{};
-		Role serverRole = NONE;
+		Role serverRole = Role::NONE;
 
 		ServerNode() = default;
 
-		ServerNode(std::string url, std::string db, std::string tag, Role role = NONE)
+		ServerNode(std::string url, std::string db, std::string tag, Role role = Role::NONE)
 			: url(std::move(url))
 			, database(std::move(db))
 			, clusterTag(std::move(tag))

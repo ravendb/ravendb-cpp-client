@@ -34,9 +34,11 @@ namespace ravendb::client::impl::utils::json_utils
 	}
 
 	template<typename T>
-	void set_val_to_json(nlohmann::json& j, const std::string& key_name, const T& field)
+	bool set_val_to_json(nlohmann::json& j, const std::string& key_name, const T& field)
 	{
-		j[key_name] = field;
+		bool res = false;
+		std::tie(std::ignore, res) = j.emplace(key_name, field);
+		return res;
 	}
 
 	template<typename T>
@@ -44,8 +46,7 @@ namespace ravendb::client::impl::utils::json_utils
 	{
 		if(field.has_value())
 		{
-			set_val_to_json(j, key_name, field.value());
-			return true;
+			return set_val_to_json(j, key_name, field.value());
 		}else
 		{
 			return false;
@@ -60,11 +61,11 @@ namespace std::chrono
 		using namespace std::chrono;
 
 		std::ostringstream time_dur;
-		uint64_t h, m, s, ms;
-		h = duration_cast<hours>(msec).count();
-		m = duration_cast<minutes>(msec%hours(1)).count();
-		s = duration_cast<seconds>(msec%minutes(1)).count();
-		ms = (msec%seconds(1)).count();
+		auto h = duration_cast<hours>(msec).count();
+		auto m = duration_cast<minutes>(msec%hours(1)).count();
+		auto s = duration_cast<seconds>(msec%minutes(1)).count();
+		auto ms = (msec%seconds(1)).count();
+
 		time_dur << std::setfill('0') <<
 			std::setw(2) << h << ":" <<
 			std::setw(2) << m << ":" <<

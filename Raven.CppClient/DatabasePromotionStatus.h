@@ -12,7 +12,7 @@ namespace ravendb::client::serverwide::operations::database_promotion_status
 		CHANGE_VECTOR_NOT_MERGED,
 		WAITING_FOR_RESPONSE,
 		OK,
-		INVALID_VALUE
+		INVALID_VALUE = -1
 	};
 
 	NLOHMANN_JSON_SERIALIZE_ENUM(DatabasePromotionStatus,
