@@ -56,6 +56,7 @@ namespace ravendb::client::impl::utils::json_utils
 
 namespace std::chrono
 {
+	//serialization in C# TimeSpan format : d.hh:mm:ss.sssssss or hh:mm:ss.sssssss
 	inline void to_json(nlohmann::json& j, const std::chrono::milliseconds& msec)
 	{
 		using namespace std::chrono;
@@ -66,11 +67,20 @@ namespace std::chrono
 		auto s = duration_cast<seconds>(msec%minutes(1)).count();
 		auto ms = (msec%seconds(1)).count();
 
+		//num of days and hours remained
+		auto d = h / 24;
+		h %= 24;
+
+		if (d > 0)
+		{
+			time_dur << d << ".";
+		}
+
 		time_dur << std::setfill('0') <<
 			std::setw(2) << h << ":" <<
 			std::setw(2) << m << ":" <<
 			std::setw(2) << s << "." <<
-			std::setw(3) << ms;
+			std::setw(7) << ms;
 
 		j = time_dur.str();
 	}
