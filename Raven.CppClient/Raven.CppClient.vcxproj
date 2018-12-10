@@ -159,10 +159,11 @@
     <ClInclude Include="DatabasePutResult.h" />
     <ClInclude Include="DatabaseRecord.h" />
     <ClInclude Include="DatabaseTopology.h" />
-    <ClInclude Include="DateTime.h" />
+    <ClInclude Include="DateTimeOffset.h" />
     <ClInclude Include="DeleteDatabaseCommand.h" />
     <ClInclude Include="DeleteDatabaseResult.h" />
     <ClInclude Include="DeleteDocumentCommand.h" />
+    <ClInclude Include="DeleteIndexOperation.h" />
     <ClInclude Include="DocumentConventions.h" />
     <ClInclude Include="FieldIndexing.h" />
     <ClInclude Include="FieldStorage.h" />
@@ -182,6 +183,7 @@
     <ClInclude Include="IndexQuery.h" />
     <ClInclude Include="IndexQueryBase.h" />
     <ClInclude Include="IndexType.h" />
+    <ClInclude Include="IVoidMaintenanceOperation.h" />
     <ClInclude Include="json_utils.h" />
     <ClInclude Include="LeaderStamp.h" />
     <ClInclude Include="Parameters.h" />

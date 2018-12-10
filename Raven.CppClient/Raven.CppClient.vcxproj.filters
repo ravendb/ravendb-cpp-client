@@ -167,9 +167,6 @@
     <ClInclude Include="Parameters.h">
       <Filter>ravendb.client</Filter>
     </ClInclude>
-    <ClInclude Include="DateTime.h">
-      <Filter>ravendb.client\impl</Filter>
-    </ClInclude>
     <ClInclude Include="SpatialFieldType.h">
       <Filter>ravendb.client\documents\indexes\spacial</Filter>
     </ClInclude>
@@ -184,6 +181,15 @@
     </ClInclude>
     <ClInclude Include="IndexHasChangedOperation.h">
       <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IVoidMaintenanceOperation.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="DeleteIndexOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="DateTimeOffset.h">
+      <Filter>ravendb.client\impl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

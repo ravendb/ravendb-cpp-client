@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "DateTime.h"
+#include "DateTimeOffset.h"
 #include "json_utils.h"
 
 namespace ravendb::client::serverwide
@@ -8,7 +8,7 @@ namespace ravendb::client::serverwide
 	struct ScriptResolver
 	{
 		std::string script{};
-		impl::DateTime last_modified_time{};
+		impl::DateTimeOffset last_modified_time{};
 	};
 
 

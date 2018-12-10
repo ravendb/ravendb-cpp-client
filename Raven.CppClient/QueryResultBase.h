@@ -1,11 +1,11 @@
 #pragma once
 #include "stdafx.h"
 #include  "json_utils.h"
-#include "DateTime.h"
+#include "DateTimeOffset.h"
 
 namespace ravendb::client::documents::queries
 {
-	using ravendb::client::impl::DateTime;
+	using ravendb::client::impl::DateTimeOffset;
 
 	template<typename TResult, typename TInclude>
 	struct QueryResultBase
@@ -16,10 +16,10 @@ namespace ravendb::client::documents::queries
 		TInclude includes;
 		std::vector<std::string> included_paths;
 		bool is_stale;
-		DateTime index_timestamp;
+		DateTimeOffset index_timestamp;
 		std::string index_name;
 		int64_t result_etag;
-		DateTime last_query_time;
+		DateTimeOffset last_query_time;
 		std::string node_tag;
 	};
 

@@ -4,7 +4,9 @@
 
 namespace ravendb::client::http
 {
-	class VoidRavenCommand : public RavenCommand<void*>
+	using VoidRavenCommandBase = RavenCommand<void*>;
+
+	class VoidRavenCommand : public VoidRavenCommandBase
 	{
 	protected:
 		VoidRavenCommand()

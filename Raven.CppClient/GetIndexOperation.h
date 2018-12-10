@@ -27,8 +27,7 @@ namespace ravendb::client::documents::operations::indexes
 
 		std::unique_ptr<RavenCommand<IndexDefinition>> get_command(const DocumentConventions& conventions) override
 		{
-			return std::unique_ptr<RavenCommand<IndexDefinition>>(
-				std::make_unique<GetIndexCommand>(_index_name));
+			return std::make_unique<GetIndexCommand>(_index_name);
 		}
 
 	private:
@@ -57,7 +56,10 @@ namespace ravendb::client::documents::operations::indexes
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 			{
-				if (auto results_it = response.find("Results"); results_it == response.end() || !results_it->is_array())
+				if (auto results_it = response.find("Results"); 
+					results_it == response.end() ||
+					!results_it->is_array() ||
+					results_it->empty())
 				{
 					throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::invalid_response);
 				}

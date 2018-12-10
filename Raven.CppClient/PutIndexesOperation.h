@@ -39,8 +39,7 @@ namespace ravendb::client::documents::operations::indexes
 		
 		std::unique_ptr<RavenCommand<std::vector<PutIndexResult>>> get_command(const DocumentConventions& conventions) override
 		{
-			return std::unique_ptr<RavenCommand<std::vector<PutIndexResult>>>(
-				std::make_unique<PutIndexesCommand>(_index_to_add));
+			return std::make_unique<PutIndexesCommand>(_index_to_add);
 		}
 
 	private:
@@ -66,12 +65,12 @@ namespace ravendb::client::documents::operations::indexes
 						nlohmann::json index_json = index;
 						temp_index_to_add.emplace_back(std::move(index_json));
 					}
-					return temp_index_to_add;
+					return std::move(temp_index_to_add);
 				}())
 				, _index_to_add_str([this]
 				{
 						nlohmann::json json_to_put;
-						json_to_put["Indexes"] = _index_to_add;
+						json_to_put.emplace("Indexes",_index_to_add);
 						return json_to_put.dump();
 				}())
 			{}
