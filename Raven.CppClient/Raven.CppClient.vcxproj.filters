@@ -201,7 +201,10 @@
       <Filter>ravendb.client\documents\operations\indexes</Filter>
     </ClInclude>
     <ClInclude Include="ResetIndexOperation.h">
-      <Filter>ravendb.client\documents\operations</Filter>
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="StartIndexOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
