@@ -12,21 +12,6 @@ ravendb::client::http::ServerNode;
 
 namespace ravendb::client::documents::operations::indexes
 {
-	namespace get_index_names_op
-	{
-		struct IndexNames //used with from_json
-		{
-			std::vector<std::string> value;
-		};
-
-		inline void from_json(const nlohmann::json& j, IndexNames& result)
-		{
-			using ravendb::client::impl::utils::json_utils::get_val_from_json;
-
-			get_val_from_json(j, "Results", result.value);
-		}
-	}
-
 	class GetIndexNamesOperation : public operations::IMaintenanceOperation<std::vector<std::string>>
 	{
 	private:
@@ -75,14 +60,9 @@ namespace ravendb::client::documents::operations::indexes
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 			{
-				if (auto results_it = response.find("Results"); results_it == response.end() || !results_it->is_array())
+				if(! impl::utils::json_utils::get_val_from_json(response, "Results", _result))
 				{
 					throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::invalid_response);
-				}
-				else
-				{
-					get_index_names_op::IndexNames res = response;
-					_result = std::move(res.value);
 				}
 			}
 

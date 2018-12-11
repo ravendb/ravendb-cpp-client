@@ -6,21 +6,6 @@
 
 namespace ravendb::client::serverwide::operations
 {
-	namespace get_db_names_op
-	{
-		struct DatabaseNames //used with from_json
-		{
-			std::vector<std::string> value;
-		};
-
-		inline void from_json(const nlohmann::json& j, DatabaseNames& result)
-		{
-			using ravendb::client::impl::utils::json_utils::get_val_from_json;
-
-			get_val_from_json(j, "Databases", result.value);
-		}
-	}
-
 	class GetDatabaseNamesOperation : public IServerOperation<std::vector<std::string>>
 	{
 	private:
@@ -67,16 +52,12 @@ namespace ravendb::client::serverwide::operations
 				url = pathBuilder.str();
 			}
 
-
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 			{
-				auto it = response.find("Databases");
-				if(it == response.end() || ! it->is_array())
+				if (! impl::utils::json_utils::get_val_from_json(response, "Databases", _result))
 				{
 					throw ravendb::client::RavenError({},ravendb::client::RavenError::ErrorType::invalid_response);
 				}
-				get_db_names_op::DatabaseNames res = response;
-				_result = std::move(res.value);
 			}
 
 			bool is_read_request() const noexcept override
