@@ -27,11 +27,15 @@ namespace ravendb::client::impl
 		//str should be in ISO8061 format : YYYY-MM-DDThh:mm:ss.sssssss(Z) or YYYY-MM-DDThh:mm:ss.sssssss±hh:mm
 		explicit DateTimeOffset(const std::string& str)
 		{
-			constexpr size_t DATE_TIME_LENGTH_1 = 27;
-			constexpr size_t DATE_TIME_LENGTH_2 = 28;
-			constexpr size_t DATE_TIME_LENGTH_3 = 33;
+			constexpr size_t DATE_TIME_LENGTH_BASIC = 27;
+			constexpr size_t DATE_TIME_LENGTH_UTC = 28;
+			constexpr size_t DATE_TIME_LENGTH_WITH_OFFSET = 33;
 
-			if (str.length() < DATE_TIME_LENGTH_1)
+			const auto length = str.length();
+
+			if (length != DATE_TIME_LENGTH_BASIC &&
+				length != DATE_TIME_LENGTH_UTC &&
+				length != DATE_TIME_LENGTH_WITH_OFFSET)
 			{
 				throw_invalid_format(str);
 			}
@@ -43,41 +47,44 @@ namespace ravendb::client::impl
 				&date_time.tm_year, &date_time.tm_mon, &date_time.tm_mday,
 				&date_time.tm_hour, &date_time.tm_min, &date_time.tm_sec, &nsec);
 
-			date_time.tm_mon -= 1;
 			nsec *= 100;
-
-			if (constexpr long MAX_NSEC = 999999999;
-				res < 7 ||
-				date_time.tm_mon < 0  || date_time.tm_mon > 11  ||
-				date_time.tm_mday < 1 || date_time.tm_mday > 31 ||
-				date_time.tm_hour < 0 || date_time.tm_hour > 23 ||
-				date_time.tm_min < 0  || date_time.tm_min > 59  ||
-				date_time.tm_sec < 0  || date_time.tm_sec > 59  ||
-				nsec < 0 || nsec > MAX_NSEC )
 			{
-				throw_invalid_format(str);
+				constexpr decltype(nsec) MAX_NSEC = 999'999'999l;
+				constexpr decltype(date_time.tm_year) MAX_YEAR = 9'999;//valid max 4 digits year
+				if (res < 7               ||
+					date_time.tm_year < 1 || date_time.tm_year > MAX_YEAR||
+					date_time.tm_mon < 1  || date_time.tm_mon > 12       ||
+					date_time.tm_mday < 1 || date_time.tm_mday > 31      ||
+					date_time.tm_hour < 0 || date_time.tm_hour > 23      ||
+					date_time.tm_min < 0  || date_time.tm_min > 59       ||
+					date_time.tm_sec < 0  || date_time.tm_sec > 59		 ||
+					nsec < 0              || nsec > MAX_NSEC             )
+				{
+					throw_invalid_format(str);
+				}
 			}
 
 			date_time.tm_year -= 1900;
+			date_time.tm_mon -= 1;
 			if (-1 == mktime(&date_time))
 			{
 				throw_invalid_format(str);
 			}
 
-			input_str += DATE_TIME_LENGTH_1;
+			input_str += DATE_TIME_LENGTH_BASIC;
 			int offset_sign = 0;
 
-			switch (str.length())
+			switch (length)
 			{
-				case DATE_TIME_LENGTH_1:
+				case DATE_TIME_LENGTH_BASIC:
 					break;
-				case DATE_TIME_LENGTH_2:
+				case DATE_TIME_LENGTH_UTC:
 					if(*input_str != 'Z')
 					{
 						throw_invalid_format(str);
 					}
 					break;
-				case DATE_TIME_LENGTH_3:
+				case DATE_TIME_LENGTH_WITH_OFFSET:
 					switch (*input_str)
 					{
 						case '+':
@@ -96,7 +103,7 @@ namespace ravendb::client::impl
 						res = sscanf_s(input_str, "%02d:%02d", &hour, &min);
 						if (
 							res < 2 ||
-							hour < 0 || hour > 23 ||
+							hour < 0 || hour > 12 ||
 							min < 0 || min > 59)
 						{
 							throw_invalid_format(str);
