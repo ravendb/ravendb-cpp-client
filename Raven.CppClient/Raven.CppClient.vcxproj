@@ -172,6 +172,7 @@
     <ClInclude Include="FieldTermVector.h" />
     <ClInclude Include="GetDatabaseNamesOperation.h" />
     <ClInclude Include="GetDocumentsResult.h" />
+    <ClInclude Include="GetIndexErrorsOperation.h" />
     <ClInclude Include="GetIndexesOperation.h" />
     <ClInclude Include="GetIndexNamesOperation.h" />
     <ClInclude Include="GetIndexOperation.h" />
@@ -179,8 +180,10 @@
     <ClInclude Include="IMaintenanceOperation.h" />
     <ClInclude Include="IndexConfiguration.h" />
     <ClInclude Include="IndexDefinition.h" />
+    <ClInclude Include="IndexErrors.h" />
     <ClInclude Include="IndexFieldOptions.h" />
     <ClInclude Include="IndexHasChangedOperation.h" />
+    <ClInclude Include="IndexingError.h" />
     <ClInclude Include="IndexLockMode.h" />
     <ClInclude Include="IndexPriority.h" />
     <ClInclude Include="IndexQuery.h" />

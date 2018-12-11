@@ -218,6 +218,15 @@
     <ClInclude Include="GetIndexNamesOperation.h">
       <Filter>ravendb.client\documents\operations\indexes</Filter>
     </ClInclude>
+    <ClInclude Include="IndexingError.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexErrors.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="GetIndexErrorsOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
