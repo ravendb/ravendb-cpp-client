@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "definitions.h"
 
-#include "GetDatabaseRecordCommand.h"
+#include "GetDatabaseRecordOperation.h"
 #include "GetDatabaseNamesOperation.h"
 #include "GetDocumentsCommand.h"
 
@@ -10,8 +10,9 @@ namespace ravendb::client::tests
 	TEST(RequestExecutorTests, CanGetDatabaseRecord)
 	{
 		auto test_suite_executor = GET_REQUEST_EXECUTOR();
-		serverwide::operations::GetDatabaseRecordCommand cmd(test_suite_executor->get_db_name());
-		auto rec = test_suite_executor->get()->execute(cmd);
+		auto op = serverwide::operations::GetDatabaseRecordOperation(test_suite_executor->get_db_name());
+		auto cmd = op.get_command({});
+		auto rec = test_suite_executor->get()->execute(*cmd);
 
 		ASSERT_EQ(rec.database_name, test_suite_executor->get_db_name());
 		ASSERT_GT(rec.etag.value(), -1);

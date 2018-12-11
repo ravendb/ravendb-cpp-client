@@ -55,9 +55,6 @@
     <ClInclude Include="ScriptResolver.h">
       <Filter>ravendb.client\serverwide</Filter>
     </ClInclude>
-    <ClInclude Include="GetDatabaseRecordCommand.h">
-      <Filter>ravendb.client\serverwide\operations</Filter>
-    </ClInclude>
     <ClInclude Include="DeleteDocumentCommand.h">
       <Filter>ravendb.client\documents\commands</Filter>
     </ClInclude>
@@ -192,6 +189,9 @@
       <Filter>ravendb.client\serverwide\operations</Filter>
     </ClInclude>
     <ClInclude Include="GetDatabaseNamesOperation.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="GetDatabaseRecordOperation.h">
       <Filter>ravendb.client\serverwide\operations</Filter>
     </ClInclude>
   </ItemGroup>

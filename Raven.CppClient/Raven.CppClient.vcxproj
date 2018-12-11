@@ -196,7 +196,7 @@
     <ClInclude Include="QueryResult.h" />
     <ClInclude Include="QueryResultBase.h" />
     <ClInclude Include="RavenErrors.h" />
-    <ClInclude Include="GetDatabaseRecordCommand.h" />
+    <ClInclude Include="GetDatabaseRecordOperation.h" />
     <ClInclude Include="GetDatabaseTopologyCommand.h" />
     <ClInclude Include="PutDocumentCommand.h" />
     <ClInclude Include="RavenCommand.h" />
