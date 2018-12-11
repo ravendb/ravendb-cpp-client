@@ -209,6 +209,12 @@
     <ClInclude Include="StopIndexOperation.h">
       <Filter>ravendb.client\documents\operations\indexes</Filter>
     </ClInclude>
+    <ClInclude Include="StopIndexingOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="StartIndexingOperationh.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
