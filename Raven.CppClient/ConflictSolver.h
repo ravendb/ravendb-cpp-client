@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "ScriptResolver.h"
+#include "json_utils.h"
 
 namespace ravendb::client::serverwide
 {

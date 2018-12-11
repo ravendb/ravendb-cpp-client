@@ -1,6 +1,4 @@
 #pragma once
-
-#include "stdafx.h"
 #include "VoidRavenCommand.h"
 
 namespace ravendb::client::tests::infrastructure
