@@ -173,6 +173,7 @@
     <ClInclude Include="GetDatabaseNamesOperation.h" />
     <ClInclude Include="GetDocumentsResult.h" />
     <ClInclude Include="GetIndexesOperation.h" />
+    <ClInclude Include="GetIndexNamesOperation.h" />
     <ClInclude Include="GetIndexOperation.h" />
     <ClInclude Include="GetNextOperationIdCommand.h" />
     <ClInclude Include="IMaintenanceOperation.h" />
