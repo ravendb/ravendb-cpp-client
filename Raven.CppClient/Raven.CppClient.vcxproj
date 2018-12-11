@@ -164,7 +164,9 @@
     <ClInclude Include="DeleteDatabaseResult.h" />
     <ClInclude Include="DeleteDocumentCommand.h" />
     <ClInclude Include="DeleteIndexOperation.h" />
+    <ClInclude Include="DisableIndexOperation.h" />
     <ClInclude Include="DocumentConventions.h" />
+    <ClInclude Include="EnableIndexOperation.h" />
     <ClInclude Include="FieldIndexing.h" />
     <ClInclude Include="FieldStorage.h" />
     <ClInclude Include="FieldTermVector.h" />

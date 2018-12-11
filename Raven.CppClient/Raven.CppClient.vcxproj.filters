@@ -194,6 +194,12 @@
     <ClInclude Include="GetDatabaseRecordOperation.h">
       <Filter>ravendb.client\serverwide\operations</Filter>
     </ClInclude>
+    <ClInclude Include="DisableIndexOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="EnableIndexOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
