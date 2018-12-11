@@ -168,7 +168,7 @@
     <ClInclude Include="FieldIndexing.h" />
     <ClInclude Include="FieldStorage.h" />
     <ClInclude Include="FieldTermVector.h" />
-    <ClInclude Include="GetDatabaseNamesCommand.h" />
+    <ClInclude Include="GetDatabaseNamesOperation.h" />
     <ClInclude Include="GetDocumentsResult.h" />
     <ClInclude Include="GetIndexesOperation.h" />
     <ClInclude Include="GetIndexOperation.h" />
