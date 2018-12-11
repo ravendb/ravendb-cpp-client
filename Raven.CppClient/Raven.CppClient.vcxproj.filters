@@ -55,9 +55,6 @@
     <ClInclude Include="ScriptResolver.h">
       <Filter>ravendb.client\serverwide</Filter>
     </ClInclude>
-    <ClInclude Include="CreateDatabaseCommand.h">
-      <Filter>ravendb.client\serverwide\operations</Filter>
-    </ClInclude>
     <ClInclude Include="DeleteDatabaseCommand.h">
       <Filter>ravendb.client\serverwide\operations</Filter>
     </ClInclude>
@@ -190,6 +187,12 @@
     </ClInclude>
     <ClInclude Include="DateTimeOffset.h">
       <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="CreateDatabaseOperation.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="IServerOperation.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

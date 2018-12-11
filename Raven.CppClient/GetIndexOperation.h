@@ -6,13 +6,13 @@
 #include "IndexDefinition.h"
 #include "utils.h"
 
+using
+	ravendb::client::http::RavenCommand,
+	ravendb::client::http::ServerNode,
+	ravendb::client::documents::indexes::IndexDefinition;
+
 namespace ravendb::client::documents::operations::indexes
 {
-	using
-		ravendb::client::http::RavenCommand,
-		ravendb::client::http::ServerNode,
-		ravendb::client::documents::indexes::IndexDefinition;
-
 	class GetIndexOperation : public operations::IMaintenanceOperation<IndexDefinition>
 	{
 	private:

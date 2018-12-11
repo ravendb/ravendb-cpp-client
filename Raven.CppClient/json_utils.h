@@ -59,8 +59,6 @@ namespace std::chrono
 	//serialization in C# TimeSpan format : d.hh:mm:ss.sssssss or hh:mm:ss.sssssss
 	inline void to_json(nlohmann::json& j, const std::chrono::milliseconds& msec)
 	{
-		using namespace std::chrono;
-
 		std::ostringstream time_dur;
 		auto h = duration_cast<hours>(msec).count();
 		auto m = duration_cast<minutes>(msec%hours(1)).count();

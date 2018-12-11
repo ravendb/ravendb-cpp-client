@@ -3,11 +3,12 @@
 #include "RavenCommand.h"
 #include "DatabaseRecord.h"
 
+using
+	ravendb::client::http::RavenCommand,
+	ravendb::client::http::ServerNode;
+
 namespace ravendb::client::serverwide::operations
 {
-	using ravendb::client::http::RavenCommand,
-		ravendb::client::http::ServerNode;
-
 	class GetDatabaseRecordCommand : public RavenCommand<DatabaseRecord>
 	{
 	private:

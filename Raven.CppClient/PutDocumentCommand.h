@@ -3,12 +3,13 @@
 #include "RavenCommand.h"
 #include "PutResult.h"
 
+using 
+	ravendb::client::http::RavenCommand,
+	ravendb::client::documents::commands::batches::PutResult,
+	ravendb::client::http::ServerNode;
+
 namespace ravendb::client::documents::commands
 {
-	using ravendb::client::http::RavenCommand,
-		ravendb::client::documents::commands::batches::PutResult,
-		ravendb::client::http::ServerNode;
-
 	class PutDocumentCommand : public RavenCommand<PutResult>
 	{
 	private:

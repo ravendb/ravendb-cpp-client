@@ -3,10 +3,11 @@
 #include  "json_utils.h"
 #include "DateTimeOffset.h"
 
+using 
+	ravendb::client::impl::DateTimeOffset;
+
 namespace ravendb::client::documents::queries
 {
-	using ravendb::client::impl::DateTimeOffset;
-
 	template<typename TResult, typename TInclude>
 	struct QueryResultBase
 	{

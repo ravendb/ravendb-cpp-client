@@ -4,12 +4,13 @@
 #include  "Topology.h"
 #include "ServerNode.h"
 
+using 
+	ravendb::client::http::RavenCommand,
+	ravendb::client::http::Topology,
+	ravendb::client::http::ServerNode;
+
 namespace ravendb::client::serverwide::commands
 {
-	using ravendb::client::http::RavenCommand,
-		ravendb::client::http::Topology,
-		ravendb::client::http::ServerNode;
-
 	class GetDatabaseTopologyCommand :public RavenCommand<Topology>
 	{
 	public:

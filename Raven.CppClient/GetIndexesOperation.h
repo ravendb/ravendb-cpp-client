@@ -5,13 +5,13 @@
 #include "ServerNode.h"
 #include "IndexDefinition.h"
 
+using
+	ravendb::client::http::RavenCommand,
+	ravendb::client::http::ServerNode,
+	ravendb::client::documents::indexes::IndexDefinition;
+
 namespace ravendb::client::documents::operations::indexes
 {
-	using
-		ravendb::client::http::RavenCommand,
-		ravendb::client::http::ServerNode,
-		ravendb::client::documents::indexes::IndexDefinition;
-
 	class GetIndexesOperation : public operations::IMaintenanceOperation<std::vector<IndexDefinition>>
 	{
 	private:

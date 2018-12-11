@@ -6,13 +6,12 @@
 //TODO put in final project
 #include "C:\work\xxhash_cpp\xxhash\xxhash.hpp"
 
+using
+	ravendb::client::http::RavenCommand,
+	ravendb::client::http::ServerNode;
 
 namespace ravendb::client::documents::commands
 {
-	using 
-		ravendb::client::http::RavenCommand,
-		ravendb::client::http::ServerNode;
-
 	class GetDocumentsCommand : public RavenCommand<GetDocumentsResult>
 	{
 	private:

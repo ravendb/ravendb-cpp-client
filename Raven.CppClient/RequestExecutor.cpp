@@ -3,10 +3,11 @@
 #include "RequestExecutor.h"
 #include "GetDatabaseTopologyCommand.h"
 
+using  
+	ravendb::client::serverwide::commands::GetDatabaseTopologyCommand;
+
 namespace ravendb::client::http
 {
-	using  ravendb::client::serverwide::commands::GetDatabaseTopologyCommand;
-
 	void RequestExecutor::first_topology_update()
 	{
 		GetDatabaseTopologyCommand getTopology;

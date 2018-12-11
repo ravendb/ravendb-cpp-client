@@ -3,13 +3,13 @@
 #include "IVoidMaintenanceOperation.h"
 #include "utils.h"
 
+using
+	ravendb::client::http::RavenCommand,
+	ravendb::client::http::ServerNode,
+	ravendb::client::http::VoidRavenCommand;
+
 namespace ravendb::client::documents::operations::indexes
 {
-	using
-		ravendb::client::http::RavenCommand,
-		ravendb::client::http::ServerNode,
-		ravendb::client::http::VoidRavenCommand;
-
 	class DeleteIndexOperation : public IVoidMaintenanceOperation
 	{
 	private:

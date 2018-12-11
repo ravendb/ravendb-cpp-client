@@ -2,10 +2,12 @@
 #include "stdafx.h"
 #include "VoidRavenCommand.h"
 
+using
+	ravendb::client::http::VoidRavenCommand,
+	ravendb::client::http::ServerNode;
+
 namespace ravendb::client::documents::commands
 {
-	using  ravendb::client::http::VoidRavenCommand, ravendb::client::http::ServerNode;
-
 	class DeleteDocumentCommand : public VoidRavenCommand
 	{
 	private:

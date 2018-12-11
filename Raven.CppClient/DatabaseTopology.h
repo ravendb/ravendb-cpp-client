@@ -4,10 +4,11 @@
 #include "LeaderStamp.h"
 #include "json_utils.h"
 
+using
+	ravendb::client::serverwide::operations::DatabasePromotionStatus;
+
 namespace  ravendb::client::serverwide
 {
-	using namespace operations::database_promotion_status;
-
 	struct DatabaseTopology
 	{
 		std::vector<std::string> members{};

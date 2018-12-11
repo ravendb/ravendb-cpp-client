@@ -3,10 +3,12 @@
 #include "RavenCommand.h"
 #include "ServerNode.h"
 
+using 
+	ravendb::client::http::RavenCommand,
+	ravendb::client::http::ServerNode;
+
 namespace ravendb::client::documents::commands
 {
-	using ravendb::client::http::RavenCommand, ravendb::client::http::ServerNode;
-
 	struct OperationId_t //used with to/from json
 	{
 		int64_t value;

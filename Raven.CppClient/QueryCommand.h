@@ -5,14 +5,14 @@
 #include "DocumentConventions.h"
 #include "IndexQuery.h"
 
+using
+	ravendb::client::http::RavenCommand,
+	ravendb::client::documents::queries::QueryResult,
+	ravendb::client::documents::conventions::DocumentConventions,
+	ravendb::client::documents::queries::IndexQuery;
+
 namespace ravendb::client::documents::commands
 {
-	using
-		ravendb::client::http::RavenCommand,
-		ravendb::client::documents::queries::QueryResult,
-		ravendb::client::documents::conventions::DocumentConventions,
-		ravendb::client::documents::queries::IndexQuery;
-
 	class QueryCommand : public RavenCommand<QueryResult>
 	{
 	private:

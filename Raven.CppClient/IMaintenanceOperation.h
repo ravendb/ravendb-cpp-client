@@ -2,12 +2,12 @@
 #include "RavenCommand.h"
 #include "DocumentConventions.h"
 
+using
+	ravendb::client::http::RavenCommand,
+	ravendb::client::documents::conventions::DocumentConventions;
+
 namespace ravendb::client::documents::operations
 {
-	using
-		ravendb::client::http::RavenCommand,
-		ravendb::client::documents::conventions::DocumentConventions;
-
 	template<typename TResult>
 	struct IMaintenanceOperation
 	{

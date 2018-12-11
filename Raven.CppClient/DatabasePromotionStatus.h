@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include <regex>
 
-namespace ravendb::client::serverwide::operations::database_promotion_status
+namespace ravendb::client::serverwide::operations
 {
 	enum class DatabasePromotionStatus
 	{

@@ -7,14 +7,14 @@
 #include "IndexDefinition.h"
 #include "utils.h"
 
+using
+	ravendb::client::http::RavenCommand,
+	ravendb::client::http::ServerNode,
+	ravendb::client::documents::indexes::IndexDefinition,
+	ravendb::client::documents::indexes::PutIndexResult;
+
 namespace ravendb::client::documents::operations::indexes
 {
-	using	
-		ravendb::client::http::RavenCommand,
-		ravendb::client::http::ServerNode,
-		ravendb::client::documents::indexes::IndexDefinition,
-		ravendb::client::documents::indexes::PutIndexResult;
-
 	class PutIndexesOperation : public IMaintenanceOperation<std::vector<PutIndexResult>>
 	{
 	private:
