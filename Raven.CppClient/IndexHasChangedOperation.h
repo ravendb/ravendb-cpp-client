@@ -21,7 +21,7 @@ namespace ravendb::client::documents::operations::indexes
 	public:
 		~IndexHasChangedOperation() override = default;
 
-		IndexHasChangedOperation(IndexDefinition definition)
+		explicit IndexHasChangedOperation(IndexDefinition definition)
 			: _index_definition(std::move(definition))
 		{}
 

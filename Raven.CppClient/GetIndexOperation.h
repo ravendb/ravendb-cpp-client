@@ -21,7 +21,7 @@ namespace ravendb::client::documents::operations::indexes
 	public:
 		~GetIndexOperation() override = default;
 
-		GetIndexOperation (std::string index_name)
+		explicit GetIndexOperation (std::string index_name)
 			: _index_name(std::move(index_name))
 		{}
 
@@ -39,7 +39,7 @@ namespace ravendb::client::documents::operations::indexes
 		public:
 			~GetIndexCommand() override = default;
 
-			GetIndexCommand(std::string index_name)
+			explicit GetIndexCommand(std::string index_name)
 				: _index_name(std::move(index_name))
 			{}
 

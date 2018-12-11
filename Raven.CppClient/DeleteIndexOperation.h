@@ -18,7 +18,7 @@ namespace ravendb::client::documents::operations::indexes
 	public:
 		~DeleteIndexOperation() override = default;
 
-		DeleteIndexOperation(std::string index_name)
+		explicit DeleteIndexOperation(std::string index_name)
 			: _index_name([&]
 		{
 			if (index_name.empty())
@@ -46,7 +46,7 @@ namespace ravendb::client::documents::operations::indexes
 		public:
 			~DeleteIndexCommand() override = default;
 
-			DeleteIndexCommand(std::string index_name)
+			explicit DeleteIndexCommand(std::string index_name)
 				: _index_name([&]
 			{
 				if(index_name.empty())

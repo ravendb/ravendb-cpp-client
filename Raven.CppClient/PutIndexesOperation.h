@@ -23,7 +23,7 @@ namespace ravendb::client::documents::operations::indexes
 	public:
 		~PutIndexesOperation() override = default;
 
-		PutIndexesOperation(std::vector<IndexDefinition> index_to_add)
+		explicit PutIndexesOperation(std::vector<IndexDefinition> index_to_add)
 			: _index_to_add([&]()
 			{
 				if(index_to_add.size() == 0)
@@ -52,7 +52,7 @@ namespace ravendb::client::documents::operations::indexes
 		public:
 			~PutIndexesCommand() override = default;
 
-			PutIndexesCommand(const std::vector<IndexDefinition>& indexes_to_add)
+			explicit PutIndexesCommand(const std::vector<IndexDefinition>& indexes_to_add)
 				: _index_to_add([&]
 				{
 					if (indexes_to_add.size() == 0)
