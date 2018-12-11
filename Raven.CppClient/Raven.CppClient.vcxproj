@@ -205,6 +205,7 @@
     <ClInclude Include="GetDocumentsCommand.h" />
     <ClInclude Include="ravendb.h" />
     <ClInclude Include="RequestExecutor.h" />
+    <ClInclude Include="ResetIndexOperation.h" />
     <ClInclude Include="ScriptResolver.h" />
     <ClInclude Include="ServerNode.h" />
     <ClInclude Include="SpatialFieldType.h" />
