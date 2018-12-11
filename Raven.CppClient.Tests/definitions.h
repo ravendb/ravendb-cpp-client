@@ -4,7 +4,7 @@
 
 #include "RequestExecutor.h"
 #include "CreateDatabaseOperation.h"
-#include "DeleteDatabaseCommand.h"
+#include "DeleteDatabasesOperation.h"
 
 namespace ravendb::client::tests
 {
@@ -43,8 +43,9 @@ namespace ravendb::client::tests
 
 		~RequestExecutorScope()
 		{
-			ravendb::client::serverwide::operations::DeleteDatabaseCommand cmd(_db_name, true, {}, std::chrono::seconds(10));
-			_executor->execute<ravendb::client::serverwide::operations::DeleteDatabaseResult>(cmd);
+			ravendb::client::serverwide::operations::DeleteDatabasesOperation op(_db_name, true, {}, std::chrono::seconds(20));
+			auto cmd = op.get_command({});
+			_executor->execute(*cmd);
 		}
 
 		ravendb::client::http::RequestExecutor* get() const noexcept

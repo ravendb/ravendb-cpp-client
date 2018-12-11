@@ -48,13 +48,15 @@ namespace ravendb::client::tests
 	{
 		auto test_suite_executor = GET_REQUEST_EXECUTOR();
 		{
-			serverwide::operations::DeleteDatabaseCommand cmd(test_suite_executor->get_db_name(), true, {}, std::chrono::milliseconds(5099));
-			auto&& res = test_suite_executor->get()->execute<serverwide::operations::DeleteDatabaseResult>(cmd);
+			auto op = serverwide::operations::DeleteDatabasesOperation(test_suite_executor->get_db_name(),
+				true, {}, std::chrono::seconds(10));
+			auto cmd = op.get_command({});
+			auto&& res = test_suite_executor->get()->execute(*cmd);
 			ASSERT_GT(res.raft_command_index, 0);
 		}
 		{
 			serverwide::operations::GetDatabaseNamesCommand cmd(0, 100);
-			auto&& res = test_suite_executor->get()->execute<std::vector<std::string>>(cmd);
+			auto&& res = test_suite_executor->get()->execute(cmd);
 			ASSERT_EQ(std::find(res.begin(), res.end(), test_suite_executor->get_db_name()), res.end());
 		}
 	}

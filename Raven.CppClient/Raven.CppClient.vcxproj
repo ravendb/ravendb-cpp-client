@@ -160,7 +160,7 @@
     <ClInclude Include="DatabaseRecord.h" />
     <ClInclude Include="DatabaseTopology.h" />
     <ClInclude Include="DateTimeOffset.h" />
-    <ClInclude Include="DeleteDatabaseCommand.h" />
+    <ClInclude Include="DeleteDatabasesOperation.h" />
     <ClInclude Include="DeleteDatabaseResult.h" />
     <ClInclude Include="DeleteDocumentCommand.h" />
     <ClInclude Include="DeleteIndexOperation.h" />
