@@ -6,7 +6,7 @@ namespace  ravendb::client::serverwide::operations
 {
 	struct DatabasePutResult
 	{
-		int64_t raft_command_index{};
+		int64_t raft_command_index = -1;
 		std::string name{};
 		DatabaseTopology topology{};
 		std::vector<std::string> nodes_added_to{};
@@ -14,9 +14,11 @@ namespace  ravendb::client::serverwide::operations
 
 	inline void from_json(const nlohmann::json& j, DatabasePutResult& dpr)
 	{
-		dpr.raft_command_index = j.at("RaftCommandIndex").get<int64_t>();
-		dpr.name = j.at("Name").get<std::string>();
-		dpr.topology = j.at("Topology").get<DatabaseTopology>();
-		dpr.nodes_added_to = j.at("NodesAddedTo").get<std::vector<std::string>>();
+		using ravendb::client::impl::utils::json_utils::get_val_from_json;
+
+		get_val_from_json(j, "RaftCommandIndex", dpr.raft_command_index);
+		get_val_from_json(j, "Name", dpr.name);
+		get_val_from_json(j, "Topology", dpr.topology);
+		get_val_from_json(j, "NodesAddedTo", dpr.nodes_added_to);
 	}
 }

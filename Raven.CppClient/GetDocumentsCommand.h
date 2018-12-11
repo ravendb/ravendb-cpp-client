@@ -6,11 +6,12 @@
 //TODO put in final project
 #include "C:\work\xxhash_cpp\xxhash\xxhash.hpp"
 
+using
+	ravendb::client::http::RavenCommand,
+	ravendb::client::http::ServerNode;
 
 namespace ravendb::client::documents::commands
 {
-	using ravendb::client::http::RavenCommand, ravendb::client::http::ServerNode;
-
 	class GetDocumentsCommand : public RavenCommand<GetDocumentsResult>
 	{
 	private:
@@ -130,7 +131,7 @@ namespace ravendb::client::documents::commands
 			, _use_start_with(true)
 		{}
 
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
+		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 		{
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/databases/" << node.database << "/docs?";

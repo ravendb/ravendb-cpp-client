@@ -3,8 +3,8 @@
 #include <filesystem>
 
 #include "RequestExecutor.h"
-#include "CreateDatabaseCommand.h"
-#include "DeleteDatabaseCommand.h"
+#include "CreateDatabaseOperation.h"
+#include "DeleteDatabasesOperation.h"
 
 namespace ravendb::client::tests
 {
@@ -12,7 +12,7 @@ namespace ravendb::client::tests
 #define GET_REQUEST_EXECUTOR() RequestExecutorScope::get_request_executor_with_db(__FILE__, __LINE__, __COUNTER__)
 #endif
 
-	inline const std::string RAVEN_SERVER_URL = "http://localhost:8080";
+	inline constexpr char RAVEN_SERVER_URL[] = "http://localhost:8080";
 
 	//using fiddler + verbose
 	void set_for_fiddler(CURL* curl);
@@ -34,16 +34,18 @@ namespace ravendb::client::tests
 
 			ravendb::client::serverwide::DatabaseRecord rec{};
 			rec.database_name = _db_name;
-			ravendb::client::serverwide::operations::CreateDatabaseCommand cmd(rec, 1);
-			server_wide_req_exec->execute(cmd);
+			serverwide::operations::CreateDatabaseOperation op(rec);
+			auto cmd = op.get_command({});
+			server_wide_req_exec->execute(*cmd);
 
 			_executor = get_raw_request_executor(_db_name);
 		}
 
 		~RequestExecutorScope()
 		{
-			ravendb::client::serverwide::operations::DeleteDatabaseCommand cmd(_db_name, true, {}, std::chrono::seconds(10));
-			_executor->execute<ravendb::client::serverwide::operations::DeleteDatabaseResult>(cmd);
+			ravendb::client::serverwide::operations::DeleteDatabasesOperation op(_db_name, true, {}, std::chrono::seconds(20));
+			auto cmd = op.get_command({});
+			_executor->execute(*cmd);
 		}
 
 		ravendb::client::http::RequestExecutor* get() const noexcept

@@ -4,16 +4,16 @@
 #include "LeaderStamp.h"
 #include "json_utils.h"
 
+using
+	ravendb::client::serverwide::operations::DatabasePromotionStatus;
+
 namespace  ravendb::client::serverwide
 {
-	using namespace operations::database_promotion_status;
-
 	struct DatabaseTopology
 	{
 		std::vector<std::string> members{};
 		std::vector<std::string> promotables{};
 		std::vector<std::string> rehabs{};
-
 		std::unordered_map<std::string, std::string> predefined_mentors{};
 		std::unordered_map<std::string, std::string> demotion_reasons{};
 		std::unordered_map<std::string, DatabasePromotionStatus> promotables_status{};
@@ -24,15 +24,17 @@ namespace  ravendb::client::serverwide
 
 	inline void to_json(nlohmann::json& j, const DatabaseTopology& dbt)
 	{
-		j["Members"] = dbt.members;
-		j["Promotables"] = dbt.promotables;
-		j["Rehabs"] = dbt.rehabs;
-		j["PredefinedMentors"] = dbt.predefined_mentors;
-		j["DemotionReasons"] = dbt.demotion_reasons;
-		j["PromotablesStatus"] = dbt.promotables_status;
-		j["ReplicationFactor"] = dbt.replication_factor;
-		j["DynamicNodesDistribution"] = dbt.dynamic_nodes_distribution;
-		j["Stamp"] = dbt.stamp;
+		using ravendb::client::impl::utils::json_utils::set_val_to_json;
+
+		set_val_to_json(j, "Members", dbt.members);
+		set_val_to_json(j, "Promotables", dbt.promotables);
+		set_val_to_json(j, "Rehabs", dbt.rehabs);
+		set_val_to_json(j, "PredefinedMentors", dbt.predefined_mentors);
+		set_val_to_json(j, "DemotionReasons", dbt.demotion_reasons);
+		set_val_to_json(j, "PromotablesStatus", dbt.promotables_status);
+		set_val_to_json(j, "ReplicationFactor", dbt.replication_factor);
+		set_val_to_json(j, "DynamicNodesDistribution", dbt.dynamic_nodes_distribution);
+		set_val_to_json(j, "Stamp", dbt.stamp);
 	}
 
 	inline void from_json(const nlohmann::json& j, DatabaseTopology& dbt)
@@ -44,13 +46,7 @@ namespace  ravendb::client::serverwide
 		get_val_from_json(j, "Rehabs", dbt.rehabs);
 		get_val_from_json(j, "PredefinedMentors", dbt.predefined_mentors);
 		get_val_from_json(j, "DemotionReasons", dbt.demotion_reasons);
-
-		std::unordered_map<std::string, std::string> temp{};
-		get_val_from_json(j, "PromotablesStatus", temp);
-		for(const auto& it : temp)
-		{
-			dbt.promotables_status.emplace(it.first, from_string(it.second));
-		}
+		get_val_from_json(j, "PromotablesStatus", dbt.promotables_status);
 		get_val_from_json(j, "ReplicationFactor", dbt.replication_factor);
 		get_val_from_json(j, "DynamicNodesDistribution", dbt.dynamic_nodes_distribution);
 		get_val_from_json(j, "Stamp", dbt.stamp);

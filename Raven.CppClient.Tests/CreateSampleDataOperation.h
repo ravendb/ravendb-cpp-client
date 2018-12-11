@@ -1,6 +1,4 @@
 #pragma once
-
-#include "stdafx.h"
 #include "VoidRavenCommand.h"
 
 namespace ravendb::client::tests::infrastructure
@@ -10,7 +8,7 @@ namespace ravendb::client::tests::infrastructure
 	{
 	public:
 
-		void create_request(CURL* curl, const http::ServerNode& node, std::string& url) const override
+		void create_request(CURL* curl, const http::ServerNode& node, std::string& url) override
 		{
 			std::ostringstream urlBuilder;
 			urlBuilder << node.url << "/databases/" << node.database << "/studio/sample-data";

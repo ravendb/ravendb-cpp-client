@@ -1,26 +1,34 @@
 #pragma once
 #include "stdafx.h"
 #include "ServerNode.h"
+#include "json_utils.h"
 
 namespace ravendb::client::http
 {
 	struct Topology
 	{
-		std::vector<ServerNode> nodes;
+		std::vector<ServerNode> nodes{};
 		int64_t etag = -1;
 	};
 
 	inline void from_json(const nlohmann::json& j, Topology& top)
 	{
-		top.etag = j.at("Etag").get<int64_t>();
+		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		auto&& nodes = j.at("Nodes").get<nlohmann::json::array_t>();
-		top.nodes.clear();
-		top.nodes.reserve(nodes.size());
+		get_val_from_json(j, "Etag", top.etag);
 
-		for (auto& node : nodes) 
+		auto it = j.find("Nodes");
+		if(it == j.end() || ! it->is_array())
 		{
-			top.nodes.emplace(top.nodes.end(), node);
+			throw std::invalid_argument("\"Nodes\" absent or no array");
+		}
+
+		top.nodes.clear();
+		top.nodes.reserve(it->size());
+
+		for (const auto& node : *it) 
+		{
+			top.nodes.emplace_back(node);
 		}
 	}
 }

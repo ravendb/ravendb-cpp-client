@@ -55,18 +55,6 @@
     <ClInclude Include="ScriptResolver.h">
       <Filter>ravendb.client\serverwide</Filter>
     </ClInclude>
-    <ClInclude Include="CreateDatabaseCommand.h">
-      <Filter>ravendb.client\serverwide\operations</Filter>
-    </ClInclude>
-    <ClInclude Include="DeleteDatabaseCommand.h">
-      <Filter>ravendb.client\serverwide\operations</Filter>
-    </ClInclude>
-    <ClInclude Include="GetDatabaseNamesCommand.h">
-      <Filter>ravendb.client\serverwide\operations</Filter>
-    </ClInclude>
-    <ClInclude Include="GetDatabaseRecordCommand.h">
-      <Filter>ravendb.client\serverwide\operations</Filter>
-    </ClInclude>
     <ClInclude Include="DeleteDocumentCommand.h">
       <Filter>ravendb.client\documents\commands</Filter>
     </ClInclude>
@@ -101,6 +89,117 @@
     <ClInclude Include="json_utils.h">
       <Filter>ravendb.client\impl</Filter>
     </ClInclude>
+    <ClInclude Include="IndexDefinition.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexPriority.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexLockMode.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexType.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexConfiguration.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexFieldOptions.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="FieldStorage.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="FieldIndexing.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="FieldTermVector.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="PutIndexResult.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IMaintenanceOperation.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="DocumentConventions.h">
+      <Filter>ravendb.client\documents\conventions</Filter>
+    </ClInclude>
+    <ClInclude Include="PutIndexesOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="GetIndexOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="GetIndexesOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryResultBase.h">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericQueryResult.h">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryResult.h">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryCommand.h">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexQueryBase.h">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexQuery.h">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClInclude>
+    <ClInclude Include="Parameters.h">
+      <Filter>ravendb.client</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialFieldType.h">
+      <Filter>ravendb.client\documents\indexes\spacial</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialOptions.h">
+      <Filter>ravendb.client\documents\indexes\spacial</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialSearchStrategy.h">
+      <Filter>ravendb.client\documents\indexes\spacial</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialUnits.h">
+      <Filter>ravendb.client\documents\indexes\spacial</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexHasChangedOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IVoidMaintenanceOperation.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="DeleteIndexOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="DateTimeOffset.h">
+      <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="CreateDatabaseOperation.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="IServerOperation.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="DeleteDatabasesOperation.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="GetDatabaseNamesOperation.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="GetDatabaseRecordOperation.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="DisableIndexOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="EnableIndexOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
@@ -129,6 +228,24 @@
     </Filter>
     <Filter Include="ravendb.client\documents\commands\batches">
       <UniqueIdentifier>{09c4d4e2-3816-4176-9509-013dcd701c91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\indexes">
+      <UniqueIdentifier>{1f19fda7-12b4-4600-bed1-6eef8dcf37e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\operations">
+      <UniqueIdentifier>{a1a246e0-8146-48da-9439-5f8f84c28cd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\conventions">
+      <UniqueIdentifier>{884d90df-d166-4ea3-9805-56767df2d865}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\operations\indexes">
+      <UniqueIdentifier>{adedf68a-4548-4041-977c-2af8bbe017f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\queries">
+      <UniqueIdentifier>{b7013a9f-b50d-47d9-a2cd-aa57a5f1de90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\indexes\spacial">
+      <UniqueIdentifier>{5eaed6e9-3163-4e30-ba67-6c03511ef765}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

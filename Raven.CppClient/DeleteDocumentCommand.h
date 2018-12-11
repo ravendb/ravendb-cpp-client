@@ -2,18 +2,20 @@
 #include "stdafx.h"
 #include "VoidRavenCommand.h"
 
+using
+	ravendb::client::http::VoidRavenCommand,
+	ravendb::client::http::ServerNode;
+
 namespace ravendb::client::documents::commands
 {
-	using  ravendb::client::http::VoidRavenCommand, ravendb::client::http::ServerNode;
-
 	class DeleteDocumentCommand : public VoidRavenCommand
 	{
 	private:
 		std::string _id;
 		std::string _change_vector;
-		mutable struct curl_slist * _headers_list = nullptr;
+		struct curl_slist * _headers_list = nullptr;
 
-		void reset_headers_list() const
+		void reset_headers_list()
 		{
 			curl_slist_free_all(_headers_list);
 			_headers_list = nullptr;
@@ -34,7 +36,7 @@ namespace ravendb::client::documents::commands
 			, _change_vector(std::move(change_vector))
 		{}
 
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
+		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 		{
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/databases/" << node.database

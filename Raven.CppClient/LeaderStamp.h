@@ -22,9 +22,10 @@ namespace  ravendb::client::serverwide
 
 	inline void to_json(nlohmann::json& j, const LeaderStamp& ls)
 	{
-		j["Index"] = ls.index;
-		j["Term"] = ls.term;
-		j["LeadersTicks"] = ls.leaders_ticks;
-	}
+		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
+		set_val_to_json(j, "Index", ls.index);
+		set_val_to_json(j, "Term", ls.term);
+		set_val_to_json(j, "LeadersTicks", ls.leaders_ticks);
+	}
 }

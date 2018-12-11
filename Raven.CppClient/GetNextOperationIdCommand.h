@@ -3,10 +3,12 @@
 #include "RavenCommand.h"
 #include "ServerNode.h"
 
+using 
+	ravendb::client::http::RavenCommand,
+	ravendb::client::http::ServerNode;
+
 namespace ravendb::client::documents::commands
 {
-	using ravendb::client::http::RavenCommand, ravendb::client::http::ServerNode;
-
 	struct OperationId_t //used with to/from json
 	{
 		int64_t value;
@@ -27,7 +29,7 @@ namespace ravendb::client::documents::commands
 		~GetNextOperationIdCommand() override = default;
 		GetNextOperationIdCommand() = default;
 
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) const override
+		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 		{
 			std::ostringstream urlBuilder;
 			urlBuilder << node.url << "/databases/" << node.database

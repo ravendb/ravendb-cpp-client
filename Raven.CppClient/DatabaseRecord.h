@@ -21,16 +21,15 @@ namespace  ravendb::client::serverwide
 
 	inline void to_json(nlohmann::json& j, const DatabaseRecord& dbr)
 	{
-		j["DatabaseName"] = dbr.database_name;
-		j["Disabled"] = dbr.disabled;
-		j["DataDirectory"] = dbr.data_directory;
-		j["Settings"] = dbr.settings;
-		j["ConflictSolverConfig"] = dbr.conflict_solver_config;
-		j["Topology"] = dbr.topology;
-		if(dbr.etag.has_value())
-		{
-			j["Etag"] = dbr.etag.value();
-		}
+		using ravendb::client::impl::utils::json_utils::set_val_to_json;
+
+		set_val_to_json(j, "DatabaseName", dbr.database_name);
+		set_val_to_json(j, "Disabled", dbr.disabled);
+		set_val_to_json(j, "DataDirectory", dbr.data_directory);
+		set_val_to_json(j, "Settings", dbr.settings);
+		set_val_to_json(j, "ConflictSolverConfig", dbr.conflict_solver_config);
+		set_val_to_json(j, "Topology", dbr.topology);
+		set_val_to_json(j, "Etag", dbr.etag);
 	}
 
 	inline void from_json(const nlohmann::json& j, DatabaseRecord& dbr)

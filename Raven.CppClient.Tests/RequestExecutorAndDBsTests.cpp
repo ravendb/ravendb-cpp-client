@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "definitions.h"
 
-#include "GetDatabaseRecordCommand.h"
-#include "GetDatabaseNamesCommand.h"
+#include "GetDatabaseRecordOperation.h"
+#include "GetDatabaseNamesOperation.h"
 #include "GetDocumentsCommand.h"
 
 namespace ravendb::client::tests
@@ -10,8 +10,9 @@ namespace ravendb::client::tests
 	TEST(RequestExecutorTests, CanGetDatabaseRecord)
 	{
 		auto test_suite_executor = GET_REQUEST_EXECUTOR();
-		serverwide::operations::GetDatabaseRecordCommand cmd(test_suite_executor->get_db_name());
-		auto rec = test_suite_executor->get()->execute(cmd);
+		auto op = serverwide::operations::GetDatabaseRecordOperation(test_suite_executor->get_db_name());
+		auto cmd = op.get_command({});
+		auto rec = test_suite_executor->get()->execute(*cmd);
 
 		ASSERT_EQ(rec.database_name, test_suite_executor->get_db_name());
 		ASSERT_GT(rec.etag.value(), -1);
@@ -20,8 +21,9 @@ namespace ravendb::client::tests
 	TEST(RequestExecutorTests, CanGetDatabaseName)
 	{
 		auto test_suite_executor = GET_REQUEST_EXECUTOR();
-		serverwide::operations::GetDatabaseNamesCommand cmd(0, 100);
-		auto&& res = test_suite_executor->get()->execute(cmd);
+		auto op = serverwide::operations::GetDatabaseNamesOperation(0, 100);
+		auto cmd = op.get_command({});
+		auto&& res = test_suite_executor->get()->execute(*cmd);
 
 		ASSERT_NE(std::find(res.begin(), res.end(), test_suite_executor->get_db_name()), res.end());
 	}
@@ -48,13 +50,16 @@ namespace ravendb::client::tests
 	{
 		auto test_suite_executor = GET_REQUEST_EXECUTOR();
 		{
-			serverwide::operations::DeleteDatabaseCommand cmd(test_suite_executor->get_db_name(), true, {}, std::chrono::seconds(5));
-			auto&& res = test_suite_executor->get()->execute<serverwide::operations::DeleteDatabaseResult>(cmd);
+			auto op = serverwide::operations::DeleteDatabasesOperation(test_suite_executor->get_db_name(),
+				true, {}, std::chrono::seconds(10));
+			auto cmd = op.get_command({});
+			auto&& res = test_suite_executor->get()->execute(*cmd);
 			ASSERT_GT(res.raft_command_index, 0);
 		}
 		{
-			serverwide::operations::GetDatabaseNamesCommand cmd(0, 100);
-			auto&& res = test_suite_executor->get()->execute<std::vector<std::string>>(cmd);
+			auto op = serverwide::operations::GetDatabaseNamesOperation(0, 100);
+			auto cmd = op.get_command({});
+			auto&& res = test_suite_executor->get()->execute(*cmd);
 			ASSERT_EQ(std::find(res.begin(), res.end(), test_suite_executor->get_db_name()), res.end());
 		}
 	}

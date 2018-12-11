@@ -69,7 +69,7 @@ namespace ravendb::client::impl::utils
 		auto str = static_cast<const std::string*>(stream);
 		size_t length = str->length();
 
-		std::memcpy(ptr, str->c_str(), length);
+		std::memcpy(ptr, str->data(), length);
 		return length;
 	}
 }

@@ -25,17 +25,20 @@ namespace ravendb::client::tests
 
 	inline void to_json(nlohmann::json& j, const User& u)
 	{
-		j["id"] = u.id;
-		j["first_name"] = u.first_name;
-		j["last_name"] = u.last_name;
-		j["address"] = u.address;
-		j["count"] = u.count;
-		j["age"] = u.age;
+		using ravendb::client::impl::utils::json_utils::set_val_to_json;
+
+		set_val_to_json(j, "id", u.id);
+		set_val_to_json(j, "first_name", u.first_name);
+		set_val_to_json(j, "last_name", u.last_name);
+		set_val_to_json(j, "address", u.address);
+		set_val_to_json(j, "count", u.count);
+		set_val_to_json(j, "age", u.age);
 	}
 
 	inline void from_json(const nlohmann::json& j, User& u)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
+
 		get_val_from_json(j, "id", u.id);
 		get_val_from_json(j, "first_name", u.first_name);
 		get_val_from_json(j, "last_name", u.last_name);
