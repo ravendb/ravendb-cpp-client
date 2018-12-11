@@ -154,7 +154,7 @@
     <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp" />
     <ClInclude Include="..\..\xxhash_cpp\xxhash\xxhash.hpp" />
     <ClInclude Include="ConflictSolver.h" />
-    <ClInclude Include="CreateDatabaseCommand.h" />
+    <ClInclude Include="CreateDatabaseOperation.h" />
     <ClInclude Include="DatabasePromotionStatus.h" />
     <ClInclude Include="DatabasePutResult.h" />
     <ClInclude Include="DatabaseRecord.h" />
@@ -183,6 +183,7 @@
     <ClInclude Include="IndexQuery.h" />
     <ClInclude Include="IndexQueryBase.h" />
     <ClInclude Include="IndexType.h" />
+    <ClInclude Include="IServerOperation.h" />
     <ClInclude Include="IVoidMaintenanceOperation.h" />
     <ClInclude Include="json_utils.h" />
     <ClInclude Include="LeaderStamp.h" />
