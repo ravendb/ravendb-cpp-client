@@ -73,6 +73,3 @@ namespace ravendb::client::documents::operations::indexes
 		};
 	};
 }
-
-
-

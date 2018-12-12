@@ -4,6 +4,7 @@
 
 namespace ravendb::client::impl::utils::json_utils
 {
+	//TODO add std::vector overloads
 
 	//TODO consider using it everywhere
 	//safe if key_name does not exists and more convenient

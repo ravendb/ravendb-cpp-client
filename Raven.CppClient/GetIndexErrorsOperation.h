@@ -6,8 +6,9 @@
 #include "IndexErrors.h"
 
 using
-	ravendb::client::http::RavenCommand,
-	ravendb::client::http::ServerNode;
+ravendb::client::http::RavenCommand,
+ravendb::client::http::ServerNode,
+ravendb::client::documents::indexes::IndexErrors;
 
 namespace ravendb::client::documents::operations::indexes
 {
