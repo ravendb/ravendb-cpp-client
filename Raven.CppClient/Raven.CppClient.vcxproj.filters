@@ -248,6 +248,12 @@
     <ClInclude Include="IndexingStatus.h">
       <Filter>ravendb.client\documents\indexes</Filter>
     </ClInclude>
+    <ClInclude Include="GetTermsOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="TermsQueryResult.h">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">

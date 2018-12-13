@@ -179,6 +179,7 @@
     <ClInclude Include="GetIndexNamesOperation.h" />
     <ClInclude Include="GetIndexOperation.h" />
     <ClInclude Include="GetNextOperationIdCommand.h" />
+    <ClInclude Include="GetTermsOperation.h" />
     <ClInclude Include="IMaintenanceOperation.h" />
     <ClInclude Include="IndexConfiguration.h" />
     <ClInclude Include="IndexDefinition.h" />
@@ -229,6 +230,7 @@
     <ClInclude Include="StopIndexingOperation.h" />
     <ClInclude Include="StopIndexOperation.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TermsQueryResult.h" />
     <ClInclude Include="Topology.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="VoidRavenCommand.h" />
