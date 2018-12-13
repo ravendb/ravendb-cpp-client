@@ -220,6 +220,7 @@
     <ClInclude Include="ScriptResolver.h" />
     <ClInclude Include="ServerNode.h" />
     <ClInclude Include="SetIndexesLockOperation.h" />
+    <ClInclude Include="SetIndexesPriorityOperation.h" />
     <ClInclude Include="SpatialFieldType.h" />
     <ClInclude Include="SpatialOptions.h" />
     <ClInclude Include="SpatialSearchStrategy.h" />

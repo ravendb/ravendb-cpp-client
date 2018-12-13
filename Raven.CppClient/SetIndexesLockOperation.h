@@ -54,6 +54,10 @@ namespace ravendb::client::documents::operations::indexes
 					throw std::invalid_argument("Index name must have a non empty value");
 				}
 			}
+			if (parameters.mode == IndexLockMode::UNSET)
+			{
+				throw std::invalid_argument("Lock mode must not be UNSET");
+			}
 			filter_auto_indexes(parameters);
 			return std::move(parameters);
 		}())

@@ -254,6 +254,9 @@
     <ClInclude Include="TermsQueryResult.h">
       <Filter>ravendb.client\documents\queries</Filter>
     </ClInclude>
+    <ClInclude Include="SetIndexesPriorityOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
