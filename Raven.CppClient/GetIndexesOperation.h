@@ -59,18 +59,9 @@ namespace ravendb::client::documents::operations::indexes
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 			{
-				if (auto results_it = response.find("Results"); results_it == response.end() || !results_it->is_array())
+				if (!impl::utils::json_utils::get_val_from_json(response, "Results", _result))
 				{
 					throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::invalid_response);
-				}
-				else
-				{
-					_result.reserve(results_it->size());
-					for (const auto& res : *results_it)
-					{
-						IndexDefinition&& put_res = res;
-						_result.emplace_back(std::move(put_res));
-					}
 				}
 			}
 
