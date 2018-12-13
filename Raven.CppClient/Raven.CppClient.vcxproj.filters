@@ -242,6 +242,12 @@
     <ClInclude Include="GetIndexesStatisticsOperation.h">
       <Filter>ravendb.client\documents\operations\indexes</Filter>
     </ClInclude>
+    <ClInclude Include="GetIndexingStatusOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexingStatus.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
