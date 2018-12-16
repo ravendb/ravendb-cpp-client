@@ -40,7 +40,7 @@ namespace ravendb::client::documents::commands
 
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/databases/" << node.database
-				<< "/queries?";// << "queryHash=" << _index_query.get_query_hash;
+				<< "/queries?";// TODO << "queryHash=" << _index_query.get_query_hash;
 		
 			if(_metadata_only)
 			{

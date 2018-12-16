@@ -3,54 +3,41 @@
 #include "IMaintenanceOperation.h"
 #include "RavenCommand.h"
 #include "ServerNode.h"
-#include "IndexDefinition.h"
+#include "json_utils.h"
+#include "IndexStats.h"
 
 using
 	ravendb::client::http::RavenCommand,
 	ravendb::client::http::ServerNode,
-	ravendb::client::documents::indexes::IndexDefinition;
+	ravendb::client::documents::indexes::IndexStats;
 
 namespace ravendb::client::documents::operations::indexes
 {
-	class GetIndexesOperation : public operations::IMaintenanceOperation<std::vector<IndexDefinition>>
+	class GetIndexesStatisticsOperation : public operations::IMaintenanceOperation<std::vector<IndexStats>>
 	{
-	private:
-		const int32_t _start;
-		const int32_t _page_size;
-
 	public:
-		~GetIndexesOperation() override = default;
+		~GetIndexesStatisticsOperation() override = default;
 
-		GetIndexesOperation(int32_t start, int32_t page_size)
-			: _start(start)
-			, _page_size(page_size)
-		{}
+		GetIndexesStatisticsOperation() = default;
 
-		std::unique_ptr<RavenCommand<std::vector<IndexDefinition>>> get_command(const DocumentConventions& conventions) override
+		std::unique_ptr<RavenCommand<std::vector<IndexStats>>> get_command(const DocumentConventions& conventions) override
 		{
-			return std::make_unique<GetIndexesCommand>(_start, _page_size);
+			return std::make_unique<GetIndexesStatisticsCommand>();
 		}
 
 	private:
-		class GetIndexesCommand : public RavenCommand<std::vector<IndexDefinition>>
+		class GetIndexesStatisticsCommand : public RavenCommand<std::vector<IndexStats>>
 		{
-		private:
-			const int32_t _start;
-			const int32_t _page_size;
-
 		public:
-			~GetIndexesCommand() override = default;
+			~GetIndexesStatisticsCommand() override = default;
 
-			GetIndexesCommand(int32_t start, int32_t page_size)
-				: _start(start)
-				, _page_size(page_size)
-			{}
+			GetIndexesStatisticsCommand() = default;
 
 			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 			{
 				std::ostringstream pathBuilder;
 				pathBuilder << node.url << "/databases/" << node.database
-					<< "/indexes?start=" << _start << "&pageSize=" << _page_size;
+					<< "/indexes/stats";
 
 				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 

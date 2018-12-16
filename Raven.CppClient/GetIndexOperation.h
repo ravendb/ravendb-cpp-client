@@ -5,6 +5,7 @@
 #include "ServerNode.h"
 #include "IndexDefinition.h"
 #include "utils.h"
+#include "json_utils.h"
 
 using
 	ravendb::client::http::RavenCommand,
@@ -56,16 +57,15 @@ namespace ravendb::client::documents::operations::indexes
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 			{
-				if (auto results_it = response.find("Results"); 
-					results_it == response.end() ||
-					!results_it->is_array() ||
-					results_it->empty())
+				if(std::vector<IndexDefinition> results{};
+					! impl::utils::json_utils::get_val_from_json(response, "Results", results) ||
+					results.size() != 1 )
 				{
 					throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::invalid_response);
 				}
 				else
 				{
-					_result = (*results_it)[0];
+					_result = std::move(results[0]);
 				}
 			}
 

@@ -15,11 +15,11 @@ namespace ravendb::client::http
 
 	NLOHMANN_JSON_SERIALIZE_ENUM(Role,
 		{
-		{Role::INVALID_VALUE, nullptr},
-		{Role::NONE, "None"},
-		{Role::PROMOTABLE , "Promotable"},
-		{Role::MEMBER, "Member"},
-		{Role::REHAB, "Rehab"}
+			{Role::INVALID_VALUE, nullptr},
+			{Role::NONE, "None"},
+			{Role::PROMOTABLE , "Promotable"},
+			{Role::MEMBER, "Member"},
+			{Role::REHAB, "Rehab"}
 		});
 
 	struct ServerNode

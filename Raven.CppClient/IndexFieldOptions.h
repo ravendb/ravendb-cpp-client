@@ -11,9 +11,9 @@ namespace ravendb::client::documents::indexes
 		FieldStorage storage = FieldStorage::UNSET;
 		FieldIndexing indexing = FieldIndexing::UNSET;
 		FieldTermVector term_vector = FieldTermVector::UNSET;
-		std::optional<spacial::SpatialOptions> spatial;
+		std::optional<spacial::SpatialOptions> spatial{};
 		std::string analyzer{};
-		std::optional<bool> suggestions;
+		std::optional<bool> suggestions{};
 	};
 
 	inline void to_json(nlohmann::json& j, const IndexFieldOptions& ifo)

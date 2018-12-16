@@ -3,45 +3,45 @@
 #include "IMaintenanceOperation.h"
 #include "RavenCommand.h"
 #include "ServerNode.h"
-#include "IndexDefinition.h"
+#include "json_utils.h"
 
 using
-	ravendb::client::http::RavenCommand,
-	ravendb::client::http::ServerNode,
-	ravendb::client::documents::indexes::IndexDefinition;
+ravendb::client::http::RavenCommand,
+ravendb::client::http::ServerNode;
+
 
 namespace ravendb::client::documents::operations::indexes
 {
-	class GetIndexesOperation : public operations::IMaintenanceOperation<std::vector<IndexDefinition>>
+	class GetIndexNamesOperation : public operations::IMaintenanceOperation<std::vector<std::string>>
 	{
 	private:
 		const int32_t _start;
 		const int32_t _page_size;
 
 	public:
-		~GetIndexesOperation() override = default;
+		~GetIndexNamesOperation() override = default;
 
-		GetIndexesOperation(int32_t start, int32_t page_size)
+		GetIndexNamesOperation(int32_t start, int32_t page_size)
 			: _start(start)
 			, _page_size(page_size)
 		{}
 
-		std::unique_ptr<RavenCommand<std::vector<IndexDefinition>>> get_command(const DocumentConventions& conventions) override
+		std::unique_ptr<RavenCommand<std::vector<std::string>>> get_command(const DocumentConventions& conventions) override
 		{
-			return std::make_unique<GetIndexesCommand>(_start, _page_size);
+			return std::make_unique<GetIndexNamesCommand>(_start, _page_size);
 		}
 
 	private:
-		class GetIndexesCommand : public RavenCommand<std::vector<IndexDefinition>>
+		class GetIndexNamesCommand : public RavenCommand<std::vector<std::string>>
 		{
 		private:
 			const int32_t _start;
 			const int32_t _page_size;
 
 		public:
-			~GetIndexesCommand() override = default;
+			~GetIndexNamesCommand() override = default;
 
-			GetIndexesCommand(int32_t start, int32_t page_size)
+			GetIndexNamesCommand(int32_t start, int32_t page_size)
 				: _start(start)
 				, _page_size(page_size)
 			{}
@@ -50,7 +50,8 @@ namespace ravendb::client::documents::operations::indexes
 			{
 				std::ostringstream pathBuilder;
 				pathBuilder << node.url << "/databases/" << node.database
-					<< "/indexes?start=" << _start << "&pageSize=" << _page_size;
+					<< "/indexes?start=" << _start << "&pageSize=" << _page_size
+					<< "&namesOnly=true";
 
 				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 
@@ -59,7 +60,7 @@ namespace ravendb::client::documents::operations::indexes
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 			{
-				if (!impl::utils::json_utils::get_val_from_json(response, "Results", _result))
+				if(! impl::utils::json_utils::get_val_from_json(response, "Results", _result))
 				{
 					throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::invalid_response);
 				}
@@ -72,6 +73,3 @@ namespace ravendb::client::documents::operations::indexes
 		};
 	};
 }
-
-
-

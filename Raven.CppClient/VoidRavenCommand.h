@@ -23,7 +23,9 @@ namespace ravendb::client::http
 		}
 
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
-		{}
+		{
+			_result = nullptr;
+		}
 	};
 	inline VoidRavenCommand::~VoidRavenCommand() = default;
 }
