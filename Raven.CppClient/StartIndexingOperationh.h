@@ -16,7 +16,7 @@ namespace ravendb::client::documents::operations::indexes
 
 		StartIndexingOperation() = default;
 
-		std::unique_ptr<VoidRavenCommandBase> get_command(const DocumentConventions& conventions) override
+		std::unique_ptr<VoidRavenCommandBase> get_command(const DocumentConventions& conventions) const override
 		{
 			return std::make_unique<StartIndexingCommand>();
 		}

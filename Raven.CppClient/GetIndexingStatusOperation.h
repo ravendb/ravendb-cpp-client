@@ -19,7 +19,7 @@ namespace ravendb::client::documents::operations::indexes
 
 		GetIndexingStatusOperation() = default;
 
-		std::unique_ptr<RavenCommand<IndexingStatus>> get_command(const DocumentConventions& conventions) override
+		std::unique_ptr<RavenCommand<IndexingStatus>> get_command(const DocumentConventions& conventions) const override
 		{
 			return std::make_unique<GetIndexingStatusCommand>();
 		}

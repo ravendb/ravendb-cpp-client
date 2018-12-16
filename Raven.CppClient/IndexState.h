@@ -7,7 +7,7 @@ namespace ravendb::client::documents::indexes
 		NORMAL,
 		DISABLED,
 		IDLE,
-		_ERROR,
+		ERRONEOUS,
 		UNSET = -1
 	};
 
@@ -17,6 +17,6 @@ namespace ravendb::client::documents::indexes
 			{IndexState::NORMAL, "Normal"},
 			{IndexState::DISABLED, "Disabled"},
 			{IndexState::IDLE, "Idle"},
-			{IndexState:: _ERROR, "Error"}
+			{IndexState::ERRONEOUS, "Error"}
 		});
 }

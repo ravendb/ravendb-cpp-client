@@ -51,7 +51,7 @@ namespace ravendb::client::documents::operations::indexes
 			, _page_size(std::move(page_size))
 		{}
 
-		std::unique_ptr<RavenCommand<std::vector<std::string>>> get_command(const DocumentConventions& conventions) override
+		std::unique_ptr<RavenCommand<std::vector<std::string>>> get_command(const DocumentConventions& conventions) const override
 		{
 			return std::make_unique<GetTermsCommand>(_index_name, _field, _from_value, _page_size);
 		}

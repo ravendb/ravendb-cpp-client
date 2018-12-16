@@ -16,8 +16,9 @@ namespace ravendb::client::tests
 		static void SetUpTestCase()
 		{
 			test_suite_executor = GET_REQUEST_EXECUTOR();
-			infrastructure::CreateSampleDataCommand cmd;
-			test_suite_executor->get()->execute(cmd);
+			auto op = infrastructure::CreateSampleDataOperation();
+			auto cmd = op.get_command({});
+			test_suite_executor->get()->execute(*cmd);
 		}
 	};
 
