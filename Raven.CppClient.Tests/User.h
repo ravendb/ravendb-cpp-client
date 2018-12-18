@@ -27,24 +27,25 @@ namespace ravendb::client::tests
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		set_val_to_json(j, "id", u.id);
-		set_val_to_json(j, "first_name", u.first_name);
-		set_val_to_json(j, "last_name", u.last_name);
-		set_val_to_json(j, "address", u.address);
-		set_val_to_json(j, "count", u.count);
-		set_val_to_json(j, "age", u.age);
+		set_val_to_json(j, "Id", u.id);
+		set_val_to_json(j, "First_name", u.first_name);
+		set_val_to_json(j, "Last_name", u.last_name);
+		set_val_to_json(j, "Address", u.address);
+		set_val_to_json(j, "Count", u.count);
+		set_val_to_json(j, "Age", u.age);
+		j["@metadata"]["@collection"] = "Users";
 	}
 
 	inline void from_json(const nlohmann::json& j, User& u)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		get_val_from_json(j, "id", u.id);
-		get_val_from_json(j, "first_name", u.first_name);
-		get_val_from_json(j, "last_name", u.last_name);
-		get_val_from_json(j, "address", u.address);
-		get_val_from_json(j, "count", u.count);
-		get_val_from_json(j, "age", u.age);
+		get_val_from_json(j, "Id", u.id);
+		get_val_from_json(j, "First_name", u.first_name);
+		get_val_from_json(j, "Last_name", u.last_name);
+		get_val_from_json(j, "Address", u.address);
+		get_val_from_json(j, "Count", u.count);
+		get_val_from_json(j, "Age", u.age);
 	}
 }
 

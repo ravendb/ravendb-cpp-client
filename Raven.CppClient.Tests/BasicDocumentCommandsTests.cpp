@@ -40,7 +40,7 @@ namespace ravendb::client::tests
 			documents::commands::GetDocumentsCommand cmd(doc_id, {}, true);
 			auto&& res = _executor->execute(cmd);
 
-			return !res.results.empty() && (std::strcmp(res.results[0].type_name(), "null") != 0);
+			return !res.results.empty() && !res.results[0].is_null();
 		}
 
 		bool does_document_exist(const std::string& doc_id)
@@ -48,7 +48,7 @@ namespace ravendb::client::tests
 			documents::commands::GetDocumentsCommand cmd(doc_id, {}, true);
 			auto&& res = test_suite_executor->get()->execute(cmd);
 
-			return !res.results.empty() && (std::strcmp(res.results[0].type_name(), "null") != 0);
+			return !res.results.empty() && !res.results[0].is_null();
 		}
 	};
 

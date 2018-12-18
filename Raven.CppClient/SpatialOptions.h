@@ -22,6 +22,19 @@ namespace ravendb::client::documents::indexes::spacial
 		double maxY = 90;
 		// Circle radius units, only used for geography indexes
 		SpatialUnits units = SpatialUnits::KILOMETERS;
+
+
+		friend bool operator==(const SpatialOptions& lhs, const SpatialOptions& rhs)
+		{
+			return lhs.type == rhs.type
+				&& lhs.strategy == rhs.strategy
+				&& lhs.max_tree_level == rhs.max_tree_level
+				&& lhs.minX == rhs.minX
+				&& lhs.maxX == rhs.maxX
+				&& lhs.minY == rhs.minY
+				&& lhs.maxY == rhs.maxY
+				&& lhs.units == rhs.units;
+		}
 	};
 
 	inline void to_json(nlohmann::json& j, const SpatialOptions& so)

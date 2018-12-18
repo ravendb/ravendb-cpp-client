@@ -22,6 +22,21 @@ namespace ravendb::client::documents::indexes
 		 IndexConfiguration configuration{};
 		 IndexType index_type = IndexType::UNSET;
 		 std::string output_reduce_to_collection{};
+
+
+		friend bool operator==(const IndexDefinition& lhs, const IndexDefinition& rhs)
+		{
+			return lhs.name == rhs.name
+				&& lhs.priority == rhs.priority
+				&& lhs.lock_mode == rhs.lock_mode
+				&& lhs.additional_sources == rhs.additional_sources
+				&& lhs.maps == rhs.maps
+				&& lhs.reduce == rhs.reduce
+				&& lhs.fields == rhs.fields
+				&& lhs.configuration == rhs.configuration
+				&& lhs.index_type == rhs.index_type
+				&& lhs.output_reduce_to_collection == rhs.output_reduce_to_collection;
+		}
 	};
 
 	inline void to_json(nlohmann::json& j, const IndexDefinition& id)

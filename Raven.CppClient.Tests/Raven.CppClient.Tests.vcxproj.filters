@@ -13,6 +13,9 @@
     <ClCompile Include="GetDocumentsCommandTests.cpp">
       <Filter>test_suits</Filter>
     </ClCompile>
+    <ClCompile Include="IndexOperationsTests.cpp">
+      <Filter>test_suits</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="definitions.h" />

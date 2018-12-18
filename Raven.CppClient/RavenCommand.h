@@ -66,11 +66,6 @@ namespace ravendb::client::http
 			_response_type = RavenCommandResponseType::EMPTY;
 		}
 
-		//do we need it ? should we use it ?
-		//public CloseableHttpResponse send(CloseableHttpClient client, HttpRequestBase request) throws IOException {
-		//	return client.execute(request);
-		//}
-
 		const std::map<ServerNode, std::exception>& get_failed_nodes() const noexcept
 		{
 			return _failed_nodes;
