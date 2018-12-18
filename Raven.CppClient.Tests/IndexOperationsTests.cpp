@@ -313,7 +313,7 @@ namespace ravendb::client::tests
 
 	TEST_F(IndexOperationsTest, CanSetIndexPriority)
 	{
-		//should NOT useIndexPriority::UNSET for SetIndexesPriorityOperation
+		//should NOT use IndexPriority::UNSET for SetIndexesPriorityOperation
 		EXPECT_THROW(
 			auto op = documents::operations::indexes::SetIndexesPriorityOperation(example_index.name, IndexPriority::UNSET),
 			std::invalid_argument);
