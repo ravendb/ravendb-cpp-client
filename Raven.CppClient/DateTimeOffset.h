@@ -14,9 +14,9 @@ namespace ravendb::client::impl
 		std::time_t offset{ 0 };	//in seconds, the actual precision is minutes
 
 	public:
-		using DateTimeOffsetTuple = std::tuple<std::tm, long, std::time_t>;
+		using RawDateTimeOffset = std::tuple<std::tm, long, std::time_t>;
 
-		DateTimeOffsetTuple get_date_time_offset() const
+		RawDateTimeOffset get_date_time_offset() const
 		{
 			return { date_time, nsec, offset };
 		}

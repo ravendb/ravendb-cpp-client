@@ -109,7 +109,6 @@ namespace ravendb::client::http
 			ravendb::client::impl::SetCurlOptions set_after_perform);
 
 	public:
-
 		RequestExecutor(const RequestExecutor& other) = delete;
 		RequestExecutor(RequestExecutor&& other) = delete;
 
@@ -146,6 +145,12 @@ namespace ravendb::client::http
 				}
 			}
 			throw RavenError(errors->str(), RavenError::ErrorType::generic);
+		}
+
+		template<typename Result_t>
+		Result_t execute(std::unique_ptr<RavenCommand<Result_t>> cmd_ptr)
+		{
+			return execute(*cmd_ptr.get());
 		}
 
 

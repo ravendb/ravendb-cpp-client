@@ -11,8 +11,7 @@ namespace ravendb::client::tests
 	{
 		auto test_suite_executor = GET_REQUEST_EXECUTOR();
 		auto op = serverwide::operations::GetDatabaseRecordOperation(test_suite_executor->get_db_name());
-		auto cmd = op.get_command({});
-		auto rec = test_suite_executor->get()->execute(*cmd);
+		auto rec = test_suite_executor->get()->execute(op.get_command({}));
 
 		ASSERT_EQ(rec.database_name, test_suite_executor->get_db_name());
 		ASSERT_GT(rec.etag.value(), -1);
@@ -22,8 +21,7 @@ namespace ravendb::client::tests
 	{
 		auto test_suite_executor = GET_REQUEST_EXECUTOR();
 		auto op = serverwide::operations::GetDatabaseNamesOperation(0, 100);
-		auto cmd = op.get_command({});
-		auto&& res = test_suite_executor->get()->execute(*cmd);
+		auto&& res = test_suite_executor->get()->execute(op.get_command({}));
 
 		ASSERT_NE(std::find(res.begin(), res.end(), test_suite_executor->get_db_name()), res.end());
 	}
@@ -52,14 +50,12 @@ namespace ravendb::client::tests
 		{
 			auto op = serverwide::operations::DeleteDatabasesOperation(test_suite_executor->get_db_name(),
 				true, {}, std::chrono::seconds(10));
-			auto cmd = op.get_command({});
-			auto&& res = test_suite_executor->get()->execute(*cmd);
+			auto&& res = test_suite_executor->get()->execute(op.get_command({}));
 			ASSERT_GT(res.raft_command_index, 0);
 		}
 		{
 			auto op = serverwide::operations::GetDatabaseNamesOperation(0, 100);
-			auto cmd = op.get_command({});
-			auto&& res = test_suite_executor->get()->execute(*cmd);
+			auto&& res = test_suite_executor->get()->execute(op.get_command({}));
 			ASSERT_EQ(std::find(res.begin(), res.end(), test_suite_executor->get_db_name()), res.end());
 		}
 	}

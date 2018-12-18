@@ -35,8 +35,7 @@ namespace ravendb::client::tests
 			ravendb::client::serverwide::DatabaseRecord rec{};
 			rec.database_name = _db_name;
 			serverwide::operations::CreateDatabaseOperation op(rec);
-			auto cmd = op.get_command({});
-			server_wide_req_exec->execute(*cmd);
+			server_wide_req_exec->execute(op.get_command({}));
 
 			_executor = get_raw_request_executor(_db_name);
 		}
@@ -44,8 +43,7 @@ namespace ravendb::client::tests
 		~RequestExecutorScope()
 		{
 			ravendb::client::serverwide::operations::DeleteDatabasesOperation op(_db_name, true, {}, std::chrono::seconds(20));
-			auto cmd = op.get_command({});
-			_executor->execute(*cmd);
+			_executor->execute(op.get_command({}));
 		}
 
 		ravendb::client::http::RequestExecutor* get() const noexcept

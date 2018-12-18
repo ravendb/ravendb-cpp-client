@@ -14,6 +14,17 @@ namespace ravendb::client::documents::indexes
 		std::optional<spacial::SpatialOptions> spatial{};
 		std::string analyzer{};
 		std::optional<bool> suggestions{};
+
+
+		friend bool operator==(const IndexFieldOptions& lhs, const IndexFieldOptions& rhs)
+		{
+			return lhs.storage == rhs.storage
+				&& lhs.indexing == rhs.indexing
+				&& lhs.term_vector == rhs.term_vector
+				&& lhs.spatial == rhs.spatial
+				&& lhs.analyzer == rhs.analyzer
+				&& lhs.suggestions == rhs.suggestions;
+		}
 	};
 
 	inline void to_json(nlohmann::json& j, const IndexFieldOptions& ifo)

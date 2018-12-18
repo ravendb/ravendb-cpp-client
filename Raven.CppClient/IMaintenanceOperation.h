@@ -14,7 +14,7 @@ namespace ravendb::client::documents::operations
 		virtual ~IMaintenanceOperation() = 0;
 
 		//using std::unique_ptr for polymorphism
-		virtual std::unique_ptr<RavenCommand<TResult>> get_command(const DocumentConventions& conventions) = 0;
+		virtual std::unique_ptr<RavenCommand<TResult>> get_command(const DocumentConventions& conventions) const = 0;
 	};
 
 	template <typename TResult>

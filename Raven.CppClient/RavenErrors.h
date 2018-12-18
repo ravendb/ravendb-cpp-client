@@ -7,7 +7,6 @@ namespace ravendb::client
 	public:
 		enum class ErrorType : uint8_t
 		{
-			success,
 			generic,
 			database_does_not_exist,
 			bad_url,
