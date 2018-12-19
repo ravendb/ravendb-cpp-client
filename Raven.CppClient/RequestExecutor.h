@@ -5,6 +5,7 @@
 #include "Topology.h"
 #include "RavenCommand.h"
 #include "utils.h"
+#include "CertificateDetails.h"
 
 namespace ravendb::client::http
 {
@@ -14,7 +15,7 @@ namespace ravendb::client::http
 		std::string _db_name;
 		std::vector<std::string> _initial_urls;
 		std::shared_ptr<Topology> _topology;
-		std::string _certificate;
+		std::optional<impl::CertificateDetails> _certificate_details;
 		std::unique_ptr<impl::CurlHandlesHolder> _curl_holder;
 		impl::SetCurlOptions _set_before_perform = {};
 		impl::SetCurlOptions _set_after_perform = {};
@@ -23,14 +24,14 @@ namespace ravendb::client::http
 
 		void first_topology_update();
 
-		template<typename Result_t>
-		Result_t execute_internal(ServerNode& node, RavenCommand<Result_t>& cmd)
+		template<typename TResult>
+		TResult execute_internal(ServerNode& node, RavenCommand<TResult>& cmd)
 		{
 			char error_buffer[CURL_ERROR_SIZE] = { '\0' };
 			std::string output_buffer;
 			std::map<std::string, std::string> headers;
-			auto ch = _curl_holder->checkout_curl();
-			auto curl = ch.get();
+			auto return_curl = _curl_holder->checkout_curl();
+			auto curl = return_curl.get();
 
 			std::string url;
 			cmd.create_request(curl, node, url);
@@ -41,6 +42,17 @@ namespace ravendb::client::http
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output_buffer);
 			curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, ravendb::client::impl::utils::push_headers);
 			curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headers);
+			if(_certificate_details)//using certificate
+			{
+				curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, "PEM");
+				//both VERIFYPEER and VERIFYHOST are set to 0 in this case because there is
+				//no CA certificate
+				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+				curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, "PEM");
+				curl_easy_setopt(curl, CURLOPT_SSL_CTX_FUNCTION, ravendb::client::impl::utils::sslctx_function);
+				curl_easy_setopt(curl, CURLOPT_SSL_CTX_DATA, &_certificate_details);
+			}
 
 			if (_set_before_perform)
 			{
@@ -67,7 +79,6 @@ namespace ravendb::client::http
 			{
 				_set_after_perform(curl);
 			}
-
 
 			cmd.status_code = statusCode;
 			switch (statusCode)
@@ -104,14 +115,13 @@ namespace ravendb::client::http
 		RequestExecutor(
 			std::string db_name,
 			std::vector<std::string> initial_urls,
-			std::string certificate,
+			std::optional<impl::CertificateDetails> certificate_details,
 			ravendb::client::impl::SetCurlOptions set_before_perform,
 			ravendb::client::impl::SetCurlOptions set_after_perform);
 
 	public:
 		RequestExecutor(const RequestExecutor& other) = delete;
 		RequestExecutor(RequestExecutor&& other) = delete;
-
 		RequestExecutor& operator=(const RequestExecutor& other) = delete;
 		RequestExecutor& operator=(RequestExecutor&& other) = delete;
 
@@ -147,17 +157,16 @@ namespace ravendb::client::http
 			throw RavenError(errors->str(), RavenError::ErrorType::generic);
 		}
 
-		template<typename Result_t>
-		Result_t execute(std::unique_ptr<RavenCommand<Result_t>> cmd_ptr)
+		template<typename TResult>
+		TResult execute(std::unique_ptr<RavenCommand<TResult>> cmd_ptr)
 		{
 			return execute(*cmd_ptr.get());
 		}
 
-
 		static std::unique_ptr<RequestExecutor> create(
 			std::vector<std::string> urls,
 			std::string db,
-			std::string certificate = {},
+			std::optional<impl::CertificateDetails> certificate_details = {},
 			ravendb::client::impl::SetCurlOptions set_before_perform = {},
 			ravendb::client::impl::SetCurlOptions set_after_perform = {});
 	};

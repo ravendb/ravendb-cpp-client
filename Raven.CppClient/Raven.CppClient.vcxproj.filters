@@ -257,6 +257,9 @@
     <ClInclude Include="SetIndexesPriorityOperation.h">
       <Filter>ravendb.client\documents\operations\indexes</Filter>
     </ClInclude>
+    <ClInclude Include="CertificateDetails.h">
+      <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">

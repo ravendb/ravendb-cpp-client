@@ -10,7 +10,7 @@ namespace ravendb::client::http
 {
 	void RequestExecutor::first_topology_update()
 	{
-		GetDatabaseTopologyCommand getTopology;
+		GetDatabaseTopologyCommand getTopology{};
 
 		std::ostringstream errors;
 
@@ -43,13 +43,13 @@ namespace ravendb::client::http
 	RequestExecutor::RequestExecutor(
 		std::string db_name,
 		std::vector<std::string> initial_urls,
-		std::string certificate,
+		std::optional<impl::CertificateDetails> certificate_details,
 		ravendb::client::impl::SetCurlOptions set_before_perform,
 		ravendb::client::impl::SetCurlOptions set_after_perform)
 		: _db_name(std::move(db_name))
 		, _initial_urls(std::move(initial_urls))
 		, _topology(std::make_shared<Topology>())
-		, _certificate(std::move(certificate))
+		, _certificate_details(std::move(certificate_details))
 		, _curl_holder(new impl::CurlHandlesHolder)
 		, _set_before_perform(set_before_perform)
 		, _set_after_perform(set_after_perform)
@@ -65,7 +65,7 @@ namespace ravendb::client::http
 
 	void RequestExecutor::validate_urls()
 	{
-		const bool certificateHasHttps = ! _certificate.empty();
+		const bool certificateHasHttps = _certificate_details.has_value();
 
 		if (_initial_urls.empty())
 			throw RavenError("No urls has been defined", RavenError::ErrorType::bad_url);
@@ -97,11 +97,10 @@ namespace ravendb::client::http
 		}
 	}
 
-
 	std::unique_ptr<RequestExecutor> RequestExecutor::create(
 		std::vector<std::string> urls,
 		std::string db,
-		std::string certificate,
+		std::optional<impl::CertificateDetails> certificate_details,
 		ravendb::client::impl::SetCurlOptions set_before_perform,
 		ravendb::client::impl::SetCurlOptions set_after_perform)
 	{
@@ -109,7 +108,7 @@ namespace ravendb::client::http
 		auto rq = std::unique_ptr<RequestExecutor>(new RequestExecutor(
 			std::move(db),
 			std::move(urls),
-			std::move(certificate),
+			std::move(certificate_details),
 			set_before_perform,
 			set_after_perform));
 

@@ -63,15 +63,13 @@ namespace ravendb::client::tests
 		auto cmd = documents::commands::QueryCommand({}, indexQuery, false, false);
 		auto&& res = test_suite_executor->get()->execute(cmd);
 
-		//essential assertions
+		//results assertions
 		ASSERT_EQ(res.total_results, 86);
 		ASSERT_EQ(res.skipped_results, 0);
 		ASSERT_EQ(res.total_results, res.results.size());
+		//includes assertions
 		ASSERT_EQ(res.includes.size(), 9);
+		ASSERT_EQ(res.included_paths.size(), 1);
+		ASSERT_EQ("Company", res.included_paths[0]);
 	}
-
-
-
-
-
 }

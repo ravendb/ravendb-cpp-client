@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp" />
     <ClInclude Include="..\..\xxhash_cpp\xxhash\xxhash.hpp" />
+    <ClInclude Include="CertificateDetails.h" />
     <ClInclude Include="ConflictSolver.h" />
     <ClInclude Include="CreateDatabaseOperation.h" />
     <ClInclude Include="DatabasePromotionStatus.h" />
