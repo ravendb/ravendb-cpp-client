@@ -16,36 +16,88 @@ namespace ravendb::client::tests
 		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 	}
 
-	std::shared_ptr<ravendb::client::impl::CertificateDetails> get_cert()
-	{
-		static std::shared_ptr<ravendb::client::impl::CertificateDetails> cert_det{};
 
-		if (!cert_det)
+	ConnectionDetailsHolder::ConnectionDetailsHolder(const std::string& def_file_name, bool has_certificate = true)
+	{
+		//open definitions file
+		std::ifstream def_file(def_file_name);
+		if (!def_file)
 		{
-			cert_det = std::make_shared<ravendb::client::impl::CertificateDetails>();
-			std::ifstream cert_file(R"(c:\work\PowerUser\PowerUser.crt)");
-			std::ifstream key_file(R"(c:\work\PowerUser\PowerUser.key)");
-			{
-				std::stringstream stream;
-				stream << cert_file.rdbuf();
-				cert_det->certificate = stream.str();
-			}
-			{
-				std::stringstream stream;
-				key_file >> stream.rdbuf();
-				cert_det->key = stream.str();
-			}
-			cert_det->key_password.emplace("PowerUser");
+			throw std::runtime_error(std::string("Can't open ") + def_file_name);
 		}
-		return cert_det;
+		if (!std::getline(def_file, url))
+		{
+			throw std::runtime_error(std::string("Can't read url from ") + def_file_name);
+		}
+
+		if(!has_certificate)
+		{
+			return;
+		}
+		//get certificate
+		std::string cert_file_name;
+		if(!std::getline(def_file, cert_file_name) || cert_file_name.empty())
+		{
+			throw std::runtime_error(std::string("Can't read certificate file name from ") + def_file_name);
+		}
+		std::ifstream cert_file(cert_file_name);
+		if (!cert_file)
+		{
+			throw std::runtime_error(std::string("Can't open ") + cert_file_name);
+		}
+		{
+			std::stringstream stream;
+			stream << cert_file.rdbuf();
+			cert_details.certificate = stream.str();
+		}
+		//get key
+		std::string key_file_name;
+		if (!std::getline(def_file, key_file_name) || key_file_name.empty())
+		{
+			throw std::runtime_error(std::string("Can't read key file name from ") + def_file_name);
+		}
+		std::ifstream key_file(key_file_name);
+		if (!key_file)
+		{
+			throw std::runtime_error(std::string("Can't open ") + key_file_name);
+		}
+		{
+			std::stringstream stream;
+			stream << key_file.rdbuf();
+			cert_details.key = stream.str();
+		}
+		//get CA file path(optional)
+		std::string CA_path_file_name;
+		if (!std::getline(def_file, CA_path_file_name))
+		{
+			return;//defaults will be used
+		}
+		//no problem if CA_path_file_name.empty() == true
+		cert_details.ca_path = CA_path_file_name;
+
+		//get password(optional)
+		std::string key_password;
+		if (!std::getline(def_file, key_password))
+		{
+			return;//no password
+		}
+		//no problem if  key_password.empty() == true
+		cert_details.key_password = key_password;
 	}
 
+	
 	//request executor only - no DB is created
 	std::unique_ptr<ravendb::client::http::RequestExecutor> get_raw_request_executor
 	(bool is_secured, const std::string& db)
 	{
-		return is_secured ? http::RequestExecutor::create({ SECURED_RAVEN_SERVER_URL }, db, *get_cert(), set_verbose) :
-			http::RequestExecutor::create({ RAVEN_SERVER_URL }, db, {}, set_for_fiddler);
+		static const auto sec_conn_details = ConnectionDetailsHolder(SECURED_RE_DETAILS, true);
+		static const auto unsec_conn_details = ConnectionDetailsHolder(UNSECURED_RE_DETAILS, false);
+		
+		return is_secured ?
+			http::RequestExecutor::create({ sec_conn_details.get_url() }, db,
+				sec_conn_details.get_cert_det(), set_verbose) :
+			http::RequestExecutor::create({ unsec_conn_details.get_url() }, db,
+				{}, set_verbose);
 	}
 }
 

@@ -3,6 +3,8 @@
 
 namespace ravendb::client::impl::utils
 {
+	constexpr char DEFAULT_CA_BUNDLE_PATH[] = "../ca-bundle.crt";
+
 	size_t push_headers(char *buffer, size_t size, size_t nitems, void *userdata);
 
 	size_t push_to_buffer(char* contents, size_t size, size_t nmemb, void* output_buffer_void);

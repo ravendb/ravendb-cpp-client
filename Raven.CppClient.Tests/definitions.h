@@ -16,18 +16,37 @@ namespace ravendb::client::tests
 #define GET_SECURED_REQUEST_EXECUTOR() RequestExecutorScope::get_request_executor_with_db(__FILE__, __LINE__, __COUNTER__, true)
 #endif
 
-	inline constexpr char RAVEN_SERVER_URL[] = "http://localhost:8080";
-	inline constexpr char SECURED_RAVEN_SERVER_URL[] = "https://a.sashatim125.development.run:8085";
+	constexpr char UNSECURED_RE_DETAILS[] = "../unsecured_re.txt";
+	constexpr char SECURED_RE_DETAILS[] = "../secured_re.txt";
 
 	//using fiddler + verbose
 	void set_for_fiddler(CURL* curl);
 
-	std::shared_ptr<ravendb::client::impl::CertificateDetails> get_cert();
+	void set_verbose(CURL* curl);
 
 	//request _executor only - no DB is created
 	std::unique_ptr<ravendb::client::http::RequestExecutor> get_raw_request_executor
-		(bool is_secured = false, const std::string& db = {});
+	(bool is_secured = false, const std::string& db = {});
 
+	class ConnectionDetailsHolder
+	{
+	private:
+		std::string url{};
+		ravendb::client::impl::CertificateDetails cert_details{};
+
+	public:
+		~ConnectionDetailsHolder() = default;
+		ConnectionDetailsHolder(const std::string& def_file_name, bool has_certificate);
+
+		const ravendb::client::impl::CertificateDetails& get_cert_det() const
+		{
+			return cert_details;
+		}
+		const std::string& get_url() const
+		{
+			return url;
+		}
+	};
 
 	class RequestExecutorScope
 	{

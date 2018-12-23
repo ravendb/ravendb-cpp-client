@@ -44,12 +44,6 @@ namespace ravendb::client::http
 			curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headers);
 			if(_certificate_details)//using certificate
 			{
-				curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, "PEM");
-				//both VERIFYPEER and VERIFYHOST are set to 0 in this case because there is
-				//no CA certificate
-				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-				curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, "PEM");
 				curl_easy_setopt(curl, CURLOPT_SSL_CTX_FUNCTION, ravendb::client::impl::utils::sslctx_function);
 				curl_easy_setopt(curl, CURLOPT_SSL_CTX_DATA, &_certificate_details);
 			}
