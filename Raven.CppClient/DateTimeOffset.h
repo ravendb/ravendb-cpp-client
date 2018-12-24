@@ -1,6 +1,6 @@
 #pragma once
-#include <stdio.h>
-#include <time.h>
+#include <cstdio>
+#include <ctime>
 #include <ostream>
 #include <iomanip>
 
@@ -9,6 +9,7 @@ namespace ravendb::client::impl
 	class DateTimeOffset
 	{
 	private:
+		//WARNING tm_wday and tm_yday fields are NOT filled in the deserialization ctor
 		std::tm date_time{ 0 };		//with seconds precision
 		long nsec{ 0 };				//the actual precision is 100nanoseconds
 		std::time_t offset{ 0 };	//in seconds, the actual precision is minutes
@@ -66,10 +67,6 @@ namespace ravendb::client::impl
 
 			date_time.tm_year -= 1900;
 			date_time.tm_mon -= 1;
-			if (-1 == mktime(&date_time))
-			{
-				throw_invalid_format(str);
-			}
 
 			input_str += DATE_TIME_LENGTH_BASIC;
 			int offset_sign = 0;

@@ -43,7 +43,7 @@
     <ClInclude Include="User.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BasicQueryCommandTests.cpp" />
+    <ClCompile Include="BasicQueryTests.cpp" />
     <ClCompile Include="definitions.cpp" />
     <ClCompile Include="BasicDocumentCommandsTests.cpp" />
     <ClCompile Include="GetDocumentsCommandTests.cpp" />
@@ -65,6 +65,10 @@
     <ProjectReference Include="..\Raven.CppClient\Raven.CppClient.vcxproj">
       <Project>{5e8f32b4-d233-4c66-97fb-380b1b52ff64}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\secured_re.txt" />
+    <Text Include="..\unsecured_re.txt" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

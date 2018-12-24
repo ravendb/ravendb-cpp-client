@@ -149,9 +149,6 @@
     <ClInclude Include="IndexQueryBase.h">
       <Filter>ravendb.client\documents\queries</Filter>
     </ClInclude>
-    <ClInclude Include="IndexQuery.h">
-      <Filter>ravendb.client\documents\queries</Filter>
-    </ClInclude>
     <ClInclude Include="Parameters.h">
       <Filter>ravendb.client</Filter>
     </ClInclude>
@@ -259,6 +256,27 @@
     </ClInclude>
     <ClInclude Include="CertificateDetails.h">
       <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="IOperation.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="HttpCache.h">
+      <Filter>ravendb.client\http</Filter>
+    </ClInclude>
+    <ClInclude Include="IDocumentStore.h">
+      <Filter>ravendb.client\documents</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryOperationOptions.h">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClInclude>
+    <ClInclude Include="DeleteByQueryOperation.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="OperationIdResult.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexQuery.h">
+      <Filter>ravendb.client\documents\queries</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

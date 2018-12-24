@@ -97,7 +97,7 @@ namespace ravendb::client::tests
 			http::RequestExecutor::create({ sec_conn_details.get_url() }, db,
 				sec_conn_details.get_cert_det(), set_verbose) :
 			http::RequestExecutor::create({ unsec_conn_details.get_url() }, db,
-				{}, set_verbose);
+				{}, set_for_fiddler);
 	}
 }
 
