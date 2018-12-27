@@ -156,6 +156,7 @@
     <ClInclude Include="CertificateDetails.h" />
     <ClInclude Include="ConflictSolver.h" />
     <ClInclude Include="CreateDatabaseOperation.h" />
+    <ClInclude Include="CurslSListHolder.h" />
     <ClInclude Include="DatabasePromotionStatus.h" />
     <ClInclude Include="DatabasePutResult.h" />
     <ClInclude Include="DatabaseRecord.h" />
@@ -207,6 +208,10 @@
     <ClInclude Include="LeaderStamp.h" />
     <ClInclude Include="OperationIdResult.h" />
     <ClInclude Include="Parameters.h" />
+    <ClInclude Include="PatchOperation.h" />
+    <ClInclude Include="PatchRequest.h" />
+    <ClInclude Include="PatchResult.h" />
+    <ClInclude Include="PatchStatus.h" />
     <ClInclude Include="PutIndexesOperation.h" />
     <ClInclude Include="PutIndexResult.h" />
     <ClInclude Include="PutResult.h" />
