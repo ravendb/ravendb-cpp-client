@@ -16,6 +16,8 @@ namespace ravendb::client::impl::utils
 	CURLcode sslctx_function(CURL*, void *sslctx_void, void *cert_details_void);
 
 	std::string url_escape(CURL* curl, const std::string& val);
+
+	bool is_blank(const std::string& str);//TODO use it for validate string arguments
 }
 
 

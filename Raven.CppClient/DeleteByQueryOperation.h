@@ -76,7 +76,7 @@ namespace ravendb::client::documents::operations
 
 				if (_options && _options->stale_timeout)
 				{
-					path_builder << "&staleTimeout=" << (*_options->stale_timeout).count();
+					path_builder << "&staleTimeout=" << _options->stale_timeout->count();
 				}
 				
 				curl_easy_setopt(curl, CURLOPT_READFUNCTION, impl::utils::read_callback);

@@ -153,4 +153,10 @@ namespace ravendb::client::impl::utils
 		// all set to go
 		return CURLE_OK;
 	}
+
+	bool is_blank(const std::string& str)
+	{
+		return str.empty() || str.end() == std::find_if(str.begin(), str.end(),
+			[](std::string::value_type c)->bool {return !std::isspace(c); });
+	}
 }

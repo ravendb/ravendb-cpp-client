@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include "ServerNode.h"
+#include "CurslSListHolder.h"
 
 namespace ravendb::client::http
 {
@@ -23,17 +24,30 @@ namespace ravendb::client::http
 		RavenCommandResponseType _response_type = RavenCommandResponseType::OBJECT;
 		bool _can_cache = true;
 		bool _can_cache_aggressively = true;
+		impl::CurlSlistHolder _headers_list{};//used for HTTP headers
 
 		RavenCommand()
 			: _response_type(RavenCommandResponseType::OBJECT)
 			, _can_cache(true)
 			, _can_cache_aggressively(true)
+			, _headers_list()
 		{}
 
 	public:
 		int32_t status_code = -1;
 
 		virtual ~RavenCommand() = 0;
+
+		void add_change_vector_if_not_null(CURL* curl, const std::optional<std::string>& change_vector)
+		{
+			if (change_vector)
+			{
+				std::ostringstream change_vector_header;
+				change_vector_header << "If-Match:" << '"' << *change_vector << '"';
+				_headers_list.append(change_vector_header.str());
+				curl_easy_setopt(curl, CURLOPT_HTTPHEADER, _headers_list.get());
+			}
+		}
 
 		virtual bool is_read_request() const noexcept = 0;
 

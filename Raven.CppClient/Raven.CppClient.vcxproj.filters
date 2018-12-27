@@ -278,6 +278,21 @@
     <ClInclude Include="IndexQuery.h">
       <Filter>ravendb.client\documents\queries</Filter>
     </ClInclude>
+    <ClInclude Include="PatchStatus.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchResult.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchRequest.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchOperation.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="CurslSListHolder.h">
+      <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
