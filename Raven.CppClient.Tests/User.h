@@ -28,8 +28,8 @@ namespace ravendb::client::tests
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
 		set_val_to_json(j, "Id", u.id);
-		set_val_to_json(j, "First_name", u.first_name);
-		set_val_to_json(j, "Last_name", u.last_name);
+		set_val_to_json(j, "FirstName", u.first_name);
+		set_val_to_json(j, "LastName", u.last_name);
 		set_val_to_json(j, "Address", u.address);
 		set_val_to_json(j, "Count", u.count);
 		set_val_to_json(j, "Age", u.age);
@@ -41,8 +41,8 @@ namespace ravendb::client::tests
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
 		get_val_from_json(j, "Id", u.id);
-		get_val_from_json(j, "First_name", u.first_name);
-		get_val_from_json(j, "Last_name", u.last_name);
+		get_val_from_json(j, "FirstName", u.first_name);
+		get_val_from_json(j, "LastName", u.last_name);
 		get_val_from_json(j, "Address", u.address);
 		get_val_from_json(j, "Count", u.count);
 		get_val_from_json(j, "Age", u.age);

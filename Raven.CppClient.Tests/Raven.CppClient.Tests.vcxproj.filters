@@ -16,6 +16,18 @@
     <ClCompile Include="IndexOperationsTests.cpp">
       <Filter>test_suits</Filter>
     </ClCompile>
+    <ClCompile Include="SecuredRequestExecutorTests.cpp">
+      <Filter>test_suits</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicQueryTests.cpp">
+      <Filter>test_suits</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicPatchTests.cpp">
+      <Filter>test_suits</Filter>
+    </ClCompile>
+    <ClCompile Include="AdvancedPatchingTest.cpp">
+      <Filter>test_suits</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="definitions.h" />
@@ -30,5 +42,16 @@
     <Filter Include="test_suits">
       <UniqueIdentifier>{e60f1d61-bd60-4c99-869a-6c04c738644c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="configurations">
+      <UniqueIdentifier>{f5a6f89b-6952-4958-ac46-82e28099fa9f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\secured_re.txt">
+      <Filter>configurations</Filter>
+    </Text>
+    <Text Include="..\unsecured_re.txt">
+      <Filter>configurations</Filter>
+    </Text>
   </ItemGroup>
 </Project>

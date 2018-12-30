@@ -1,0 +1,5 @@
+https://a.sashatim125.development.run:8085
+c:\work\PowerUser\PowerUser.crt
+c:\work\PowerUser\PowerUser.key
+
+PowerUser

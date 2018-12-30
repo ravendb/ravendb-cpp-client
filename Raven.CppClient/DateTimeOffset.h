@@ -1,6 +1,6 @@
 #pragma once
-#include <stdio.h>
-#include <time.h>
+#include <cstdio>
+#include <ctime>
 #include <ostream>
 #include <iomanip>
 
@@ -9,16 +9,17 @@ namespace ravendb::client::impl
 	class DateTimeOffset
 	{
 	private:
-		std::tm date_time{ 0 };		//with seconds precision
-		long nsec{ 0 };				//the actual precision is 100nanoseconds
-		std::time_t offset{ 0 };	//in seconds, the actual precision is minutes
+		//WARNING tm_wday and tm_yday fields are NOT filled in the deserialization ctor
+		std::tm _date_time{ 0,0,0,1,0,-1899,0,0,0 };		//with seconds precision
+		long _nsec{ 0 };				//the actual precision is 100nanoseconds
+		std::time_t _offset{ 0 };	//in seconds, the actual precision is minutes
 
 	public:
 		using RawDateTimeOffset = std::tuple<std::tm, long, std::time_t>;
 
 		RawDateTimeOffset get_date_time_offset() const
 		{
-			return { date_time, nsec, offset };
+			return { _date_time, _nsec, _offset };
 		}
 
 		DateTimeOffset() = default;
@@ -44,32 +45,28 @@ namespace ravendb::client::impl
 
 			//expecting ISO8061 format : YYYY-MM-DDThh:mm:ss.sssssss(Z) or YYYY-MM-DDThh:mm:ss.sssssss±hh:mm
 			int res = sscanf_s(input_str, "%04d-%02d-%02dT%02d:%02d:%02d.%07d",
-				&date_time.tm_year, &date_time.tm_mon, &date_time.tm_mday,
-				&date_time.tm_hour, &date_time.tm_min, &date_time.tm_sec, &nsec);
+				&_date_time.tm_year, &_date_time.tm_mon, &_date_time.tm_mday,
+				&_date_time.tm_hour, &_date_time.tm_min, &_date_time.tm_sec, &_nsec);
 
-			nsec *= 100;
+			_nsec *= 100;
 			{
-				constexpr decltype(nsec) MAX_NSEC = 999'999'999l;
-				constexpr decltype(date_time.tm_year) MAX_YEAR = 9'999;//valid max 4 digits year
-				if (res < 7               ||
-					date_time.tm_year < 1 || date_time.tm_year > MAX_YEAR||
-					date_time.tm_mon < 1  || date_time.tm_mon > 12       ||
-					date_time.tm_mday < 1 || date_time.tm_mday > 31      ||
-					date_time.tm_hour < 0 || date_time.tm_hour > 23      ||
-					date_time.tm_min < 0  || date_time.tm_min > 59       ||
-					date_time.tm_sec < 0  || date_time.tm_sec > 59		 ||
-					nsec < 0              || nsec > MAX_NSEC             )
+				constexpr decltype(_nsec) MAX_NSEC = 999'999'999l;
+				constexpr decltype(_date_time.tm_year) MAX_YEAR = 9'999;//valid max 4 digits year
+				if (res < 7                ||
+					_date_time.tm_year < 1 || _date_time.tm_year > MAX_YEAR||
+					_date_time.tm_mon < 1  || _date_time.tm_mon > 12       ||
+					_date_time.tm_mday < 1 || _date_time.tm_mday > 31      ||
+					_date_time.tm_hour < 0 || _date_time.tm_hour > 23      ||
+					_date_time.tm_min < 0  || _date_time.tm_min > 59       ||
+					_date_time.tm_sec < 0  || _date_time.tm_sec > 59       ||
+					_nsec < 0              || _nsec > MAX_NSEC             )
 				{
 					throw_invalid_format(str);
 				}
 			}
 
-			date_time.tm_year -= 1900;
-			date_time.tm_mon -= 1;
-			if (-1 == mktime(&date_time))
-			{
-				throw_invalid_format(str);
-			}
+			_date_time.tm_year -= 1900;
+			_date_time.tm_mon -= 1;
 
 			input_str += DATE_TIME_LENGTH_BASIC;
 			int offset_sign = 0;
@@ -99,17 +96,17 @@ namespace ravendb::client::impl
 					{
 						input_str += 1;
 						int hour = 0, min = 0;
-						// offset is in format +(-)hh:mm
+						// _offset is in format +(-)hh:mm
 						res = sscanf_s(input_str, "%02d:%02d", &hour, &min);
 						if (
-							res < 2 ||
+							res < 2  ||
 							hour < 0 || hour > 12 ||
-							min < 0 || min > 59)
+							min < 0  || min > 59)
 						{
 							throw_invalid_format(str);
 						}
-						//storing offset in seconds
-						this->offset = offset_sign * (3600 * hour + 60 * min);
+						//storing _offset in seconds
+						this->_offset = offset_sign * (3600 * hour + 60 * min);
 					}
 				default:
 					throw_invalid_format(str);
@@ -122,15 +119,15 @@ namespace ravendb::client::impl
 			std::ostringstream result{};
 
 			result << std::setfill('0') <<
-				std::setw(4) << date_time.tm_year + 1900 << "-" <<
-				std::setw(2) << date_time.tm_mon + 1 << "-" <<
-				std::setw(2) << date_time.tm_mday << "T" <<
-				std::setw(2) << date_time.tm_hour << ":" <<
-				std::setw(2) << date_time.tm_min << ":" <<
-				std::setw(2) << date_time.tm_sec << "." <<
-				std::setw(7) << nsec / 100;
+				std::setw(4) << _date_time.tm_year + 1900 << "-" <<
+				std::setw(2) << _date_time.tm_mon + 1 << "-" <<
+				std::setw(2) << _date_time.tm_mday << "T" <<
+				std::setw(2) << _date_time.tm_hour << ":" <<
+				std::setw(2) << _date_time.tm_min << ":" <<
+				std::setw(2) << _date_time.tm_sec << "." <<
+				std::setw(7) << _nsec / 100;
 
-			std::time_t offset_copy = this->offset;
+			std::time_t offset_copy = this->_offset;
 			if (0 == offset_copy)
 			{
 				if (add_Z_if_zero_offset)

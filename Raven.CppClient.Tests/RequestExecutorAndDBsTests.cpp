@@ -30,7 +30,7 @@ namespace ravendb::client::tests
 	{
 		try
 		{
-			auto test_suite_executor = get_raw_request_executor("no_such_db");
+			auto test_suite_executor = get_raw_request_executor(false, "no_such_db");
 
 			documents::commands::GetDocumentsCommand cmd("users/1-A", {}, false);
 			test_suite_executor->execute(cmd);

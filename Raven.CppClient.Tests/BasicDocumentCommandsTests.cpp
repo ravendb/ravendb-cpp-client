@@ -36,7 +36,7 @@ namespace ravendb::client::tests
 
 		static bool does_document_exist(const std::string& doc_id, const std::string& db_name)
 		{
-			auto _executor = get_raw_request_executor(db_name);
+			auto _executor = get_raw_request_executor(false, db_name);
 			documents::commands::GetDocumentsCommand cmd(doc_id, {}, true);
 			auto&& res = _executor->execute(cmd);
 

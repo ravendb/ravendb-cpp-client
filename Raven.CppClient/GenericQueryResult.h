@@ -14,7 +14,6 @@ namespace ravendb::client::documents::queries
 		std::optional<std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::string>>>> highlightings;
 		int64_t duration_in_ms;
 		std::optional<std::unordered_map<std::string, std::string>> score_explanations;
-		int64_t result_size;
 	};
 
 	template <typename TResult, typename TInclude>
@@ -32,7 +31,5 @@ namespace ravendb::client::documents::queries
 		get_val_from_json(j, "Highlightings", gqr.highlightings);
 		get_val_from_json(j, "DurationInMs", gqr.duration_in_ms);
 		get_val_from_json(j, "ScoreExplanations", gqr.score_explanations);
-		get_val_from_json(j, "ResultSize", gqr.result_size);
-
 	}
 }

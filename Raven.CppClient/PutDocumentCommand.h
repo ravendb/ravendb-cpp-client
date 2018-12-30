@@ -14,18 +14,18 @@ namespace ravendb::client::documents::commands
 	{
 	private:
 		std::string _id;
-		std::string _change_vector;
+		std::optional<std::string> _change_vector;
 		std::string _document;
 
 	public:
 
 		~PutDocumentCommand() override = default;
 
-		PutDocumentCommand(std::string id, std::string change_vector, nlohmann::json document)
-			: PutDocumentCommand(id, change_vector, document.dump())
+		PutDocumentCommand(std::string id, std::optional<std::string> change_vector, nlohmann::json document)
+			: PutDocumentCommand(std::move(id), std::move(change_vector), document.dump())
 		{}
 		
-		PutDocumentCommand(std::string id, std::string change_vector, std::string document)
+		PutDocumentCommand(std::string id, std::optional<std::string> change_vector, std::string document)
 			: _id(std::move(id))
 			, _change_vector(std::move(change_vector))
 			, _document(std::move(document))
@@ -43,9 +43,10 @@ namespace ravendb::client::documents::commands
 			curl_easy_setopt(curl, CURLOPT_READDATA, &_document);
 			curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_document.length());
 
+			add_change_vector_if_not_null(curl, _change_vector);
+
 			url = pathBuilder.str();
 		}
-
 
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 		{

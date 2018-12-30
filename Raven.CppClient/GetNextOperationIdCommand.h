@@ -9,18 +9,6 @@ using
 
 namespace ravendb::client::documents::commands
 {
-	struct OperationId_t //used with to/from json
-	{
-		int64_t value;
-	};
-
-	inline void from_json(const nlohmann::json& j, OperationId_t& res)
-	{
-		if (auto&& id = j.find("Id"); id != j.end())
-		{
-			res.value = id->get<int64_t>();
-		}
-	}
 
 	class GetNextOperationIdCommand :public RavenCommand<int64_t>
 	{
@@ -42,8 +30,11 @@ namespace ravendb::client::documents::commands
 
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 		{
-			OperationId_t res = response;
-			_result = res.value;
+			if(! impl::utils::json_utils::get_val_from_json(response, "Id", _result))
+			{
+				throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::invalid_response);
+			}
+			
 		}
 
 		bool is_read_request() const noexcept override
