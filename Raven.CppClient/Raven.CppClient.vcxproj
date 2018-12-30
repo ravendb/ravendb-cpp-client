@@ -182,6 +182,7 @@
     <ClInclude Include="GetIndexNamesOperation.h" />
     <ClInclude Include="GetIndexOperation.h" />
     <ClInclude Include="GetNextOperationIdCommand.h" />
+    <ClInclude Include="GetOperationStateOperation.h" />
     <ClInclude Include="GetTermsOperation.h" />
     <ClInclude Include="HttpCache.h" />
     <ClInclude Include="IDocumentStore.h" />
@@ -208,6 +209,7 @@
     <ClInclude Include="LeaderStamp.h" />
     <ClInclude Include="OperationIdResult.h" />
     <ClInclude Include="Parameters.h" />
+    <ClInclude Include="PatchByQueryOperation.h" />
     <ClInclude Include="PatchOperation.h" />
     <ClInclude Include="PatchRequest.h" />
     <ClInclude Include="PatchResult.h" />

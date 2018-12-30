@@ -18,6 +18,9 @@ namespace ravendb::client::impl::utils
 	std::string url_escape(CURL* curl, const std::string& val);
 
 	bool is_blank(const std::string& str);//TODO use it for validate string arguments
+
+	// serialization in C# TimeSpan format : d.hh:mm:ss.sssssss or hh:mm:ss.sssssss
+	std::string millis_to_timespan(const std::chrono::milliseconds& msec);
 }
 
 

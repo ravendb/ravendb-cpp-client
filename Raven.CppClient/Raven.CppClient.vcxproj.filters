@@ -293,6 +293,12 @@
     <ClInclude Include="CurslSListHolder.h">
       <Filter>ravendb.client\impl</Filter>
     </ClInclude>
+    <ClInclude Include="PatchByQueryOperation.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="GetOperationStateOperation.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">

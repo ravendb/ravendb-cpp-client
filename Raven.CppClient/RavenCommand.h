@@ -24,7 +24,7 @@ namespace ravendb::client::http
 		RavenCommandResponseType _response_type = RavenCommandResponseType::OBJECT;
 		bool _can_cache = true;
 		bool _can_cache_aggressively = true;
-		impl::CurlSlistHolder _headers_list{};//used for HTTP headers
+		impl::CurlSlistHolder _headers_list{};
 
 		RavenCommand()
 			: _response_type(RavenCommandResponseType::OBJECT)

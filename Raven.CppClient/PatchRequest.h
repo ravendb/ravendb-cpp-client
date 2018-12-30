@@ -8,6 +8,8 @@ namespace ravendb::client::documents::operations
 		std::string script{};
 		std::unordered_map<std::string, nlohmann::json> values{};
 
+		PatchRequest() = default;
+
 		explicit PatchRequest(std::string script)
 			: script(std::move(script))
 		{}

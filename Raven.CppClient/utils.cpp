@@ -159,4 +159,33 @@ namespace ravendb::client::impl::utils
 		return str.empty() || str.end() == std::find_if(str.begin(), str.end(),
 			[](std::string::value_type c)->bool {return !std::isspace(c); });
 	}
+
+	std::string millis_to_timespan(const std::chrono::milliseconds& msec)
+	{
+		using namespace std::chrono;
+
+		std::ostringstream time_dur;
+		auto h = duration_cast<hours>(msec).count();
+		auto m = duration_cast<minutes>(msec%hours(1)).count();
+		auto s = duration_cast<seconds>(msec%minutes(1)).count();
+		auto ms = (msec%seconds(1)).count();
+
+		//num of days and hours remained
+		auto d = h / 24;
+		h %= 24;
+
+		if (d > 0)
+		{
+			time_dur << d << ".";
+		}
+
+		time_dur << std::setfill('0') <<
+			std::setw(2) << h << ":" <<
+			std::setw(2) << m << ":" <<
+			std::setw(2) << s << "." <<
+			std::setw(3) << ms <<
+			std::setw(4) << 0;
+
+		return time_dur.str();
+	}
 }

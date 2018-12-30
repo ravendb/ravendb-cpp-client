@@ -102,7 +102,7 @@ namespace ravendb::client::tests
 				from user in docs.Users 
 				select new 
 				{
-					Name = user.First_name + " " + user.Last_name
+					Name = user.FirstName + " " + user.LastName
 				})"};
 		}
 	};
@@ -216,7 +216,7 @@ namespace ravendb::client::tests
 				from user in docs.Users 
 				select new 
 				{
-					FullName = user.First_name + ' ' + user.Last_name + " from " + user.Address
+					FullName = user.FirstName + ' ' + user.LastName + " from " + user.Address
 				})" };
 		{
 			auto op = documents::operations::indexes::IndexHasChangedOperation(changed_index);

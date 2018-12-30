@@ -22,6 +22,12 @@
     <ClCompile Include="BasicQueryTests.cpp">
       <Filter>test_suits</Filter>
     </ClCompile>
+    <ClCompile Include="BasicPatchTests.cpp">
+      <Filter>test_suits</Filter>
+    </ClCompile>
+    <ClCompile Include="AdvancedPatchingTest.cpp">
+      <Filter>test_suits</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="definitions.h" />
