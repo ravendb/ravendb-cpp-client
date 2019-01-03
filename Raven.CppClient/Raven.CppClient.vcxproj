@@ -154,7 +154,9 @@
     <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp" />
     <ClInclude Include="..\..\xxhash_cpp\xxhash\xxhash.hpp" />
     <ClInclude Include="CertificateDetails.h" />
+    <ClInclude Include="ConcurrencyCheckMode.h" />
     <ClInclude Include="ConflictSolver.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="CreateDatabaseOperation.h" />
     <ClInclude Include="CurslSListHolder.h" />
     <ClInclude Include="DatabasePromotionStatus.h" />
@@ -169,6 +171,9 @@
     <ClInclude Include="DeleteIndexOperation.h" />
     <ClInclude Include="DisableIndexOperation.h" />
     <ClInclude Include="DocumentConventions.h" />
+    <ClInclude Include="DocumentInfo.h" />
+    <ClInclude Include="DocumentsById.h" />
+    <ClInclude Include="DocumentSession.h" />
     <ClInclude Include="EnableIndexOperation.h" />
     <ClInclude Include="FieldIndexing.h" />
     <ClInclude Include="FieldStorage.h" />
@@ -202,11 +207,14 @@
     <ClInclude Include="IndexState.h" />
     <ClInclude Include="IndexStats.h" />
     <ClInclude Include="IndexType.h" />
+    <ClInclude Include="InMemoryDocumentSessionOperations.h" />
     <ClInclude Include="IOperation.h" />
     <ClInclude Include="IServerOperation.h" />
     <ClInclude Include="IVoidMaintenanceOperation.h" />
     <ClInclude Include="json_utils.h" />
     <ClInclude Include="LeaderStamp.h" />
+    <ClInclude Include="LoadOperation.h" />
+    <ClInclude Include="OperationExecutor.h" />
     <ClInclude Include="OperationIdResult.h" />
     <ClInclude Include="Parameters.h" />
     <ClInclude Include="PatchByQueryOperation.h" />
@@ -233,6 +241,8 @@
     <ClInclude Include="ResetIndexOperation.h" />
     <ClInclude Include="ScriptResolver.h" />
     <ClInclude Include="ServerNode.h" />
+    <ClInclude Include="SessionInfo.h" />
+    <ClInclude Include="SessionOptions.h" />
     <ClInclude Include="SetIndexesLockOperation.h" />
     <ClInclude Include="SetIndexesPriorityOperation.h" />
     <ClInclude Include="SpatialFieldType.h" />
@@ -247,6 +257,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TermsQueryResult.h" />
     <ClInclude Include="Topology.h" />
+    <ClInclude Include="TransactionMode.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="VoidRavenCommand.h" />
   </ItemGroup>
