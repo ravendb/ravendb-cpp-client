@@ -43,7 +43,7 @@
     <ClInclude Include="User.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AdvancedPatchingTest.cpp" />
+    <ClCompile Include="AdvancedPatchingTests.cpp" />
     <ClCompile Include="BasicQueryTests.cpp" />
     <ClCompile Include="definitions.cpp" />
     <ClCompile Include="BasicDocumentCommandsTests.cpp" />

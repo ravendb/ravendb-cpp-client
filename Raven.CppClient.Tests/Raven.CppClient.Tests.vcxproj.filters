@@ -25,7 +25,7 @@
     <ClCompile Include="BasicPatchTests.cpp">
       <Filter>test_suits</Filter>
     </ClCompile>
-    <ClCompile Include="AdvancedPatchingTest.cpp">
+    <ClCompile Include="AdvancedPatchingTests.cpp">
       <Filter>test_suits</Filter>
     </ClCompile>
   </ItemGroup>

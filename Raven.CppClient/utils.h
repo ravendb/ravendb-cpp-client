@@ -21,6 +21,22 @@ namespace ravendb::client::impl::utils
 
 	// serialization in C# TimeSpan format : d.hh:mm:ss.sssssss or hh:mm:ss.sssssss
 	std::string millis_to_timespan(const std::chrono::milliseconds& msec);
+
+	struct CompareStringsToIgnoreCase
+	{
+		static std::string to_lower_str(const std::string& str)
+		{
+			std::string temp{};
+			std::transform(str.cbegin(), str.cend(), std::back_insert_iterator<std::string>(temp),
+				[](std::string::value_type c) {return std::tolower(c); });
+			return std::move(temp);
+		};
+
+		bool operator()(const std::string& s1, const std::string s2) const
+		{
+			return to_lower_str(s1) < to_lower_str(s2);
+		}
+	};
 }
 
 

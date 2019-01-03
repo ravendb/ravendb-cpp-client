@@ -149,9 +149,6 @@
     <ClInclude Include="IndexQueryBase.h">
       <Filter>ravendb.client\documents\queries</Filter>
     </ClInclude>
-    <ClInclude Include="Parameters.h">
-      <Filter>ravendb.client</Filter>
-    </ClInclude>
     <ClInclude Include="SpatialFieldType.h">
       <Filter>ravendb.client\documents\indexes\spacial</Filter>
     </ClInclude>
@@ -299,6 +296,40 @@
     <ClInclude Include="GetOperationStateOperation.h">
       <Filter>ravendb.client\documents\operations</Filter>
     </ClInclude>
+    <ClInclude Include="Constants.h" />
+    <ClInclude Include="ConcurrencyCheckMode.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="DocumentInfo.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="Parameters.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="DocumentsById.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="DocumentSession.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="InMemoryDocumentSessionOperations.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadOperation.h">
+      <Filter>ravendb.client\documents\session\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="OperationExecutor.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionInfo.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionOptions.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="TransactionMode.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
@@ -345,6 +376,12 @@
     </Filter>
     <Filter Include="ravendb.client\documents\indexes\spacial">
       <UniqueIdentifier>{5eaed6e9-3163-4e30-ba67-6c03511ef765}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\session">
+      <UniqueIdentifier>{2b6b9f90-4eb2-4bdd-aa0a-ccf888f0e506}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\session\operations">
+      <UniqueIdentifier>{e68ffdcc-7fc1-4497-b33e-8f9b53ce2ea0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
