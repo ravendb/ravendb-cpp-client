@@ -11,7 +11,7 @@ namespace ravendb::client::tests
 	class GetDocumentsCommandTests : public ::testing::Test
 	{
 	protected:
-		inline static std::unique_ptr<RequestExecutorScope> test_suite_executor{};
+		inline static std::shared_ptr<RequestExecutorScope> test_suite_executor{};
 
 		static void SetUpTestCase()
 		{

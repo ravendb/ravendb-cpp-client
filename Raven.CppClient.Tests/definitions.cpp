@@ -87,7 +87,7 @@ namespace ravendb::client::tests
 
 	
 	//request executor only - no DB is created
-	std::unique_ptr<ravendb::client::http::RequestExecutor> get_raw_request_executor
+	std::shared_ptr<ravendb::client::http::RequestExecutor> get_raw_request_executor
 	(bool is_secured, const std::string& db)
 	{
 		static const auto sec_conn_details = ConnectionDetailsHolder(SECURED_RE_DETAILS, true);
