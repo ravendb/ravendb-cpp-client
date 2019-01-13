@@ -153,7 +153,13 @@
   <ItemGroup>
     <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp" />
     <ClInclude Include="..\..\xxhash_cpp\xxhash\xxhash.hpp" />
+    <ClInclude Include="BatchCommand.h" />
+    <ClInclude Include="BatchCommandResult.h" />
+    <ClInclude Include="BatchOperation.h" />
+    <ClInclude Include="BatchOptions.h" />
     <ClInclude Include="CertificateDetails.h" />
+    <ClInclude Include="CommandDataBase.h" />
+    <ClInclude Include="CommandType.h" />
     <ClInclude Include="ConcurrencyCheckMode.h" />
     <ClInclude Include="ConflictSolver.h" />
     <ClInclude Include="Constants.h" />
@@ -165,6 +171,7 @@
     <ClInclude Include="DatabaseTopology.h" />
     <ClInclude Include="DateTimeOffset.h" />
     <ClInclude Include="DeleteByQueryOperation.h" />
+    <ClInclude Include="DeleteCommandData.h" />
     <ClInclude Include="DeleteDatabasesOperation.h" />
     <ClInclude Include="DeleteDatabaseResult.h" />
     <ClInclude Include="DeleteDocumentCommand.h" />
@@ -173,6 +180,7 @@
     <ClInclude Include="DocumentConventions.h" />
     <ClInclude Include="DocumentInfo.h" />
     <ClInclude Include="DocumentsById.h" />
+    <ClInclude Include="DocumentsChanges.h" />
     <ClInclude Include="DocumentSession.h" />
     <ClInclude Include="EnableIndexOperation.h" />
     <ClInclude Include="FieldIndexing.h" />
@@ -190,8 +198,12 @@
     <ClInclude Include="GetOperationStateOperation.h" />
     <ClInclude Include="GetTermsOperation.h" />
     <ClInclude Include="HttpCache.h" />
+    <ClInclude Include="IAdvancedDocumentSessionOperations.h" />
+    <ClInclude Include="IAdvancedSessionOperations.h" />
+    <ClInclude Include="IDocumentSession.h" />
     <ClInclude Include="IDocumentStore.h" />
     <ClInclude Include="IMaintenanceOperation.h" />
+    <ClInclude Include="IndexBatchOptions.h" />
     <ClInclude Include="IndexConfiguration.h" />
     <ClInclude Include="IndexDefinition.h" />
     <ClInclude Include="IndexErrors.h" />
@@ -222,6 +234,7 @@
     <ClInclude Include="PatchRequest.h" />
     <ClInclude Include="PatchResult.h" />
     <ClInclude Include="PatchStatus.h" />
+    <ClInclude Include="PutCommandData.h" />
     <ClInclude Include="PutIndexesOperation.h" />
     <ClInclude Include="PutIndexResult.h" />
     <ClInclude Include="PutResult.h" />
@@ -237,6 +250,7 @@
     <ClInclude Include="RavenCommand.h" />
     <ClInclude Include="GetDocumentsCommand.h" />
     <ClInclude Include="ravendb.h" />
+    <ClInclude Include="ReplicationBatchOptions.h" />
     <ClInclude Include="RequestExecutor.h" />
     <ClInclude Include="ResetIndexOperation.h" />
     <ClInclude Include="ScriptResolver.h" />

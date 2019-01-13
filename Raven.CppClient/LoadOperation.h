@@ -21,7 +21,7 @@ namespace ravendb::client::documents::session::operations
 			: _session(std::ref(session))
 		{}
 
-		std::unique_ptr<RavenCommand<commands::GetDocumentsResult>> create_request()
+		std::unique_ptr<RavenCommand<commands::GetDocumentsResult>> create_request() const
 		{
 			if(_ids_to_check_on_server.empty())
 			{
@@ -69,20 +69,19 @@ namespace ravendb::client::documents::session::operations
 			{
 				return {};
 			}
+
+			if (auto doc_info = _session.get()._documents_by_id.find(id);
+				doc_info != _session.get()._documents_by_id.end())
 			{
-				auto doc_info = _session.get()._documents_by_id.find(id);
-				if (doc_info != _session.get()._documents_by_id.end())
-				{
-					return _session.get().track_entity<T>(*doc_info->second);
-				}
+				return _session.get().track_entity<T>(*doc_info->second);
 			}
+			
+			if (auto doc_info = _session.get()._included_documents_by_id.find(id);
+				doc_info != _session.get()._included_documents_by_id.end())
 			{
-				auto doc_info = _session.get()._included_documents_by_id.find(id);
-				if (doc_info != _session.get()._included_documents_by_id.end())
-				{
-					return _session.get().track_entity<T>(*doc_info->second);
-				}
+				return _session.get().track_entity<T>(*doc_info->second);
 			}
+
 			return {};
 		}
 
@@ -97,7 +96,7 @@ namespace ravendb::client::documents::session::operations
 
 			for(const auto& document : result.results)
 			{
-				if(document.empty() || document.is_null())
+				if(document.empty())//null is empty
 				{
 					continue;
 				}

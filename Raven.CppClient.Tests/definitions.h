@@ -25,7 +25,7 @@ namespace ravendb::client::tests
 	void set_verbose(CURL* curl);
 
 	//request _executor only - no DB is created
-	std::unique_ptr<ravendb::client::http::RequestExecutor> get_raw_request_executor
+	std::shared_ptr<ravendb::client::http::RequestExecutor> get_raw_request_executor
 	(bool is_secured = false, const std::string& db = {});
 
 	class ConnectionDetailsHolder
@@ -52,7 +52,7 @@ namespace ravendb::client::tests
 	{
 	private:
 		std::string _db_name;
-		std::unique_ptr<ravendb::client::http::RequestExecutor> _executor;
+		std::shared_ptr<ravendb::client::http::RequestExecutor> _executor;
 	public:
 		RequestExecutorScope(std::string db_name, bool is_secured = false)
 			: _db_name(std::move(db_name))
@@ -78,20 +78,25 @@ namespace ravendb::client::tests
 			return _executor.get();
 		}
 
+		std::shared_ptr<ravendb::client::http::RequestExecutor> get_shared() const noexcept
+		{
+			return _executor;
+		}
+
 		const std::string& get_db_name() const
 		{
 			return _db_name;
 		}
 
-		static std::unique_ptr<RequestExecutorScope> get_request_executor_with_db
+		static std::shared_ptr<RequestExecutorScope> get_request_executor_with_db
 			(const std::string& file, int line, int counter, bool is_secured = false)
 		{
 			std::filesystem::path path(file);
 			std::ostringstream name;
 			name << path.filename().replace_extension().string() << "_" << line << "_" << counter;
 			return is_secured ?
-				std::make_unique<RequestExecutorScope>(name.str(), true) :
-				std::make_unique<RequestExecutorScope>(name.str());
+				std::make_shared<RequestExecutorScope>(name.str(), true) :
+				std::make_shared<RequestExecutorScope>(name.str());
 		}
 	};
 }

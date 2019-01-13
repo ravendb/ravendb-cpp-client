@@ -45,6 +45,7 @@
   <ItemGroup>
     <ClCompile Include="AdvancedPatchingTests.cpp" />
     <ClCompile Include="BasicQueryTests.cpp" />
+    <ClCompile Include="BasicDocumentsSessionTests.cpp" />
     <ClCompile Include="definitions.cpp" />
     <ClCompile Include="BasicDocumentCommandsTests.cpp" />
     <ClCompile Include="GetDocumentsCommandTests.cpp" />

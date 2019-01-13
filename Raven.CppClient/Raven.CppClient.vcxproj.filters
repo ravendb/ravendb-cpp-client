@@ -330,6 +330,48 @@
     <ClInclude Include="TransactionMode.h">
       <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
+    <ClInclude Include="IDocumentSession.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="IAdvancedDocumentSessionOperations.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="IAdvancedSessionOperations.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="BatchOperation.h">
+      <Filter>ravendb.client\documents\session\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="BatchCommand.h">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClInclude>
+    <ClInclude Include="BatchCommandResult.h">
+      <Filter>ravendb.client\json</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandType.h">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClInclude>
+    <ClInclude Include="BatchOptions.h">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClInclude>
+    <ClInclude Include="ReplicationBatchOptions.h">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexBatchOptions.h">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClInclude>
+    <ClInclude Include="DocumentsChanges.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="PutCommandData.h">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandDataBase.h">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClInclude>
+    <ClInclude Include="DeleteCommandData.h">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
@@ -382,6 +424,9 @@
     </Filter>
     <Filter Include="ravendb.client\documents\session\operations">
       <UniqueIdentifier>{e68ffdcc-7fc1-4497-b33e-8f9b53ce2ea0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\json">
+      <UniqueIdentifier>{1980ad8f-3fd8-4d41-9c28-4dedb33184b7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

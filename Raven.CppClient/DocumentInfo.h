@@ -10,6 +10,19 @@ namespace ravendb::client::documents::session
 		using FromJsonConverter = std::function<std::shared_ptr<void>(const nlohmann::json&)>;
 		using ToJsonConverter = std::function<nlohmann::json(std::shared_ptr<void>)>;
 
+		template<typename T>
+		inline static const ToJsonConverter default_to_json = [](std::shared_ptr<void> entity) -> nlohmann::json
+		{
+			return nlohmann::json(*std::static_pointer_cast<T>(entity));
+		};
+
+		template<typename T>
+		inline static const FromJsonConverter default_from_json = [](const nlohmann::json& json) -> std::shared_ptr<void>
+		{
+			auto temp = std::make_shared<T>(json);//implicit conversion(deserialization)
+			return std::static_pointer_cast<void>(temp);
+		};
+
 		nlohmann::json document{};
 		nlohmann::json metadata{};
 
@@ -27,8 +40,7 @@ namespace ravendb::client::documents::session
 		std::string collection{};
 
 		//TODO std::string entity_type{};
-
-		std::optional<std::type_info> exact_type;//to be filled by store()
+		//std::optional<std::type_info> exact_type;//to be filled by store()
 
 		DocumentInfo() = default;
 

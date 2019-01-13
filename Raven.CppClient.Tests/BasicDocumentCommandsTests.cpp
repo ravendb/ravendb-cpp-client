@@ -12,7 +12,7 @@ namespace ravendb::client::tests
 	class BasicDocumentCommandsTests : public ::testing::Test
 	{
 	protected:
-		inline static std::unique_ptr<RequestExecutorScope> test_suite_executor{};
+		inline static std::shared_ptr<RequestExecutorScope> test_suite_executor{};
 
 		static const User example_user;
 
