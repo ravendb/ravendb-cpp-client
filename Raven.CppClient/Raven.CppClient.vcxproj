@@ -223,9 +223,12 @@
     <ClInclude Include="IOperation.h" />
     <ClInclude Include="IServerOperation.h" />
     <ClInclude Include="IVoidMaintenanceOperation.h" />
+    <ClInclude Include="JsonOperation.h" />
     <ClInclude Include="json_utils.h" />
     <ClInclude Include="LeaderStamp.h" />
     <ClInclude Include="LoadOperation.h" />
+    <ClInclude Include="MetadataAsDictionary.h" />
+    <ClInclude Include="IMetadataDictionary.h" />
     <ClInclude Include="OperationExecutor.h" />
     <ClInclude Include="OperationIdResult.h" />
     <ClInclude Include="Parameters.h" />

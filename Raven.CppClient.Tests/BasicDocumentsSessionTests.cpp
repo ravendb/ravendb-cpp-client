@@ -25,7 +25,7 @@ namespace ravendb::client::tests
 	{
 		std::string doc_id = "users/1";
 
-		auto session_options = documents::session::SessionOptions{ test_suite_executor->get_db_name(),
+		const auto session_options = documents::session::SessionOptions{ test_suite_executor->get_db_name(),
 			false, true, test_suite_executor->get_shared(), 
 			documents::session::TransactionMode::SINGLE_NODE };
 		{

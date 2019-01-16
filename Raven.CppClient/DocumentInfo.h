@@ -1,6 +1,7 @@
 #pragma once
 #include "ConcurrencyCheckMode.h"
 #include "Constants.h"
+#include "IMetadataDictionary.h"
 
 
 namespace ravendb::client::documents::session
@@ -19,12 +20,14 @@ namespace ravendb::client::documents::session
 		template<typename T>
 		inline static const FromJsonConverter default_from_json = [](const nlohmann::json& json) -> std::shared_ptr<void>
 		{
-			auto temp = std::make_shared<T>(json);//implicit conversion(deserialization)
+			auto temp = std::make_shared<T>(json.get<T>());//conversion(deserialization)
 			return std::static_pointer_cast<void>(temp);
 		};
 
 		nlohmann::json document{};
 		nlohmann::json metadata{};
+
+		std::shared_ptr<IMetadataDictionary> metadata_instance{};
 
 		std::string id{};
 		std::string change_vector{};

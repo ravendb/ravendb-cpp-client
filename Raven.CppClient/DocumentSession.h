@@ -63,7 +63,7 @@ namespace ravendb::client::documents::session
 				_request_executor->execute(*command);
 				//TODO
 				//update_session_after_changes(command->get_result());
-				//save_changes_operation.set_result(command->get_result());
+				save_changes_operation.set_result(command->get_result());
 			}
 		}
 	};

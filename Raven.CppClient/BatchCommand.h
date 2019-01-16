@@ -2,7 +2,6 @@
 #include "stdafx.h"
 #include "RavenCommand.h"
 #include "DocumentConventions.h"
-#include <unordered_set>
 #include "TransactionMode.h"
 #include "BatchCommandResult.h"
 #include "CommandDataBase.h"

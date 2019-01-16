@@ -372,6 +372,15 @@
     <ClInclude Include="DeleteCommandData.h">
       <Filter>ravendb.client\documents\commands\batches</Filter>
     </ClInclude>
+    <ClInclude Include="MetadataAsDictionary.h">
+      <Filter>ravendb.client\json</Filter>
+    </ClInclude>
+    <ClInclude Include="IMetadataDictionary.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonOperation.h">
+      <Filter>ravendb.client\json</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">

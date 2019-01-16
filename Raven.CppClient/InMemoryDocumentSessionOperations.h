@@ -13,9 +13,12 @@
 #include "DocumentsChanges.h"
 #include "PutCommandData.h"
 #include "DeleteCommandData.h"
+#include "MetadataAsDictionary.h"
+#include "JsonOperation.h"
 
 namespace ravendb::client::documents::session::operations {
 	class LoadOperation;
+	class BatchOperation;
 }
 
 namespace ravendb::client::documents::session::in_memory_document_session_operations
@@ -50,6 +53,11 @@ namespace ravendb::client::documents::session
 	class InMemoryDocumentSessionOperations
 	{
 	public:
+		friend operations::LoadOperation;
+		friend operations::BatchOperation;
+
+		static const int32_t DEFAULT_MAX_NUMBER_OF_REQUESTS_PER_SESSION = 32;
+
 		struct  SaveChangesData
 		{
 			std::vector<std::shared_ptr<commands::batches::CommandDataBase>> deferred_commands{};
@@ -65,16 +73,15 @@ namespace ravendb::client::documents::session
 			{}
 		};
 
-		friend operations::LoadOperation;
+
 
 		virtual ~InMemoryDocumentSessionOperations() = 0;
 
-		//BatchOptions _save_changes_options;//TODO use this
 		const int32_t id;
 		const std::string database_name;
-		int32_t max_number_of_requests_per_session = 32;
+		int32_t max_number_of_requests_per_session = DEFAULT_MAX_NUMBER_OF_REQUESTS_PER_SESSION;
 		bool use_optimistic_concurrency = true;
-		const bool no_tracking = false;
+		const bool no_tracking;
 
 	private:
 		inline static std::atomic_int32_t _client_session_id_counter{};
@@ -129,6 +136,87 @@ namespace ravendb::client::documents::session
 		}
 
 	private:
+		static nlohmann::json basic_metadata_to_json_converter(const std::any& object)
+		{
+			//TODO think of more types or other solution
+			if (!object.has_value())
+			{
+				return nullptr;
+			}
+			if (auto val_ptr = std::any_cast<std::string>(&object);
+				nullptr != val_ptr)
+			{
+				return *val_ptr;
+			}
+			if (auto val_ptr = std::any_cast<int64_t>(&object);
+				nullptr != val_ptr)
+			{
+				return *val_ptr;
+			}
+			if (auto val_ptr = std::any_cast<uint64_t>(&object);
+				nullptr != val_ptr)
+			{
+				return *val_ptr;
+			}
+			if (auto val_ptr = std::any_cast<double>(&object);
+				nullptr != val_ptr)
+			{
+				return *val_ptr;
+			}
+			if (auto val_ptr = std::any_cast<bool>(&object);
+				nullptr != val_ptr)
+			{
+				return *val_ptr;
+			}
+			if (auto val_ptr = std::any_cast<std::shared_ptr<json::MetadataAsDictionary>>(&object);
+				nullptr != val_ptr)
+			{
+				const auto& map =  val_ptr->get()->get_dictionary();
+				nlohmann::json j = nlohmann::json::object();
+
+				for(const auto& [key, val] : map)
+				{
+					impl::utils::json_utils::set_val_to_json(j, key, basic_metadata_to_json_converter(val));
+				}
+				return j;
+			}
+			if (auto val_ptr = std::any_cast<std::vector<std::any>>(&object);
+				nullptr != val_ptr)
+			{
+				nlohmann::json arr = nlohmann::json::array();
+				for(const auto& val : *val_ptr)
+				{
+					arr.push_back(basic_metadata_to_json_converter(val));
+				}
+				return arr;
+			}
+			throw std::runtime_error("No more types supported");
+		}
+
+		static bool update_metadata_modifications(std::shared_ptr<DocumentInfo> doc_info)
+		{
+			bool dirty = false;
+			if(doc_info->metadata_instance)
+			{
+				if (doc_info->metadata_instance->is_dirty())
+				{
+					dirty = true;
+				}
+				for(auto& metadata_it : doc_info->metadata_instance->get_dictionary())
+				{
+					//MetadataAsDictionary weak pointer
+					using MAD_wptr = std::weak_ptr<json::MetadataAsDictionary>;
+					if (!metadata_it.second.has_value() ||
+						nullptr != std::any_cast<MAD_wptr>(&metadata_it.second) &&
+						std::any_cast<MAD_wptr>(metadata_it.second).lock()->is_dirty())
+					{
+						dirty = true;
+					}
+					doc_info->metadata[metadata_it.first] = basic_metadata_to_json_converter(metadata_it.second);
+				}
+			}
+			return dirty;
+		}
 		void store_internal(std::shared_ptr<void> entity, std::optional<std::string> change_vector, std::optional<std::string> id, 
 			ConcurrencyCheckMode force_concurrency_check, DocumentInfo::ToJsonConverter to_json)
 		{
@@ -164,21 +252,30 @@ namespace ravendb::client::documents::session
 			if(!id)
 			{
 				//TODO generate id or
-				throw std::exception{};
+				throw std::runtime_error("Not implemented");
 			}
 
-			//TODO throw is there is a deferred command registered for this document in the session
-
-			if(auto it = _deleted_entities.find(entity);
+			if(auto it = _deferred_commands_map.find(
+				in_memory_document_session_operations::IdTypeAndName{*id, 
+					commands::batches::CommandType::CLIENT_ANY_COMMAND, {}});
+				it != _deferred_commands_map.end())
+			{
+				throw std::runtime_error("Can't store document, there is a deferred command registered for this document in the session. Document id: " +*id);
+			}
+			if (auto it = _deleted_entities.find(entity);
 				it != _deleted_entities.end())
 			{
 				throw std::runtime_error("Can't store object, it was already deleted in this session.  Document id: " + *id);
 			}
 
-			//TODO assertNoNonUniqueInstance
+			// we make the check here even if we just generated the ID
+			// users can override the ID generation behavior, and we need
+			// to detect if they generate duplicates.
+			assert_is_unique_instance(entity, *id);
 
 			nlohmann::json metadata{};
 			//TODO generate and set collection name
+
 			if(id)
 			{
 				_known_missing_ids.erase(*id);
@@ -188,11 +285,11 @@ namespace ravendb::client::documents::session
 		}
 
 		void prepare_for_entities_deletion(SaveChangesData& result, 
-			std::optional<std::unordered_map<std::string, DocumentsChanges>>& changes)
+			std::optional<std::unordered_map<std::string, DocumentsChanges>>& changes_collection)
 		{
 			for(auto& deleted_entity : _deleted_entities)
 			{
-				std::shared_ptr<DocumentInfo> doc_info;
+				std::shared_ptr<DocumentInfo> doc_info{};
 				if(auto doc_info_it = _documents_by_entity.find(deleted_entity);
 					doc_info_it == _documents_by_entity.end())
 				{
@@ -201,14 +298,15 @@ namespace ravendb::client::documents::session
 				{
 					doc_info = doc_info_it->second;
 				}
-				if(changes)
+				if(changes_collection)
 				{
 					//TODO complete
+					throw std::runtime_error("Not implemented");
 				}else
 				{
 					if(auto command_it = result.deferred_commands_map.find(
-						in_memory_document_session_operations::IdTypeAndName{ doc_info->id,
-							commands::batches::CommandType::CLIENT_ANY_COMMAND, "" });
+						in_memory_document_session_operations::IdTypeAndName
+						{ doc_info->id, commands::batches::CommandType::CLIENT_ANY_COMMAND, "" });
 						command_it != result.deferred_commands_map.end())
 					{
 						// here we explicitly want to throw for all types of deferred commands, if the document
@@ -218,17 +316,17 @@ namespace ravendb::client::documents::session
 					std::string change_vector{};
 
 					auto doc_info_it = _documents_by_id.find(doc_info->id);
-					doc_info = doc_info_it != _documents_by_id.end() ? doc_info_it->second : nullptr;
+					auto doc_info_from_id = doc_info_it != _documents_by_id.end() ? doc_info_it->second : nullptr;
 
-					if(doc_info)
+					if(doc_info_from_id)
 					{
-						change_vector = doc_info->change_vector;
-						if(doc_info->entity)
+						change_vector = doc_info_from_id->change_vector;
+						if(doc_info_from_id->entity)
 						{
-							_documents_by_entity.erase(doc_info->entity);
-							result.entities.emplace_back(doc_info->entity);
+							_documents_by_entity.erase(doc_info_from_id->entity);
+							result.entities.emplace_back(doc_info_from_id->entity);
 						}
-						_documents_by_id.erase(doc_info->id);
+						_documents_by_id.erase(doc_info_from_id->id);
 					}
 					if(!use_optimistic_concurrency)
 					{
@@ -236,11 +334,11 @@ namespace ravendb::client::documents::session
 					}
 					//TODO call EventHelper.invoke()
 
-					result.session_commands.push_back(std::make_shared<commands::batches::DeleteCommandData>
+					result.session_commands.emplace_back(std::make_shared<commands::batches::DeleteCommandData>
 						(doc_info->id, change_vector));
 				}
 			}
-			if(!changes)
+			if(!changes_collection)
 			{
 				_deleted_entities.clear();
 			}
@@ -248,38 +346,59 @@ namespace ravendb::client::documents::session
 
 		void prepare_for_entities_puts(SaveChangesData& result)
 		{
-			for(auto& entity_docinfo_pair : _documents_by_entity)
+			for(auto& [entity, doc_info] : _documents_by_entity)
 			{
-				if(entity_docinfo_pair.second->ignore_changes)
+				if(doc_info->ignore_changes)
 				{
 					continue;
 				}
 
-				//TODO bool dirty_metadata = update_metadata_modifications(entity.second);
-				nlohmann::json document = entity_docinfo_pair.second->to_json_converter(entity_docinfo_pair.first);
+				bool dirty_metadata = update_metadata_modifications(doc_info);
 
-				entity_docinfo_pair.second->new_document = false;
-				result.entities.push_back(entity_docinfo_pair.first);
-				if(!entity_docinfo_pair.second->id.empty())
+				if (!doc_info->to_json_converter)
 				{
-					_documents_by_id.erase(entity_docinfo_pair.second->id);
+					throw std::runtime_error("for document id = " + doc_info->id + 
+						" to_json_converter is missing in the session.");
+				}
+				nlohmann::json document = doc_info->to_json_converter(entity);
+
+				if(auto empty_changes_collection = std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>>{};
+					!dirty_metadata && !entity_changed(document, doc_info, empty_changes_collection))
+				{
+					continue;
 				}
 
-				entity_docinfo_pair.second->document = document;
+				if(auto command_it = result.deferred_commands_map.find(
+					{ doc_info->id, commands::batches::CommandType::CLIENT_MODIFY_DOCUMENT_COMMAND, {} });
+					command_it != result.deferred_commands_map.end())
+				{
+					throw_invalid_modified_document_with_deferred_command(command_it->second);
+				}
+
+				//TODO use onBeforeStore
+
+				doc_info->new_document = false;
+				result.entities.push_back(entity);
+				if(!doc_info->id.empty())
+				{
+					_documents_by_id.erase(doc_info->id);
+				}
+
+				doc_info->document = document;
 				std::string change_vector{};
 				if(use_optimistic_concurrency)
 				{
-					if(entity_docinfo_pair.second->concurrency_check_mode != ConcurrencyCheckMode::DISABLED)
+					if(doc_info->concurrency_check_mode != ConcurrencyCheckMode::DISABLED)
 					{// if the user didn't provide a change vector, we'll test for an empty one
-						change_vector = !entity_docinfo_pair.second->change_vector.empty() ? entity_docinfo_pair.second->change_vector : "";
+						change_vector = doc_info->change_vector;
 					}
-				} else if(entity_docinfo_pair.second->concurrency_check_mode == ConcurrencyCheckMode::FORCED)
+				} else if(doc_info->concurrency_check_mode == ConcurrencyCheckMode::FORCED)
 				{
-					change_vector = entity_docinfo_pair.second->change_vector;
+					change_vector = doc_info->change_vector;
 				}
 
 				result.session_commands.push_back(std::make_shared<commands::batches::PutCommandData>
-					(entity_docinfo_pair.second->id, std::move(change_vector), std::move(document)));
+					(doc_info->id, std::move(change_vector), std::move(document)));
 			}
 		}
 
@@ -319,7 +438,28 @@ namespace ravendb::client::documents::session
 			}
 		}
 
+		std::shared_ptr<DocumentInfo> get_document_info(std::shared_ptr<void> entity)
+		{
+			if(auto doc_info_it = _documents_by_entity.find(entity);
+				doc_info_it != _documents_by_entity.end())
+			{
+				return doc_info_it->second;
+			}
 
+			//TODO get id
+			throw std::runtime_error("Not implemented");
+			
+		}
+
+		static void throw_invalid_modified_document_with_deferred_command(std::shared_ptr<commands::batches::CommandDataBase> result_command)
+		{
+			std::ostringstream error_msg{};
+			error_msg << "Cannot perform save because document " << result_command->get_id() <<
+				" has been modified by the session and is also taking part in deferred " <<
+				nlohmann::json(result_command->get_type()).get<std::string>() << " command";
+
+			throw std::runtime_error(error_msg.str());
+		}
 		static void throw_invalid_deleted_document_with_deferred_command(std::shared_ptr<commands::batches::CommandDataBase> result_command)
 		{
 			std::ostringstream error_msg{};
@@ -352,9 +492,9 @@ namespace ravendb::client::documents::session
 			, _sessionInfo(id, {}, options.no_caching)
 		{}
 
-		void store_entity_in_unit_of_work(std::optional<std::string> id, std::shared_ptr<void>entity,
-			std::optional<std::string> change_vector, nlohmann::json metadata , 
-			ConcurrencyCheckMode force_concurrency_check, DocumentInfo::ToJsonConverter to_json)
+		void store_entity_in_unit_of_work(std::optional<std::string>& id, std::shared_ptr<void> entity,
+			std::optional<std::string>& change_vector, nlohmann::json metadata , 
+			ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json)
 		{
 			if (!to_json)
 			{
@@ -388,6 +528,42 @@ namespace ravendb::client::documents::session
 			}
 		}
 
+		bool entity_changed(const nlohmann::json& new_obj, std::shared_ptr<DocumentInfo> doc_info,
+			std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>>& changes_collection)
+		{
+			return json::JsonOperation::entity_changed(new_obj, doc_info, changes_collection);
+		}
+
+		void assert_is_unique_instance(std::shared_ptr<void> entity, const std::string& id)
+		{
+			if(id.empty() || id.back() == '|' || id.back() == '/')
+			{
+				return;
+			}
+			auto doc_info_it = _documents_by_id.find(id);
+			if(doc_info_it == _documents_by_id.end() || doc_info_it->second == entity)
+			{
+				return;
+			}
+			throw std::runtime_error("Attempted to associate a different object with id '" + id + "'.");
+		}
+
+		void increment_request_count()
+		{
+			if (++_number_of_requests > max_number_of_requests_per_session)
+			{
+				std::ostringstream error;
+				error << "The maximum number of requests " << max_number_of_requests_per_session <<
+					" allowed for this session has been reached." <<
+					"Raven limits the number of remote calls that a session is allowed to make as an early warning system. Sessions are expected to be short lived, and "
+					"Raven provides facilities like load(std::vector<std::string> keys) to load multiple documents at once and batch saves (call save_changes() only once)."
+					"You can increase the limit by setting DocumentConvention.max_number_of_requests_per_session or 'max_number_of_requests_per_session', but it is"
+					"advisable that you'll look into reducing the number of remote calls first, since that will speed up your application significantly and result in a"
+					"more responsive application.";
+				throw std::runtime_error(error.str());
+			}
+		}
+
 	public:
 		const auto& get_documents_by_id() const
 		{
@@ -398,21 +574,6 @@ namespace ravendb::client::documents::session
 			return _included_documents_by_id;
 		}
 
-		void increment_request_count()
-		{
-			if(++_number_of_requests > max_number_of_requests_per_session)
-			{
-				std::ostringstream error;
-				error << "The maximum number of requests " << max_number_of_requests_per_session <<
-					" allowed for this session has been reached." <<
-					"Raven limits the number of remote calls that a session is allowed to make as an early warning system. Sessions are expected to be short lived, and "
-					"Raven provides facilities like load(std::vector<std::string> keys) to load multiple documents at once and batch saves (call SaveChanges() only once)."
-					"You can increase the limit by setting DocumentConvention.max_number_of_requests_per_session or 'max_number_of_requests_per_session', but it is"
-					"advisable that you'll look into reducing the number of remote calls first, since that will speed up your application significantly and result in a"
-					"more responsive application.";
-				throw std::runtime_error(error.str());
-			}
-		}
 
 		bool is_deleted(const std::string& id) const
 		{
@@ -585,8 +746,8 @@ namespace ravendb::client::documents::session
 			_deferred_commands.clear();
 			_deferred_commands_map.clear();
 
-			auto empty_changes = std::optional<std::unordered_map<std::string, DocumentsChanges>>{};
-			prepare_for_entities_deletion(result, empty_changes);
+			auto empty_changes_collection = std::optional<std::unordered_map<std::string, DocumentsChanges>>{};
+			prepare_for_entities_deletion(result, empty_changes_collection);
 			prepare_for_entities_puts(result);
 
 			//TODO prepare_compare_exchange_entities(result);
@@ -594,19 +755,19 @@ namespace ravendb::client::documents::session
 			if(!_deferred_commands.empty())
 			{// this allow on_before_store to call defer during the call to include
             // additional values during the same save_changes call
-				result.deferred_commands.insert(result.deferred_commands.end(), _deferred_commands.cbegin(), _deferred_commands.cend());
+				result.deferred_commands.insert(result.deferred_commands.end(),
+					_deferred_commands.cbegin(), _deferred_commands.cend());
 				result.deferred_commands_map.insert(_deferred_commands_map.cbegin(), _deferred_commands_map.cend());
 			}
 
 			_deferred_commands.clear();
 			_deferred_commands_map.clear();
 
-			//TODO
-			//for(auto& deferred_command : result.deferred_commands)
-			//{
-			//	deferred_command->on_before_save_changes(*this);
-			//}
-			return std::move(result);
+			for(auto& deferred_command : result.deferred_commands)
+			{
+				deferred_command->on_before_save_changes(*this);
+			}
+			return result;
 		}
 
 		void defer(const std::vector<std::shared_ptr<commands::batches::CommandDataBase>>& commands)
@@ -618,7 +779,24 @@ namespace ravendb::client::documents::session
 			}
 		}
 
+		template<typename T>
+		std::shared_ptr<IMetadataDictionary> get_metadata_for(std::shared_ptr<T> entity)
+		{
+			if(!entity)
+			{
+				throw std::invalid_argument("Entity cannot be null");
+			}
 
+			auto doc_info = get_document_info(std::static_pointer_cast<void>(entity));
+			if (doc_info->metadata_instance)
+			{
+				return doc_info->metadata_instance;
+			}
+
+			auto metadata = json::MetadataAsDictionary::create(doc_info->metadata);
+			doc_info->metadata_instance = std::static_pointer_cast<IMetadataDictionary>(metadata);
+			return doc_info->metadata_instance;
+		}
 
 
 	};

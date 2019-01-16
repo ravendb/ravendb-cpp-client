@@ -17,7 +17,7 @@ namespace ravendb::client::documents::commands::batches
 		nlohmann::json serialize() const override
 		{
 			using ravendb::client::impl::utils::json_utils::set_val_to_json;
-			nlohmann::json j{};
+			nlohmann::json j = nlohmann::json::object();
 
 			set_val_to_json(j, "Id", id);
 			if (!impl::utils::is_blank(change_vector))
