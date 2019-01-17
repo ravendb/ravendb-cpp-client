@@ -11,6 +11,9 @@
       <Filter>ravendb.client\impl</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="EntityToJson.cpp">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -380,6 +383,9 @@
     </ClInclude>
     <ClInclude Include="JsonOperation.h">
       <Filter>ravendb.client\json</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityToJson.h">
+      <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

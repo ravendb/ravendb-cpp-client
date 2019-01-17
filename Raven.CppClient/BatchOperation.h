@@ -11,7 +11,7 @@ namespace ravendb::client::documents::session::operations
 		std::vector<std::shared_ptr<void>> _entities{};
 		size_t _session_commands_count{};
 		size_t _all_commands_count{};
-		std::map<std::string, std::shared_ptr<DocumentInfo>, impl::utils::CompareStringsToIgnoreCase> _modifications{};
+		std::map<std::string, std::shared_ptr<DocumentInfo>, impl::utils::CompareStringsIgnoreCase> _modifications{};
 
 		void handle_put(size_t index, const nlohmann::json& batch_result, bool is_deferred )
 		{

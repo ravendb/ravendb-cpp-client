@@ -15,6 +15,7 @@
 #include "DeleteCommandData.h"
 #include "MetadataAsDictionary.h"
 #include "JsonOperation.h"
+#include "EntityToJson.h"
 
 namespace ravendb::client::documents::session::operations {
 	class LoadOperation;
@@ -96,7 +97,7 @@ namespace ravendb::client::documents::session
 		const std::shared_ptr<http::RequestExecutor> _request_executor{};
 		const bool _generate_document_keys_on_store = true;
 		const SessionInfo _sessionInfo;
-		std::set<std::string, impl::utils::CompareStringsToIgnoreCase> _known_missing_ids{};
+		std::set<std::string, impl::utils::CompareStringsIgnoreCase> _known_missing_ids{};
 		std::unordered_map<std::string, std::shared_ptr<void>> _external_state{};
 
 		//Translate between an ID and its associated entity
@@ -135,7 +136,6 @@ namespace ravendb::client::documents::session
 			return _transaction_mode;
 		}
 
-	private:
 		static nlohmann::json basic_metadata_to_json_converter(const std::any& object)
 		{
 			//TODO think of more types or other solution
@@ -171,10 +171,10 @@ namespace ravendb::client::documents::session
 			if (auto val_ptr = std::any_cast<std::shared_ptr<json::MetadataAsDictionary>>(&object);
 				nullptr != val_ptr)
 			{
-				const auto& map =  val_ptr->get()->get_dictionary();
+				const auto& map = val_ptr->get()->get_dictionary();
 				nlohmann::json j = nlohmann::json::object();
 
-				for(const auto& [key, val] : map)
+				for (const auto&[key, val] : map)
 				{
 					impl::utils::json_utils::set_val_to_json(j, key, basic_metadata_to_json_converter(val));
 				}
@@ -184,7 +184,7 @@ namespace ravendb::client::documents::session
 				nullptr != val_ptr)
 			{
 				nlohmann::json arr = nlohmann::json::array();
-				for(const auto& val : *val_ptr)
+				for (const auto& val : *val_ptr)
 				{
 					arr.push_back(basic_metadata_to_json_converter(val));
 				}
@@ -193,6 +193,7 @@ namespace ravendb::client::documents::session
 			throw std::runtime_error("No more types supported");
 		}
 
+	private:
 		static bool update_metadata_modifications(std::shared_ptr<DocumentInfo> doc_info)
 		{
 			bool dirty = false;
@@ -212,7 +213,8 @@ namespace ravendb::client::documents::session
 					{
 						dirty = true;
 					}
-					doc_info->metadata[metadata_it.first] = basic_metadata_to_json_converter(metadata_it.second);
+					impl::utils::json_utils::set_val_to_json(doc_info->metadata,
+						metadata_it.first, basic_metadata_to_json_converter(metadata_it.second));
 				}
 			}
 			return dirty;
@@ -355,12 +357,7 @@ namespace ravendb::client::documents::session
 
 				bool dirty_metadata = update_metadata_modifications(doc_info);
 
-				if (!doc_info->to_json_converter)
-				{
-					throw std::runtime_error("for document id = " + doc_info->id + 
-						" to_json_converter is missing in the session.");
-				}
-				nlohmann::json document = doc_info->to_json_converter(entity);
+				nlohmann::json document = EntityToJson::convert_entity_to_json(entity, doc_info);
 
 				if(auto empty_changes_collection = std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>>{};
 					!dirty_metadata && !entity_changed(document, doc_info, empty_changes_collection))

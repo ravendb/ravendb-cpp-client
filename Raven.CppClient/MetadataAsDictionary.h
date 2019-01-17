@@ -56,14 +56,19 @@ namespace  ravendb::client::json
 			_dirty = true;
 			_metadata.clear();
 
-			for (const auto& field : _source.items())
-			{
-				_metadata.insert({field.key(), convert_value(field.key(), field.value())});
-			}
+			update_from_source();
 
 			if(_parent)// mark parent as dirty
 			{
 				_parent->insert(_parent_key, shared_this);
+			}
+		}
+
+		void update_from_source()
+		{
+			for (const auto& field : _source.items())
+			{
+				_metadata.insert_or_assign(field.key(), convert_value(field.key(), field.value()));
 			}
 		}
 
@@ -123,6 +128,7 @@ namespace  ravendb::client::json
 		{
 			auto shared = std::shared_ptr<MetadataAsDictionary>(new MetadataAsDictionary(std::move(metadata)));
 			shared->shared_this = shared;
+			shared->update_from_source();
 			return shared;
 
 		}
@@ -130,6 +136,7 @@ namespace  ravendb::client::json
 		{
 			auto shared = std::shared_ptr<MetadataAsDictionary>(new MetadataAsDictionary(std::move(metadata)));
 			shared->shared_this = shared;
+			shared->update_from_source();
 			return shared;
 		}
 		static std::shared_ptr<MetadataAsDictionary> create(nlohmann::json::object_t metadata,
@@ -138,6 +145,7 @@ namespace  ravendb::client::json
 			auto shared = std::shared_ptr<MetadataAsDictionary>(new MetadataAsDictionary(
 				std::move(metadata), parent, std::move(parent_key)));
 			shared->shared_this = shared;
+			shared->update_from_source();
 			return shared;
 		}
 

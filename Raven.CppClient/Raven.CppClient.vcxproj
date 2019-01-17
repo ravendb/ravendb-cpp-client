@@ -183,6 +183,7 @@
     <ClInclude Include="DocumentsChanges.h" />
     <ClInclude Include="DocumentSession.h" />
     <ClInclude Include="EnableIndexOperation.h" />
+    <ClInclude Include="EntityToJson.h" />
     <ClInclude Include="FieldIndexing.h" />
     <ClInclude Include="FieldStorage.h" />
     <ClInclude Include="FieldTermVector.h" />
@@ -280,6 +281,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CurlHandlesHolder.h" />
+    <ClCompile Include="EntityToJson.cpp" />
     <ClCompile Include="RequestExecutor.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
