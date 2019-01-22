@@ -1,13 +1,14 @@
 #include "pch.h"
-#include "definitions.h"
+#include "re_definitions.h"
 #include "CreateSampleDataOperation.h"
 #include "QueryCommand.h"
 #include "QueryOperationOptions.h"
 #include "DeleteByQueryOperation.h"
+#include "DocumentStore.h"
 
 namespace
 {
-	class FakeStore : public IDocumentStore
+	class FakeStore : public ravendb::client::documents::DocumentStore
 	{};
 }
 

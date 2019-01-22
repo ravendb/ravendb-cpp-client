@@ -7,12 +7,27 @@
     <ClCompile Include="utils.cpp">
       <Filter>ravendb.client\impl</Filter>
     </ClCompile>
-    <ClCompile Include="CurlHandlesHolder.h">
-      <Filter>ravendb.client\impl</Filter>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="EntityToJson.cpp">
       <Filter>ravendb.client\documents\session</Filter>
+    </ClCompile>
+    <ClCompile Include="DocumentStoreBase.cpp">
+      <Filter>ravendb.client\documents</Filter>
+    </ClCompile>
+    <ClCompile Include="DocumentStore.cpp">
+      <Filter>ravendb.client\documents</Filter>
+    </ClCompile>
+    <ClCompile Include="InMemoryDocumentSessionOperations.cpp">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClCompile>
+    <ClCompile Include="SessionOperationExecutor.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="BatchOperation.cpp">
+      <Filter>ravendb.client\documents\session\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="CurlHandlesHolder.cpp">
+      <Filter>ravendb.client\impl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -386,6 +401,21 @@
     </ClInclude>
     <ClInclude Include="EntityToJson.h">
       <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="MaintenanceOperationExecutor.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="DocumentStoreBase.h">
+      <Filter>ravendb.client\documents</Filter>
+    </ClInclude>
+    <ClInclude Include="DocumentStore.h">
+      <Filter>ravendb.client\documents</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionOperationExecutor.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="CurlHandlesHolder.h">
+      <Filter>ravendb.client\impl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

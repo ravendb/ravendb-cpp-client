@@ -2,14 +2,18 @@
 #include "InMemoryDocumentSessionOperations.h"
 #include "LoadOperation.h"
 #include "BatchOperation.h"
+#include "SessionOptions.h"
+#include "BatchCommand.h"
 
 namespace ravendb::client::documents::session
 {
 	class DocumentSession : public InMemoryDocumentSessionOperations
 	{
 	public:
-		DocumentSession(SessionOptions options)
-			: InMemoryDocumentSessionOperations(std::move(options))
+		~DocumentSession() override = default;
+
+		DocumentSession(DocumentStoreBase& document_store,/* UUID id,*/ SessionOptions options)
+			: InMemoryDocumentSessionOperations(document_store, std::move(options))
 		{}
 
 		template<typename T>
@@ -44,7 +48,8 @@ namespace ravendb::client::documents::session
 				return true;
 			}
 
-			//TODO execute HeadDocumentCommand
+			//TODO execute HeadDocumentCommand , for now->
+			throw std::runtime_error("Not implemented");
 		}
 
 		void save_changes()
@@ -61,8 +66,7 @@ namespace ravendb::client::documents::session
 					throw std::runtime_error("Cannot execute saveChanges when entity tracking is disabled in session.");
 				}
 				_request_executor->execute(*command);
-				//TODO
-				//update_session_after_changes(command->get_result());
+				update_session_after_changes(command->get_result());
 				save_changes_operation.set_result(command->get_result());
 			}
 		}

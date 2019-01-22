@@ -44,6 +44,7 @@ namespace ravendb::client::documents::commands::batches
 		}
 
 		virtual nlohmann::json serialize() const = 0;
+
 		virtual void on_before_save_changes(session::InMemoryDocumentSessionOperations& session) = 0;
 	};
 

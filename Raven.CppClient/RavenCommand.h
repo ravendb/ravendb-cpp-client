@@ -6,13 +6,13 @@
 
 namespace ravendb::client::http
 {
-	enum class RavenCommandResponseType : uint8_t
+	enum class RavenCommandResponseType
 	{
 		EMPTY,
 		OBJECT,
 	};
 
-
+	//TODO consider using base non_template abstract class/interface
 	template<typename Result_t>
 	class RavenCommand //abstract
 	{
@@ -87,7 +87,7 @@ namespace ravendb::client::http
 
 		bool is_failed_with_node(const ServerNode& node) const noexcept
 		{
-			return _failed_nodes.find(node) != _failed_nodes.cend();
+			return _failed_nodes.find(node) != _failed_nodes.end();
 		}
 
 	};

@@ -2,8 +2,9 @@
 
 namespace ravendb::client::documents::conventions
 {
-	struct DocumentConventions
+	class DocumentConventions
 	{
+	public:
 		static const DocumentConventions& default_conventions()
 		{
 			static DocumentConventions dc{};
@@ -11,6 +12,7 @@ namespace ravendb::client::documents::conventions
 		}
 		
 		DocumentConventions() = default;
+		~DocumentConventions() = default;
 
 		//TODO do it !
 
