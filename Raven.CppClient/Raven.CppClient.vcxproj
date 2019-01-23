@@ -180,6 +180,7 @@
     <ClInclude Include="DocumentConventions.h" />
     <ClInclude Include="DocumentInfo.h" />
     <ClInclude Include="DocumentsById.h" />
+    <ClInclude Include="DocumentsByIdsMap.h" />
     <ClInclude Include="DocumentsChanges.h" />
     <ClInclude Include="DocumentSessionImpl.h" />
     <ClInclude Include="DocumentStore.h" />

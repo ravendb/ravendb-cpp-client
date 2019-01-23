@@ -11,11 +11,6 @@ namespace ravendb::client::documents::session
 
 	operations::LoadOperation DocumentSessionImpl::load_impl(const std::string& id)
 	{
-		if (impl::utils::is_blank(id))
-		{
-			throw std::invalid_argument("Id must be a non empty string");
-		}
-
 		auto load_op = operations::LoadOperation(*this);
 		load_op.by_id(id);
 		auto cmd = load_op.create_request();
@@ -27,6 +22,29 @@ namespace ravendb::client::documents::session
 		}
 
 		return load_op;
+	}
+
+	operations::LoadOperation DocumentSessionImpl::load_impl(const std::vector<std::reference_wrapper<const std::string>>& ids)
+	{
+		auto load_op = operations::LoadOperation(*this);
+		load_internal(ids, load_op);
+
+		return load_op;
+	}
+
+
+	void DocumentSessionImpl::load_internal(const std::vector<std::reference_wrapper<const std::string>>& ids,
+		operations::LoadOperation& operation)
+	{
+		operation.by_ids(ids);
+
+		auto cmd = operation.create_request();
+
+		if (cmd)
+		{
+			_request_executor->execute(*cmd);
+			operation.set_result(cmd->get_result());
+		}
 	}
 
 

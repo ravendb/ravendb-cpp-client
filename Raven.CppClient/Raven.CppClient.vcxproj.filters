@@ -420,6 +420,9 @@
     <ClInclude Include="ExtendedAdvancedSessionOperations.h">
       <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
+    <ClInclude Include="DocumentsByIdsMap.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">

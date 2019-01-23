@@ -66,5 +66,12 @@ namespace ravendb::client::documents::session
 		{
 			return _session_impl->load<T>(id);
 		}
+
+		//load by collections of ids (std::string)
+		template<typename T, typename InputIt>
+		DocumentsByIdsMap<T> load(InputIt first, InputIt last)
+		{
+			return _session_impl->load<T, InputIt>(first, last);
+		}
 	};
 }
