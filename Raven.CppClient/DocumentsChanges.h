@@ -40,6 +40,4 @@ namespace ravendb::client::documents::session
 		std::string field_name{};
 		std::string field_path{};		
 	};
-
-
 }

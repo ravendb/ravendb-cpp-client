@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "definitions.h"
+#include "re_definitions.h"
 #include <fstream>
 
 namespace ravendb::client::tests

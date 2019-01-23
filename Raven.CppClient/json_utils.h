@@ -11,7 +11,7 @@ namespace ravendb::client::impl::utils::json_utils
 	{
 		if(auto&& it = j.find(key_name); it != j.end() && ! it->is_null())
 		{
-			field = it->get<T>();
+			it->get_to<T>(field);
 			return true;
 		}
 		return false;
@@ -63,8 +63,15 @@ namespace ravendb::client::impl::utils::json_utils
 	bool set_val_to_json(nlohmann::json& j, const std::string& key_name, const T& field)
 	{
 		bool res = false;
-		std::tie(std::ignore, res) = j.emplace(key_name, field);
-		return res;
+		if (auto it = j.find(key_name);
+			it == j.end())
+		{
+			std::tie(std::ignore, res) = j.emplace(key_name, field);
+			return res;
+		}
+		else
+			it.value() = field;
+		return true;
 	}
 
 	template<typename T>
@@ -104,7 +111,7 @@ namespace ravendb::client::impl::utils::json_utils
 
 
 
-
+//TODO think of somthing better!
 namespace std::chrono
 {
 	//serialization in C# TimeSpan format : d.hh:mm:ss.sssssss or hh:mm:ss.sssssss

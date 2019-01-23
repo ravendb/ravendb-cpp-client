@@ -8,6 +8,8 @@ using
 
 namespace ravendb::client::http
 {
+	RequestExecutor::~RequestExecutor() = default;
+
 	void RequestExecutor::first_topology_update()
 	{
 		GetDatabaseTopologyCommand getTopology{};
@@ -39,13 +41,12 @@ namespace ravendb::client::http
 		throw RavenError(errors.str(), RavenError::ErrorType::generic);
 	}
 
-
 	RequestExecutor::RequestExecutor(
 		std::string db_name,
 		std::vector<std::string> initial_urls,
 		std::optional<impl::CertificateDetails> certificate_details,
-		ravendb::client::impl::SetCurlOptions set_before_perform,
-		ravendb::client::impl::SetCurlOptions set_after_perform)
+		ravendb::client::impl::CurlOptionsSetter set_before_perform,
+		ravendb::client::impl::CurlOptionsSetter set_after_perform)
 		: _db_name(std::move(db_name))
 		, _initial_urls(std::move(initial_urls))
 		, _topology(std::make_shared<Topology>())
@@ -101,8 +102,8 @@ namespace ravendb::client::http
 		std::vector<std::string> urls,
 		std::string db,
 		std::optional<impl::CertificateDetails> certificate_details,
-		ravendb::client::impl::SetCurlOptions set_before_perform,
-		ravendb::client::impl::SetCurlOptions set_after_perform)
+		ravendb::client::impl::CurlOptionsSetter set_before_perform,
+		ravendb::client::impl::CurlOptionsSetter set_after_perform)
 	{
 		//using explicit call to PRIVATE ctor
 		auto rq = std::unique_ptr<RequestExecutor>(new RequestExecutor(

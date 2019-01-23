@@ -2,7 +2,6 @@
 #include "stdafx.h"
 #include "RavenCommand.h"
 #include "DocumentConventions.h"
-#include <unordered_set>
 #include "TransactionMode.h"
 #include "BatchCommandResult.h"
 #include "CommandDataBase.h"
@@ -68,7 +67,7 @@ namespace ravendb::client::documents::commands::batches
 	public:
 		~BatchCommand() override = default;
 
-		BatchCommand(DocumentConventions conventions, std::vector<std::shared_ptr<CommandDataBase>> commands,
+		BatchCommand(conventions::DocumentConventions conventions, std::vector<std::shared_ptr<CommandDataBase>> commands,
 			std::optional<BatchOptions> options = {}, session::TransactionMode mode = session::TransactionMode::SINGLE_NODE)
 			: _conventions(std::move(conventions))
 			, _commands(std::move(commands))

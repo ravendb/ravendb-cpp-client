@@ -54,7 +54,7 @@ namespace ravendb::client::tests
 		std::string _db_name;
 		std::shared_ptr<ravendb::client::http::RequestExecutor> _executor;
 	public:
-		RequestExecutorScope(std::string db_name, bool is_secured = false)
+		explicit RequestExecutorScope(std::string db_name, bool is_secured = false)
 			: _db_name(std::move(db_name))
 		{
 			auto server_wide_req_exec = get_raw_request_executor(is_secured);

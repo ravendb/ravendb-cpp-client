@@ -1,6 +1,5 @@
 #pragma once
 
-#include "stdafx.h"
 #include "CurlHandlesHolder.h"
 #include "Topology.h"
 #include "RavenCommand.h"
@@ -17,13 +16,14 @@ namespace ravendb::client::http
 		std::shared_ptr<Topology> _topology;
 		std::optional<impl::CertificateDetails> _certificate_details;
 		std::unique_ptr<impl::CurlHandlesHolder> _curl_holder;
-		impl::SetCurlOptions _set_before_perform = {};
-		impl::SetCurlOptions _set_after_perform = {};
+		impl::CurlOptionsSetter _set_before_perform = {};
+		impl::CurlOptionsSetter _set_after_perform = {};
 
 		void validate_urls();
 
 		void first_topology_update();
 
+		//TODO move the non-template part out 
 		template<typename TResult>
 		TResult execute_internal(ServerNode& node, RavenCommand<TResult>& cmd)
 		{
@@ -110,16 +110,16 @@ namespace ravendb::client::http
 			std::string db_name,
 			std::vector<std::string> initial_urls,
 			std::optional<impl::CertificateDetails> certificate_details,
-			ravendb::client::impl::SetCurlOptions set_before_perform,
-			ravendb::client::impl::SetCurlOptions set_after_perform);
+			ravendb::client::impl::CurlOptionsSetter set_before_perform,
+			ravendb::client::impl::CurlOptionsSetter set_after_perform);
 
 	public:
+		~RequestExecutor();
+
 		RequestExecutor(const RequestExecutor& other) = delete;
 		RequestExecutor(RequestExecutor&& other) = delete;
 		RequestExecutor& operator=(const RequestExecutor& other) = delete;
 		RequestExecutor& operator=(RequestExecutor&& other) = delete;
-
-		~RequestExecutor() = default;
 
 		template<typename Result_t>
 		Result_t execute(RavenCommand<Result_t>& cmd)
@@ -161,7 +161,7 @@ namespace ravendb::client::http
 			std::vector<std::string> urls,
 			std::string db,
 			std::optional<impl::CertificateDetails> certificate_details = {},
-			ravendb::client::impl::SetCurlOptions set_before_perform = {},
-			ravendb::client::impl::SetCurlOptions set_after_perform = {});
+			ravendb::client::impl::CurlOptionsSetter set_before_perform = {},
+			ravendb::client::impl::CurlOptionsSetter set_after_perform = {});
 	};
 }

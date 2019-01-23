@@ -6,7 +6,6 @@
     <ClCompile Include="RequestExecutorAndDBsTests.cpp">
       <Filter>test_suits</Filter>
     </ClCompile>
-    <ClCompile Include="definitions.cpp" />
     <ClCompile Include="BasicDocumentCommandsTests.cpp">
       <Filter>test_suits</Filter>
     </ClCompile>
@@ -31,12 +30,20 @@
     <ClCompile Include="BasicDocumentsSessionTests.cpp">
       <Filter>test_suits</Filter>
     </ClCompile>
+    <ClCompile Include="re_definitions.cpp">
+      <Filter>definitions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="definitions.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="CreateSampleDataOperation.h" />
     <ClInclude Include="User.h" />
+    <ClInclude Include="re_definitions.h">
+      <Filter>definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="ds_definitions.h">
+      <Filter>definitions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -47,6 +54,9 @@
     </Filter>
     <Filter Include="configurations">
       <UniqueIdentifier>{f5a6f89b-6952-4958-ac46-82e28099fa9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="definitions">
+      <UniqueIdentifier>{21ed43ff-ed6d-4099-8d0c-6d9750d409f4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

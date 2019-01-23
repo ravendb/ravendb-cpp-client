@@ -1,6 +1,5 @@
 #include "pch.h"
-#include "definitions.h"
-#include "IDocumentStore.h"
+#include "re_definitions.h"
 #include "User.h"
 #include "PatchOperation.h"
 #include "PutDocumentCommand.h"
@@ -8,10 +7,11 @@
 #include "PatchByQueryOperation.h"
 #include "DeleteDocumentCommand.h"
 #include "GetOperationStateOperation.h"
+#include "DocumentStore.h"
 
 namespace
 {
-	class FakeStore : public ravendb::client::documents::IDocumentStore
+	class FakeStore : public ravendb::client::documents::DocumentStore
 	{};
 }
 

@@ -180,9 +180,13 @@
     <ClInclude Include="DocumentConventions.h" />
     <ClInclude Include="DocumentInfo.h" />
     <ClInclude Include="DocumentsById.h" />
+    <ClInclude Include="DocumentsByIdsMap.h" />
     <ClInclude Include="DocumentsChanges.h" />
-    <ClInclude Include="DocumentSession.h" />
+    <ClInclude Include="DocumentSessionImpl.h" />
+    <ClInclude Include="DocumentStore.h" />
+    <ClInclude Include="DocumentStoreBase.h" />
     <ClInclude Include="EnableIndexOperation.h" />
+    <ClInclude Include="EntityToJson.h" />
     <ClInclude Include="FieldIndexing.h" />
     <ClInclude Include="FieldStorage.h" />
     <ClInclude Include="FieldTermVector.h" />
@@ -198,9 +202,9 @@
     <ClInclude Include="GetOperationStateOperation.h" />
     <ClInclude Include="GetTermsOperation.h" />
     <ClInclude Include="HttpCache.h" />
-    <ClInclude Include="IAdvancedDocumentSessionOperations.h" />
-    <ClInclude Include="IAdvancedSessionOperations.h" />
-    <ClInclude Include="IDocumentSession.h" />
+    <ClInclude Include="AdvancedDocumentSessionOperations.h" />
+    <ClInclude Include="ExtendedAdvancedSessionOperations.h" />
+    <ClInclude Include="DocumentSession.h" />
     <ClInclude Include="IDocumentStore.h" />
     <ClInclude Include="IMaintenanceOperation.h" />
     <ClInclude Include="IndexBatchOptions.h" />
@@ -223,9 +227,13 @@
     <ClInclude Include="IOperation.h" />
     <ClInclude Include="IServerOperation.h" />
     <ClInclude Include="IVoidMaintenanceOperation.h" />
+    <ClInclude Include="JsonOperation.h" />
     <ClInclude Include="json_utils.h" />
     <ClInclude Include="LeaderStamp.h" />
     <ClInclude Include="LoadOperation.h" />
+    <ClInclude Include="MaintenanceOperationExecutor.h" />
+    <ClInclude Include="MetadataAsDictionary.h" />
+    <ClInclude Include="IMetadataDictionary.h" />
     <ClInclude Include="OperationExecutor.h" />
     <ClInclude Include="OperationIdResult.h" />
     <ClInclude Include="Parameters.h" />
@@ -256,6 +264,7 @@
     <ClInclude Include="ScriptResolver.h" />
     <ClInclude Include="ServerNode.h" />
     <ClInclude Include="SessionInfo.h" />
+    <ClInclude Include="SessionOperationExecutor.h" />
     <ClInclude Include="SessionOptions.h" />
     <ClInclude Include="SetIndexesLockOperation.h" />
     <ClInclude Include="SetIndexesPriorityOperation.h" />
@@ -276,8 +285,16 @@
     <ClInclude Include="VoidRavenCommand.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CurlHandlesHolder.h" />
+    <ClCompile Include="BatchOperation.cpp" />
+    <ClCompile Include="CurlHandlesHolder.cpp" />
+    <ClInclude Include="CurlHandlesHolder.h" />
+    <ClCompile Include="DocumentSessionImpl.cpp" />
+    <ClCompile Include="DocumentStore.cpp" />
+    <ClCompile Include="DocumentStoreBase.cpp" />
+    <ClCompile Include="EntityToJson.cpp" />
+    <ClCompile Include="InMemoryDocumentSessionOperations.cpp" />
     <ClCompile Include="RequestExecutor.cpp" />
+    <ClCompile Include="SessionOperationExecutor.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
