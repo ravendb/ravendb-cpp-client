@@ -19,7 +19,7 @@ namespace ravendb::client::documents::session
 	std::atomic_int32_t InMemoryDocumentSessionOperations::_client_session_id_counter{};
 	std::atomic_int32_t InMemoryDocumentSessionOperations::_instances_counter{};
 
-	IDocumentStore& InMemoryDocumentSessionOperations::get_document_store() const
+	std::reference_wrapper<IDocumentStore> InMemoryDocumentSessionOperations::get_document_store() const
 	{
 		return _document_store;
 	}

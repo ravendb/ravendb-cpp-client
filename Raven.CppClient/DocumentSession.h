@@ -1,74 +1,70 @@
 #pragma once
-#include "InMemoryDocumentSessionOperations.h"
-#include "LoadOperation.h"
-#include "BatchOperation.h"
-#include "SessionOptions.h"
-#include "BatchCommand.h"
+#include "DocumentSessionImpl.h"
+#include "AdvancedDocumentSessionOperations.h"
 
 namespace ravendb::client::documents::session
 {
-	class DocumentSession : public InMemoryDocumentSessionOperations
+	class DocumentSession
 	{
-	public:
-		~DocumentSession() override = default;
+	private:
+		std::shared_ptr<DocumentSessionImpl> _session_impl;
 
-		DocumentSession(DocumentStoreBase& document_store,/* UUID id,*/ SessionOptions options)
-			: InMemoryDocumentSessionOperations(document_store, std::move(options))
+	public:
+		~DocumentSession() = default;
+
+		explicit DocumentSession(std::shared_ptr<DocumentSessionImpl> session_impl)
+			: _session_impl(session_impl)
 		{}
 
-		template<typename T>
-		std::shared_ptr<T> load(const std::string& id)
+		AdvancedDocumentSessionOperations advanced()
 		{
-			if (impl::utils::is_blank(id))
-			{
-				throw std::invalid_argument("Id must be a non empty string");
-			}
-
-			auto load_op = operations::LoadOperation(*this);
-			load_op.by_id(id);
-			auto cmd = load_op.create_request();
-
-			if (cmd)
-			{
-				_request_executor->execute(*cmd);
-				load_op.set_result(cmd->get_result());
-			}
-
-			return load_op.get_document<T>();
+			return AdvancedDocumentSessionOperations(_session_impl);
 		}
 
-		bool exists(const std::string& id)
+		const AdvancedDocumentSessionOperations advanced() const
 		{
-			if(_known_missing_ids.find(id) != _known_missing_ids.end())
-			{
-				return false;
-			}
-			if(_documents_by_id.find(id) != _documents_by_id.end())
-			{
-				return true;
-			}
+			return AdvancedDocumentSessionOperations(_session_impl);
+		}
 
-			//TODO execute HeadDocumentCommand , for now->
-			throw std::runtime_error("Not implemented");
+		template<typename T>
+		void delete_document(std::shared_ptr<T> entity)
+		{
+			_session_impl->delete_document(entity);
+		}
+
+		void delete_document(const std::string& id, const std::string& expected_change_vector = {})
+		{
+			_session_impl->delete_document(id, expected_change_vector);
 		}
 
 		void save_changes()
 		{
-			auto save_changes_operation = operations::BatchOperation(*this);
-			if(auto command = save_changes_operation.create_request();
-				!command)
-			{
-				return;
-			}else
-			{
-				if (no_tracking)
-				{
-					throw std::runtime_error("Cannot execute saveChanges when entity tracking is disabled in session.");
-				}
-				_request_executor->execute(*command);
-				update_session_after_changes(command->get_result());
-				save_changes_operation.set_result(command->get_result());
-			}
+			_session_impl->save_changes();
+		}
+
+		template<typename T>
+		void store(std::shared_ptr<T> entity, std::optional<DocumentInfo::ToJsonConverter> to_json = {})
+		{
+			_session_impl->store(entity, to_json);
+		}
+
+		template<typename T>
+		void store(std::shared_ptr<T> entity, std::string id, std::optional<DocumentInfo::ToJsonConverter> to_json = {})
+		{
+			_session_impl->store(entity, id, to_json);
+		}
+
+		template<typename T>
+		void store(std::shared_ptr<T> entity, std::optional<std::string> id = {},
+			std::optional<std::string> change_vector = {}, std::optional<DocumentInfo::ToJsonConverter> to_json = {})
+		{
+			_session_impl->store(entity, id, change_vector, to_json);
+		}
+
+		template<typename T>
+		std::shared_ptr<T> load(const std::string& id)
+		{
+			return _session_impl->load<T>(id);
 		}
 	};
 }

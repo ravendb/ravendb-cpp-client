@@ -181,7 +181,7 @@
     <ClInclude Include="DocumentInfo.h" />
     <ClInclude Include="DocumentsById.h" />
     <ClInclude Include="DocumentsChanges.h" />
-    <ClInclude Include="DocumentSession.h" />
+    <ClInclude Include="DocumentSessionImpl.h" />
     <ClInclude Include="DocumentStore.h" />
     <ClInclude Include="DocumentStoreBase.h" />
     <ClInclude Include="EnableIndexOperation.h" />
@@ -201,9 +201,9 @@
     <ClInclude Include="GetOperationStateOperation.h" />
     <ClInclude Include="GetTermsOperation.h" />
     <ClInclude Include="HttpCache.h" />
-    <ClInclude Include="IAdvancedDocumentSessionOperations.h" />
-    <ClInclude Include="IAdvancedSessionOperations.h" />
-    <ClInclude Include="IDocumentSession.h" />
+    <ClInclude Include="AdvancedDocumentSessionOperations.h" />
+    <ClInclude Include="ExtendedAdvancedSessionOperations.h" />
+    <ClInclude Include="DocumentSession.h" />
     <ClInclude Include="IDocumentStore.h" />
     <ClInclude Include="IMaintenanceOperation.h" />
     <ClInclude Include="IndexBatchOptions.h" />
@@ -287,6 +287,7 @@
     <ClCompile Include="BatchOperation.cpp" />
     <ClCompile Include="CurlHandlesHolder.cpp" />
     <ClInclude Include="CurlHandlesHolder.h" />
+    <ClCompile Include="DocumentSessionImpl.cpp" />
     <ClCompile Include="DocumentStore.cpp" />
     <ClCompile Include="DocumentStoreBase.cpp" />
     <ClCompile Include="EntityToJson.cpp" />

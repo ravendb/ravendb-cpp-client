@@ -115,7 +115,7 @@ namespace ravendb::client::documents::session
 			{}
 		};
 	public:
-		const int32_t id;
+		const int64_t id;
 
 		const std::string database_name;
 
@@ -125,7 +125,7 @@ namespace ravendb::client::documents::session
 
 		const bool no_tracking;
 
-		std::unordered_map<std::string, std::shared_ptr<void>> _external_state{};
+		std::unordered_map<std::string, std::shared_ptr<void>> external_state{};
 	private:
 		static std::atomic_int32_t _client_session_id_counter;
 
@@ -178,7 +178,7 @@ namespace ravendb::client::documents::session
 	public:
 		virtual ~InMemoryDocumentSessionOperations() = 0;
 
-		IDocumentStore& get_document_store() const;
+		std::reference_wrapper<IDocumentStore> get_document_store() const;
 
 		std::shared_ptr<http::RequestExecutor> get_request_executor() const;
 
@@ -214,7 +214,7 @@ namespace ravendb::client::documents::session
 			return get_metadata_for_internal(std::static_pointer_cast<void>(entity));
 		}
 
-		//todo template<typename T> std::shared_ptr<IMetadataDictionary> get_counters_for(std::shared_ptr<T> entity)
+		//TODO template<typename T> std::shared_ptr<IMetadataDictionary> get_counters_for(std::shared_ptr<T> entity)
 
 		template<typename T>
 		std::optional<std::string> get_change_vector_for(std::shared_ptr<T> entity) const

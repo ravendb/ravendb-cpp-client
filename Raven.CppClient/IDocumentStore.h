@@ -40,7 +40,7 @@ namespace  ravendb::client::documents
 		virtual void set_identifier(std::string identifier) = 0;
 
 		//TODO consider returning std::reference_wrapper<IDocumentStore> 
-		virtual IDocumentStore& initialize() = 0;
+		virtual std::reference_wrapper<IDocumentStore> initialize() = 0;
 
 		virtual session::DocumentSession open_session() = 0;
 		virtual session::DocumentSession open_session(const std::string& database) = 0;

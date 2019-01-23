@@ -2,6 +2,7 @@
 #include "ds_definitions.h"
 #include "User.h"
 #include "DocumentSession.h"
+#include "SessionOptions.h"
 #include "DocumentStore.h"
 
 namespace ravendb::client::tests

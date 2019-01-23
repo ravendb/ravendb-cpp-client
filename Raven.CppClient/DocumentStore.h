@@ -41,7 +41,7 @@ namespace ravendb::client::documents
 		//can be called with empty database param
 		std::shared_ptr<http::RequestExecutor> get_request_executor(const std::string& database = {}) const override;
 
-		IDocumentStore& initialize() override;
+		std::reference_wrapper<IDocumentStore> initialize() override;
 
 		std::shared_ptr<operations::MaintenanceOperationExecutor> get_maintenance() const override;
 

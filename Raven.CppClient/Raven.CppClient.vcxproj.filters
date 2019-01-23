@@ -29,6 +29,9 @@
     <ClCompile Include="CurlHandlesHolder.cpp">
       <Filter>ravendb.client\impl</Filter>
     </ClCompile>
+    <ClCompile Include="DocumentSessionImpl.cpp">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -327,9 +330,6 @@
     <ClInclude Include="DocumentsById.h">
       <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
-    <ClInclude Include="DocumentSession.h">
-      <Filter>ravendb.client\documents\session</Filter>
-    </ClInclude>
     <ClInclude Include="InMemoryDocumentSessionOperations.h">
       <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
@@ -346,15 +346,6 @@
       <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
     <ClInclude Include="TransactionMode.h">
-      <Filter>ravendb.client\documents\session</Filter>
-    </ClInclude>
-    <ClInclude Include="IDocumentSession.h">
-      <Filter>ravendb.client\documents\session</Filter>
-    </ClInclude>
-    <ClInclude Include="IAdvancedDocumentSessionOperations.h">
-      <Filter>ravendb.client\documents\session</Filter>
-    </ClInclude>
-    <ClInclude Include="IAdvancedSessionOperations.h">
       <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
     <ClInclude Include="BatchOperation.h">
@@ -416,6 +407,18 @@
     </ClInclude>
     <ClInclude Include="CurlHandlesHolder.h">
       <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="DocumentSessionImpl.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="DocumentSession.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="AdvancedDocumentSessionOperations.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="ExtendedAdvancedSessionOperations.h">
+      <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

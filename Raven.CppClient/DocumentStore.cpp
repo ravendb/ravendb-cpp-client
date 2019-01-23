@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "DocumentStore.h"
 #include "DocumentSession.h"
+#include "SessionOptions.h"
 #include "MaintenanceOperationExecutor.h"
 
 namespace ravendb::client::documents
@@ -54,11 +55,11 @@ namespace ravendb::client::documents
 		assert_initialized();
 		//TODO ensure_not_closed();
 
-		session::DocumentSession session(*this, options);
+		auto session_impl = std::make_shared<session::DocumentSessionImpl>(*this, options);
 		//TODO
-		//register_events(session);
-		//after_session_created(session);
-		return session;
+		//register_events(session_impl);
+		//after_session_created(session_impl);
+		return session::DocumentSession(session_impl);
 	}
 
 	std::shared_ptr<http::RequestExecutor> DocumentStore::get_request_executor(const std::string& database) const
@@ -92,7 +93,7 @@ namespace ravendb::client::documents
 		}
 	}
 
-	IDocumentStore& DocumentStore::initialize()
+	std::reference_wrapper<IDocumentStore> DocumentStore::initialize()
 	{
 		if(is_initialized)
 		{
