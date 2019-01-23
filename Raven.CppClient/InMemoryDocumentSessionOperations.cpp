@@ -95,6 +95,7 @@ namespace ravendb::client::documents::session
 			return document_store.get_database();
 		}
 		throw_no_database();
+		return std::string{};//not suppose to happen - just shut the warning
 	}())
 		, no_tracking(options.no_tracking)
 		, _operation_executor(std::make_shared<documents::operations::SessionOperationExecutor>(*this))
@@ -311,7 +312,7 @@ namespace ravendb::client::documents::session
 	void InMemoryDocumentSessionOperations::delete_document_internal(std::shared_ptr<void> entity)
 	{
 		if(auto doc_info_it = _documents_by_entity.find(entity);
-			doc_info_it != _documents_by_entity.end())
+			doc_info_it == _documents_by_entity.end())
 		{
 			throw std::runtime_error("This entity is not associated with the session, cannot delete unknown entity instance");
 		}else
@@ -495,7 +496,7 @@ namespace ravendb::client::documents::session
 		_deferred_commands.clear();
 		_deferred_commands_map.clear();
 
-		auto empty_changes_collection = std::optional<std::unordered_map<std::string, DocumentsChanges>>{};
+		auto empty_changes_collection = std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>>{};
 		prepare_for_entities_deletion(result, empty_changes_collection);
 		prepare_for_entities_puts(result);
 
@@ -586,7 +587,7 @@ namespace ravendb::client::documents::session
 	}
 
 	void InMemoryDocumentSessionOperations::prepare_for_entities_deletion(SaveChangesData& result,
-		std::optional<std::unordered_map<std::string, DocumentsChanges>>& changes_collection)
+		std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>>& changes_collection)
 	{
 		for (auto& deleted_entity : _deleted_entities)
 		{
@@ -602,8 +603,13 @@ namespace ravendb::client::documents::session
 			}
 			if (changes_collection)
 			{
-				//TODO complete
-				throw std::runtime_error("Not implemented");
+				DocumentsChanges change{};
+				change.field_new_value = std::string{};
+				change.field_old_value = std::string{};
+				change.change = DocumentsChanges::ChangeType::DOCUMENT_DELETED;
+
+				std::vector<DocumentsChanges> doc_changes{ std::move(change) };
+				changes_collection->insert({doc_info->id, std::move(doc_changes)});
 			}else
 			{
 				if (auto command_it = result.deferred_commands_map.find(
@@ -739,8 +745,11 @@ namespace ravendb::client::documents::session
 		std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>> changes_collection{};
 		changes_collection.emplace();
 
-		//TODO implement
-		throw std::runtime_error("not implemented");
+		auto unused = SaveChangesData(*this);
+		prepare_for_entities_deletion(unused, changes_collection);
+		get_all_entities_changes(changes_collection);
+
+		return *changes_collection;
 	}
 
 	bool InMemoryDocumentSessionOperations::has_changes() const

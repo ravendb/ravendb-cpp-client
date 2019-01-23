@@ -202,8 +202,7 @@
     <ClInclude Include="GetOperationStateOperation.h" />
     <ClInclude Include="GetTermsOperation.h" />
     <ClInclude Include="HttpCache.h" />
-    <ClInclude Include="AdvancedDocumentSessionOperations.h" />
-    <ClInclude Include="ExtendedAdvancedSessionOperations.h" />
+    <ClInclude Include="AdvancedSessionOperations.h" />
     <ClInclude Include="DocumentSession.h" />
     <ClInclude Include="IDocumentStore.h" />
     <ClInclude Include="IMaintenanceOperation.h" />

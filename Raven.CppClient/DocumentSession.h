@@ -1,6 +1,6 @@
 #pragma once
 #include "DocumentSessionImpl.h"
-#include "AdvancedDocumentSessionOperations.h"
+#include "AdvancedSessionOperations.h"
 
 namespace ravendb::client::documents::session
 {
@@ -16,14 +16,14 @@ namespace ravendb::client::documents::session
 			: _session_impl(session_impl)
 		{}
 
-		AdvancedDocumentSessionOperations advanced()
+		AdvancedSessionOperations advanced()
 		{
-			return AdvancedDocumentSessionOperations(_session_impl);
+			return AdvancedSessionOperations(_session_impl);
 		}
 
-		const AdvancedDocumentSessionOperations advanced() const
+		const AdvancedSessionOperations advanced() const
 		{
-			return AdvancedDocumentSessionOperations(_session_impl);
+			return AdvancedSessionOperations(_session_impl);
 		}
 
 		template<typename T>

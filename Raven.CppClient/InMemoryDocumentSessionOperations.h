@@ -388,7 +388,7 @@ namespace ravendb::client::documents::session
 		static bool update_metadata_modifications(std::shared_ptr<DocumentInfo> doc_info);
 
 		void prepare_for_entities_deletion(SaveChangesData& result,
-			std::optional<std::unordered_map<std::string, DocumentsChanges>>& changes_collection);
+			std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>>& changes_collection);
 		
 		void prepare_for_entities_puts(SaveChangesData& result);
 		

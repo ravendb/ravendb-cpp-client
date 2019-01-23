@@ -24,13 +24,15 @@ namespace ravendb::client::json
 			{
 				const auto long_val = new_prop.get<int64_t>();
 				const auto double_val = old_prop.get<double>();
-				return std::modf(double_val, nullptr) == 0.0 && long_val == static_cast<decltype(long_val)>(double_val);
+				double int_part{};
+				return std::modf(double_val, &int_part) == 0.0 && long_val == static_cast<decltype(long_val)>(int_part);
 			}
 			if (old_prop.is_number_integer() && new_prop.is_number())
 			{
 				const auto long_val = old_prop.get<int64_t>();
 				const auto double_val = new_prop.get<double>();
-				return std::modf(double_val, nullptr) == 0.0 && long_val == static_cast<decltype(long_val)>(double_val);
+				double int_part{};
+				return std::modf(double_val, &int_part) == 0.0 && long_val == static_cast<decltype(long_val)>(int_part);
 			}
 
 			if(old_prop.type() != new_prop.type())
@@ -146,13 +148,27 @@ namespace ravendb::client::json
 			return is_something_changed;
 		}
 
+		static void new_change(const std::string& field_path, const std::string& name,
+			const nlohmann::json& new_value, const nlohmann::json& old_value,
+			std::vector<documents::session::DocumentsChanges>& doc_changes,
+			documents::session::DocumentsChanges::ChangeType change)
+		{
+			auto documents_changes = documents::session::DocumentsChanges();
+			documents_changes.field_name = name;
+			documents_changes.field_new_value = new_value;
+			documents_changes.field_old_value = old_value;
+			documents_changes.change = change;
+			documents_changes.field_path = field_path;
+			doc_changes.push_back(std::move(documents_changes));
+		}
+
 	public:
 		//static class
 		JsonOperation() = delete;
 		~JsonOperation() = delete;
 
 		static bool entity_changed(const nlohmann::json& new_obj,
-			std::shared_ptr<documents::session::DocumentInfo> doc_info,
+			std::shared_ptr<documents::session::DocumentInfo>& doc_info,
 			std::optional<std::unordered_map<std::string, std::vector<documents::session::DocumentsChanges>>>& changes_collection)
 		{
 			std::optional<std::vector<documents::session::DocumentsChanges>> doc_changes{};
@@ -169,21 +185,25 @@ namespace ravendb::client::json
 				return true;
 			}
 
-			//TODO put new change into changes_collection
-			throw std::runtime_error("Not implemented");
+			new_change({}, {}, {}, {}, *doc_changes, documents::session::DocumentsChanges::ChangeType::DOCUMENT_ADDED);
 
-			changes_collection->insert_or_assign(doc_info->id, *doc_changes);
+			changes_collection->insert_or_assign(doc_info->id, std::move(doc_changes).value());
 			return true;
 		}
 
 		static bool compare_json(const std::string& field_path, const std::string& id,
 			const nlohmann::json& original_json, const nlohmann::json& new_json,
 			std::optional<std::unordered_map<std::string, std::vector<documents::session::DocumentsChanges>>>& changes_collection,
-			std::optional<std::vector<documents::session::DocumentsChanges>>& doc_changes_collection)
+			std::optional<std::vector<documents::session::DocumentsChanges>>& doc_changes)
 		{
 			if (!new_json.is_object() || !original_json.is_object())
 			{
 				throw std::invalid_argument("The argument(s) must be of type 'object'");
+			}
+
+			if (changes_collection && !doc_changes)
+			{
+				doc_changes.emplace();
 			}
 
 			std::set<std::string> new_json_props{};
@@ -211,8 +231,7 @@ namespace ravendb::client::json
 				{
 					return true;
 				}
-				//TODO collect change
-				throw std::runtime_error("Not implemented");
+				new_change(field_path, field, {}, {}, doc_changes.value(), documents::session::DocumentsChanges::ChangeType::REMOVED_FIELD);
 			}
 
 			for(const auto& prop : new_json_props)
@@ -232,8 +251,7 @@ namespace ravendb::client::json
 						return true;
 					}
 
-					//TODO collect change
-					throw std::runtime_error("Not implemented");
+					new_change(field_path, prop, new_json.at(prop), {}, doc_changes.value(), documents::session::DocumentsChanges::ChangeType::NEW_FIELD);
 					continue;
 				}
 
@@ -257,8 +275,7 @@ namespace ravendb::client::json
 					{
 						return true;
 					}
-					//TODO collect change
-					throw std::runtime_error("Not implemented");
+					new_change(field_path, prop, new_prop, old_prop, doc_changes.value(), documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED);
 					break;
 				case nlohmann::detail::value_t::null:
 					if (old_prop.is_null())
@@ -269,8 +286,7 @@ namespace ravendb::client::json
 					{
 						return true;
 					}
-					//TODO collect change
-					throw std::runtime_error("Not implemented");
+					new_change(field_path, prop, {}, old_prop, *doc_changes, documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED);
 					break;
 				case nlohmann::detail::value_t::array:
 					if(!old_prop.is_array())
@@ -279,13 +295,12 @@ namespace ravendb::client::json
 						{
 							return true;
 						}
-						//TODO collect change
-						throw std::runtime_error("Not implemented");
+						new_change(field_path, prop, new_prop, old_prop, *doc_changes, documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED);
 						break;
 					}
 
 					is_something_changed = compare_json_array(field_path_combine(field_path, prop), id, 
-						old_prop, new_prop, changes_collection, doc_changes_collection, prop);
+						old_prop, new_prop, changes_collection, doc_changes, prop);
 					if(!changes_collection && is_something_changed)
 					{
 						return true;
@@ -298,12 +313,11 @@ namespace ravendb::client::json
 						{
 							return true;
 						}
-						//TODO collect change
-						throw std::runtime_error("Not implemented");
+						new_change(field_path, prop, new_prop, {}, *doc_changes, documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED);
 						break;
 					}
 
-					is_something_changed = compare_json(field_path_combine(field_path,prop), id, old_prop, new_prop, changes_collection, doc_changes_collection);
+					is_something_changed = compare_json(field_path_combine(field_path,prop), id, old_prop, new_prop, changes_collection, doc_changes);
 					if(!changes_collection && is_something_changed)
 					{
 						return true;
@@ -314,12 +328,12 @@ namespace ravendb::client::json
 
 				}
 			}
-			if (!changes_collection || !doc_changes_collection || doc_changes_collection->size() == 0)
+			if (!changes_collection || !doc_changes || doc_changes->size() == 0)
 			{
 				return false;
 			}
 
-			changes_collection->insert_or_assign(id, *doc_changes_collection);
+			changes_collection->insert_or_assign(id, *doc_changes);
 			return true;
 		}
 
