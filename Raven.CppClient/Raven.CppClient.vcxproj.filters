@@ -32,6 +32,9 @@
     <ClCompile Include="DocumentSessionImpl.cpp">
       <Filter>ravendb.client\documents\session</Filter>
     </ClCompile>
+    <ClCompile Include="JsonOperation.cpp">
+      <Filter>ravendb.client\json</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">

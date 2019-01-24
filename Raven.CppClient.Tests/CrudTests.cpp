@@ -4,6 +4,7 @@
 #include "SessionOptions.h"
 #include "DocumentStore.h"
 #include "User.h"
+#include "Family.h"
 
 namespace ravendb::client::tests
 {
@@ -135,5 +136,20 @@ namespace ravendb::client::tests
 
 		temp_user = session.load<User>("users/1");
 		ASSERT_EQ(10, temp_user->age);
+	}
+
+	TEST_F(CrudTests, CrudOperationsWithArrayInObject)
+	{
+		auto session = test_suite_store->get().open_session();
+
+		auto family = std::make_shared<Family>();
+		family->names = { "Hibernating Rhinos", "RavenDB" };
+		session.store(family, std::string("family/1"));
+		session.save_changes();
+
+		auto new_family = session.load<Family>("family/1");
+		new_family->names = { "Toli", "Mitzi", "Boki" };
+		ASSERT_EQ(1, session.advanced().what_changed().size());
+		session.save_changes();
 	}
 }
