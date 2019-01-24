@@ -16,6 +16,10 @@ namespace ravendb::client::tests
 		{
 			test_suite_store = GET_DOCUMENT_STORE();
 		}
+		static void TearDownTestCase()
+		{
+			test_suite_store.reset();
+		}
 	};
 
 

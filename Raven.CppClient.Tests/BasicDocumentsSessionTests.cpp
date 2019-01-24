@@ -18,6 +18,10 @@ namespace ravendb::client::tests
 		{
 			test_suite_store = GET_DOCUMENT_STORE();
 		}
+		static void TearDownTestCase()
+		{
+			test_suite_store.reset();
+		}
 	};
 
 	const User BasicDocumentsSessionTests::example_user{ "users/1", "Alexander", "Timoshenko", "Israel", 0, 38 };

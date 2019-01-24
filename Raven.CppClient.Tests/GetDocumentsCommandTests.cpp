@@ -10,7 +10,7 @@ namespace ravendb::client::tests
 	class GetDocumentsCommandTests : public ::testing::Test
 	{
 	protected:
-		inline static std::shared_ptr<RequestExecutorScope> test_suite_executor{};
+		static std::shared_ptr<RequestExecutorScope> test_suite_executor;
 
 		static void SetUpTestCase()
 		{
@@ -19,7 +19,14 @@ namespace ravendb::client::tests
 			auto cmd = op.get_command({});
 			test_suite_executor->get()->execute(*cmd);
 		}
+		static void TearDownTestCase()
+		{
+			test_suite_executor.reset();
+		}
+
 	};
+
+	std::shared_ptr<RequestExecutorScope> GetDocumentsCommandTests::test_suite_executor{};
 
 	TEST_F(GetDocumentsCommandTests, CanGetPagedSetOfDocuments)
 	{

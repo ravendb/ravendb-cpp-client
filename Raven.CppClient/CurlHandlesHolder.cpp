@@ -3,6 +3,8 @@
 
 namespace ravendb::client::impl
 {
+	CurlHandlesHolder::CurlGlobalInit CurlHandlesHolder::_curl_global_init{};
+
 	CurlHandlesHolder::CurlGlobalInit::CurlGlobalInit()
 	{
 		const auto res = curl_global_init(CURL_GLOBAL_ALL);
@@ -16,8 +18,6 @@ namespace ravendb::client::impl
 	{
 		curl_global_cleanup();
 	}
-
-	CurlHandlesHolder::CurlGlobalInit CurlHandlesHolder::_curl_global_init{};
 
 	void CurlHandlesHolder::return_curl_handle_to_holder(CurlHandleUniquePtr curl)
 	{

@@ -25,6 +25,10 @@ namespace ravendb::client::tests
 			auto op = infrastructure::CreateSampleDataOperation();
 			test_suite_executor->get()->execute(op.get_command({}));
 		}
+		static void TearDownTestCase()
+		{
+			test_suite_executor.reset();
+		}
 	};
 
 	TEST_F(BasicQueryTests, CanExecuteParametersQuery)

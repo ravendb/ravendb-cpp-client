@@ -19,6 +19,10 @@ namespace ravendb::client::tests
 		{
 			test_suite_executor = GET_REQUEST_EXECUTOR();
 		}
+		static void TearDownTestCase()
+		{
+			test_suite_executor.reset();
+		}
 
 		void SetUp() override//create sample document
 		{

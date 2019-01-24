@@ -41,6 +41,10 @@ namespace ravendb::client::tests
 			test_suite_executor = GET_REQUEST_EXECUTOR();
 			set_example_index();
 		}
+		static void TearDownTestCase()
+		{
+			test_suite_executor.reset();
+		}
 
 		void SetUp() override//create sample document and sample index
 		{

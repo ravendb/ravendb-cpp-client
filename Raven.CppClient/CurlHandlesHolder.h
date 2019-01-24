@@ -29,7 +29,6 @@ namespace ravendb::client::impl
 		using CurlHandleUniquePtr = std::unique_ptr<CURL, CurlCleanup>;
 
 		std::mutex _curl_handles_lock{};
-
 		// protected by _curl_handles_lock
 		std::queue<CurlHandleUniquePtr> _curl_handles{};
 
