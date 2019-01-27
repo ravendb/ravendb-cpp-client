@@ -49,6 +49,7 @@
     <ClCompile Include="BasicQueryTests.cpp" />
     <ClCompile Include="BasicDocumentsSessionTests.cpp" />
     <ClCompile Include="CrudTests.cpp" />
+    <ClCompile Include="ds_definitions.cpp" />
     <ClCompile Include="re_definitions.cpp" />
     <ClCompile Include="BasicDocumentCommandsTests.cpp" />
     <ClCompile Include="GetDocumentsCommandTests.cpp" />

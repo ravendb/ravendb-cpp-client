@@ -1,4 +1,5 @@
 #include "pch.h"
+//#define __USE_FIDDLER__
 #include "re_definitions.h"
 #include "CreateSampleDataOperation.h"
 #include "QueryCommand.h"
@@ -23,7 +24,7 @@ namespace ravendb::client::tests
 		{
 			test_suite_executor = GET_REQUEST_EXECUTOR();
 			auto op = infrastructure::CreateSampleDataOperation();
-			test_suite_executor->get()->execute(op.get_command({}));
+			test_suite_executor->get().execute(op.get_command({}));
 		}
 		static void TearDownTestCase()
 		{
@@ -45,7 +46,7 @@ namespace ravendb::client::tests
 		index_query.wait_for_non_stale_results_timeout = std::chrono::seconds(10);
 
 		auto cmd = documents::commands::QueryCommand({}, index_query, false, false);
-		auto&& res = test_suite_executor->get()->execute(cmd);
+		auto&& res = test_suite_executor->get().execute(cmd);
 
 		//essential assertions
 		ASSERT_EQ(res.total_results, 2);
@@ -73,7 +74,7 @@ namespace ravendb::client::tests
 		index_query.wait_for_non_stale_results_timeout = std::chrono::seconds(10);
 
 		auto cmd = documents::commands::QueryCommand({}, index_query, false, false);
-		auto&& res = test_suite_executor->get()->execute(cmd);
+		auto&& res = test_suite_executor->get().execute(cmd);
 
 		//results assertions
 		ASSERT_EQ(res.total_results, 86);
@@ -93,7 +94,7 @@ namespace ravendb::client::tests
 		categories_index_query.wait_for_non_stale_results_timeout = std::chrono::seconds(1);
 		
 		auto cmd1 = documents::commands::QueryCommand({}, categories_index_query, true, false);
-		auto&& res1 = test_suite_executor->get()->execute(cmd1);
+		auto&& res1 = test_suite_executor->get().execute(cmd1);
 		//Categories count
 		const auto total_categories = res1.total_results;
 		
@@ -109,7 +110,7 @@ namespace ravendb::client::tests
 		custom_index_query.wait_for_non_stale_results_timeout = std::chrono::seconds(1);
 
 		auto cmd2 = documents::commands::QueryCommand({}, custom_index_query, true, false);
-		auto&& res2 = test_suite_executor->get()->execute(cmd2);
+		auto&& res2 = test_suite_executor->get().execute(cmd2);
 		//Custom query results count
 		const auto custom_query_tot_res = res2.total_results;
 		ASSERT_GE(total_categories, custom_query_tot_res);
@@ -118,12 +119,12 @@ namespace ravendb::client::tests
 		auto op3 = documents::operations::DeleteByQueryOperation(custom_index_query, query_op_options);
 		FakeStore store;
 		HttpCache cache;
-		auto&& res3 = test_suite_executor->get()->execute(op3.get_command(store, {}, cache));
+		auto&& res3 = test_suite_executor->get().execute(op3.get_command(store, {}, cache));
 		ASSERT_GT(res3.operation_id, 0);
 
 		std::this_thread::sleep_for(std::chrono::seconds(1));//TODO something better
 
-		auto&& res4 = test_suite_executor->get()->execute(cmd1);
+		auto&& res4 = test_suite_executor->get().execute(cmd1);
 		const auto categories_left = res4.total_results;
 		//Rest of employees = All employees - Custom query results
 		ASSERT_EQ(total_categories - custom_query_tot_res, categories_left);

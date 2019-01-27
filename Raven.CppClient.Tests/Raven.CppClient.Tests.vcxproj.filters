@@ -36,6 +36,9 @@
     <ClCompile Include="CrudTests.cpp">
       <Filter>ravendb.client.tests\tests</Filter>
     </ClCompile>
+    <ClCompile Include="ds_definitions.cpp">
+      <Filter>ravendb.client.tests\definitions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

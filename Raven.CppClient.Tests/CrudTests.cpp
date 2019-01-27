@@ -1,4 +1,5 @@
 #include "pch.h"
+#define __USE_FIDDLER__
 #include "ds_definitions.h"
 #include "DocumentSession.h"
 #include "SessionOptions.h"
@@ -22,7 +23,6 @@ namespace ravendb::client::tests
 			test_suite_store.reset();
 		}
 	};
-
 
 	TEST_F(CrudTests, EntitiesAreSavedUsingLowerCase)
 	{

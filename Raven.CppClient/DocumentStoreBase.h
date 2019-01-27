@@ -2,6 +2,7 @@
 #include "IDocumentStore.h"
 #include "CertificateDetails.h"
 #include "CurlHandlesHolder.h"
+#include <optional>
 
 namespace ravendb::client::documents
 {

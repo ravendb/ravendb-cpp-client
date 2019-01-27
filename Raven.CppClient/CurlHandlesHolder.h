@@ -1,4 +1,5 @@
 #pragma once
+#include <curl/curl.h>
 #include <queue>
 #include <functional>
 #include <mutex>
