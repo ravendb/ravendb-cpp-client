@@ -152,4 +152,158 @@ namespace ravendb::client::tests
 		ASSERT_EQ(1, session.advanced().what_changed().size());
 		session.save_changes();
 	}
+	TEST_F(CrudTests, CrudOperationsWithArrayInObject2)
+	{
+		auto session = test_suite_store->get().open_session();
+
+		auto family = std::make_shared<Family>();
+		family->names = { "Hibernating Rhinos", "RavenDB" };
+		session.store(family, std::string("family/1"));
+		session.save_changes();
+
+		auto new_family = session.load<Family>("family/1");
+		new_family->names = { "Hibernating Rhinos", "RavenDB" };
+		ASSERT_EQ(0, session.advanced().what_changed().size());
+
+		new_family->names = { "RavenDB","Hibernating Rhinos" };
+		ASSERT_EQ(1, session.advanced().what_changed().size());
+		session.save_changes();
+	}
+
+	TEST_F(CrudTests, CrudOperationsWithArrayInObject3)
+	{
+		auto session = test_suite_store->get().open_session();
+
+		auto family = std::make_shared<Family>();
+		family->names = { "Hibernating Rhinos", "RavenDB" };
+		session.store(family, std::string("family/1"));
+		session.save_changes();
+
+		auto new_family = session.load<Family>("family/1");
+		new_family->names = { "RavenDB" };
+		ASSERT_EQ(1, session.advanced().what_changed().size());
+		session.save_changes();
+	}
+
+	TEST_F(CrudTests, CrudOperationsWithArrayInObject4)
+	{
+		auto session = test_suite_store->get().open_session();
+
+		auto family = std::make_shared<Family>();
+		family->names = { "Hibernating Rhinos", "RavenDB" };
+		session.store(family, std::string("family/1"));
+		session.save_changes();
+
+		auto new_family = session.load<Family>("family/1");
+		new_family->names = { "RavenDB", "Hibernating Rhinos", "Toli", "Mitzi", "Boki" };
+		ASSERT_EQ(1, session.advanced().what_changed().size());
+		session.save_changes();
+	}
+
+	TEST_F(CrudTests, CrudOperationsWithNull)
+	{
+		auto session = test_suite_store->get().open_session();
+
+		auto user = std::make_shared<User>();
+		user->first_name = {};
+
+		session.store(user, std::string("users/1"));
+		session.save_changes();
+
+		auto user2 = session.load<User>("users/1");
+		ASSERT_TRUE(session.advanced().what_changed().empty());
+
+		user2->age = 3;
+		ASSERT_EQ(1, session.advanced().what_changed().size());
+	}
+
+	TEST_F(CrudTests, CrudOperationsWithArrayOfObjects)
+	{
+		auto session = test_suite_store->get().open_session();
+
+		auto member1 = std::make_shared<Member>();
+		member1->name = "Hibernating Rhinos";
+		member1->age = 8;
+
+		auto member2 = std::make_shared<Member>();
+		member2->name = "RavenDB";
+		member2->age = 4;
+
+		auto family = std::make_shared<FamilyMembers>();
+		family->members = { member1, member2 };
+
+		session.store(family, std::string("family/1"));
+		session.save_changes();
+
+		member1 = std::make_shared<Member>();
+		member1->name = "RavenDB";
+		member1->age = 4;
+
+		member2 = std::make_shared<Member>();
+		member2->name = "Hibernating Rhinos";
+		member2->age = 8;
+
+		auto new_family = session.load<FamilyMembers>("family/1");
+		new_family->members = { member1, member2 };
+
+		auto changes = session.advanced().what_changed();
+		ASSERT_EQ(1, changes.size());
+
+		ASSERT_EQ(4, changes.at("family/1").size());
+
+		ASSERT_EQ(std::string("Age"), changes.at("family/1").at(0).field_name);
+		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family/1").at(0).change);
+		ASSERT_EQ(8, changes.at("family/1").at(0).field_old_value.get<int>());
+		ASSERT_EQ(4, changes.at("family/1").at(0).field_new_value.get<int>());
+		
+		ASSERT_EQ(std::string("Name"), changes.at("family/1").at(1).field_name);
+		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family/1").at(1).change);
+		ASSERT_EQ(std::string("Hibernating Rhinos"), changes.at("family/1").at(1).field_old_value.get<std::string>());
+		ASSERT_EQ(std::string("RavenDB"), changes.at("family/1").at(1).field_new_value.get<std::string>());
+
+		ASSERT_EQ(std::string("Age"), changes.at("family/1").at(2).field_name);
+		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family/1").at(2).change);
+		ASSERT_EQ(4, changes.at("family/1").at(2).field_old_value.get<int>());
+		ASSERT_EQ(8, changes.at("family/1").at(2).field_new_value.get<int>());
+
+		ASSERT_EQ(std::string("Name"), changes.at("family/1").at(3).field_name);
+		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family/1").at(3).change);
+		ASSERT_EQ(std::string("RavenDB"), changes.at("family/1").at(3).field_old_value.get<std::string>());
+		ASSERT_EQ(std::string("Hibernating Rhinos"), changes.at("family/1").at(3).field_new_value.get<std::string>());
+
+		member1 = std::make_shared<Member>();
+		member1->name = "Toli";
+		member1->age = 5;
+
+		member2 = std::make_shared<Member>();
+		member2->name = "Boki";
+		member2->age = 15;
+
+		new_family->members = { member1, member2 };
+
+		changes = session.advanced().what_changed();
+		ASSERT_EQ(1, changes.size());
+
+		ASSERT_EQ(4, changes.at("family/1").size());
+
+		ASSERT_EQ(std::string("Age"), changes.at("family/1").at(0).field_name);
+		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family/1").at(0).change);
+		ASSERT_EQ(8, changes.at("family/1").at(0).field_old_value.get<int>());
+		ASSERT_EQ(5, changes.at("family/1").at(0).field_new_value.get<int>());
+
+		ASSERT_EQ(std::string("Name"), changes.at("family/1").at(1).field_name);
+		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family/1").at(1).change);
+		ASSERT_EQ(std::string("Hibernating Rhinos"), changes.at("family/1").at(1).field_old_value.get<std::string>());
+		ASSERT_EQ(std::string("Toli"), changes.at("family/1").at(1).field_new_value.get<std::string>());
+
+		ASSERT_EQ(std::string("Age"), changes.at("family/1").at(2).field_name);
+		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family/1").at(2).change);
+		ASSERT_EQ(4, changes.at("family/1").at(2).field_old_value.get<int>());
+		ASSERT_EQ(15, changes.at("family/1").at(2).field_new_value.get<int>());
+
+		ASSERT_EQ(std::string("Name"), changes.at("family/1").at(3).field_name);
+		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family/1").at(3).change);
+		ASSERT_EQ(std::string("RavenDB"), changes.at("family/1").at(3).field_old_value.get<std::string>());
+		ASSERT_EQ(std::string("Boki"), changes.at("family/1").at(3).field_new_value.get<std::string>());
+	}
 }

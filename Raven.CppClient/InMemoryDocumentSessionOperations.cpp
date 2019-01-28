@@ -261,16 +261,18 @@ namespace ravendb::client::documents::session
 			throw std::invalid_argument("Document " + id + "must have Change Vector");
 		}
 
-		auto doc_info = std::make_shared<DocumentInfo>();
-		doc_info->id = id;
-		doc_info->document = document;
-		doc_info->metadata = metadata;
-		doc_info->entity = entity;
-		doc_info->change_vector = change_vector;
+		if (!no_tracking)
+		{
+			auto doc_info = std::make_shared<DocumentInfo>();
+			doc_info->id = id;
+			doc_info->document = document;
+			doc_info->metadata = metadata;
+			doc_info->entity = entity;
+			doc_info->change_vector = change_vector;
 
-		_documents_by_id.insert({ doc_info->id, doc_info });
-		_documents_by_entity.insert({ entity, doc_info });
-
+			_documents_by_id.insert({ doc_info->id, doc_info });
+			_documents_by_entity.insert({ entity, doc_info });
+		}
 		return entity;
 	}
 
@@ -373,7 +375,8 @@ namespace ravendb::client::documents::session
 
 	void InMemoryDocumentSessionOperations::store_internal(std::shared_ptr<void> entity,
 		std::optional<std::string> change_vector, std::optional<std::string> id,
-		ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json)
+		ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json,
+		const type_info& type)
 	{
 		if (no_tracking)
 		{
@@ -428,12 +431,31 @@ namespace ravendb::client::documents::session
 		// to detect if they generate duplicates.
 		assert_is_unique_instance(entity, id ? *id : std::string());
 
-		nlohmann::json metadata{};
+		nlohmann::json metadata = nlohmann::json::object();
+		
 		//TODO generate and set collection name
 
 		if (id)
 		{
 			_known_missing_ids.erase(*id);
+		}
+
+		//this part is unique to C++ : metadata check from the entity serialized
+		auto temp_doc_info = std::make_shared<DocumentInfo>();
+		temp_doc_info->to_json_converter = to_json;
+		auto document = EntityToJson::convert_entity_to_json(entity, temp_doc_info);
+
+		metadata = document[constants::documents::metadata::KEY];
+		if(metadata.find(constants::documents::metadata::COLLECTION) == metadata.end())
+		{
+			std::ostringstream collection{};
+			std::string_view type_name = type.name();
+			collection << type_name.substr(type_name.find_last_of(':') + 1);
+			impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::COLLECTION, collection.str());			
+		}
+		if (id)
+		{
+			impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::ID, *id);
 		}
 
 		store_entity_in_unit_of_work(id, entity, change_vector, std::move(metadata), force_concurrency_check, to_json);

@@ -1,6 +1,7 @@
 #pragma once
 #include <any>
 #include <unordered_set>
+#include <typeinfo>
 #include "BatchOptions.h"
 #include "SessionInfo.h"
 #include "DocumentsById.h"
@@ -287,14 +288,15 @@ namespace ravendb::client::documents::session
 			bool has_id = false;
 			store_internal(std::static_pointer_cast<void>(entity), {}, {},
 				!has_id ? ConcurrencyCheckMode::FORCED : ConcurrencyCheckMode::AUTO, 
-				to_json ? *to_json : DocumentInfo::default_to_json<T>);
+				to_json ? *to_json : DocumentInfo::default_to_json<T>,
+				typeid(T));
 		}
 
 		template<typename T>
 		void store(std::shared_ptr<T> entity, std::string id, std::optional<DocumentInfo::ToJsonConverter> to_json = {})
 		{
 			store_internal(std::static_pointer_cast<void>(entity), {}, std::move(id), ConcurrencyCheckMode::AUTO,
-				to_json ? *to_json : DocumentInfo::default_to_json<T>);
+				to_json ? *to_json : DocumentInfo::default_to_json<T>, typeid(T));
 		}
 
 		template<typename T>
@@ -303,7 +305,8 @@ namespace ravendb::client::documents::session
 		{
 			store_internal(std::static_pointer_cast<void>(entity), std::move(change_vector), std::move(id),
 				!change_vector ? ConcurrencyCheckMode::DISABLED : ConcurrencyCheckMode::FORCED,
-				to_json ? *to_json : DocumentInfo::default_to_json<T>);
+				to_json ? *to_json : DocumentInfo::default_to_json<T>,
+				typeid(T));
 		}
 
 		SaveChangesData prepare_for_save_changes();
@@ -381,7 +384,8 @@ namespace ravendb::client::documents::session
 
 		void store_internal(std::shared_ptr<void> entity,
 			std::optional<std::string> change_vector, std::optional<std::string> id,
-			ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json);
+			ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json,
+			const type_info& type);
 
 		//TODO void prepare_compare_exchange_entities(const SaveChangesData& result);
 
