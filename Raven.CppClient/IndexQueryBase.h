@@ -30,7 +30,7 @@ namespace ravendb::client::documents::queries
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		set_val_to_json(j, "PageSize", iqb.page_size);
+		set_val_to_json(j, "PageSize", iqb.page_size, false);
 		set_val_to_json(j, "Query", iqb.query);
 		set_val_to_json(j, "QueryParameters", iqb.query_parameters);
 		set_val_to_json(j, "Start", iqb.start);

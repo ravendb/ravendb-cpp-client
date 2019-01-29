@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "re_definitions.h"
+#include "CreateDatabaseOperation.h"
+#include "DeleteDatabasesOperation.h"
 #include <fstream>
+
 
 namespace ravendb::client::tests
 {
@@ -11,11 +14,14 @@ namespace ravendb::client::tests
 		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 	}
 
-	void set_verbose(CURL* curl)
+	void set_no_proxy(CURL* curl)
 	{
+
+		curl_easy_setopt(curl, CURLOPT_NOPROXY, "*");
 		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 	}
 
+	ConnectionDetailsHolder::~ConnectionDetailsHolder() = default;
 
 	ConnectionDetailsHolder::ConnectionDetailsHolder(const std::string& def_file_name, bool has_certificate = true)
 	{
@@ -85,19 +91,50 @@ namespace ravendb::client::tests
 		cert_details.key_password = key_password;
 	}
 
-	
+	RequestExecutorScope::RequestExecutorScope(std::string db_name, bool is_secured, bool use_fiddler)
+		: _db_name(std::move(db_name))
+	{
+		auto server_wide_req_exec = get_raw_request_executor({}, is_secured, use_fiddler);
+
+		ravendb::client::serverwide::DatabaseRecord rec{};
+		rec.database_name = _db_name;
+		serverwide::operations::CreateDatabaseOperation op(rec);
+		server_wide_req_exec->execute(op.get_command({}));
+
+		_executor = get_raw_request_executor(_db_name, is_secured, use_fiddler);
+	}
+
+	RequestExecutorScope::~RequestExecutorScope()
+	{
+		ravendb::client::serverwide::operations::DeleteDatabasesOperation op(_db_name, true, {}, std::chrono::seconds(20));
+		_executor->execute(op.get_command({}));
+	}
+
+
 	//request executor only - no DB is created
 	std::shared_ptr<ravendb::client::http::RequestExecutor> get_raw_request_executor
-	(bool is_secured, const std::string& db)
+	(const std::string& db, bool is_secured, bool use_fiddler)
 	{
 		static const auto sec_conn_details = ConnectionDetailsHolder(SECURED_RE_DETAILS, true);
 		static const auto unsec_conn_details = ConnectionDetailsHolder(UNSECURED_RE_DETAILS, false);
 		
 		return is_secured ?
 			http::RequestExecutor::create({ sec_conn_details.get_url() }, db,
-				sec_conn_details.get_cert_det(), set_verbose) :
+				sec_conn_details.get_cert_det(), set_no_proxy) :
 			http::RequestExecutor::create({ unsec_conn_details.get_url() }, db,
-				{}, set_for_fiddler);
+				{}, use_fiddler ? set_for_fiddler : set_no_proxy);
 	}
+
+	std::shared_ptr<RequestExecutorScope> RequestExecutorScope::get_request_executor_with_db(
+		const std::string& file, int line, int counter, bool is_secured, bool use_fiddler)
+	{
+		std::filesystem::path path(file);
+		std::ostringstream name;
+		name << path.filename().replace_extension().string() << "_" << line << "_" << counter;
+		return is_secured ?
+			std::make_shared<RequestExecutorScope>(name.str(), true, use_fiddler) :
+			std::make_shared<RequestExecutorScope>(name.str(), false, use_fiddler);
+	}
+
 }
 

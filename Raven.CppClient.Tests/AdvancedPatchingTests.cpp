@@ -1,4 +1,5 @@
 #include "pch.h"
+//#define __USE_FIDDLER__
 #include "re_definitions.h"
 #include "PutDocumentCommand.h"
 #include "GetDocumentsCommand.h"
@@ -57,15 +58,19 @@ namespace ravendb::client::tests
 		{
 			test_suite_executor = GET_REQUEST_EXECUTOR();
 		}
+		static void TearDownTestCase()
+		{
+			test_suite_executor.reset();
+		}
 
 		void TearDown() override
 		{
 			auto  get_docs_cmd = documents::commands::GetDocumentsCommand({}, {}, {}, {}, 0, 100, true);
-			auto results = test_suite_executor->get()->execute(get_docs_cmd);
+			auto results = test_suite_executor->get().execute(get_docs_cmd);
 			for (const auto& res : results.results)
 			{
 				auto del_doc_cmd = documents::commands::DeleteDocumentCommand(res["@metadata"]["@id"].get<std::string>());
-				test_suite_executor->get()->execute(del_doc_cmd);
+				test_suite_executor->get().execute(del_doc_cmd);
 			}
 		}
 	};
@@ -75,7 +80,7 @@ namespace ravendb::client::tests
 		using namespace adv_patching_tests;
 		auto custom_type = CustomType{ "CustomTypes/1","me" };
 		auto put_doc_cmd = documents::commands::PutDocumentCommand(custom_type.id, {}, custom_type);
-		auto&& res1 = test_suite_executor->get()->execute(put_doc_cmd);
+		auto&& res1 = test_suite_executor->get().execute(put_doc_cmd);
 		ASSERT_EQ(res1.id, custom_type.id);
 
 		auto patch = documents::operations::PatchRequest("this.Owner = args.v1");
@@ -83,14 +88,14 @@ namespace ravendb::client::tests
 		auto op = documents::operations::PatchOperation(custom_type.id, {}, patch);
 
 		HttpCache cache;
-		auto&& res2 = test_suite_executor->get()->execute(op.get_command(FakeStore(), {}, cache));
+		auto&& res2 = test_suite_executor->get().execute(op.get_command(FakeStore(), {}, cache));
 
 		ASSERT_EQ(res2.status, documents::operations::PatchStatus::PATCHED);
 
 		auto get_doc_cmd = documents::commands::GetDocumentsCommand(custom_type.id, {}, false);
-		auto&& res3 = test_suite_executor->get()->execute(get_doc_cmd);
+		auto&& res3 = test_suite_executor->get().execute(get_doc_cmd);
 
-		CustomType ret_custom_type = res3.results[0];
+		CustomType ret_custom_type = res3.results[0].get<CustomType>();
 		ASSERT_EQ(ret_custom_type.owner, "someone else");
 	}
 

@@ -74,7 +74,9 @@ namespace ravendb::client::documents::session::operations
 		}
 
 		template<typename T>
-		std::shared_ptr<T> get_document()
+		std::shared_ptr<T> get_document(
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
 			if (_session.get().no_tracking)
 			{
@@ -92,16 +94,19 @@ namespace ravendb::client::documents::session::operations
 						return  nullptr;
 					}
 					auto doc_info = DocumentInfo(document);
-					return _session.get().track_entity<T>(doc_info);
+					return _session.get().track_entity<T>(doc_info, from_json, to_json);
 				}else
 				{
 					return nullptr;
 				}
 			}
-			return get_document<T>(_ids[0]);//TODO check if _ids[0] is OK
+			return get_document<T>(_ids[0], from_json, to_json);//TODO check if _ids[0] is OK
 		}
 		template<typename T>
-		std::shared_ptr<T> get_document(const std::string& id)
+		std::shared_ptr<T> get_document(
+			const std::string& id,
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
 			if(id.empty())
 			{
@@ -115,20 +120,22 @@ namespace ravendb::client::documents::session::operations
 			if (auto doc_info = _session.get()._documents_by_id.find(id);
 				doc_info != _session.get()._documents_by_id.end())
 			{
-				return _session.get().track_entity<T>(*doc_info->second);
+				return _session.get().track_entity<T>(*doc_info->second, from_json, to_json);
 			}
 			
 			if (auto doc_info = _session.get()._included_documents_by_id.find(id);
 				doc_info != _session.get()._included_documents_by_id.end())
 			{
-				return _session.get().track_entity<T>(*doc_info->second);
+				return _session.get().track_entity<T>(*doc_info->second, from_json, to_json);
 			}
 
 			return {};
 		}
 
 		template<typename T>
-		DocumentsByIdsMap<T> get_documents()
+		DocumentsByIdsMap<T> get_documents(
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
 			DocumentsByIdsMap<T> results{};
 
@@ -153,7 +160,7 @@ namespace ravendb::client::documents::session::operations
 						continue;
 					}
 					auto doc_info = DocumentInfo(doc);
-					results.insert({doc_info.id, _session.get().track_entity<T>(doc_info)});
+					results.insert({doc_info.id, _session.get().track_entity<T>(doc_info, from_json, to_json)});
 				}
 			}
 
@@ -161,7 +168,7 @@ namespace ravendb::client::documents::session::operations
 			{
 				if(!id.empty())
 				{
-					results.insert({id, get_document<T>(id)});
+					results.insert({id, get_document<T>(id, from_json, to_json)});
 				}
 			}
 			return results;
@@ -178,7 +185,7 @@ namespace ravendb::client::documents::session::operations
 
 			for(const auto& document : result.results)
 			{
-				if(document.empty())//null is empty
+				if(document.is_null())
 				{
 					continue;
 				}

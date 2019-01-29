@@ -115,24 +115,29 @@ namespace ravendb::client::documents::session::operations
 				break;
 			case commands::batches::CommandType::PATCH:
 				//TODO handle_patch(batch_result);
+				throw std::runtime_error("not implemented");
 				break;
 			case commands::batches::CommandType::ATTACHMENT_PUT:
 				//TODO handle_attachment_put(batch_result);
 				break;
 			case commands::batches::CommandType::ATTACHMENT_DELETE:
 				//TODO handle_attachment_delete(batch_result);
+				throw std::runtime_error("not implemented");
 				break;
 			case commands::batches::CommandType::ATTACHMENT_MOVE:
 				//TODO handle_attachment_move(batch_result);
+				throw std::runtime_error("not implemented");
 				break;
 			case commands::batches::CommandType::ATTACHMENT_COPY:
 				//TODO handle_attachment_copy(batch_result);
+				throw std::runtime_error("not implemented");
 				break;
 			case commands::batches::CommandType::COMPARE_EXCHANGE_PUT:
 			case commands::batches::CommandType::COMPARE_EXCHANGE_DELETE:
 				break;
 			case commands::batches::CommandType::COUNTERS:
 				//TODO handle_counters(batch_result);
+				throw std::runtime_error("not implemented");
 				break;
 			case commands::batches::CommandType::BATCH_PATCH:
 				break;

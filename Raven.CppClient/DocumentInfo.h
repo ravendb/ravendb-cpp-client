@@ -39,7 +39,7 @@ namespace ravendb::client::documents::session
 		bool ignore_changes = false;
 
 		std::shared_ptr<void> entity{};
-		bool new_document = true;
+		bool new_document = false;
 		std::string collection{};
 
 		//TODO std::string entity_type{};

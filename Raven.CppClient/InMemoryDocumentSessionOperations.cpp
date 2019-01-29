@@ -95,6 +95,7 @@ namespace ravendb::client::documents::session
 			return document_store.get_database();
 		}
 		throw_no_database();
+		return std::string{};//not suppose to happen - just shut the warning
 	}())
 		, no_tracking(options.no_tracking)
 		, _operation_executor(std::make_shared<documents::operations::SessionOperationExecutor>(*this))
@@ -203,11 +204,17 @@ namespace ravendb::client::documents::session
 	}
 
 	std::shared_ptr<void> InMemoryDocumentSessionOperations::track_entity(const std::string& id, const nlohmann::json& document,
-		const nlohmann::json& metadata, bool no_tracking_, const DocumentInfo::FromJsonConverter& from_json_converter)
+		const nlohmann::json& metadata, bool no_tracking_,
+		const DocumentInfo::FromJsonConverter& from_json_converter,
+		const DocumentInfo::ToJsonConverter& to_json_converter)
 	{
 		if (!from_json_converter)
 		{
 			throw std::invalid_argument("from_json_converter must have a target");
+		}
+		if (!to_json_converter)
+		{
+			throw std::invalid_argument("to_json_converter must have a target");
 		}
 
 		// if noTracking is session-wide then we want to override the passed argument
@@ -233,6 +240,8 @@ namespace ravendb::client::documents::session
 				_included_documents_by_id.erase(id);
 				_documents_by_entity.insert({ doc_info_it->second->entity, doc_info_it->second });
 			}
+			doc_info_it->second->from_json_converter = from_json_converter;
+			doc_info_it->second->to_json_converter = to_json_converter;
 			return doc_info_it->second->entity;
 		}
 
@@ -249,6 +258,8 @@ namespace ravendb::client::documents::session
 				_documents_by_id.insert({ doc_info_it->second->id, doc_info_it->second });
 				_documents_by_entity.insert({ doc_info_it->second->entity, doc_info_it->second });
 			}
+			doc_info_it->second->from_json_converter = from_json_converter;
+			doc_info_it->second->to_json_converter = to_json_converter;
 			return doc_info_it->second->entity;
 		}
 
@@ -260,16 +271,20 @@ namespace ravendb::client::documents::session
 			throw std::invalid_argument("Document " + id + "must have Change Vector");
 		}
 
-		auto doc_info = std::make_shared<DocumentInfo>();
-		doc_info->id = id;
-		doc_info->document = document;
-		doc_info->metadata = metadata;
-		doc_info->entity = entity;
-		doc_info->change_vector = change_vector;
+		if (!no_tracking)
+		{
+			auto doc_info = std::make_shared<DocumentInfo>();
+			doc_info->id = id;
+			doc_info->document = document;
+			doc_info->metadata = metadata;
+			doc_info->entity = entity;
+			doc_info->change_vector = change_vector;
+			doc_info->from_json_converter = from_json_converter;
+			doc_info->to_json_converter = to_json_converter;
 
-		_documents_by_id.insert({ doc_info->id, doc_info });
-		_documents_by_entity.insert({ entity, doc_info });
-
+			_documents_by_id.insert({ doc_info->id, doc_info });
+			_documents_by_entity.insert({ entity, doc_info });
+		}
 		return entity;
 	}
 
@@ -311,7 +326,7 @@ namespace ravendb::client::documents::session
 	void InMemoryDocumentSessionOperations::delete_document_internal(std::shared_ptr<void> entity)
 	{
 		if(auto doc_info_it = _documents_by_entity.find(entity);
-			doc_info_it != _documents_by_entity.end())
+			doc_info_it == _documents_by_entity.end())
 		{
 			throw std::runtime_error("This entity is not associated with the session, cannot delete unknown entity instance");
 		}else
@@ -324,7 +339,8 @@ namespace ravendb::client::documents::session
 	}
 
 	void InMemoryDocumentSessionOperations::delete_document(const std::string& id, 
-		const std::optional<std::string>& expected_change_vector, std::optional<DocumentInfo::ToJsonConverter> to_json)
+		const std::optional<std::string>& expected_change_vector,
+		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
 	{
 		if (impl::utils::is_blank(id))
 		{
@@ -372,7 +388,8 @@ namespace ravendb::client::documents::session
 
 	void InMemoryDocumentSessionOperations::store_internal(std::shared_ptr<void> entity,
 		std::optional<std::string> change_vector, std::optional<std::string> id,
-		ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json)
+		ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json,
+		const type_info& type)
 	{
 		if (no_tracking)
 		{
@@ -427,12 +444,31 @@ namespace ravendb::client::documents::session
 		// to detect if they generate duplicates.
 		assert_is_unique_instance(entity, id ? *id : std::string());
 
-		nlohmann::json metadata{};
+		nlohmann::json metadata = nlohmann::json::object();
+		
 		//TODO generate and set collection name
 
 		if (id)
 		{
 			_known_missing_ids.erase(*id);
+		}
+
+		//this part is unique to C++ : metadata check from the entity serialized
+		auto temp_doc_info = std::make_shared<DocumentInfo>();
+		temp_doc_info->to_json_converter = to_json;
+		auto document = EntityToJson::convert_entity_to_json(entity, temp_doc_info);
+
+		metadata = document[constants::documents::metadata::KEY];
+		if(metadata.find(constants::documents::metadata::COLLECTION) == metadata.end())
+		{
+			std::ostringstream collection{};
+			std::string_view type_name = type.name();
+			collection << type_name.substr(type_name.find_last_of(':') + 1);
+			impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::COLLECTION, collection.str());			
+		}
+		if (id)
+		{
+			impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::ID, *id);
 		}
 
 		store_entity_in_unit_of_work(id, entity, change_vector, std::move(metadata), force_concurrency_check, to_json);
@@ -495,7 +531,7 @@ namespace ravendb::client::documents::session
 		_deferred_commands.clear();
 		_deferred_commands_map.clear();
 
-		auto empty_changes_collection = std::optional<std::unordered_map<std::string, DocumentsChanges>>{};
+		auto empty_changes_collection = std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>>{};
 		prepare_for_entities_deletion(result, empty_changes_collection);
 		prepare_for_entities_puts(result);
 
@@ -586,7 +622,7 @@ namespace ravendb::client::documents::session
 	}
 
 	void InMemoryDocumentSessionOperations::prepare_for_entities_deletion(SaveChangesData& result,
-		std::optional<std::unordered_map<std::string, DocumentsChanges>>& changes_collection)
+		std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>>& changes_collection)
 	{
 		for (auto& deleted_entity : _deleted_entities)
 		{
@@ -602,8 +638,13 @@ namespace ravendb::client::documents::session
 			}
 			if (changes_collection)
 			{
-				//TODO complete
-				throw std::runtime_error("Not implemented");
+				DocumentsChanges change{};
+				change.field_new_value = std::string{};
+				change.field_old_value = std::string{};
+				change.change = DocumentsChanges::ChangeType::DOCUMENT_DELETED;
+
+				std::vector<DocumentsChanges> doc_changes{ std::move(change) };
+				changes_collection->insert({doc_info->id, std::move(doc_changes)});
 			}else
 			{
 				if (auto command_it = result.deferred_commands_map.find(
@@ -739,8 +780,11 @@ namespace ravendb::client::documents::session
 		std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>> changes_collection{};
 		changes_collection.emplace();
 
-		//TODO implement
-		throw std::runtime_error("not implemented");
+		auto unused = SaveChangesData(*this);
+		prepare_for_entities_deletion(unused, changes_collection);
+		get_all_entities_changes(changes_collection);
+
+		return *changes_collection;
 	}
 
 	bool InMemoryDocumentSessionOperations::has_changes() const

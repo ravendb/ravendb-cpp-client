@@ -1,6 +1,5 @@
 #pragma once
 #include "stdafx.h"
-#include <iomanip>
 #include "utils.h"
 
 namespace ravendb::client::impl::utils::json_utils
@@ -70,20 +69,25 @@ namespace ravendb::client::impl::utils::json_utils
 			return res;
 		}
 		else
+		{
 			it.value() = field;
+		}
 		return true;
 	}
 
 	template<typename T>
-	bool set_val_to_json(nlohmann::json& j, const std::string& key_name, const std::optional<T>& field)
+	bool set_val_to_json(nlohmann::json& j, const std::string& key_name, const std::optional<T>& field,
+		bool set_null_if_no_value = true)
 	{
 		if(field.has_value())
 		{
 			return set_val_to_json(j, key_name, field.value());
-		}else
-		{
-			return false;
 		}
+		if(set_null_if_no_value)
+		{
+			return set_val_to_json(j, key_name, nullptr);
+		}
+		return false;
 	}
 
 	template<typename T>
@@ -111,7 +115,7 @@ namespace ravendb::client::impl::utils::json_utils
 
 
 
-//TODO think of somthing better!
+//TODO think of something better!
 namespace std::chrono
 {
 	//serialization in C# TimeSpan format : d.hh:mm:ss.sssssss or hh:mm:ss.sssssss

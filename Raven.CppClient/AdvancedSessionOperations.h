@@ -1,11 +1,10 @@
 #pragma once
 #include "DocumentSessionImpl.h"
 #include "DocumentsChanges.h"
-#include "ExtendedAdvancedSessionOperations.h"
 
 namespace ravendb::client::documents::session
 {
-	class AdvancedDocumentSessionOperations
+	class AdvancedSessionOperations
 	{
 	public:
 		friend class DocumentSession;
@@ -13,22 +12,12 @@ namespace ravendb::client::documents::session
 	private:
 		std::shared_ptr<DocumentSessionImpl> _session_impl;
 
-		explicit AdvancedDocumentSessionOperations(std::shared_ptr<DocumentSessionImpl> session_impl)
+		explicit AdvancedSessionOperations(std::shared_ptr<DocumentSessionImpl> session_impl)
 			: _session_impl(session_impl)
 		{}
 
 	public:
-		~AdvancedDocumentSessionOperations() = default;
-
-		ExtendedAdvancedSessionOperations extended()
-		{
-			return ExtendedAdvancedSessionOperations(_session_impl);
-		}
-
-		const ExtendedAdvancedSessionOperations extended() const
-		{
-			return ExtendedAdvancedSessionOperations(_session_impl);
-		}
+		~AdvancedSessionOperations() = default;
 
 		std::reference_wrapper<IDocumentStore> get_document_store() const
 		{

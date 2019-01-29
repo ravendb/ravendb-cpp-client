@@ -1,6 +1,7 @@
 #pragma once
 #include <any>
 #include <unordered_set>
+#include <typeinfo>
 #include "BatchOptions.h"
 #include "SessionInfo.h"
 #include "DocumentsById.h"
@@ -249,15 +250,29 @@ namespace ravendb::client::documents::session
 		}
 
 		template<typename T>
-		std::shared_ptr<T> track_entity(const DocumentInfo& document_found)
+		std::shared_ptr<T> track_entity(const DocumentInfo& document_found,
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
+			DocumentInfo::FromJsonConverter from_json_converter =
+				document_found.from_json_converter ? document_found.from_json_converter : DocumentInfo::default_from_json<T>;
+			if (from_json)
+				from_json_converter = *from_json;
+			DocumentInfo::ToJsonConverter to_json_converter =
+				document_found.to_json_converter ? document_found.to_json_converter : DocumentInfo::default_to_json<T>;
+			if (to_json)
+				to_json_converter = *to_json;
 			return std::static_pointer_cast<T>(track_entity(
-				document_found.id, document_found.document, document_found.metadata, no_tracking,
-				document_found.from_json_converter ? document_found.from_json_converter : DocumentInfo::default_from_json<T>));	
+				document_found.id, document_found.document, document_found.metadata, no_tracking, 
+				from_json_converter, to_json_converter));
 		}
 
-		std::shared_ptr<void> track_entity(const std::string& id, const nlohmann::json& document,
-			const nlohmann::json& metadata, bool no_tracking_, const DocumentInfo::FromJsonConverter& from_json_converter);
+		std::shared_ptr<void> track_entity(const std::string& id,
+			const nlohmann::json& document,
+			const nlohmann::json& metadata,
+			bool no_tracking_,
+			const DocumentInfo::FromJsonConverter& from_json_converter,
+			const DocumentInfo::ToJsonConverter& to_json_converter);
 
 		void register_external_loaded_into_the_session(std::shared_ptr<DocumentInfo> info);
 
@@ -272,38 +287,47 @@ namespace ravendb::client::documents::session
 		}
 
 		template<typename T>
-		void delete_document(const std::string& id, const std::optional<std::string>& expected_change_vector = {})
+		void delete_document(const std::string& id,
+			const std::optional<std::string>& expected_change_vector = {})
 		{
 			delete_document(id, expected_change_vector, DocumentInfo::default_to_json<T>);
 		}
 
-		void delete_document(const std::string& id, const std::optional<std::string>& expected_change_vector = {},
-			std::optional<DocumentInfo::ToJsonConverter> to_json = {});
+		void delete_document(const std::string& id,
+			const std::optional<std::string>& expected_change_vector = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {});
 
 		template<typename T>
-		void store(std::shared_ptr<T> entity, std::optional<DocumentInfo::ToJsonConverter> to_json = {})
+		void store(std::shared_ptr<T> entity,
+			const std::optional<DocumentInfo::ToJsonConverter> to_json = {})
 		{
 			//TODO check if has id
 			bool has_id = false;
 			store_internal(std::static_pointer_cast<void>(entity), {}, {},
 				!has_id ? ConcurrencyCheckMode::FORCED : ConcurrencyCheckMode::AUTO, 
-				to_json ? *to_json : DocumentInfo::default_to_json<T>);
+				to_json ? *to_json : DocumentInfo::default_to_json<T>,
+				typeid(T));
 		}
 
 		template<typename T>
-		void store(std::shared_ptr<T> entity, std::string id, std::optional<DocumentInfo::ToJsonConverter> to_json = {})
+		void store(std::shared_ptr<T> entity,
+			std::string id,
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
 			store_internal(std::static_pointer_cast<void>(entity), {}, std::move(id), ConcurrencyCheckMode::AUTO,
-				to_json ? *to_json : DocumentInfo::default_to_json<T>);
+				to_json ? *to_json : DocumentInfo::default_to_json<T>, typeid(T));
 		}
 
 		template<typename T>
-		void store(std::shared_ptr<T> entity, std::optional<std::string> id = {},
-			std::optional<std::string> change_vector = {}, std::optional<DocumentInfo::ToJsonConverter> to_json = {})
+		void store(std::shared_ptr<T> entity,
+			std::optional<std::string> id = {},
+			std::optional<std::string> change_vector = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
 			store_internal(std::static_pointer_cast<void>(entity), std::move(change_vector), std::move(id),
 				!change_vector ? ConcurrencyCheckMode::DISABLED : ConcurrencyCheckMode::FORCED,
-				to_json ? *to_json : DocumentInfo::default_to_json<T>);
+				to_json ? *to_json : DocumentInfo::default_to_json<T>,
+				typeid(T));
 		}
 
 		SaveChangesData prepare_for_save_changes();
@@ -381,14 +405,15 @@ namespace ravendb::client::documents::session
 
 		void store_internal(std::shared_ptr<void> entity,
 			std::optional<std::string> change_vector, std::optional<std::string> id,
-			ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json);
+			ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json,
+			const type_info& type);
 
 		//TODO void prepare_compare_exchange_entities(const SaveChangesData& result);
 
 		static bool update_metadata_modifications(std::shared_ptr<DocumentInfo> doc_info);
 
 		void prepare_for_entities_deletion(SaveChangesData& result,
-			std::optional<std::unordered_map<std::string, DocumentsChanges>>& changes_collection);
+			std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>>& changes_collection);
 		
 		void prepare_for_entities_puts(SaveChangesData& result);
 		

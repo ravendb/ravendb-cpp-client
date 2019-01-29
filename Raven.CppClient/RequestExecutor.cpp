@@ -51,7 +51,7 @@ namespace ravendb::client::http
 		, _initial_urls(std::move(initial_urls))
 		, _topology(std::make_shared<Topology>())
 		, _certificate_details(std::move(certificate_details))
-		, _curl_holder(new impl::CurlHandlesHolder)
+		, _curl_holder()
 		, _set_before_perform(set_before_perform)
 		, _set_after_perform(set_after_perform)
 	{

@@ -1,4 +1,5 @@
 #include "pch.h"
+//#define __USE_FIDDLER__
 #include "ds_definitions.h"
 #include "User.h"
 #include "DocumentSession.h"
@@ -17,6 +18,10 @@ namespace ravendb::client::tests
 		static void SetUpTestCase()
 		{
 			test_suite_store = GET_DOCUMENT_STORE();
+		}
+		static void TearDownTestCase()
+		{
+			test_suite_store.reset();
 		}
 	};
 

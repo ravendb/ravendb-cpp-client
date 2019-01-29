@@ -15,7 +15,7 @@ namespace ravendb::client::http
 		std::vector<std::string> _initial_urls;
 		std::shared_ptr<Topology> _topology;
 		std::optional<impl::CertificateDetails> _certificate_details;
-		std::unique_ptr<impl::CurlHandlesHolder> _curl_holder;
+		impl::CurlHandlesHolder _curl_holder{};
 		impl::CurlOptionsSetter _set_before_perform = {};
 		impl::CurlOptionsSetter _set_after_perform = {};
 
@@ -30,7 +30,7 @@ namespace ravendb::client::http
 			char error_buffer[CURL_ERROR_SIZE] = { '\0' };
 			std::string output_buffer;
 			std::map<std::string, std::string> headers;
-			auto return_curl = _curl_holder->checkout_curl();
+			auto return_curl = _curl_holder.checkout_curl();
 			auto curl = return_curl.get();
 
 			std::string url;
@@ -56,6 +56,7 @@ namespace ravendb::client::http
 
 			long statusCode;
 			curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode);
+
 			if (res != CURLE_OK)
 			{
 				std::ostringstream error_builder;

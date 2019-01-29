@@ -32,6 +32,9 @@
     <ClCompile Include="DocumentSessionImpl.cpp">
       <Filter>ravendb.client\documents\session</Filter>
     </ClCompile>
+    <ClCompile Include="JsonOperation.cpp">
+      <Filter>ravendb.client\json</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -414,13 +417,10 @@
     <ClInclude Include="DocumentSession.h">
       <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
-    <ClInclude Include="AdvancedDocumentSessionOperations.h">
-      <Filter>ravendb.client\documents\session</Filter>
-    </ClInclude>
-    <ClInclude Include="ExtendedAdvancedSessionOperations.h">
-      <Filter>ravendb.client\documents\session</Filter>
-    </ClInclude>
     <ClInclude Include="DocumentsByIdsMap.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="AdvancedSessionOperations.h">
       <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
   </ItemGroup>
