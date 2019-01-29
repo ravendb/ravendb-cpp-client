@@ -204,11 +204,17 @@ namespace ravendb::client::documents::session
 	}
 
 	std::shared_ptr<void> InMemoryDocumentSessionOperations::track_entity(const std::string& id, const nlohmann::json& document,
-		const nlohmann::json& metadata, bool no_tracking_, const DocumentInfo::FromJsonConverter& from_json_converter)
+		const nlohmann::json& metadata, bool no_tracking_,
+		const DocumentInfo::FromJsonConverter& from_json_converter,
+		const DocumentInfo::ToJsonConverter& to_json_converter)
 	{
 		if (!from_json_converter)
 		{
 			throw std::invalid_argument("from_json_converter must have a target");
+		}
+		if (!to_json_converter)
+		{
+			throw std::invalid_argument("to_json_converter must have a target");
 		}
 
 		// if noTracking is session-wide then we want to override the passed argument
@@ -234,6 +240,8 @@ namespace ravendb::client::documents::session
 				_included_documents_by_id.erase(id);
 				_documents_by_entity.insert({ doc_info_it->second->entity, doc_info_it->second });
 			}
+			doc_info_it->second->from_json_converter = from_json_converter;
+			doc_info_it->second->to_json_converter = to_json_converter;
 			return doc_info_it->second->entity;
 		}
 
@@ -250,6 +258,8 @@ namespace ravendb::client::documents::session
 				_documents_by_id.insert({ doc_info_it->second->id, doc_info_it->second });
 				_documents_by_entity.insert({ doc_info_it->second->entity, doc_info_it->second });
 			}
+			doc_info_it->second->from_json_converter = from_json_converter;
+			doc_info_it->second->to_json_converter = to_json_converter;
 			return doc_info_it->second->entity;
 		}
 
@@ -269,6 +279,8 @@ namespace ravendb::client::documents::session
 			doc_info->metadata = metadata;
 			doc_info->entity = entity;
 			doc_info->change_vector = change_vector;
+			doc_info->from_json_converter = from_json_converter;
+			doc_info->to_json_converter = to_json_converter;
 
 			_documents_by_id.insert({ doc_info->id, doc_info });
 			_documents_by_entity.insert({ entity, doc_info });
@@ -327,7 +339,8 @@ namespace ravendb::client::documents::session
 	}
 
 	void InMemoryDocumentSessionOperations::delete_document(const std::string& id, 
-		const std::optional<std::string>& expected_change_vector, std::optional<DocumentInfo::ToJsonConverter> to_json)
+		const std::optional<std::string>& expected_change_vector,
+		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
 	{
 		if (impl::utils::is_blank(id))
 		{

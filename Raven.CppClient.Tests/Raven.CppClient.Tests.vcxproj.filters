@@ -57,6 +57,15 @@
     <ClInclude Include="Family.h">
       <Filter>ravendb.client.tests\infrastructure\entities</Filter>
     </ClInclude>
+    <ClInclude Include="Arr.h">
+      <Filter>ravendb.client.tests\infrastructure\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="NullableUser.h">
+      <Filter>ravendb.client.tests\infrastructure\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Poc.h">
+      <Filter>ravendb.client.tests\infrastructure\entities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -177,7 +177,10 @@ namespace ravendb::client::json
 		return true;
 	}
 
-	bool JsonOperation::compare_json(const std::string& field_path, const std::string& id, const nlohmann::json& original_json, const nlohmann::json& new_json, std::optional<std::unordered_map<std::string, std::vector<documents::session::DocumentsChanges>>>& changes_collection, std::optional<std::vector<documents::session::DocumentsChanges>>& doc_changes)
+	bool JsonOperation::compare_json(const std::string& field_path, const std::string& id,
+		const nlohmann::json& original_json, const nlohmann::json& new_json,
+		std::optional<std::unordered_map<std::string, std::vector<documents::session::DocumentsChanges>>>& changes_collection,
+		std::optional<std::vector<documents::session::DocumentsChanges>>& doc_changes)
 	{
 		if (!new_json.is_object() || !original_json.is_object())
 		{

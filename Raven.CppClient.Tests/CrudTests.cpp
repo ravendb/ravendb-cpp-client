@@ -1,11 +1,15 @@
 #include "pch.h"
-#define __USE_FIDDLER__
+//#define __USE_FIDDLER__
 #include "ds_definitions.h"
 #include "DocumentSession.h"
 #include "SessionOptions.h"
 #include "DocumentStore.h"
 #include "User.h"
 #include "Family.h"
+#include "NullableUser.h"
+#include "Arr.h"
+#include "DeleteDocumentCommand.h"
+#include "Poc.h"
 
 namespace ravendb::client::tests
 {
@@ -22,6 +26,50 @@ namespace ravendb::client::tests
 		{
 			test_suite_store.reset();
 		}
+
+		void TearDown() override
+		{
+			auto  get_docs_cmd = documents::commands::GetDocumentsCommand({}, {}, {}, {}, 0, 100, true);
+			auto results = test_suite_store->get().get_request_executor()->execute(get_docs_cmd);
+			for (const auto& res : results.results)
+			{
+				auto del_doc_cmd = documents::commands::DeleteDocumentCommand(res["@metadata"]["@id"].get<std::string>());
+				test_suite_store->get().get_request_executor()->execute(del_doc_cmd);
+			}
+		}
+
+		documents::session::DocumentInfo::ToJsonConverter arr2_to_json = [](std::shared_ptr<void> arr_param)->nlohmann::json
+		{
+			auto arr = std::static_pointer_cast<Arr2>(arr_param);
+			nlohmann::json json_array = nlohmann::json::array();
+			for(const auto& a : arr->arr1)
+			{
+				nlohmann::json temp = nlohmann::json::object();
+				temp["str"] = nlohmann::json(a.str);
+				json_array.push_back(std::move(temp));
+			}
+			nlohmann::json json;
+			json["arr1"] = std::move(json_array);
+			return json;
+		};
+
+		documents::session::DocumentInfo::FromJsonConverter arr2_from_json = [](const nlohmann::json& json)->std::shared_ptr<void>
+		{
+			auto arr2 = std::make_shared<Arr2>();
+			const auto& json_array = static_cast<const nlohmann::json::array_t&>(json["arr1"]);
+			arr2->arr1.reserve(json_array.size());
+			for(const auto& str_arr : json_array)
+			{
+				Arr1 arr1{};
+				arr1.str.reserve(str_arr.at("str").size());
+				for (const auto& str : str_arr.at("str"))
+				{
+					arr1.str.push_back(str.get<std::string>());
+				}
+				arr2->arr1.push_back(std::move(arr1));
+			}
+			return std::static_pointer_cast<void>(arr2);
+		};
 	};
 
 	TEST_F(CrudTests, EntitiesAreSavedUsingLowerCase)
@@ -204,13 +252,12 @@ namespace ravendb::client::tests
 	{
 		auto session = test_suite_store->get().open_session();
 
-		auto user = std::make_shared<User>();
-		user->first_name = {};
+		auto user = std::make_shared<NullableUser>();
 
-		session.store(user, std::string("users/1"));
+		session.store(user, std::string("n_users/1"));
 		session.save_changes();
 
-		auto user2 = session.load<User>("users/1");
+		auto user2 = session.load<NullableUser>("n_users/1");
 		ASSERT_TRUE(session.advanced().what_changed().empty());
 
 		user2->age = 3;
@@ -232,7 +279,7 @@ namespace ravendb::client::tests
 		auto family = std::make_shared<FamilyMembers>();
 		family->members = { member1, member2 };
 
-		session.store(family, std::string("family/1"));
+		session.store(family, std::string("family_members/1"));
 		session.save_changes();
 
 		member1 = std::make_shared<Member>();
@@ -243,33 +290,33 @@ namespace ravendb::client::tests
 		member2->name = "Hibernating Rhinos";
 		member2->age = 8;
 
-		auto new_family = session.load<FamilyMembers>("family/1");
+		auto new_family = session.load<FamilyMembers>("family_members/1");
 		new_family->members = { member1, member2 };
 
 		auto changes = session.advanced().what_changed();
 		ASSERT_EQ(1, changes.size());
 
-		ASSERT_EQ(4, changes.at("family/1").size());
+		ASSERT_EQ(4, changes.at("family_members/1").size());
 
-		ASSERT_EQ(std::string("Age"), changes.at("family/1").at(0).field_name);
-		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family/1").at(0).change);
-		ASSERT_EQ(8, changes.at("family/1").at(0).field_old_value.get<int>());
-		ASSERT_EQ(4, changes.at("family/1").at(0).field_new_value.get<int>());
+		ASSERT_EQ(std::string("Age"), changes.at("family_members/1").at(0).field_name);
+		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family_members/1").at(0).change);
+		ASSERT_EQ(8, changes.at("family_members/1").at(0).field_old_value.get<int>());
+		ASSERT_EQ(4, changes.at("family_members/1").at(0).field_new_value.get<int>());
 		
-		ASSERT_EQ(std::string("Name"), changes.at("family/1").at(1).field_name);
-		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family/1").at(1).change);
-		ASSERT_EQ(std::string("Hibernating Rhinos"), changes.at("family/1").at(1).field_old_value.get<std::string>());
-		ASSERT_EQ(std::string("RavenDB"), changes.at("family/1").at(1).field_new_value.get<std::string>());
+		ASSERT_EQ(std::string("Name"), changes.at("family_members/1").at(1).field_name);
+		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family_members/1").at(1).change);
+		ASSERT_EQ(std::string("Hibernating Rhinos"), changes.at("family_members/1").at(1).field_old_value.get<std::string>());
+		ASSERT_EQ(std::string("RavenDB"), changes.at("family_members/1").at(1).field_new_value.get<std::string>());
 
-		ASSERT_EQ(std::string("Age"), changes.at("family/1").at(2).field_name);
-		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family/1").at(2).change);
-		ASSERT_EQ(4, changes.at("family/1").at(2).field_old_value.get<int>());
-		ASSERT_EQ(8, changes.at("family/1").at(2).field_new_value.get<int>());
+		ASSERT_EQ(std::string("Age"), changes.at("family_members/1").at(2).field_name);
+		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family_members/1").at(2).change);
+		ASSERT_EQ(4, changes.at("family_members/1").at(2).field_old_value.get<int>());
+		ASSERT_EQ(8, changes.at("family_members/1").at(2).field_new_value.get<int>());
 
-		ASSERT_EQ(std::string("Name"), changes.at("family/1").at(3).field_name);
-		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family/1").at(3).change);
-		ASSERT_EQ(std::string("RavenDB"), changes.at("family/1").at(3).field_old_value.get<std::string>());
-		ASSERT_EQ(std::string("Hibernating Rhinos"), changes.at("family/1").at(3).field_new_value.get<std::string>());
+		ASSERT_EQ(std::string("Name"), changes.at("family_members/1").at(3).field_name);
+		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family_members/1").at(3).change);
+		ASSERT_EQ(std::string("RavenDB"), changes.at("family_members/1").at(3).field_old_value.get<std::string>());
+		ASSERT_EQ(std::string("Hibernating Rhinos"), changes.at("family_members/1").at(3).field_new_value.get<std::string>());
 
 		member1 = std::make_shared<Member>();
 		member1->name = "Toli";
@@ -284,26 +331,141 @@ namespace ravendb::client::tests
 		changes = session.advanced().what_changed();
 		ASSERT_EQ(1, changes.size());
 
-		ASSERT_EQ(4, changes.at("family/1").size());
+		ASSERT_EQ(4, changes.at("family_members/1").size());
 
-		ASSERT_EQ(std::string("Age"), changes.at("family/1").at(0).field_name);
-		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family/1").at(0).change);
-		ASSERT_EQ(8, changes.at("family/1").at(0).field_old_value.get<int>());
-		ASSERT_EQ(5, changes.at("family/1").at(0).field_new_value.get<int>());
+		ASSERT_EQ(std::string("Age"), changes.at("family_members/1").at(0).field_name);
+		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family_members/1").at(0).change);
+		ASSERT_EQ(8, changes.at("family_members/1").at(0).field_old_value.get<int>());
+		ASSERT_EQ(5, changes.at("family_members/1").at(0).field_new_value.get<int>());
 
-		ASSERT_EQ(std::string("Name"), changes.at("family/1").at(1).field_name);
-		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family/1").at(1).change);
-		ASSERT_EQ(std::string("Hibernating Rhinos"), changes.at("family/1").at(1).field_old_value.get<std::string>());
-		ASSERT_EQ(std::string("Toli"), changes.at("family/1").at(1).field_new_value.get<std::string>());
+		ASSERT_EQ(std::string("Name"), changes.at("family_members/1").at(1).field_name);
+		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family_members/1").at(1).change);
+		ASSERT_EQ(std::string("Hibernating Rhinos"), changes.at("family_members/1").at(1).field_old_value.get<std::string>());
+		ASSERT_EQ(std::string("Toli"), changes.at("family_members/1").at(1).field_new_value.get<std::string>());
 
-		ASSERT_EQ(std::string("Age"), changes.at("family/1").at(2).field_name);
-		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family/1").at(2).change);
-		ASSERT_EQ(4, changes.at("family/1").at(2).field_old_value.get<int>());
-		ASSERT_EQ(15, changes.at("family/1").at(2).field_new_value.get<int>());
+		ASSERT_EQ(std::string("Age"), changes.at("family_members/1").at(2).field_name);
+		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family_members/1").at(2).change);
+		ASSERT_EQ(4, changes.at("family_members/1").at(2).field_old_value.get<int>());
+		ASSERT_EQ(15, changes.at("family_members/1").at(2).field_new_value.get<int>());
 
-		ASSERT_EQ(std::string("Name"), changes.at("family/1").at(3).field_name);
-		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family/1").at(3).change);
-		ASSERT_EQ(std::string("RavenDB"), changes.at("family/1").at(3).field_old_value.get<std::string>());
-		ASSERT_EQ(std::string("Boki"), changes.at("family/1").at(3).field_new_value.get<std::string>());
+		ASSERT_EQ(std::string("Name"), changes.at("family_members/1").at(3).field_name);
+		ASSERT_EQ(documents::session::DocumentsChanges::ChangeType::FIELD_CHANGED, changes.at("family_members/1").at(3).change);
+		ASSERT_EQ(std::string("RavenDB"), changes.at("family_members/1").at(3).field_old_value.get<std::string>());
+		ASSERT_EQ(std::string("Boki"), changes.at("family_members/1").at(3).field_new_value.get<std::string>());
+	}
+
+	TEST_F(CrudTests, CrudOperationsWithArrayOfArrays)
+	{
+		{
+			auto session = test_suite_store->get().open_session();
+
+			Arr1 a1 = { {"a", "b"} };
+			Arr1 a2 = { {"c", "d"} };
+			auto arr = std::make_shared<Arr2>();
+			arr->arr1 = { a1, a2 };
+
+			session.store(arr, std::string("arr/1"), arr2_to_json);
+			session.save_changes();
+
+			auto new_arr = session.load<Arr2>("arr/1");
+
+			a1.str = { "d", "c" };
+			a2.str = { "a", "b" };
+			new_arr->arr1 = { a1, a2 };
+
+			auto what_changed = session.advanced().what_changed();
+			ASSERT_EQ(1, what_changed.size());
+
+			auto change = what_changed.at("arr/1");
+			ASSERT_EQ(4, change.size());
+
+			ASSERT_EQ(std::string("a"), change.at(0).field_old_value.get<std::string>());
+			ASSERT_EQ(std::string("d"), change.at(0).field_new_value.get<std::string>());
+
+
+			ASSERT_EQ(std::string("b"), change.at(1).field_old_value.get<std::string>());
+			ASSERT_EQ(std::string("c"), change.at(1).field_new_value.get<std::string>());
+
+			ASSERT_EQ(std::string("c"), change.at(2).field_old_value.get<std::string>());
+			ASSERT_EQ(std::string("a"), change.at(2).field_new_value.get<std::string>());
+
+			ASSERT_EQ(std::string("d"), change.at(3).field_old_value.get<std::string>());
+			ASSERT_EQ(std::string("b"), change.at(3).field_new_value.get<std::string>());
+
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+
+			auto new_arr = session.load<Arr2>("arr/1", arr2_from_json, arr2_to_json);
+
+			Arr1 a1 = { {"q", "w"} };
+			Arr1 a2 = { {"a", "b"} };
+			new_arr->arr1 = { a1, a2 };
+
+			auto what_changed = session.advanced().what_changed();
+			ASSERT_EQ(1, what_changed.size());
+
+			auto change = what_changed.at("arr/1");
+			ASSERT_EQ(2, change.size());
+
+			ASSERT_EQ(std::string("d"), change.at(0).field_old_value.get<std::string>());
+			ASSERT_EQ(std::string("q"), change.at(0).field_new_value.get<std::string>());
+
+			ASSERT_EQ(std::string("c"), change.at(1).field_old_value.get<std::string>());
+			ASSERT_EQ(std::string("w"), change.at(1).field_new_value.get<std::string>());
+
+			session.save_changes();
+		}
+	}
+
+	TEST_F(CrudTests, CrudCanUpdatePropertyToNull)
+	{
+		{
+			auto session = test_suite_store->get().open_session();
+			auto user = std::make_shared<NullableUser>();
+			user->first_name = "user1";
+
+			session.store(user, std::string("n_users/1"));
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+			auto user = session.load<NullableUser>("n_users/1");
+			user->first_name.reset();
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+			auto user = session.load<NullableUser>("n_users/1");
+			ASSERT_FALSE(user->first_name.has_value());
+		}
+	}
+
+	TEST_F(CrudTests, CrudCanUpdatePropertyFromNullToObject)
+	{
+		{
+			auto session = test_suite_store->get().open_session();
+			auto poc = std::make_shared<Poc>();
+			poc->name = "User";
+			poc->obj.reset();
+
+			session.store(poc, std::string("pocs/1"));
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+			auto poc = session.load<Poc>("pocs/1");
+			ASSERT_FALSE(poc->obj.has_value());
+
+			auto user = User();
+			poc->obj = user;
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+			auto poc = session.load<Poc>("pocs/1");
+			ASSERT_TRUE(poc->obj.has_value());
+		}
 	}
 }

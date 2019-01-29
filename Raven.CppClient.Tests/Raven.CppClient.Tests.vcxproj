@@ -37,9 +37,12 @@
     </Microsoft-googletest-v140-windesktop-msvcstl-static-rt-dyn-Disable-gtest_main>
   </PropertyGroup>
   <ItemGroup>
+    <ClInclude Include="Arr.h" />
     <ClInclude Include="CreateSampleDataOperation.h" />
     <ClInclude Include="ds_definitions.h" />
     <ClInclude Include="Family.h" />
+    <ClInclude Include="NullableUser.h" />
+    <ClInclude Include="Poc.h" />
     <ClInclude Include="re_definitions.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="User.h" />

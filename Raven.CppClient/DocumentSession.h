@@ -32,9 +32,10 @@ namespace ravendb::client::documents::session
 			_session_impl->delete_document(entity);
 		}
 
-		void delete_document(const std::string& id, const std::string& expected_change_vector = {})
+		void delete_document(const std::string& id, const std::string& expected_change_vector = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
-			_session_impl->delete_document(id, expected_change_vector);
+			_session_impl->delete_document(id, expected_change_vector, to_json);
 		}
 
 		void save_changes()
@@ -43,35 +44,44 @@ namespace ravendb::client::documents::session
 		}
 
 		template<typename T>
-		void store(std::shared_ptr<T> entity, std::optional<DocumentInfo::ToJsonConverter> to_json = {})
+		void store(std::shared_ptr<T> entity,
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
 			_session_impl->store(entity, to_json);
 		}
 
 		template<typename T>
-		void store(std::shared_ptr<T> entity, std::string id, std::optional<DocumentInfo::ToJsonConverter> to_json = {})
+		void store(std::shared_ptr<T> entity, std::string id, 
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
 			_session_impl->store(entity, id, to_json);
 		}
 
 		template<typename T>
-		void store(std::shared_ptr<T> entity, std::optional<std::string> id = {},
-			std::optional<std::string> change_vector = {}, std::optional<DocumentInfo::ToJsonConverter> to_json = {})
+		void store(std::shared_ptr<T> entity, 
+			const std::optional<std::string>& id = {},
+			const std::optional<std::string>& change_vector = {}, 
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
 			_session_impl->store(entity, id, change_vector, to_json);
 		}
 
 		template<typename T>
-		std::shared_ptr<T> load(const std::string& id)
+		std::shared_ptr<T> load(const std::string& id,
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
-			return _session_impl->load<T>(id);
+			return _session_impl->load<T>(id, from_json, to_json);
 		}
 
 		//load by collections of ids (std::string)
 		template<typename T, typename InputIt>
-		DocumentsByIdsMap<T> load(InputIt first, InputIt last)
+		//TODO add converters
+		DocumentsByIdsMap<T> load(InputIt first, InputIt last,
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
-			return _session_impl->load<T, InputIt>(first, last);
+			return _session_impl->load<T, InputIt>(first, last, from_json, to_json);
 		}
 	};
 }
