@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "DocumentSessionImpl.h"
 #include "BatchOperation.h"
+#include "BatchCommand.h"
+#include "LoadOperation.h"
 #include "SessionOptions.h"
+#include "LoaderWithInclude.h"
 
 namespace ravendb::client::documents::session
 {
@@ -32,6 +35,26 @@ namespace ravendb::client::documents::session
 		return load_op;
 	}
 
+	operations::LoadOperation DocumentSessionImpl::load_impl(
+		const std::vector<std::reference_wrapper<const std::string>>& ids,
+		const std::vector<std::string>& includes)
+	{
+		auto load_op = operations::LoadOperation(*this);
+		load_op.by_ids(ids);
+		load_op.with_includes(includes);
+
+		//TODO take care of counters;
+
+		auto cmd = load_op.create_request();
+		if (cmd)
+		{
+			_request_executor->execute(*cmd);
+			load_op.set_result(cmd->get_result());
+		}
+
+		return load_op;
+	}
+
 
 	void DocumentSessionImpl::load_internal(const std::vector<std::reference_wrapper<const std::string>>& ids,
 		operations::LoadOperation& operation)
@@ -47,6 +70,10 @@ namespace ravendb::client::documents::session
 		}
 	}
 
+	loaders::LoaderWithInclude DocumentSessionImpl::include(const std::string& path)
+	{
+		return loaders::MultiLoaderWithInclude::create(*this).include(path);
+	}
 
 	bool DocumentSessionImpl::exists(const std::string& id)
 	{
@@ -82,5 +109,4 @@ namespace ravendb::client::documents::session
 			save_changes_operation.set_result(command->get_result());
 		}
 	}
-
 }

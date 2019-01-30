@@ -1,16 +1,24 @@
 #pragma once
 #include "InMemoryDocumentSessionOperations.h"
-#include "BatchCommand.h"
+#include "DocumentsByIdsMap.h"
 #include "LoadOperation.h"
 
 namespace ravendb::client::documents::session
 {
+	namespace loaders
+	{
+		class LoaderWithInclude;
+	}
+
 	class DocumentSessionImpl : public InMemoryDocumentSessionOperations
 	{
 	private:
 		operations::LoadOperation load_impl(const std::string& id);
 
 		operations::LoadOperation load_impl(const std::vector<std::reference_wrapper<const std::string>>& ids);
+
+		operations::LoadOperation load_impl(const std::vector<std::reference_wrapper<const std::string>>& ids,
+		const std::vector<std::string>& includes);
 
 		void load_internal(const std::vector<std::reference_wrapper<const std::string>>& ids,
 			operations::LoadOperation& operation);
@@ -19,6 +27,14 @@ namespace ravendb::client::documents::session
 		~DocumentSessionImpl() override = default;
 
 		DocumentSessionImpl(DocumentStoreBase& document_store,/* UUID id,*/ SessionOptions options);
+
+		loaders::LoaderWithInclude include(const std::string& path);
+
+		template <typename T>
+		DocumentsByIdsMap<T> load_internal(const std::vector<std::reference_wrapper<const std::string>>& ids,
+			const std::vector<std::string>& includes,
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json,
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json);
 
 		template<typename T>
 		std::shared_ptr<T> load(const std::string& id, 
@@ -37,6 +53,16 @@ namespace ravendb::client::documents::session
 	};
 
 	template <typename T>
+	DocumentsByIdsMap<T> DocumentSessionImpl::load_internal(
+		const std::vector<std::reference_wrapper<const std::string>>& ids,
+		const std::vector<std::string>& includes,
+		const std::optional<DocumentInfo::FromJsonConverter>& from_json,
+		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
+	{
+		return load_impl(ids, includes).get_documents<T>(from_json, to_json);
+	}
+
+	template <typename T>
 	std::shared_ptr<T> DocumentSessionImpl::load(const std::string& id,
 		const std::optional<DocumentInfo::FromJsonConverter>& from_json,
 		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
@@ -45,7 +71,6 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T, typename InputIt>
-	//TODO add converters
 	DocumentsByIdsMap<T> DocumentSessionImpl::load(InputIt first, InputIt last,
 		const std::optional<DocumentInfo::FromJsonConverter>& from_json,
 		const std::optional<DocumentInfo::ToJsonConverter>& to_json)

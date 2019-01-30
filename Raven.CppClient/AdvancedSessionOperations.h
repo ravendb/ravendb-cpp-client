@@ -88,7 +88,7 @@ namespace ravendb::client::documents::session
 		}
 
 		template<typename T>
-		std::string get_document_id(std::shared_ptr<T> entity)
+		std::optional<std::string> get_document_id(std::shared_ptr<T> entity)
 		{
 			return _session_impl->get_document_id(entity);
 		}

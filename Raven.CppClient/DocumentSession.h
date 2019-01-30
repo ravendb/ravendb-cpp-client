@@ -1,6 +1,7 @@
 #pragma once
 #include "DocumentSessionImpl.h"
 #include "AdvancedSessionOperations.h"
+#include "LoaderWithInclude.h"
 
 namespace ravendb::client::documents::session
 {
@@ -66,6 +67,11 @@ namespace ravendb::client::documents::session
 			_session_impl->store(entity, id, change_vector, to_json);
 		}
 
+		loaders::LoaderWithInclude include(const std::string& path)
+		{
+			return _session_impl->include(path);
+		}
+
 		template<typename T>
 		std::shared_ptr<T> load(const std::string& id,
 			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
@@ -76,7 +82,6 @@ namespace ravendb::client::documents::session
 
 		//load by collections of ids (std::string)
 		template<typename T, typename InputIt>
-		//TODO add converters
 		DocumentsByIdsMap<T> load(InputIt first, InputIt last,
 			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
 			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})

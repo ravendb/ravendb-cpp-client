@@ -13,6 +13,8 @@ namespace ravendb::client::documents::session::operations
 
 		std::vector<std::string> _ids{};
 
+		std::vector<std::string> _includes{};
+
 		std::vector<std::string> _ids_to_check_on_server{};
 
 		std::optional<commands::GetDocumentsResult> _current_load_results{};
@@ -29,9 +31,23 @@ namespace ravendb::client::documents::session::operations
 				return {};
 			}
 
+			if(_session.get().check_if_already_included(_ids, _includes))
+			{
+				return nullptr;
+			}
+
 			_session.get().increment_request_count();
 
-			return std::make_unique<commands::GetDocumentsCommand>(_ids_to_check_on_server, std::vector<std::string>(), false);
+			//TODO take care of counters
+
+			return std::make_unique<commands::GetDocumentsCommand>(_ids_to_check_on_server, _includes, false);
+		}
+
+		LoadOperation& with_includes(std::vector<std::string> includes)
+		{
+			_includes = std::move(includes);
+
+			return *this;
 		}
 
 		LoadOperation& by_id(const std::string& id)
@@ -181,7 +197,9 @@ namespace ravendb::client::documents::session::operations
 				_current_load_results = result;
 			}
 
-			//TODO add later _session.get().register_includes(result.includes);
+			_session.get().register_includes(result.includes);
+
+			//TODO take care of counters
 
 			for(const auto& document : result.results)
 			{
@@ -194,7 +212,7 @@ namespace ravendb::client::documents::session::operations
 				_session.get()._documents_by_id.insert({new_doc_info->id,new_doc_info});
 			}
 
-			//TODO add later _session.get().register_missing_includes(result.results, result.includes, _includes);
+			_session.get().register_missing_includes(result.results, result.includes, _includes);
 		}
 	};
 }

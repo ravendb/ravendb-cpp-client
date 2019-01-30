@@ -229,10 +229,12 @@
     <ClInclude Include="JsonOperation.h" />
     <ClInclude Include="json_utils.h" />
     <ClInclude Include="LeaderStamp.h" />
+    <ClInclude Include="LoaderWithInclude.h" />
     <ClInclude Include="LoadOperation.h" />
     <ClInclude Include="MaintenanceOperationExecutor.h" />
     <ClInclude Include="MetadataAsDictionary.h" />
     <ClInclude Include="IMetadataDictionary.h" />
+    <ClInclude Include="MultiLoaderWithInclude.h" />
     <ClInclude Include="OperationExecutor.h" />
     <ClInclude Include="OperationIdResult.h" />
     <ClInclude Include="Parameters.h" />
@@ -293,6 +295,7 @@
     <ClCompile Include="EntityToJson.cpp" />
     <ClCompile Include="InMemoryDocumentSessionOperations.cpp" />
     <ClCompile Include="JsonOperation.cpp" />
+    <ClCompile Include="MultiLoaderWithInclude.cpp" />
     <ClCompile Include="RequestExecutor.cpp" />
     <ClCompile Include="SessionOperationExecutor.cpp" />
     <ClCompile Include="stdafx.cpp">

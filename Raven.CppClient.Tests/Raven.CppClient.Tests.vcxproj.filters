@@ -3,41 +3,44 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="BasicDocumentCommandsTests.cpp">
-      <Filter>ravendb.client.tests\tests</Filter>
-    </ClCompile>
-    <ClCompile Include="GetDocumentsCommandTests.cpp">
-      <Filter>ravendb.client.tests\tests</Filter>
-    </ClCompile>
-    <ClCompile Include="IndexOperationsTests.cpp">
-      <Filter>ravendb.client.tests\tests</Filter>
-    </ClCompile>
-    <ClCompile Include="BasicQueryTests.cpp">
-      <Filter>ravendb.client.tests\tests</Filter>
-    </ClCompile>
-    <ClCompile Include="BasicPatchTests.cpp">
-      <Filter>ravendb.client.tests\tests</Filter>
-    </ClCompile>
-    <ClCompile Include="AdvancedPatchingTests.cpp">
-      <Filter>ravendb.client.tests\tests</Filter>
-    </ClCompile>
-    <ClCompile Include="BasicDocumentsSessionTests.cpp">
-      <Filter>ravendb.client.tests\tests</Filter>
-    </ClCompile>
     <ClCompile Include="re_definitions.cpp">
       <Filter>ravendb.client.tests\definitions</Filter>
     </ClCompile>
     <ClCompile Include="RequestExecutorAndDBsTests.cpp">
-      <Filter>ravendb.client.tests\RequestExecutor</Filter>
+      <Filter>ravendb.client.tests\C++ client tests\RequestExecutor</Filter>
     </ClCompile>
     <ClCompile Include="SecuredRequestExecutorTests.cpp">
-      <Filter>ravendb.client.tests\RequestExecutor</Filter>
-    </ClCompile>
-    <ClCompile Include="CrudTests.cpp">
-      <Filter>ravendb.client.tests\tests</Filter>
+      <Filter>ravendb.client.tests\C++ client tests\RequestExecutor</Filter>
     </ClCompile>
     <ClCompile Include="ds_definitions.cpp">
       <Filter>ravendb.client.tests\definitions</Filter>
+    </ClCompile>
+    <ClCompile Include="AdvancedPatchingTests.cpp">
+      <Filter>ravendb.client.tests\C++ client tests</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicDocumentCommandsTests.cpp">
+      <Filter>ravendb.client.tests\C++ client tests</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicDocumentsSessionTests.cpp">
+      <Filter>ravendb.client.tests\C++ client tests</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicPatchTests.cpp">
+      <Filter>ravendb.client.tests\C++ client tests</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicQueryTests.cpp">
+      <Filter>ravendb.client.tests\C++ client tests</Filter>
+    </ClCompile>
+    <ClCompile Include="GetDocumentsCommandTests.cpp">
+      <Filter>ravendb.client.tests\C++ client tests</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexOperationsTests.cpp">
+      <Filter>ravendb.client.tests\C++ client tests</Filter>
+    </ClCompile>
+    <ClCompile Include="CrudTests.cpp">
+      <Filter>ravendb.client.tests\test\client</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadTest.cpp">
+      <Filter>ravendb.client.tests\test\client\documents</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -86,11 +89,20 @@
     <Filter Include="ravendb.client.tests\infrastructure\entities">
       <UniqueIdentifier>{6287136a-e536-4a91-baae-25e9232576b8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ravendb.client.tests\RequestExecutor">
+    <Filter Include="ravendb.client.tests\test">
+      <UniqueIdentifier>{e60f1d61-bd60-4c99-869a-6c04c738644c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\C++ client tests">
+      <UniqueIdentifier>{7c4395f2-2ac4-4def-bfe1-e0bbd1041d6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\C++ client tests\RequestExecutor">
       <UniqueIdentifier>{fed010f5-d988-46d5-a578-09fdda2ece62}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ravendb.client.tests\tests">
-      <UniqueIdentifier>{e60f1d61-bd60-4c99-869a-6c04c738644c}</UniqueIdentifier>
+    <Filter Include="ravendb.client.tests\test\client">
+      <UniqueIdentifier>{9c644875-0be0-4418-b505-961724366078}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\client\documents">
+      <UniqueIdentifier>{e938cbab-71e6-48d6-a273-c97380f445c8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

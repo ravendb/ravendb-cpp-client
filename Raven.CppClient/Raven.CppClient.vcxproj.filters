@@ -35,6 +35,9 @@
     <ClCompile Include="JsonOperation.cpp">
       <Filter>ravendb.client\json</Filter>
     </ClCompile>
+    <ClCompile Include="MultiLoaderWithInclude.cpp">
+      <Filter>ravendb.client\documents\session\loaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -423,6 +426,12 @@
     <ClInclude Include="AdvancedSessionOperations.h">
       <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
+    <ClInclude Include="LoaderWithInclude.h">
+      <Filter>ravendb.client\documents\session\loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiLoaderWithInclude.h">
+      <Filter>ravendb.client\documents\session\loaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
@@ -478,6 +487,9 @@
     </Filter>
     <Filter Include="ravendb.client\json">
       <UniqueIdentifier>{1980ad8f-3fd8-4d41-9c28-4dedb33184b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\session\loaders">
+      <UniqueIdentifier>{a1d828d5-98a3-4f57-a8e4-d988cb652873}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

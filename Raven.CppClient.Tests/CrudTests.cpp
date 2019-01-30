@@ -10,6 +10,7 @@
 #include "Arr.h"
 #include "DeleteDocumentCommand.h"
 #include "Poc.h"
+#include "GetDocumentsCommand.h"
 
 namespace ravendb::client::tests
 {

@@ -366,9 +366,19 @@ namespace ravendb::client::documents::session
 
 		void register_missing(const std::string& id);
 
+		void register_includes(const nlohmann::json& includes);
+
+		//TODO register_missing_includes is NOT fully implemented since it DOESN'T parse the include path
+		//TODO but use it as is (only works with simple path)
+		//TODO this behaviour is NOT implemented in Java client ether.
+		void register_missing_includes(const nlohmann::json& results, const nlohmann::json& includes,
+			const std::vector<std::string>& include_paths);
+
 		//TODO implement "includes" methods
 
 		//TODO implement "counters" methods
+
+		bool check_if_already_included(const std::vector<std::string>& ids, const std::vector<std::string>& includes);
 
 	protected:
 		InMemoryDocumentSessionOperations(DocumentStoreBase& document_store,/* UUID id,*/ SessionOptions options);
