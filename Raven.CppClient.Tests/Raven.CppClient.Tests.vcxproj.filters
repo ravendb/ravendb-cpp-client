@@ -36,11 +36,23 @@
     <ClCompile Include="IndexOperationsTests.cpp">
       <Filter>ravendb.client.tests\C++ client tests</Filter>
     </ClCompile>
-    <ClCompile Include="CrudTests.cpp">
-      <Filter>ravendb.client.tests\test\client</Filter>
-    </ClCompile>
     <ClCompile Include="LoadTest.cpp">
       <Filter>ravendb.client.tests\test\client\documents</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadTests.cpp">
+      <Filter>ravendb.client.tests\test\client</Filter>
+    </ClCompile>
+    <ClCompile Include="CreateSampleDataOperation.cpp">
+      <Filter>ravendb.client.tests\infrastructure</Filter>
+    </ClCompile>
+    <ClCompile Include="DeleteTest.cpp">
+      <Filter>ravendb.client.tests\test\client</Filter>
+    </ClCompile>
+    <ClCompile Include="CrudTest.cpp">
+      <Filter>ravendb.client.tests\test\client</Filter>
+    </ClCompile>
+    <ClCompile Include="test_utils.cpp">
+      <Filter>ravendb.client.tests\infrastructure\utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +80,42 @@
     </ClInclude>
     <ClInclude Include="Poc.h">
       <Filter>ravendb.client.tests\infrastructure\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="GeekPerson.h">
+      <Filter>ravendb.client.tests\infrastructure\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Address.h">
+      <Filter>ravendb.client.tests\infrastructure\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="CompanyType.h">
+      <Filter>ravendb.client.tests\infrastructure\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Company.h">
+      <Filter>ravendb.client.tests\infrastructure\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Contact.h">
+      <Filter>ravendb.client.tests\infrastructure\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Employee.h">
+      <Filter>ravendb.client.tests\infrastructure\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="OrderLine.h">
+      <Filter>ravendb.client.tests\infrastructure\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Order.h">
+      <Filter>ravendb.client.tests\infrastructure\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Person.h">
+      <Filter>ravendb.client.tests\infrastructure\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Post.h">
+      <Filter>ravendb.client.tests\infrastructure\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="test_utils.h">
+      <Filter>ravendb.client.tests\infrastructure\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="TestSuiteBase.h">
+      <Filter>ravendb.client.tests\infrastructure</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -103,6 +151,9 @@
     </Filter>
     <Filter Include="ravendb.client.tests\test\client\documents">
       <UniqueIdentifier>{e938cbab-71e6-48d6-a273-c97380f445c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\infrastructure\utils">
+      <UniqueIdentifier>{33363449-c257-4b7c-acb3-ea205e91209a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

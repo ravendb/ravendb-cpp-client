@@ -1,10 +1,7 @@
 #include "pch.h"
 //#define __USE_FIDDLER__
-#include "ds_definitions.h"
+#include "TestSuiteBase.h"
 #include "DocumentSession.h"
-#include "SessionOptions.h"
-#include "DocumentStore.h"
-#include "DeleteDocumentCommand.h"
 
 namespace load_test
 {
@@ -52,34 +49,16 @@ namespace load_test
 		get_val_from_json(j, "FooIds", b.foo_ids);
 		get_val_from_json(j, "Name", b.name);
 	}
-
 }
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::client::documents
 {
-	class LoadTest : public ::testing::Test
+	class LoadTest : public infrastructure::TestSuiteBase
 	{
 	protected:
-		inline static std::shared_ptr<DocumentStoreScope> test_suite_store{};
-
 		static void SetUpTestCase()
 		{
-			test_suite_store = GET_DOCUMENT_STORE();
-		}
-		static void TearDownTestCase()
-		{
-			test_suite_store.reset();
-		}
-
-		void TearDown() override
-		{
-			auto  get_docs_cmd = documents::commands::GetDocumentsCommand({}, {}, {}, {}, 0, 100, true);
-			auto results = test_suite_store->get().get_request_executor()->execute(get_docs_cmd);
-			for (const auto& res : results.results)
-			{
-				auto del_doc_cmd = documents::commands::DeleteDocumentCommand(res["@metadata"]["@id"].get<std::string>());
-				test_suite_store->get().get_request_executor()->execute(del_doc_cmd);
-			}
+			test_suite_store = definitions::GET_DOCUMENT_STORE();
 		}
 	};
 
@@ -92,14 +71,14 @@ namespace ravendb::client::tests
 			auto foo = std::make_shared<load_test::Foo>();
 			foo->name = "Beginning";
 			//TODO generate ID
-			session.store(foo, std::string("foos/1"));
+			session.store(foo, "foos/1");
 
 			auto foo_id = *session.advanced().get_document_id(foo);
 			auto bar = std::make_shared<load_test::Bar>();
 			bar->name = "End";
 			bar->foo_id = foo_id;
 			//TODO generate ID
-			session.store(bar, std::string("bars/1"));
+			session.store(bar, "bars/1");
 
 			bar_id = *session.advanced().get_document_id(bar);
 			session.save_changes();
@@ -133,7 +112,7 @@ namespace ravendb::client::tests
 			bar->name = "End";
 			bar->foo_id = "non_exists/1";
 			//TODO generate ID
-			session.store(bar, std::string("bars/1"));
+			session.store(bar, "bars/1");
 			bar_id = *session.advanced().get_document_id(bar);
 			session.save_changes();
 		}

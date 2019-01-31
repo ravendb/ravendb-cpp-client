@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::infrastructure::entities
 {
 	struct Arr1
 	{
@@ -8,10 +8,10 @@ namespace ravendb::client::tests
 	};
 
 	inline void to_json(nlohmann::json& j, const Arr1& a)
-	{}//purposefully left empty
+	{}//intentionally left empty
 
 	inline void from_json(const nlohmann::json& j, Arr1& a)
-	{}//purposefully left empty
+	{}//intentionally left empty
 
 	struct Arr2
 	{
@@ -19,8 +19,8 @@ namespace ravendb::client::tests
 	};
 
 	inline void to_json(nlohmann::json& j, const Arr2& a)
-	{}//purposefully left empty
+	{}//intentionally left empty
 
 	inline void from_json(const nlohmann::json& j, Arr2& a)
-	{}//purposefully left empty
+	{}//intentionally left empty
 }

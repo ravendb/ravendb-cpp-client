@@ -6,7 +6,7 @@
 #include "CreateDatabaseOperation.h"
 #include "DeleteDatabasesOperation.h"
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::definitions
 {
 	DocumentStoreScope::DocumentStoreScope(const std::string& db_name, bool is_secured, bool use_fiddler)
 	{

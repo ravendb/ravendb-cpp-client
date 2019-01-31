@@ -12,13 +12,13 @@ namespace ravendb::client::tests
 	class BasicDocumentCommandsTests : public ::testing::Test
 	{
 	protected:
-		inline static std::shared_ptr<RequestExecutorScope> test_suite_executor{};
+		inline static std::shared_ptr<definitions::RequestExecutorScope> test_suite_executor{};
 
-		static const User example_user;
+		static const infrastructure::entities::User example_user;
 
 		static void SetUpTestCase()
 		{
-			test_suite_executor = GET_REQUEST_EXECUTOR();
+			test_suite_executor = definitions::GET_REQUEST_EXECUTOR();
 		}
 		static void TearDownTestCase()
 		{
@@ -47,7 +47,7 @@ namespace ravendb::client::tests
 		}
 	};
 
-	const User BasicDocumentCommandsTests::example_user{ "users/1-A", "Alexander", "Timoshenko", "Israel", 0, 38 };
+	const infrastructure::entities::User BasicDocumentCommandsTests::example_user{ "users/1-A", "Alexander", "Timoshenko", "Israel", 0, 38 };
 
 
 	TEST_F(BasicDocumentCommandsTests, CanGetDocument)
@@ -57,7 +57,7 @@ namespace ravendb::client::tests
 		documents::commands::GetDocumentsCommand cmd(example_user.id, {}, false);
 		auto&& res = test_suite_executor->get().execute(cmd);
 
-		User check_user = res.results[0];
+		infrastructure::entities::User check_user = res.results[0].get<infrastructure::entities::User>();
 		ASSERT_EQ(example_user, check_user);
 	}
 

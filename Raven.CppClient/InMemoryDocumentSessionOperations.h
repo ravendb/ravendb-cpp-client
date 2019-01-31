@@ -310,8 +310,7 @@ namespace ravendb::client::documents::session
 		}
 
 		template<typename T>
-		void store(std::shared_ptr<T> entity,
-			std::string id,
+		void store(std::shared_ptr<T> entity, std::string id,
 			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
 			store_internal(std::static_pointer_cast<void>(entity), {}, std::move(id), ConcurrencyCheckMode::AUTO,

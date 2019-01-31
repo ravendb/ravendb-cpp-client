@@ -1,31 +1,26 @@
 #include "pch.h"
 //#define __USE_FIDDLER__
-#include "ds_definitions.h"
-#include "User.h"
+#include "TestSuiteBase.h"
 #include "DocumentSession.h"
 #include "SessionOptions.h"
-#include "DocumentStore.h"
+#include "User.h"
+
+
 
 namespace ravendb::client::tests
 {
-	class BasicDocumentsSessionTests : public ::testing::Test
+	class BasicDocumentsSessionTests : public infrastructure::TestSuiteBase
 	{
 	protected:
-		inline static std::shared_ptr<DocumentStoreScope> test_suite_store{};
-
-		static const User example_user;
+		static const infrastructure::entities::User example_user;
 
 		static void SetUpTestCase()
 		{
-			test_suite_store = GET_DOCUMENT_STORE();
-		}
-		static void TearDownTestCase()
-		{
-			test_suite_store.reset();
+			test_suite_store = definitions::GET_DOCUMENT_STORE();
 		}
 	};
 
-	const User BasicDocumentsSessionTests::example_user{ "users/1", "Alexander", "Timoshenko", "Israel", 0, 38 };
+	const infrastructure::entities::User BasicDocumentsSessionTests::example_user{ "users/1", "Alexander", "Timoshenko", "Israel", 0, 38 };
 
 
 	TEST_F(BasicDocumentsSessionTests, SessionCRUDTest)
@@ -37,20 +32,20 @@ namespace ravendb::client::tests
 			documents::session::TransactionMode::SINGLE_NODE };
 		{
 			auto session = test_suite_store->get().open_session(session_options);
-			auto user = session.load<User>(example_user.id);
+			auto user = session.load<infrastructure::entities::User>(example_user.id);
 			ASSERT_FALSE(user);
 		}
 		{
 			auto session = test_suite_store->get().open_session(session_options);
-			auto user = std::make_shared<User>(example_user);
+			auto user = std::make_shared<infrastructure::entities::User>(example_user);
 			session.store(user, user->id);
 			session.save_changes();
 		}
 		{
 			auto session = test_suite_store->get().open_session(session_options);
-			auto user = session.load<User>(example_user.id);
+			auto user = session.load<infrastructure::entities::User>(example_user.id);
 			ASSERT_TRUE(user);
-			ASSERT_EQ(user->first_name, example_user.first_name);
+			ASSERT_EQ(user->name, example_user.name);
 			ASSERT_EQ(user->last_name, example_user.last_name);
 		}
 		{
@@ -60,7 +55,7 @@ namespace ravendb::client::tests
 		}
 		{
 			auto session = test_suite_store->get().open_session(session_options);
-			auto user = session.load<User>(example_user.id);
+			auto user = session.load<infrastructure::entities::User>(example_user.id);
 			ASSERT_FALSE(user);
 		}
 	}

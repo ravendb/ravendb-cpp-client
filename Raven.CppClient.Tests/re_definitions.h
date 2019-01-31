@@ -3,7 +3,7 @@
 #include "CertificateDetails.h"
 #include "RequestExecutor.h"
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::definitions
 {
 #ifndef GET_REQUEST_EXECUTOR
 	#ifdef __USE_FIDDLER__

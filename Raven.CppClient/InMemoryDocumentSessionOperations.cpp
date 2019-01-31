@@ -359,7 +359,10 @@ namespace ravendb::client::documents::session
 					"and missing in the session. "
 					"Use template delete_document() for default to_json serializer.");
 			}
-			nlohmann::json new_obj = to_json ? (*to_json)(doc_info->entity) : doc_info->to_json_converter(doc_info->entity);
+
+			//TODO consider NOT using the following test  - may be unsafe since user defined serializer 
+			//TODO may NOT add @metadata
+			nlohmann::json new_obj = to_json ? (*to_json)(doc_info->entity) : EntityToJson::convert_entity_to_json(doc_info->entity, doc_info);
 			if(auto empty_changes = std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>>();
 				doc_info->entity && entity_changed(new_obj, doc_info, empty_changes))
 			{

@@ -1,7 +1,7 @@
 #pragma once
 #include "DocumentStore.h"
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::definitions
 {
 #ifndef GET_DOCUMENT_STORE
 	#ifdef __USE_FIDDLER__

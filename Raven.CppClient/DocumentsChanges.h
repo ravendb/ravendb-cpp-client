@@ -4,16 +4,17 @@ namespace ravendb::client::documents::session
 {
 	struct DocumentsChanges
 	{
-		enum class JsonNodeType {
-			ARRAY,
-			BINARY,
-			BOOLEAN,
-			MISSING,
-			NULL_,
-			NUMBER,
-			OBJECT,
-			STRING
-		};
+		//TODO obsolete
+		//enum class JsonNodeType {
+		//	ARRAY,
+		//	BINARY,
+		//	BOOLEAN,
+		//	MISSING,
+		//	NULL_,
+		//	NUMBER,
+		//	OBJECT,
+		//	STRING
+		//};
 
 		enum class ChangeType
 		{
@@ -32,8 +33,9 @@ namespace ravendb::client::documents::session
 		nlohmann::json field_old_value{};
 		nlohmann::json field_new_value{};
 
-		JsonNodeType field_old_type{};
-		JsonNodeType field_new_type{};
+		//TODO obsolete ?
+		//JsonNodeType field_old_type{};
+		//JsonNodeType field_new_type{};
 
 		ChangeType change{};
 		

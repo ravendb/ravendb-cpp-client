@@ -80,6 +80,8 @@ namespace ravendb::client::documents::session::operations
 
 			std::set<std::reference_wrapper<const std::string>, decltype(comparator)> distinct(
 				ids.cbegin(), ids.cend(), comparator);
+			const std::string empty_str{};
+			distinct.erase(empty_str);
 
 			std::for_each(distinct.cbegin(), distinct.cend(), [this](const std::reference_wrapper<const std::string>& id)
 			{

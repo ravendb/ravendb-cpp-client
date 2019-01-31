@@ -5,7 +5,7 @@
 #include <fstream>
 
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::definitions
 {
 	//using fiddler + verbose
 	void set_for_fiddler(CURL* curl)

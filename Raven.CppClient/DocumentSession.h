@@ -59,6 +59,13 @@ namespace ravendb::client::documents::session
 		}
 
 		template<typename T>
+		void store(std::shared_ptr<T> entity, const char* id,
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
+		{
+			this->store(entity, std::string(id), to_json);
+		}
+
+		template<typename T>
 		void store(std::shared_ptr<T> entity, 
 			const std::optional<std::string>& id = {},
 			const std::optional<std::string>& change_vector = {}, 
@@ -87,6 +94,15 @@ namespace ravendb::client::documents::session
 			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
 			return _session_impl->load<T, InputIt>(first, last, from_json, to_json);
+		}
+
+		//load by vector of ids (std::string)
+		template<typename T>
+		DocumentsByIdsMap<T> load(const std::vector<std::string>& ids,
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
+		{
+			return this->load<T>(ids.cbegin(),ids.cend(), from_json, to_json);
 		}
 	};
 }
