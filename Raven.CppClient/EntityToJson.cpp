@@ -84,6 +84,11 @@ namespace ravendb::client::documents::session
 		{
 			return *val_ptr;
 		}
+		if (auto val_ptr = std::any_cast<const char*>(&object);
+			nullptr != val_ptr)
+		{
+			return std::string(*val_ptr);
+		}
 		if (auto val_ptr = std::any_cast<int64_t>(&object);
 			nullptr != val_ptr)
 		{

@@ -84,6 +84,7 @@
     <ClCompile Include="RequestExecutorAndDBsTests.cpp" />
     <ClCompile Include="SecuredRequestExecutorTests.cpp" />
     <ClCompile Include="test_utils.cpp" />
+    <ClCompile Include="TrackEntityTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
