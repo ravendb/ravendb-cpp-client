@@ -294,8 +294,8 @@ namespace ravendb::client::documents::session
 		}
 
 		void delete_document(const std::string& id,
-			const std::optional<std::string>& expected_change_vector = {},
-			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {});
+			const std::optional<std::string>& expected_change_vector,
+			const DocumentInfo::ToJsonConverter& to_json);
 
 		template<typename T>
 		void store(std::shared_ptr<T> entity,

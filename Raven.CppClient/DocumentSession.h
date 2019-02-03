@@ -33,8 +33,14 @@ namespace ravendb::client::documents::session
 			_session_impl->delete_document(entity);
 		}
 
+		template<typename T>
+		void delete_document(const std::string& id, const std::string& expected_change_vector = {})
+		{
+			_session_impl->delete_document<T>(id, expected_change_vector);
+		}
+
 		void delete_document(const std::string& id, const std::string& expected_change_vector = {},
-			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
+			const DocumentInfo::ToJsonConverter& to_json = {})
 		{
 			_session_impl->delete_document(id, expected_change_vector, to_json);
 		}

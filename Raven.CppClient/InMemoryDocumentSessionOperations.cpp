@@ -341,7 +341,7 @@ namespace ravendb::client::documents::session
 
 	void InMemoryDocumentSessionOperations::delete_document(const std::string& id, 
 		const std::optional<std::string>& expected_change_vector,
-		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
+		const DocumentInfo::ToJsonConverter& to_json)
 	{
 		if (impl::utils::is_blank(id))
 		{
@@ -360,9 +360,7 @@ namespace ravendb::client::documents::session
 					"Use template delete_document() for default to_json serializer.");
 			}
 
-			//TODO consider NOT using the following test  - may be unsafe since user defined serializer 
-			//TODO may NOT add @metadata
-			nlohmann::json new_obj = to_json ? (*to_json)(doc_info->entity) : EntityToJson::convert_entity_to_json(doc_info->entity, doc_info);
+			nlohmann::json new_obj = EntityToJson::convert_entity_to_json(doc_info->entity, doc_info, to_json);
 			if(auto empty_changes = std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>>();
 				doc_info->entity && entity_changed(new_obj, doc_info, empty_changes))
 			{

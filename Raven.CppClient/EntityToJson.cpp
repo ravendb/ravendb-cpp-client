@@ -48,7 +48,8 @@ namespace ravendb::client::documents::session
 		}
 	}
 
-	nlohmann::json EntityToJson::convert_entity_to_json(std::shared_ptr<void> entity, std::shared_ptr<DocumentInfo> doc_info)
+	nlohmann::json EntityToJson::convert_entity_to_json(std::shared_ptr<void> entity, std::shared_ptr<DocumentInfo> doc_info,
+		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
 	{
 		if (!doc_info || !doc_info->entity && !entity)
 		{
@@ -59,12 +60,12 @@ namespace ravendb::client::documents::session
 		{
 			entity = doc_info->entity;
 		}
-		if (!doc_info->to_json_converter)
+		if ((!to_json || !to_json.value()) && !doc_info->to_json_converter)
 		{
 			throw std::runtime_error("for document id = " + doc_info->id +
 				" to_json_converter is missing in the session.");
 		}
-		auto json = doc_info->to_json_converter(entity);
+		auto json = (to_json && to_json.value()) ? to_json.value()(entity) : doc_info->to_json_converter(entity);
 
 		write_metadata(json, doc_info);
 
