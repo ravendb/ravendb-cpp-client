@@ -1,5 +1,5 @@
 #include "pch.h"
-#define __USE_FIDDLER__
+//#define __USE_FIDDLER__
 #include "TestSuiteBase.h"
 #include "DocumentSession.h"
 #include "json_utils.h"
