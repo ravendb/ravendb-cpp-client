@@ -294,12 +294,12 @@ namespace ravendb::client::documents::session
 		}
 
 		void delete_document(const std::string& id,
-			const std::optional<std::string>& expected_change_vector = {},
-			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {});
+			const std::optional<std::string>& expected_change_vector,
+			const DocumentInfo::ToJsonConverter& to_json);
 
 		template<typename T>
 		void store(std::shared_ptr<T> entity,
-			const std::optional<DocumentInfo::ToJsonConverter> to_json = {})
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
 			//TODO check if has id
 			bool has_id = false;
@@ -310,8 +310,7 @@ namespace ravendb::client::documents::session
 		}
 
 		template<typename T>
-		void store(std::shared_ptr<T> entity,
-			std::string id,
+		void store(std::shared_ptr<T> entity, std::string id,
 			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
 			store_internal(std::static_pointer_cast<void>(entity), {}, std::move(id), ConcurrencyCheckMode::AUTO,
@@ -320,8 +319,8 @@ namespace ravendb::client::documents::session
 
 		template<typename T>
 		void store(std::shared_ptr<T> entity,
+			std::optional<std::string> change_vector,
 			std::optional<std::string> id = {},
-			std::optional<std::string> change_vector = {},
 			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
 			store_internal(std::static_pointer_cast<void>(entity), std::move(change_vector), std::move(id),
@@ -366,9 +365,19 @@ namespace ravendb::client::documents::session
 
 		void register_missing(const std::string& id);
 
+		void register_includes(const nlohmann::json& includes);
+
+		//TODO register_missing_includes is NOT fully implemented since it DOESN'T parse the include path
+		//TODO but use it as is (only works with simple path)
+		//TODO this behaviour is NOT implemented in Java client ether.
+		void register_missing_includes(const nlohmann::json& results, const nlohmann::json& includes,
+			const std::vector<std::string>& include_paths);
+
 		//TODO implement "includes" methods
 
 		//TODO implement "counters" methods
+
+		bool check_if_already_included(const std::vector<std::string>& ids, const std::vector<std::string>& includes);
 
 	protected:
 		InMemoryDocumentSessionOperations(DocumentStoreBase& document_store,/* UUID id,*/ SessionOptions options);

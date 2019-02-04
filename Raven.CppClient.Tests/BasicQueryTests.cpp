@@ -18,11 +18,11 @@ namespace ravendb::client::tests
 	class BasicQueryTests : public ::testing::Test
 	{
 	protected:
-		inline static std::shared_ptr<RequestExecutorScope> test_suite_executor{};
+		inline static std::shared_ptr<definitions::RequestExecutorScope> test_suite_executor{};
 
 		static void SetUpTestCase()
 		{
-			test_suite_executor = GET_REQUEST_EXECUTOR();
+			test_suite_executor = definitions::GET_REQUEST_EXECUTOR();
 			auto op = infrastructure::CreateSampleDataOperation();
 			test_suite_executor->get().execute(op.get_command({}));
 		}

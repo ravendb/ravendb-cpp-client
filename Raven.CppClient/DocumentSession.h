@@ -1,6 +1,7 @@
 #pragma once
 #include "DocumentSessionImpl.h"
 #include "AdvancedSessionOperations.h"
+#include "LoaderWithInclude.h"
 
 namespace ravendb::client::documents::session
 {
@@ -32,8 +33,14 @@ namespace ravendb::client::documents::session
 			_session_impl->delete_document(entity);
 		}
 
+		template<typename T>
+		void delete_document(const std::string& id, const std::string& expected_change_vector = {})
+		{
+			_session_impl->delete_document<T>(id, expected_change_vector);
+		}
+
 		void delete_document(const std::string& id, const std::string& expected_change_vector = {},
-			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
+			const DocumentInfo::ToJsonConverter& to_json = {})
 		{
 			_session_impl->delete_document(id, expected_change_vector, to_json);
 		}
@@ -58,12 +65,24 @@ namespace ravendb::client::documents::session
 		}
 
 		template<typename T>
-		void store(std::shared_ptr<T> entity, 
-			const std::optional<std::string>& id = {},
-			const std::optional<std::string>& change_vector = {}, 
+		void store(std::shared_ptr<T> entity, const char* id,
 			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
-			_session_impl->store(entity, id, change_vector, to_json);
+			this->store(entity, std::string(id), to_json);
+		}
+
+		template<typename T>
+		void store(std::shared_ptr<T> entity, 
+			const std::optional<std::string>& change_vector,
+			const std::optional<std::string>& id = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
+		{
+			_session_impl->store(entity, change_vector, id, to_json);
+		}
+
+		loaders::LoaderWithInclude include(const std::string& path)
+		{
+			return _session_impl->include(path);
 		}
 
 		template<typename T>
@@ -76,12 +95,20 @@ namespace ravendb::client::documents::session
 
 		//load by collections of ids (std::string)
 		template<typename T, typename InputIt>
-		//TODO add converters
 		DocumentsByIdsMap<T> load(InputIt first, InputIt last,
 			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
 			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
 			return _session_impl->load<T, InputIt>(first, last, from_json, to_json);
+		}
+
+		//load by vector of ids (std::string)
+		template<typename T>
+		DocumentsByIdsMap<T> load(const std::vector<std::string>& ids,
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
+		{
+			return this->load<T>(ids.cbegin(),ids.cend(), from_json, to_json);
 		}
 	};
 }

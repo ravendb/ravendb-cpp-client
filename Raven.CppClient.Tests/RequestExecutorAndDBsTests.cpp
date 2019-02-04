@@ -10,7 +10,7 @@ namespace ravendb::client::tests
 {
 	TEST(RequestExecutorTests, CanGetDatabaseRecord)
 	{
-		auto test_suite_executor = GET_REQUEST_EXECUTOR();
+		auto test_suite_executor = definitions::GET_REQUEST_EXECUTOR();
 		auto op = serverwide::operations::GetDatabaseRecordOperation(test_suite_executor->get_db_name());
 		auto rec = test_suite_executor->get().execute(op.get_command({}));
 
@@ -20,7 +20,7 @@ namespace ravendb::client::tests
 
 	TEST(RequestExecutorTests, CanGetDatabaseName)
 	{
-		auto test_suite_executor = GET_REQUEST_EXECUTOR();
+		auto test_suite_executor = definitions::GET_REQUEST_EXECUTOR();
 		auto op = serverwide::operations::GetDatabaseNamesOperation(0, 100);
 		auto&& res = test_suite_executor->get().execute(op.get_command({}));
 
@@ -34,7 +34,7 @@ namespace ravendb::client::tests
 #ifdef __USE_FIDDLER__
 			auto test_suite_executor = get_raw_request_executor("no_such_db",false, true);
 #else
-			auto test_suite_executor = get_raw_request_executor("no_such_db");
+			auto test_suite_executor = definitions::get_raw_request_executor("no_such_db");
 #endif
 			documents::commands::GetDocumentsCommand cmd("users/1-A", {}, false);
 			test_suite_executor->execute(cmd);
@@ -50,7 +50,7 @@ namespace ravendb::client::tests
 
 	TEST(RequestExecutorTests, CanDeleteDatabase)
 	{
-		auto test_suite_executor = GET_REQUEST_EXECUTOR();
+		auto test_suite_executor = definitions::GET_REQUEST_EXECUTOR();
 		{
 			auto op = serverwide::operations::DeleteDatabasesOperation(test_suite_executor->get_db_name(),
 				true, {}, std::chrono::seconds(10));

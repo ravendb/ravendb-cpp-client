@@ -1,46 +1,27 @@
 #include "pch.h"
 //#define __USE_FIDDLER__
-#include "ds_definitions.h"
+#include "TestSuiteBase.h"
 #include "DocumentSession.h"
-#include "SessionOptions.h"
-#include "DocumentStore.h"
+#include "RequestExecutor.h"
 #include "User.h"
 #include "Family.h"
 #include "NullableUser.h"
 #include "Arr.h"
-#include "DeleteDocumentCommand.h"
 #include "Poc.h"
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::client
 {
-	class CrudTests : public ::testing::Test
+	class CrudTest : public infrastructure::TestSuiteBase
 	{
 	protected:
-		inline static std::shared_ptr<DocumentStoreScope> test_suite_store{};
-
 		static void SetUpTestCase()
 		{
-			test_suite_store = GET_DOCUMENT_STORE();
-		}
-		static void TearDownTestCase()
-		{
-			test_suite_store.reset();
-		}
-
-		void TearDown() override
-		{
-			auto  get_docs_cmd = documents::commands::GetDocumentsCommand({}, {}, {}, {}, 0, 100, true);
-			auto results = test_suite_store->get().get_request_executor()->execute(get_docs_cmd);
-			for (const auto& res : results.results)
-			{
-				auto del_doc_cmd = documents::commands::DeleteDocumentCommand(res["@metadata"]["@id"].get<std::string>());
-				test_suite_store->get().get_request_executor()->execute(del_doc_cmd);
-			}
+			test_suite_store = definitions::GET_DOCUMENT_STORE();
 		}
 
 		documents::session::DocumentInfo::ToJsonConverter arr2_to_json = [](std::shared_ptr<void> arr_param)->nlohmann::json
 		{
-			auto arr = std::static_pointer_cast<Arr2>(arr_param);
+			auto arr = std::static_pointer_cast<infrastructure::entities::Arr2>(arr_param);
 			nlohmann::json json_array = nlohmann::json::array();
 			for(const auto& a : arr->arr1)
 			{
@@ -55,12 +36,12 @@ namespace ravendb::client::tests
 
 		documents::session::DocumentInfo::FromJsonConverter arr2_from_json = [](const nlohmann::json& json)->std::shared_ptr<void>
 		{
-			auto arr2 = std::make_shared<Arr2>();
+			auto arr2 = std::make_shared<infrastructure::entities::Arr2>();
 			const auto& json_array = static_cast<const nlohmann::json::array_t&>(json["arr1"]);
 			arr2->arr1.reserve(json_array.size());
 			for(const auto& str_arr : json_array)
 			{
-				Arr1 arr1{};
+				infrastructure::entities::Arr1 arr1{};
 				arr1.str.reserve(str_arr.at("str").size());
 				for (const auto& str : str_arr.at("str"))
 				{
@@ -72,13 +53,13 @@ namespace ravendb::client::tests
 		};
 	};
 
-	TEST_F(CrudTests, EntitiesAreSavedUsingLowerCase)
+	TEST_F(CrudTest, EntitiesAreSavedUsingLowerCase)
 	{
 		{
 			auto session = test_suite_store->get().open_session();
-			auto user1 = std::make_shared<User>();
+			auto user1 = std::make_shared<infrastructure::entities::User>();
 			user1->last_name = "user1";
-			session.store(user1, std::string("users/1"));
+			session.store(user1, "users/1");
 			session.save_changes();
 		}
 
@@ -92,71 +73,78 @@ namespace ravendb::client::tests
 		//TODO complete using session.advanced().raw_query
 	}
 
-	TEST_F(CrudTests, CrudOperations)
+
+	//TODO implement
+	TEST_F(CrudTest, CanCustomizePropertyNamingStrategy)
+	{
+		SUCCEED();
+	}
+	
+	TEST_F(CrudTest, CrudOperations)
 	{
 		auto session = test_suite_store->get().open_session();
-		auto user1 = std::make_shared<User>();
+		auto user1 = std::make_shared<infrastructure::entities::User>();
 		user1->last_name = "user1";
-		session.store(user1, std::string("users/1"));
+		session.store(user1, "users/1");
 		
-		auto user2 = std::make_shared<User>();
-		user2->first_name = "user2";
+		auto user2 = std::make_shared<infrastructure::entities::User>();
+		user2->name = "user2";
 		user1->age = 1;
-		session.store(user2, std::string("users/2"));
+		session.store(user2, "users/2");
 
-		auto user3 = std::make_shared<User>();
-		user3->first_name = "user3";
+		auto user3 = std::make_shared<infrastructure::entities::User>();
+		user3->name = "user3";
 		user3->age = 1;
-		session.store(user3, std::string("users/3"));
+		session.store(user3, "users/3");
 
-		auto user4 = std::make_shared<User>();
-		user4->first_name = "user4";
-		session.store(user4, std::string("users/4"));
+		auto user4 = std::make_shared<infrastructure::entities::User>();
+		user4->name = "user4";
+		session.store(user4, "users/4");
 
 		session.delete_document(user2);
 		user3->age = 3;
 		session.save_changes();
 
-		auto temp_user = session.load<User>("users/2");
+		auto temp_user = session.load<infrastructure::entities::User>("users/2");
 		ASSERT_FALSE(temp_user);
 
-		temp_user = session.load<User>("users/3");
+		temp_user = session.load<infrastructure::entities::User>("users/3");
 		ASSERT_EQ(3, temp_user->age);
 
-		user1 = session.load<User>("users/1");
-		user4 = session.load<User>("users/4");
+		user1 = session.load<infrastructure::entities::User>("users/1");
+		user4 = session.load<infrastructure::entities::User>("users/4");
 
 		session.delete_document(user4);
 		user1->age = 10;
 		session.save_changes();
 
-		temp_user = session.load<User>("users/4");
+		temp_user = session.load<infrastructure::entities::User>("users/4");
 		ASSERT_FALSE(temp_user);
 
-		temp_user = session.load<User>("users/1");
+		temp_user = session.load<infrastructure::entities::User>("users/1");
 		ASSERT_EQ(10, temp_user->age);		
 	}
 
-	TEST_F(CrudTests, CrudOperationsWithWhatChanged)
+	TEST_F(CrudTest, CrudOperationsWithWhatChanged)
 	{
 		auto session = test_suite_store->get().open_session();
-		auto user1 = std::make_shared<User>();
+		auto user1 = std::make_shared<infrastructure::entities::User>();
 		user1->last_name = "user1";
-		session.store(user1, std::string("users/1"));
+		session.store(user1, "users/1");
 
-		auto user2 = std::make_shared<User>();
-		user2->first_name = "user2";
+		auto user2 = std::make_shared<infrastructure::entities::User>();
+		user2->name = "user2";
 		user1->age = 1;
-		session.store(user2, std::string("users/2"));
+		session.store(user2, "users/2");
 
-		auto user3 = std::make_shared<User>();
-		user3->first_name = "user3";
+		auto user3 = std::make_shared<infrastructure::entities::User>();
+		user3->name = "user3";
 		user3->age = 1;
-		session.store(user3, std::string("users/3"));
+		session.store(user3, "users/3");
 
-		auto user4 = std::make_shared<User>();
-		user4->first_name = "user4";
-		session.store(user4, std::string("users/4"));
+		auto user4 = std::make_shared<infrastructure::entities::User>();
+		user4->name = "user4";
+		session.store(user4, "users/4");
 
 		session.delete_document(user2);
 		user3->age = 3;
@@ -164,14 +152,14 @@ namespace ravendb::client::tests
 		ASSERT_EQ(4, session.advanced().what_changed().size());
 		session.save_changes();
 
-		auto temp_user = session.load<User>("users/2");
+		auto temp_user = session.load<infrastructure::entities::User>("users/2");
 		ASSERT_FALSE(temp_user);
 
-		temp_user = session.load<User>("users/3");
+		temp_user = session.load<infrastructure::entities::User>("users/3");
 		ASSERT_EQ(3, temp_user->age);
 
-		user1 = session.load<User>("users/1");
-		user4 = session.load<User>("users/4");
+		user1 = session.load<infrastructure::entities::User>("users/1");
+		user4 = session.load<infrastructure::entities::User>("users/4");
 
 		session.delete_document(user4);
 		user1->age = 10;
@@ -179,37 +167,37 @@ namespace ravendb::client::tests
 
 		session.save_changes();
 
-		temp_user = session.load<User>("users/4");
+		temp_user = session.load<infrastructure::entities::User>("users/4");
 		ASSERT_FALSE(temp_user);
 
-		temp_user = session.load<User>("users/1");
+		temp_user = session.load<infrastructure::entities::User>("users/1");
 		ASSERT_EQ(10, temp_user->age);
 	}
 
-	TEST_F(CrudTests, CrudOperationsWithArrayInObject)
+	TEST_F(CrudTest, CrudOperationsWithArrayInObject)
 	{
 		auto session = test_suite_store->get().open_session();
 
-		auto family = std::make_shared<Family>();
+		auto family = std::make_shared<infrastructure::entities::Family>();
 		family->names = { "Hibernating Rhinos", "RavenDB" };
-		session.store(family, std::string("family/1"));
+		session.store(family, "family/1");
 		session.save_changes();
 
-		auto new_family = session.load<Family>("family/1");
+		auto new_family = session.load<infrastructure::entities::Family>("family/1");
 		new_family->names = { "Toli", "Mitzi", "Boki" };
 		ASSERT_EQ(1, session.advanced().what_changed().size());
 		session.save_changes();
 	}
-	TEST_F(CrudTests, CrudOperationsWithArrayInObject2)
+	TEST_F(CrudTest, CrudOperationsWithArrayInObject2)
 	{
 		auto session = test_suite_store->get().open_session();
 
-		auto family = std::make_shared<Family>();
+		auto family = std::make_shared<infrastructure::entities::Family>();
 		family->names = { "Hibernating Rhinos", "RavenDB" };
-		session.store(family, std::string("family/1"));
+		session.store(family, "family/1");
 		session.save_changes();
 
-		auto new_family = session.load<Family>("family/1");
+		auto new_family = session.load<infrastructure::entities::Family>("family/1");
 		new_family->names = { "Hibernating Rhinos", "RavenDB" };
 		ASSERT_EQ(0, session.advanced().what_changed().size());
 
@@ -218,79 +206,79 @@ namespace ravendb::client::tests
 		session.save_changes();
 	}
 
-	TEST_F(CrudTests, CrudOperationsWithArrayInObject3)
+	TEST_F(CrudTest, CrudOperationsWithArrayInObject3)
 	{
 		auto session = test_suite_store->get().open_session();
 
-		auto family = std::make_shared<Family>();
+		auto family = std::make_shared<infrastructure::entities::Family>();
 		family->names = { "Hibernating Rhinos", "RavenDB" };
-		session.store(family, std::string("family/1"));
+		session.store(family, "family/1");
 		session.save_changes();
 
-		auto new_family = session.load<Family>("family/1");
+		auto new_family = session.load<infrastructure::entities::Family>("family/1");
 		new_family->names = { "RavenDB" };
 		ASSERT_EQ(1, session.advanced().what_changed().size());
 		session.save_changes();
 	}
 
-	TEST_F(CrudTests, CrudOperationsWithArrayInObject4)
+	TEST_F(CrudTest, CrudOperationsWithArrayInObject4)
 	{
 		auto session = test_suite_store->get().open_session();
 
-		auto family = std::make_shared<Family>();
+		auto family = std::make_shared<infrastructure::entities::Family>();
 		family->names = { "Hibernating Rhinos", "RavenDB" };
-		session.store(family, std::string("family/1"));
+		session.store(family, "family/1");
 		session.save_changes();
 
-		auto new_family = session.load<Family>("family/1");
+		auto new_family = session.load<infrastructure::entities::Family>("family/1");
 		new_family->names = { "RavenDB", "Hibernating Rhinos", "Toli", "Mitzi", "Boki" };
 		ASSERT_EQ(1, session.advanced().what_changed().size());
 		session.save_changes();
 	}
 
-	TEST_F(CrudTests, CrudOperationsWithNull)
+	TEST_F(CrudTest, CrudOperationsWithNull)
 	{
 		auto session = test_suite_store->get().open_session();
 
-		auto user = std::make_shared<NullableUser>();
+		auto user = std::make_shared<infrastructure::entities::NullableUser>();
 
-		session.store(user, std::string("n_users/1"));
+		session.store(user, "n_users/1");
 		session.save_changes();
 
-		auto user2 = session.load<NullableUser>("n_users/1");
+		auto user2 = session.load<infrastructure::entities::NullableUser>("n_users/1");
 		ASSERT_TRUE(session.advanced().what_changed().empty());
 
 		user2->age = 3;
 		ASSERT_EQ(1, session.advanced().what_changed().size());
 	}
 
-	TEST_F(CrudTests, CrudOperationsWithArrayOfObjects)
+	TEST_F(CrudTest, CrudOperationsWithArrayOfObjects)
 	{
 		auto session = test_suite_store->get().open_session();
 
-		auto member1 = std::make_shared<Member>();
+		auto member1 = std::make_shared<infrastructure::entities::Member>();
 		member1->name = "Hibernating Rhinos";
 		member1->age = 8;
 
-		auto member2 = std::make_shared<Member>();
+		auto member2 = std::make_shared<infrastructure::entities::Member>();
 		member2->name = "RavenDB";
 		member2->age = 4;
 
-		auto family = std::make_shared<FamilyMembers>();
+		auto family = std::make_shared<infrastructure::entities::FamilyMembers>();
 		family->members = { member1, member2 };
 
-		session.store(family, std::string("family_members/1"));
+		session.store(family, "family_members/1");
 		session.save_changes();
 
-		member1 = std::make_shared<Member>();
+		member1 = std::make_shared<infrastructure::entities::Member>();
 		member1->name = "RavenDB";
 		member1->age = 4;
 
-		member2 = std::make_shared<Member>();
+		member2 = std::make_shared<infrastructure::entities::Member>();
 		member2->name = "Hibernating Rhinos";
 		member2->age = 8;
 
-		auto new_family = session.load<FamilyMembers>("family_members/1");
+		auto new_family = session.load<infrastructure::entities::FamilyMembers>("family_members/1");
 		new_family->members = { member1, member2 };
 
 		auto changes = session.advanced().what_changed();
@@ -318,11 +306,11 @@ namespace ravendb::client::tests
 		ASSERT_EQ(std::string("RavenDB"), changes.at("family_members/1").at(3).field_old_value.get<std::string>());
 		ASSERT_EQ(std::string("Hibernating Rhinos"), changes.at("family_members/1").at(3).field_new_value.get<std::string>());
 
-		member1 = std::make_shared<Member>();
+		member1 = std::make_shared<infrastructure::entities::Member>();
 		member1->name = "Toli";
 		member1->age = 5;
 
-		member2 = std::make_shared<Member>();
+		member2 = std::make_shared<infrastructure::entities::Member>();
 		member2->name = "Boki";
 		member2->age = 15;
 
@@ -354,20 +342,20 @@ namespace ravendb::client::tests
 		ASSERT_EQ(std::string("Boki"), changes.at("family_members/1").at(3).field_new_value.get<std::string>());
 	}
 
-	TEST_F(CrudTests, CrudOperationsWithArrayOfArrays)
+	TEST_F(CrudTest, CrudOperationsWithArrayOfArrays)
 	{
 		{
 			auto session = test_suite_store->get().open_session();
 
-			Arr1 a1 = { {"a", "b"} };
-			Arr1 a2 = { {"c", "d"} };
-			auto arr = std::make_shared<Arr2>();
+			infrastructure::entities::Arr1 a1 = { {"a", "b"} };
+			infrastructure::entities::Arr1 a2 = { {"c", "d"} };
+			auto arr = std::make_shared<infrastructure::entities::Arr2>();
 			arr->arr1 = { a1, a2 };
 
-			session.store(arr, std::string("arr/1"), arr2_to_json);
+			session.store(arr, "arr/1", arr2_to_json);
 			session.save_changes();
 
-			auto new_arr = session.load<Arr2>("arr/1");
+			auto new_arr = session.load<infrastructure::entities::Arr2>("arr/1");
 
 			a1.str = { "d", "c" };
 			a2.str = { "a", "b" };
@@ -397,10 +385,10 @@ namespace ravendb::client::tests
 		{
 			auto session = test_suite_store->get().open_session();
 
-			auto new_arr = session.load<Arr2>("arr/1", arr2_from_json, arr2_to_json);
+			auto new_arr = session.load<infrastructure::entities::Arr2>("arr/1", arr2_from_json, arr2_to_json);
 
-			Arr1 a1 = { {"q", "w"} };
-			Arr1 a2 = { {"a", "b"} };
+			infrastructure::entities::Arr1 a1 = { {"q", "w"} };
+			infrastructure::entities::Arr1 a2 = { {"a", "b"} };
 			new_arr->arr1 = { a1, a2 };
 
 			auto what_changed = session.advanced().what_changed();
@@ -419,52 +407,52 @@ namespace ravendb::client::tests
 		}
 	}
 
-	TEST_F(CrudTests, CrudCanUpdatePropertyToNull)
+	TEST_F(CrudTest, CrudCanUpdatePropertyToNull)
 	{
 		{
 			auto session = test_suite_store->get().open_session();
-			auto user = std::make_shared<NullableUser>();
+			auto user = std::make_shared<infrastructure::entities::NullableUser>();
 			user->first_name = "user1";
 
-			session.store(user, std::string("n_users/1"));
+			session.store(user, "n_users/1");
 			session.save_changes();
 		}
 		{
 			auto session = test_suite_store->get().open_session();
-			auto user = session.load<NullableUser>("n_users/1");
+			auto user = session.load<infrastructure::entities::NullableUser>("n_users/1");
 			user->first_name.reset();
 			session.save_changes();
 		}
 		{
 			auto session = test_suite_store->get().open_session();
-			auto user = session.load<NullableUser>("n_users/1");
+			auto user = session.load<infrastructure::entities::NullableUser>("n_users/1");
 			ASSERT_FALSE(user->first_name.has_value());
 		}
 	}
 
-	TEST_F(CrudTests, CrudCanUpdatePropertyFromNullToObject)
+	TEST_F(CrudTest, CrudCanUpdatePropertyFromNullToObject)
 	{
 		{
 			auto session = test_suite_store->get().open_session();
-			auto poc = std::make_shared<Poc>();
+			auto poc = std::make_shared<infrastructure::entities::Poc>();
 			poc->name = "User";
 			poc->obj.reset();
 
-			session.store(poc, std::string("pocs/1"));
+			session.store(poc, "pocs/1");
 			session.save_changes();
 		}
 		{
 			auto session = test_suite_store->get().open_session();
-			auto poc = session.load<Poc>("pocs/1");
+			auto poc = session.load<infrastructure::entities::Poc>("pocs/1");
 			ASSERT_FALSE(poc->obj.has_value());
 
-			auto user = User();
+			auto user = infrastructure::entities::User();
 			poc->obj = user;
 			session.save_changes();
 		}
 		{
 			auto session = test_suite_store->get().open_session();
-			auto poc = session.load<Poc>("pocs/1");
+			auto poc = session.load<infrastructure::entities::Poc>("pocs/1");
 			ASSERT_TRUE(poc->obj.has_value());
 		}
 	}

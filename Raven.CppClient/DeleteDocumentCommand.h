@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 #include "VoidRavenCommand.h"
 
 using

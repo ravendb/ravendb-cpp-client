@@ -11,11 +11,11 @@ namespace ravendb::client::tests
 	class GetDocumentsCommandTests : public ::testing::Test
 	{
 	protected:
-		static std::shared_ptr<RequestExecutorScope> test_suite_executor;
+		static std::shared_ptr<definitions::RequestExecutorScope> test_suite_executor;
 
 		static void SetUpTestCase()
 		{
-			test_suite_executor = GET_REQUEST_EXECUTOR();
+			test_suite_executor = definitions::GET_REQUEST_EXECUTOR();
 			auto op = infrastructure::CreateSampleDataOperation();
 			auto cmd = op.get_command({});
 			test_suite_executor->get().execute(*cmd);
@@ -27,7 +27,7 @@ namespace ravendb::client::tests
 
 	};
 
-	std::shared_ptr<RequestExecutorScope> GetDocumentsCommandTests::test_suite_executor{};
+	std::shared_ptr<definitions::RequestExecutorScope> GetDocumentsCommandTests::test_suite_executor{};
 
 	TEST_F(GetDocumentsCommandTests, CanGetPagedSetOfDocuments)
 	{

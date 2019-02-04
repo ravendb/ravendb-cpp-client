@@ -2,7 +2,7 @@
 #include "json_utils.h"
 #include "User.h"
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::infrastructure::entities
 {
 	struct Poc
 	{

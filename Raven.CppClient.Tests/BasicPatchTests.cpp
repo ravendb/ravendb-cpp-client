@@ -21,11 +21,11 @@ namespace ravendb::client::tests
 	class BasicPatchTests : public ::testing::Test
 	{
 	protected:
-		inline static std::shared_ptr<RequestExecutorScope> test_suite_executor{};
+		inline static std::shared_ptr<definitions::RequestExecutorScope> test_suite_executor{};
 
 		static void SetUpTestCase()
 		{
-			test_suite_executor = GET_REQUEST_EXECUTOR();
+			test_suite_executor = definitions::GET_REQUEST_EXECUTOR();
 		}
 		static void TearDownTestCase()
 		{
@@ -46,7 +46,7 @@ namespace ravendb::client::tests
 
 	TEST_F(BasicPatchTests, CanPatchSingleDocument)
 	{
-		User user{"users/1","Alexander","Timoshenko","Israel"};
+		infrastructure::entities::User user{"users/1","Alexander","Timoshenko","Israel"};
 
 		auto put_doc_cmd = documents::commands::PutDocumentCommand(user.id, {}, user);
 		auto&& res1 = test_suite_executor->get().execute(put_doc_cmd);
@@ -57,29 +57,29 @@ namespace ravendb::client::tests
 
 		HttpCache cache;
 		auto&& res2 = test_suite_executor->get().execute(op.get_command(FakeStore(), {}, cache));
-		
-		User check_user = user;
+
+		auto check_user = user;
 		check_user.last_name = "The Great";
-		User modified_user = nlohmann::json(res2.modified_document).get<User>();
+		auto modified_user = nlohmann::json(res2.modified_document).get<infrastructure::entities::User>();
 
 		ASSERT_EQ(res2.status, documents::operations::PatchStatus::PATCHED);
-		ASSERT_EQ(modified_user, check_user);
+		ASSERT_EQ(check_user, modified_user);
 
 		auto get_doc_cmd = documents::commands::GetDocumentsCommand(user.id, {}, false);
 		auto&& res3= test_suite_executor->get().execute(get_doc_cmd);
 
-		User ret_user = res3.results[0].get<User>();
-		ASSERT_EQ(ret_user, check_user);
+		infrastructure::entities::User ret_user = res3.results[0].get<infrastructure::entities::User>();
+		ASSERT_EQ(check_user, ret_user);
 	}
 
 	TEST_F(BasicPatchTests, CanPatchManyDocuments)
 	{
 		constexpr size_t NUM_OF_USERS = 5;
-		std::array<User, NUM_OF_USERS> users{};
+		std::array<infrastructure::entities::User, NUM_OF_USERS> users{};
 
 		for (size_t i = 0; i < users.size(); ++i)
 		{
-			users[i].first_name = "Alexander";
+			users[i].name = "Alexander";
 			users[i].last_name = std::to_string(i+1);
 			users[i].id = "users/" + std::to_string(i + 1);
 
@@ -111,14 +111,14 @@ namespace ravendb::client::tests
 		auto&& res = test_suite_executor->get().execute(get_doc_cmd);
 		for (size_t i = 0; i < users.size(); ++i)
 		{
-			User u = res.results[users.size() - i - 1];
+			infrastructure::entities::User u = res.results[users.size() - i - 1];
 			ASSERT_EQ(u.last_name, std::to_string(i + 1) + " Great");
 		}	
 	}
 
 	TEST_F(BasicPatchTests, ThrowsOnInvalidScript)
 	{
-		User user{ "users/1","Alexander","Timoshenko","Israel" };
+		infrastructure::entities::User user{ "users/1","Alexander","Timoshenko","Israel" };
 
 		auto put_doc_cmd = documents::commands::PutDocumentCommand(user.id, {}, user);
 		auto&& res1 = test_suite_executor->get().execute(put_doc_cmd);

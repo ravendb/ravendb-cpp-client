@@ -238,7 +238,7 @@ namespace ravendb::client::documents::session
 			if (!no_tracking_)
 			{
 				_included_documents_by_id.erase(id);
-				_documents_by_entity.insert({ doc_info_it->second->entity, doc_info_it->second });
+				_documents_by_entity.insert_or_assign(doc_info_it->second->entity, doc_info_it->second);
 			}
 			doc_info_it->second->from_json_converter = from_json_converter;
 			doc_info_it->second->to_json_converter = to_json_converter;
@@ -248,19 +248,20 @@ namespace ravendb::client::documents::session
 		if(auto doc_info_it = _included_documents_by_id.find(id);
 			doc_info_it != _included_documents_by_id.end())
 		{
-			if (!doc_info_it->second->entity)
+			auto doc_info = doc_info_it->second;
+			if (!doc_info->entity)
 			{
-				doc_info_it->second->entity = from_json_converter(document);
+				doc_info->entity = from_json_converter(document);
 			}
 			if (!no_tracking_)
 			{
 				_included_documents_by_id.erase(id);
-				_documents_by_id.insert({ doc_info_it->second->id, doc_info_it->second });
-				_documents_by_entity.insert({ doc_info_it->second->entity, doc_info_it->second });
+				_documents_by_id.insert_or_assign(doc_info->id, doc_info);
+				_documents_by_entity.insert_or_assign(doc_info->entity, doc_info);
 			}
-			doc_info_it->second->from_json_converter = from_json_converter;
-			doc_info_it->second->to_json_converter = to_json_converter;
-			return doc_info_it->second->entity;
+			doc_info->from_json_converter = from_json_converter;
+			doc_info->to_json_converter = to_json_converter;
+			return doc_info->entity;
 		}
 
 		auto entity = from_json_converter(document);
@@ -340,7 +341,7 @@ namespace ravendb::client::documents::session
 
 	void InMemoryDocumentSessionOperations::delete_document(const std::string& id, 
 		const std::optional<std::string>& expected_change_vector,
-		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
+		const DocumentInfo::ToJsonConverter& to_json)
 	{
 		if (impl::utils::is_blank(id))
 		{
@@ -358,7 +359,8 @@ namespace ravendb::client::documents::session
 					"and missing in the session. "
 					"Use template delete_document() for default to_json serializer.");
 			}
-			nlohmann::json new_obj = to_json ? (*to_json)(doc_info->entity) : doc_info->to_json_converter(doc_info->entity);
+
+			nlohmann::json new_obj = EntityToJson::convert_entity_to_json(doc_info->entity, doc_info, to_json);
 			if(auto empty_changes = std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>>();
 				doc_info->entity && entity_changed(new_obj, doc_info, empty_changes))
 			{
@@ -454,6 +456,7 @@ namespace ravendb::client::documents::session
 		}
 
 		//this part is unique to C++ : metadata check from the entity serialized
+		//TODO probably would be transferred to DocumentConventions 
 		auto temp_doc_info = std::make_shared<DocumentInfo>();
 		temp_doc_info->to_json_converter = to_json;
 		auto document = EntityToJson::convert_entity_to_json(entity, temp_doc_info);
@@ -910,6 +913,129 @@ namespace ravendb::client::documents::session
 		}
 		_known_missing_ids.insert(id);
 	}
+
+	void InMemoryDocumentSessionOperations::register_includes(const nlohmann::json& includes)
+	{
+		if(!includes.is_object())
+		{
+			throw std::invalid_argument("'includes' should be of the type 'object'");
+		}
+
+		if(no_tracking || includes.empty())
+		{
+			return;
+		}
+
+		for(const auto& [key, val] : static_cast<const nlohmann::json::object_t&>(includes))
+		{
+			if(val.is_null())
+			{
+				continue;
+			}
+			auto doc_info = std::make_shared<DocumentInfo>(val);
+			//TODO tryGetConflict(doc_info.metadata);
+
+			_included_documents_by_id.insert_or_assign(doc_info->id, doc_info);
+		}
+	}
+
+	void InMemoryDocumentSessionOperations::register_missing_includes(const nlohmann::json& results, const nlohmann::json& includes,
+		const std::vector<std::string>& include_paths)
+	{
+		if(!results.is_array() || !includes.is_object())
+		{
+			throw std::invalid_argument("'results' should be of the type 'array' and 'includes' of the type 'object'");
+		}
+
+		if(no_tracking)
+		{
+			return;
+		}
+
+		if(include_paths.empty())
+		{
+			return;
+		}
+
+		for(const auto& result : static_cast<const nlohmann::json::array_t&>(results))
+		{
+			for(const auto& include : include_paths)
+			{
+				//TODO this is PARTIAL implementation of the C# code
+				if(constants::documents::indexing::fields::DOCUMENT_ID_FIELD_NAME == include)
+				{
+					continue;
+				}
+
+				{
+					std::string id{};
+					if(auto id_it = result.find(include);//the path is NOT parsed !
+						id_it != result.end())
+					{
+						id = *id_it;
+					}
+					if(id.empty() || is_loaded(id))
+					{
+						continue;
+					}
+
+					if(auto document_it = includes.find(id);
+						document_it != includes.end())
+					{
+						auto&& document = *document_it;
+
+						auto&& metadata = document.at(constants::documents::metadata::KEY);
+						//TODO  if (JsonExtensions.tryGetConflict(metadata)) {
+						//return;
+						//}
+					}
+					register_missing(id);
+				}
+			}
+		}
+	}
+
+	bool InMemoryDocumentSessionOperations::check_if_already_included(const std::vector<std::string>& ids,
+		const std::vector<std::string>& includes)
+	{
+		for(const auto& id : ids)
+		{
+			if(_known_missing_ids.find(id) != _known_missing_ids.end())
+			{
+				continue;
+			}
+
+			std::shared_ptr<DocumentInfo> doc_info{};
+			if(auto doc_info_it = _documents_by_id.find(id);
+				doc_info_it == _documents_by_id.end())
+			{
+				if(auto doc_info_it2 = _included_documents_by_id.find(id);
+					doc_info_it2 == _included_documents_by_id.end())
+				{
+					return false;
+				}else
+				{
+					doc_info = doc_info_it2->second;
+				}
+			}else
+			{
+				doc_info = doc_info_it->second;
+			}
+
+			if(!doc_info->entity)
+			{
+				return false;
+			}
+
+			for(const auto& include : includes)
+			{
+				//TODO this is PARTIAL implementation of the JAVA code
+				
+			}
+		}
+		return true;
+	}
+
 
 	void InMemoryDocumentSessionOperations::update_session_after_changes(const json::BatchCommandResult& result)
 	{

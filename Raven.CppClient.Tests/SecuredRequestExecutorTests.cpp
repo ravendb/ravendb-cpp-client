@@ -11,13 +11,13 @@ namespace ravendb::client::tests
 	class SecuredRequestExecutorTests : public ::testing::Test
 	{
 	protected:
-		inline static std::shared_ptr<RequestExecutorScope> test_suite_executor{};
+		inline static std::shared_ptr<definitions::RequestExecutorScope> test_suite_executor{};
 
-		static const User example_user;
+		static const infrastructure::entities::User example_user;
 
 		static void SetUpTestCase()
 		{
-			test_suite_executor = GET_SECURED_REQUEST_EXECUTOR();
+			test_suite_executor = definitions::GET_SECURED_REQUEST_EXECUTOR();
 		}
 
 		void SetUp() override//create sample document
@@ -42,7 +42,7 @@ namespace ravendb::client::tests
 		}
 	};
 
-	const User SecuredRequestExecutorTests::example_user{ "users/1-A", "Alexander", "Timoshenko", "Israel", 0, 38 };
+	const infrastructure::entities::User SecuredRequestExecutorTests::example_user{ "users/1-A", "Alexander", "Timoshenko", "Israel", 0, 38 };
 
 
 	TEST_F(SecuredRequestExecutorTests, CanGetDocument)
@@ -52,7 +52,7 @@ namespace ravendb::client::tests
 		documents::commands::GetDocumentsCommand cmd(example_user.id, {}, false);
 		auto&& res = test_suite_executor->get().execute(cmd);
 
-		User check_user = res.results[0].get<User>();
+		infrastructure::entities::User check_user = res.results[0].get<infrastructure::entities::User>();
 		ASSERT_EQ(example_user, check_user);
 	}
 

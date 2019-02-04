@@ -1,9 +1,9 @@
 #pragma once
 #include <any>
+#include "DocumentInfo.h"
 
 namespace ravendb::client::documents::session
 {
-	struct DocumentInfo;
 	class InMemoryDocumentSessionOperations;
 
 	class EntityToJson
@@ -18,7 +18,8 @@ namespace ravendb::client::documents::session
 		explicit EntityToJson(InMemoryDocumentSessionOperations& session);
 		~EntityToJson() = default;
 
-		static nlohmann::json convert_entity_to_json(std::shared_ptr<void> entity, std::shared_ptr<DocumentInfo> doc_info);
+		static nlohmann::json convert_entity_to_json(std::shared_ptr<void> entity, std::shared_ptr<DocumentInfo> doc_info,
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {});
 
 		static nlohmann::json basic_metadata_to_json_converter(const std::any& object);
 	};

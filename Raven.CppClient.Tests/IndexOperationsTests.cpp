@@ -32,14 +32,14 @@ namespace ravendb::client::tests
 	class IndexOperationsTest : public ::testing::Test
 	{
 	protected:
-		inline static std::shared_ptr<RequestExecutorScope> test_suite_executor{};
+		inline static std::shared_ptr<definitions::RequestExecutorScope> test_suite_executor{};
 
-		static const User example_user;
+		static const infrastructure::entities::User example_user;
 		static IndexDefinition example_index;
 
 		static void SetUpTestCase()
 		{
-			test_suite_executor = GET_REQUEST_EXECUTOR();
+			test_suite_executor = definitions::GET_REQUEST_EXECUTOR();
 			set_example_index();
 		}
 		static void TearDownTestCase()
@@ -74,7 +74,7 @@ namespace ravendb::client::tests
 			auto&& res1 = test_suite_executor->get().execute(cmd);
 			for(auto& result : res1.results)
 			{
-				User u = result;
+				infrastructure::entities::User u = result;
 				documents::commands::DeleteDocumentCommand cmd2(u.id);
 				test_suite_executor->get().execute(cmd2);
 			}
@@ -107,11 +107,11 @@ namespace ravendb::client::tests
 				from user in docs.Users 
 				select new 
 				{
-					Name = user.FirstName + " " + user.LastName
+					FullName = user.Name + " " + user.LastName
 				})"};
 		}
 	};
-	const User IndexOperationsTest::example_user{ "Users/1", "Alexander", "Timoshenko", "Israel", 0, 38 };
+	const infrastructure::entities::User IndexOperationsTest::example_user{ "Users/1", "Alexander", "Timoshenko", "Israel", 0, 38 };
 	IndexDefinition IndexOperationsTest::example_index{};
 	
 	TEST_F(IndexOperationsTest, CanGetIndex)
@@ -197,11 +197,11 @@ namespace ravendb::client::tests
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 
-		auto op = documents::operations::indexes::GetTermsOperation(example_index.name,"Name");
+		auto op = documents::operations::indexes::GetTermsOperation(example_index.name,"FullName");
 		auto&& res = test_suite_executor->get().execute(op.get_command({}));
 
 		ASSERT_EQ(res.size(), 1);
-		std::string expected_str = example_user.first_name + ' ' + example_user.last_name;
+		std::string expected_str = example_user.name + ' ' + example_user.last_name;
 		std::transform(expected_str.cbegin(), expected_str.cend(), expected_str.begin(),
 			[](std::string::value_type c) {return std::tolower(c); });
 		ASSERT_EQ(res[0], expected_str);
@@ -221,7 +221,7 @@ namespace ravendb::client::tests
 				from user in docs.Users 
 				select new 
 				{
-					FullName = user.FirstName + ' ' + user.LastName + " from " + user.Address
+					FullName = user.Name + ' ' + user.LastName + " from " + user.AddressId
 				})" };
 		{
 			auto op = documents::operations::indexes::IndexHasChangedOperation(changed_index);
@@ -396,7 +396,7 @@ namespace ravendb::client::tests
 			ASSERT_EQ(res[0].entries_count, 1);
 		}
 		{
-			User user = { "Users/2","Johnnie","Walker","GB",0,150 };
+			infrastructure::entities::User user = { "Users/2","Johnnie","Walker","GB",0,150 };
 			documents::commands::PutDocumentCommand cmd(user.id, {}, nlohmann::json(user));
 			test_suite_executor->get().execute(cmd);
 		}

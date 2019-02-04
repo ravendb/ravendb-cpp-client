@@ -37,22 +37,39 @@
     </Microsoft-googletest-v140-windesktop-msvcstl-static-rt-dyn-Disable-gtest_main>
   </PropertyGroup>
   <ItemGroup>
+    <ClInclude Include="Address.h" />
     <ClInclude Include="Arr.h" />
+    <ClInclude Include="Company.h" />
+    <ClInclude Include="CompanyType.h" />
+    <ClInclude Include="Contact.h" />
     <ClInclude Include="CreateSampleDataOperation.h" />
     <ClInclude Include="ds_definitions.h" />
+    <ClInclude Include="Employee.h" />
     <ClInclude Include="Family.h" />
+    <ClInclude Include="GeekPerson.h" />
     <ClInclude Include="NullableUser.h" />
+    <ClInclude Include="Order.h" />
+    <ClInclude Include="OrderLine.h" />
+    <ClInclude Include="Person.h" />
     <ClInclude Include="Poc.h" />
+    <ClInclude Include="Post.h" />
     <ClInclude Include="re_definitions.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="TestSuiteBase.h" />
     <ClInclude Include="User.h" />
+    <ClInclude Include="test_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AdvancedPatchingTests.cpp" />
     <ClCompile Include="BasicQueryTests.cpp" />
     <ClCompile Include="BasicDocumentsSessionTests.cpp" />
-    <ClCompile Include="CrudTests.cpp" />
+    <ClCompile Include="CreateSampleDataOperation.cpp" />
+    <ClCompile Include="CrudTest.cpp" />
+    <ClCompile Include="DeleteTest.cpp" />
     <ClCompile Include="ds_definitions.cpp" />
+    <ClCompile Include="HttpsTest.cpp" />
+    <ClCompile Include="LoadTest.cpp" />
+    <ClCompile Include="LoadTests.cpp" />
     <ClCompile Include="re_definitions.cpp" />
     <ClCompile Include="BasicDocumentCommandsTests.cpp" />
     <ClCompile Include="GetDocumentsCommandTests.cpp" />
@@ -67,6 +84,9 @@
     </ClCompile>
     <ClCompile Include="RequestExecutorAndDBsTests.cpp" />
     <ClCompile Include="SecuredRequestExecutorTests.cpp" />
+    <ClCompile Include="test_utils.cpp" />
+    <ClCompile Include="TrackEntityTest.cpp" />
+    <ClCompile Include="WhatChangedTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,7 +1,7 @@
 #pragma once
 #include "json_utils.h"
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::infrastructure::entities
 {
 	struct Family
 	{
