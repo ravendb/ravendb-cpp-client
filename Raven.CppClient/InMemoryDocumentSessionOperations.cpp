@@ -456,6 +456,7 @@ namespace ravendb::client::documents::session
 		}
 
 		//this part is unique to C++ : metadata check from the entity serialized
+		//TODO probably would be transferred to DocumentConventions 
 		auto temp_doc_info = std::make_shared<DocumentInfo>();
 		temp_doc_info->to_json_converter = to_json;
 		auto document = EntityToJson::convert_entity_to_json(entity, temp_doc_info);

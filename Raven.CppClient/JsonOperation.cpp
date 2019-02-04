@@ -252,6 +252,8 @@ namespace ravendb::client::json
 			case nlohmann::detail::value_t::number_unsigned:
 			case nlohmann::detail::value_t::boolean:
 			case nlohmann::detail::value_t::string:
+				//compare_values() call is a backup , nlohmann::json compare is usually
+				//smart enough to compare across number types (like integer 1 with equal float 1.0)
 				if (new_prop == old_prop ||
 					compare_values(old_prop, new_prop))
 				{

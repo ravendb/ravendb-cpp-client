@@ -4,7 +4,7 @@ namespace ravendb::client::documents::session
 {
 	struct DocumentsChanges
 	{
-		//TODO obsolete
+		//TODO obsolete ?
 		//enum class JsonNodeType {
 		//	ARRAY,
 		//	BINARY,

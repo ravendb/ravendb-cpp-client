@@ -73,11 +73,11 @@ namespace ravendb::client::documents::session
 
 		template<typename T>
 		void store(std::shared_ptr<T> entity, 
+			const std::optional<std::string>& change_vector,
 			const std::optional<std::string>& id = {},
-			const std::optional<std::string>& change_vector = {}, 
 			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
-			_session_impl->store(entity, id, change_vector, to_json);
+			_session_impl->store(entity, change_vector, id, to_json);
 		}
 
 		loaders::LoaderWithInclude include(const std::string& path)

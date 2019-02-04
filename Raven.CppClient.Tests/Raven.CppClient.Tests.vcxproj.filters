@@ -57,6 +57,9 @@
     <ClCompile Include="TrackEntityTest.cpp">
       <Filter>ravendb.client.tests\test\client</Filter>
     </ClCompile>
+    <ClCompile Include="WhatChangedTest.cpp">
+      <Filter>ravendb.client.tests\test\client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
