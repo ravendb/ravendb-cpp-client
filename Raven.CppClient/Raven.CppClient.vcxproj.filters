@@ -459,6 +459,15 @@
     <ClInclude Include="FieldsToFetchToken.h">
       <Filter>ravendb.client\documents\session\tokens</Filter>
     </ClInclude>
+    <ClInclude Include="Lazy.h">
+      <Filter>ravendb.client\documents</Filter>
+    </ClInclude>
+    <ClInclude Include="Supplier.h">
+      <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryBase.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">

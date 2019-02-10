@@ -19,11 +19,26 @@ namespace ravendb::client::documents::session
 		return collection_name;
 	}
 
+	const DocumentConventions& AbstractDocumentQuery::get_conventions() const
+	{
+		return _conventions;
+	}
 
 	std::reference_wrapper<DocumentSessionImpl> AbstractDocumentQuery::get_session() const
 	{
 		return static_cast<DocumentSessionImpl&>(the_session.get());
 	}
+
+	void AbstractDocumentQuery::_using_default_operator(queries::QueryOperator query_operator)
+	{
+		//TODO add
+		//if (!where_tokens.empty()) {
+		//	throw new std::runtime_error("Default operator can only be set before any where clause is added.");
+		//}
+
+		default_operator = query_operator;
+	}
+
 
 	queries::IndexQuery AbstractDocumentQuery::get_index_query() const
 	{
@@ -35,12 +50,27 @@ namespace ravendb::client::documents::session
 		return index_query;
 	}
 
+	void AbstractDocumentQuery::_add_parameter(std::string name, nlohmann::json object)
+	{
+		const std::string pure_name(name.front() == '$' ? ++name.begin() : name.begin(), name.end());
+		if(query_parameters.find(pure_name) != query_parameters.end())
+		{
+			std::ostringstream msg{};
+			msg << "The parameter " << pure_name << " was already added";
+			throw std::runtime_error(msg.str());
+		}
+
+		query_parameters.insert_or_assign(pure_name, object);
+	}
+
+
 	AbstractDocumentQuery::AbstractDocumentQuery(InMemoryDocumentSessionOperations& session, std::optional<std::string> index_name,
 		std::optional<std::string> collection_name, bool is_group_by, /*DeclareToken*/ void* declare_token,
 		/*std::vector<DeclareToken>*/void* load_tokens, std::optional<std::string> from_alias)
 		: index_name(std::move(index_name))
 		, collection_name(std::move(collection_name))
 		, the_session(session)
+		, _conventions(session.get_conventions())
 	{}
 
 	void AbstractDocumentQuery::_wait_for_non_stale_results(std::optional<std::chrono::milliseconds> wait_timeout)
@@ -124,6 +154,13 @@ namespace ravendb::client::documents::session
 	{
 		return query_operation;
 	}
+
+	int32_t AbstractDocumentQuery::count()
+	{
+		_take(0);
+		return get_query_result().total_results;
+	}
+
 
 	void AbstractDocumentQuery::_no_tracking()
 	{

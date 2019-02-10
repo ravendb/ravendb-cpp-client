@@ -230,6 +230,7 @@
     <ClInclude Include="IVoidMaintenanceOperation.h" />
     <ClInclude Include="JsonOperation.h" />
     <ClInclude Include="json_utils.h" />
+    <ClInclude Include="Lazy.h" />
     <ClInclude Include="LeaderStamp.h" />
     <ClInclude Include="LoaderWithInclude.h" />
     <ClInclude Include="LoadOperation.h" />
@@ -250,6 +251,7 @@
     <ClInclude Include="PutIndexResult.h" />
     <ClInclude Include="PutResult.h" />
     <ClInclude Include="GenericQueryResult.h" />
+    <ClInclude Include="QueryBase.h" />
     <ClInclude Include="QueryCommand.h" />
     <ClInclude Include="QueryOperation.h" />
     <ClInclude Include="QueryOperationOptions.h" />
@@ -284,6 +286,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StopIndexingOperation.h" />
     <ClInclude Include="StopIndexOperation.h" />
+    <ClInclude Include="Supplier.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TermsQueryResult.h" />
     <ClInclude Include="Topology.h" />

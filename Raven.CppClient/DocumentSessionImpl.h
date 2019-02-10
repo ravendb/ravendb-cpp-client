@@ -54,7 +54,7 @@ namespace ravendb::client::documents::session
 
 		std::shared_ptr<RawDocumentQuery> raw_query(const std::string& query)
 		{
-			return std::make_shared<RawDocumentQuery>(*this, query);
+			return RawDocumentQuery::create(*this, query);
 		}
 	};
 

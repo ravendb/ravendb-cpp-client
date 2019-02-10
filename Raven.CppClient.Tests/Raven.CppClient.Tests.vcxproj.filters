@@ -63,6 +63,9 @@
     <ClCompile Include="HttpsTest.cpp">
       <Filter>ravendb.client.tests\test\client</Filter>
     </ClCompile>
+    <ClCompile Include="QueryTest.cpp">
+      <Filter>ravendb.client.tests\test\client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

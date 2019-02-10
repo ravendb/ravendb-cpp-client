@@ -29,6 +29,8 @@ namespace ravendb::client::documents::session
 
 		std::optional<std::string> collection_name {};
 
+		DocumentConventions _conventions;
+
 	protected:
 		queries::QueryOperator default_operator = queries::QueryOperator::AND;
 
@@ -64,9 +66,26 @@ namespace ravendb::client::documents::session
 
 		const std::optional<std::string>& get_collection_name() const;
 
+		const DocumentConventions& get_conventions() const;
+
 		std::reference_wrapper<DocumentSessionImpl> get_session() const;
 
+		const std::optional<operations::QueryOperation>& get_query_operation() const;
+
+		template<typename T>
+		std::vector<std::shared_ptr<T>> to_list();
+
+		int32_t count();
+
+		queries::QueryResult get_query_result();
+
+	protected:
+
+		void _using_default_operator(queries::QueryOperator query_operator);
+
 		queries::IndexQuery get_index_query() const;
+
+		void _add_parameter(std::string name, nlohmann::json object);
 
 		void _take(int32_t count);
 
@@ -76,18 +95,9 @@ namespace ravendb::client::documents::session
 
 		friend std::ostream& operator<<(std::ostream& os, const AbstractDocumentQuery& adq);
 
-		const std::optional<operations::QueryOperation>& get_query_operation() const;
-
 		void _no_tracking();
 
 		void _no_caching();
-
-		template<typename T>
-		std::vector<std::shared_ptr<T>> to_list();
-
-		queries::QueryResult get_query_result();
-
-	protected:
 
 		//TODO see what to send by value/reference
 		AbstractDocumentQuery(InMemoryDocumentSessionOperations& session, std::optional<std::string> index_name,
