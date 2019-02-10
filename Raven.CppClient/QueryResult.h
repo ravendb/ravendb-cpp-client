@@ -12,7 +12,7 @@ namespace ravendb::client::documents::queries
 
 		QueryResult create_snapshot() const
 		{
-			return { *this };
+			return *this ;
 		}
 
 	};

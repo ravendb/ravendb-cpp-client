@@ -38,6 +38,15 @@
     <ClCompile Include="MultiLoaderWithInclude.cpp">
       <Filter>ravendb.client\documents\session\loaders</Filter>
     </ClCompile>
+    <ClCompile Include="AbstractDocumentQuery.cpp">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryOperation.cpp">
+      <Filter>ravendb.client\documents\session\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -432,6 +441,24 @@
     <ClInclude Include="MultiLoaderWithInclude.h">
       <Filter>ravendb.client\documents\session\loaders</Filter>
     </ClInclude>
+    <ClInclude Include="RawDocumentQuery.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractDocumentQuery.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryOperator.h">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryOperation.h">
+      <Filter>ravendb.client\documents\session\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="FieldsToFetchToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
@@ -490,6 +517,9 @@
     </Filter>
     <Filter Include="ravendb.client\documents\session\loaders">
       <UniqueIdentifier>{a1d828d5-98a3-4f57-a8e4-d988cb652873}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\session\tokens">
+      <UniqueIdentifier>{9c81b735-b376-4497-a085-28da06280d81}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

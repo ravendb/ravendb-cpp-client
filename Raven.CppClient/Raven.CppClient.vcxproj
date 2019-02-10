@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp" />
     <ClInclude Include="..\..\xxhash_cpp\xxhash\xxhash.hpp" />
+    <ClInclude Include="AbstractDocumentQuery.h" />
     <ClInclude Include="BatchCommand.h" />
     <ClInclude Include="BatchCommandResult.h" />
     <ClInclude Include="BatchOperation.h" />
@@ -188,6 +189,7 @@
     <ClInclude Include="EnableIndexOperation.h" />
     <ClInclude Include="EntityToJson.h" />
     <ClInclude Include="FieldIndexing.h" />
+    <ClInclude Include="FieldsToFetchToken.h" />
     <ClInclude Include="FieldStorage.h" />
     <ClInclude Include="FieldTermVector.h" />
     <ClInclude Include="GetDatabaseNamesOperation.h" />
@@ -249,9 +251,12 @@
     <ClInclude Include="PutResult.h" />
     <ClInclude Include="GenericQueryResult.h" />
     <ClInclude Include="QueryCommand.h" />
+    <ClInclude Include="QueryOperation.h" />
     <ClInclude Include="QueryOperationOptions.h" />
+    <ClInclude Include="QueryOperator.h" />
     <ClInclude Include="QueryResult.h" />
     <ClInclude Include="QueryResultBase.h" />
+    <ClInclude Include="QueryToken.h" />
     <ClInclude Include="RavenErrors.h" />
     <ClInclude Include="GetDatabaseRecordOperation.h" />
     <ClInclude Include="GetDatabaseTopologyCommand.h" />
@@ -259,6 +264,7 @@
     <ClInclude Include="RavenCommand.h" />
     <ClInclude Include="GetDocumentsCommand.h" />
     <ClInclude Include="ravendb.h" />
+    <ClInclude Include="RawDocumentQuery.h" />
     <ClInclude Include="ReplicationBatchOptions.h" />
     <ClInclude Include="RequestExecutor.h" />
     <ClInclude Include="ResetIndexOperation.h" />
@@ -286,6 +292,7 @@
     <ClInclude Include="VoidRavenCommand.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AbstractDocumentQuery.cpp" />
     <ClCompile Include="BatchOperation.cpp" />
     <ClCompile Include="CurlHandlesHolder.cpp" />
     <ClInclude Include="CurlHandlesHolder.h" />
@@ -296,6 +303,8 @@
     <ClCompile Include="InMemoryDocumentSessionOperations.cpp" />
     <ClCompile Include="JsonOperation.cpp" />
     <ClCompile Include="MultiLoaderWithInclude.cpp" />
+    <ClCompile Include="QueryOperation.cpp" />
+    <ClCompile Include="QueryToken.cpp" />
     <ClCompile Include="RequestExecutor.cpp" />
     <ClCompile Include="SessionOperationExecutor.cpp" />
     <ClCompile Include="stdafx.cpp">
