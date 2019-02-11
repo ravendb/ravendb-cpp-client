@@ -98,8 +98,9 @@ namespace ravendb::client::tests::client
 
 		auto session = test_suite_store->get().open_session();
 
-		ASSERT_EQ(1, session.advanced().raw_query("from User where Name = $name")
-			->add_parameter("name", "Tuzik")
-			->count());
+		ASSERT_EQ(1, 
+			session.advanced().raw_query("from User where Name = $name")
+				->add_parameter("name", "Tuzik")
+				->count());
 	}
 }

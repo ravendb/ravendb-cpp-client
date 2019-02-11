@@ -56,8 +56,6 @@ namespace ravendb::client::documents::session
 
 		std::optional<operations::QueryOperation> query_operation{};
 		
-		
-		
 		std::optional<std::string> query_raw{};
 	public:
 

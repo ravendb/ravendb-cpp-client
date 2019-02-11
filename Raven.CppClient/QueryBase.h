@@ -1,5 +1,9 @@
 #pragma once
-#include "QueryOperator.h"
+
+namespace ravendb::client::documents::queries
+{
+	enum class QueryOperator;
+}
 
 namespace ravendb::client::documents::session
 {
@@ -12,7 +16,7 @@ namespace ravendb::client::documents::session
 			friend QueryBase;
 
 		protected:
-			std::shared_ptr<TThis> _query_base_ptr{};
+			std::weak_ptr<TThis> _query_base_ptr{};
 
 		public:
 			virtual ~AbstractInner() = 0;
@@ -36,7 +40,7 @@ namespace ravendb::client::documents::session
 			//TODO
 			//virtual void wait_for_non_stale_results
 
-			virtual void inner_add_parameter(std::string name, nlohmann::json object) = 0;
+			virtual void inner_add_parameter(std::string name, nlohmann::json value) = 0;
 		};
 
 		std::unique_ptr<AbstractInner> _inner{};
@@ -54,37 +58,37 @@ namespace ravendb::client::documents::session
 		std::shared_ptr<TThis> skip(int32_t count)
 		{
 			_inner->inner_skip(count);
-			return _inner->_query_base_ptr;
+			return _inner->_query_base_ptr.lock();
 		}
 
 		std::shared_ptr<TThis> take(int32_t count)
 		{
 			_inner->inner_take(count);
-			return _inner->_query_base_ptr;
+			return _inner->_query_base_ptr.lock();
 		}
 
 		std::shared_ptr<TThis> no_tracking()
 		{
 			_inner->inner_no_tracking();
-			return _inner->_query_base_ptr;
+			return _inner->_query_base_ptr.lock();
 		}
 
 		std::shared_ptr<TThis> no_caching()
 		{
 			_inner->inner_no_caching();
-			return _inner->_query_base_ptr;
+			return _inner->_query_base_ptr.lock();
 		}
 
 		std::shared_ptr<TThis> using_default_operator(queries::QueryOperator query_operator)
 		{
 			_inner->inner_using_default_operator(query_operator);
-			return _inner->_query_base_ptr;
+			return _inner->_query_base_ptr.lock();
 		}
 
-		std::shared_ptr<TThis> add_parameter(std::string name, nlohmann::json object)
+		std::shared_ptr<TThis> add_parameter(std::string name, nlohmann::json value)
 		{
-			_inner->inner_add_parameter(std::move(name), std::move(object));
-			return _inner->_query_base_ptr;
+			_inner->inner_add_parameter(std::move(name), std::move(value));
+			return _inner->_query_base_ptr.lock();
 		}
 	};
 

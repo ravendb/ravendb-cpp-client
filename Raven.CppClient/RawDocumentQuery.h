@@ -14,32 +14,32 @@ namespace ravendb::client::documents::session
 
 			void inner_skip(int32_t count) override
 			{
-				_query_base_ptr->_skip(count);
+				_query_base_ptr.lock()->_skip(count);
 			}
 
 			void inner_take(int32_t count) override
 			{
-				_query_base_ptr->_take(count);
+				_query_base_ptr.lock()->_take(count);
 			}
 
 			void inner_no_tracking() override
 			{
-				_query_base_ptr->_no_tracking();
+				_query_base_ptr.lock()->_no_tracking();
 			}
 
 			void inner_no_caching() override
 			{
-				_query_base_ptr->_no_caching();
+				_query_base_ptr.lock()->_no_caching();
 			}
 
 			void inner_using_default_operator(queries::QueryOperator query_operator) override
 			{
-				_query_base_ptr->_using_default_operator(query_operator);
+				_query_base_ptr.lock()->_using_default_operator(query_operator);
 			}
 
-			void inner_add_parameter(std::string name, nlohmann::json object) override
+			void inner_add_parameter(std::string name, nlohmann::json value) override
 			{
-				_query_base_ptr->_add_parameter(std::move(name), std::move(object));
+				_query_base_ptr.lock()->_add_parameter(std::move(name), std::move(value));
 			}
 		};
 
