@@ -76,7 +76,7 @@ namespace ravendb::client::documents::session
 		const DocumentInfo::EntityUpdater& update_from_json)
 	{
 		if(auto doc_info_it = _documents_by_id.find(id);
-			doc_info_it != _documents_by_id.end())
+			doc_info_it != _documents_by_id.end() && !doc_info_it->second->update_from_json)
 		{
 			doc_info_it->second->update_from_json = update_from_json;
 		}
@@ -90,6 +90,35 @@ namespace ravendb::client::documents::session
 		++_vals_count;
 
 		if(!try_merge_patches(id, patch_request))
+		{
+			defer({ std::make_shared<commands::batches::PatchCommandData>(id, std::optional<std::string>(),
+				patch_request, std::optional<documents::operations::PatchRequest>()) });
+		}
+	}
+
+	void DocumentSessionImpl::increment_internal(const std::string& id, const std::string& path, const nlohmann::json& value_to_add,
+		const DocumentInfo::EntityUpdater& update_from_json)
+	{
+		if (auto doc_info_it = _documents_by_id.find(id);
+			doc_info_it != _documents_by_id.end() && !doc_info_it->second->update_from_json)
+		{
+			doc_info_it->second->update_from_json = update_from_json;
+		}
+
+		auto patch_request = documents::operations::PatchRequest();
+		const std::string variable = "this." + path;
+		const std::string value = "args.val_" + std::to_string(_vals_count);
+
+		std::ostringstream script{};
+		script << variable << " = " << variable <<
+			" ? " << variable << " + " << value <<
+			" : " << value << ";";
+		patch_request.script = script.str();
+		patch_request.values.insert_or_assign("val_" + std::to_string(_vals_count), value_to_add);
+
+		++_vals_count;
+
+		if (!try_merge_patches(id, patch_request))
 		{
 			defer({ std::make_shared<commands::batches::PatchCommandData>(id, std::optional<std::string>(),
 				patch_request, std::optional<documents::operations::PatchRequest>()) });

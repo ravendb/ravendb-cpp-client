@@ -271,7 +271,37 @@ namespace ravendb::client::tests::client
 	//TODO implement
 	TEST_F(FirstClassPatchTest, CanIncrement)
 	{
-		SUCCEED();
+		auto stuff = std::vector<first_class_patch_test::Stuff>(3);
+		stuff[0].key = 6;
+
+		auto user = std::make_shared<first_class_patch_test::User>();
+		user->stuff = stuff;
+		user->numbers = { 66 };
+
+		{
+			auto session = test_suite_store->get().open_session();
+			session.store(user, first_class_patch_test::DOC_ID);
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+			session.advanced().increment<first_class_patch_test::User>(first_class_patch_test::DOC_ID,
+				"Numbers[0]", 1);
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+			auto loaded = session.load<first_class_patch_test::User>(first_class_patch_test::DOC_ID);
+			ASSERT_EQ(67, loaded->numbers[0]);
+
+			session.advanced().increment(loaded, "Stuff[0].Key", -3);
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+			auto loaded = session.load<first_class_patch_test::User>(first_class_patch_test::DOC_ID);
+			ASSERT_EQ(3, loaded->stuff[0].key);
+		}
 	}
 
 	TEST_F(FirstClassPatchTest, ShouldMergePatchCalls)
@@ -320,7 +350,10 @@ namespace ravendb::client::tests::client
 		}
 		{
 			auto session = test_suite_store->get().open_session();
-			//TODO implement session.advanced().increment test
+			session.advanced().increment<first_class_patch_test::User>(first_class_patch_test::DOC_ID,
+				"Numbers[0]", 1);
+			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
+			//TODO continue
 		}
 	}
 	TEST_F(FirstClassPatchTest, CanUpdateSessionByPatch)

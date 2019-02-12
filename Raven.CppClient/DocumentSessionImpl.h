@@ -37,6 +37,9 @@ namespace ravendb::client::documents::session
 		void patch_internal(const std::string& id, const std::string& path, const nlohmann::json& value,
 			const DocumentInfo::EntityUpdater& update_from_json);
 
+		void increment_internal(const std::string& id, const std::string& path, const nlohmann::json& value_to_add,
+			const DocumentInfo::EntityUpdater& update_from_json);
+
 		bool try_merge_patches(const std::string& id, const documents::operations::PatchRequest& patch_request);
 
 	public:
@@ -71,6 +74,10 @@ namespace ravendb::client::documents::session
 
 		template<typename T>
 		void patch(const std::string& id, const std::string& path, const T& value,
+			const DocumentInfo::EntityUpdater& update_from_json);
+
+		template<typename T>
+		void increment(const std::string& id, const std::string& path, const T& value_to_add,
 			const DocumentInfo::EntityUpdater& update_from_json);
 	};
 
@@ -116,4 +123,14 @@ namespace ravendb::client::documents::session
 		patch_internal(id, path, nlohmann::json(value), update_from_json);
 	}
 
+	template <typename T>
+	void DocumentSessionImpl::increment(const std::string& id, const std::string& path, const T& value_to_add,
+		const DocumentInfo::EntityUpdater& update_from_json)
+	{
+		if (!update_from_json)
+		{
+			throw std::invalid_argument("'update_from_json' should have a target");
+		}
+		increment_internal(id, path, nlohmann::json(value_to_add), update_from_json);
+	}
 }
