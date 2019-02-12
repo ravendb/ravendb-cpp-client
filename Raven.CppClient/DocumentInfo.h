@@ -10,6 +10,7 @@ namespace ravendb::client::documents::session
 	{
 		using FromJsonConverter = std::function<std::shared_ptr<void>(const nlohmann::json&)>;
 		using ToJsonConverter = std::function<nlohmann::json(std::shared_ptr<void>)>;
+		using EntityUpdater = std::function<void(std::shared_ptr<void>, const nlohmann::json&)>;
 
 		template<typename T>
 		inline static const ToJsonConverter default_to_json = [](std::shared_ptr<void> entity) -> nlohmann::json
@@ -24,6 +25,14 @@ namespace ravendb::client::documents::session
 			return std::static_pointer_cast<void>(temp);
 		};
 
+		template<typename T>
+		inline static const EntityUpdater default_entity_update = 
+			[](std::shared_ptr<void> entity, const nlohmann::json& new_json) -> void
+		{
+			auto document = std::static_pointer_cast<T>(entity);
+			*document = new_json.get<T>(); //change the old document with the new one obtained from 'new_json'
+		};
+
 		nlohmann::json document{};
 		nlohmann::json metadata{};
 
@@ -34,6 +43,7 @@ namespace ravendb::client::documents::session
 
 		FromJsonConverter from_json_converter;
 		ToJsonConverter to_json_converter;
+		EntityUpdater update_from_json;
 		
 		ConcurrencyCheckMode concurrency_check_mode = ConcurrencyCheckMode::AUTO;
 		bool ignore_changes = false;

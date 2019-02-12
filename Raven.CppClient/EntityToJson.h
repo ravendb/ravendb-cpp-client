@@ -18,6 +18,9 @@ namespace ravendb::client::documents::session
 		explicit EntityToJson(InMemoryDocumentSessionOperations& session);
 		~EntityToJson() = default;
 
+		static void populate_entity(std::shared_ptr<void> entity, const std::string& id, const nlohmann::json& document,
+			const DocumentInfo::EntityUpdater& update_from_json);
+
 		static nlohmann::json convert_entity_to_json(std::shared_ptr<void> entity, std::shared_ptr<DocumentInfo> doc_info,
 			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {});
 

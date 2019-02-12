@@ -35,7 +35,9 @@ namespace ravendb::client::documents::session::operations
 		std::map<std::string, std::shared_ptr<DocumentInfo>, impl::utils::CompareStringsIgnoreCase> _modifications{};
 
 		void handle_put(size_t index, const nlohmann::json& batch_result, bool is_deferred);
-		
+
+		void handle_patch(const nlohmann::json& batch_result);
+
 		void handle_delete(const nlohmann::json& batch_result);
 
 		void handle_delete_internal(const nlohmann::json& batch_result, commands::batches::CommandType type);

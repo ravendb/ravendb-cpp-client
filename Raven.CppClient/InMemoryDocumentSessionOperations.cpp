@@ -11,6 +11,7 @@
 #include "PutCommandData.h"
 #include "JsonOperation.h"
 #include "BatchCommandResult.h"
+#include "DocumentConventions.h"
 
 namespace ravendb::client::documents::session
 {
@@ -55,7 +56,9 @@ namespace ravendb::client::documents::session
 	{
 		//TODO implement
 		//return _request_executor.get_conventions();
-		throw std::runtime_error("Not implemented");
+		//throw std::runtime_error("Not implemented");
+		static conventions::DocumentConventions conv{};
+		return conv;
 	}
 
 	size_t InMemoryDocumentSessionOperations::get_deferred_commands_count() const
@@ -104,7 +107,7 @@ namespace ravendb::client::documents::session
 		, _client_session_id(++_client_session_id_counter)
 		, _request_executor(options.request_executor ? options.request_executor : 
 			document_store.get_request_executor(database_name))
-		, _sessionInfo(_client_session_id, /*document_store.get_last_transaction_index(database_name)*/{}, options.no_caching)
+		, _session_info(_client_session_id, /*document_store.get_last_transaction_index(database_name)*/{}, options.no_caching)
 		, _document_store(document_store)
 
 
@@ -900,8 +903,8 @@ namespace ravendb::client::documents::session
 		case commands::batches::CommandType::COUNTERS:
 			break;
 		default:
-			_deferred_commands_map.insert({ in_memory_document_session_operations::IdTypeAndName
-			(command->get_id(), commands::batches::CommandType::CLIENT_MODIFY_DOCUMENT_COMMAND, {}), command });
+			_deferred_commands_map.insert_or_assign(in_memory_document_session_operations::IdTypeAndName
+			(command->get_id(), commands::batches::CommandType::CLIENT_MODIFY_DOCUMENT_COMMAND, {}), command);
 		}
 	}
 
@@ -1041,7 +1044,7 @@ namespace ravendb::client::documents::session
 	{
 		auto&& returned_transaction_index = result.transaction_index;
 		_document_store.get().set_last_transaction_index(database_name, returned_transaction_index);
-		_sessionInfo.last_cluster_transaction_index = returned_transaction_index;
+		_session_info.last_cluster_transaction_index = returned_transaction_index;
 	}
 
 

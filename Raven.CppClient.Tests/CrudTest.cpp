@@ -70,7 +70,12 @@ namespace ravendb::client::tests::client
 		auto user_json = result.results.at(0);
 		ASSERT_TRUE(user_json.find("LastName") != user_json.end());
 
-		//TODO complete using session.advanced().raw_query
+		{
+			auto session = test_suite_store->get().open_session();
+			auto users = session.advanced().raw_query("from User where LastName = 'user1'")->to_list<infrastructure::entities::User>();
+
+			ASSERT_EQ(1, users.size());
+		}
 	}
 
 

@@ -5,6 +5,8 @@
 #include "LoadOperation.h"
 #include "SessionOptions.h"
 #include "LoaderWithInclude.h"
+#include "PatchRequest.h"
+#include "PatchCommandData.h"
 
 namespace ravendb::client::documents::session
 {
@@ -70,6 +72,62 @@ namespace ravendb::client::documents::session
 		}
 	}
 
+	void DocumentSessionImpl::patch_internal(const std::string& id, const std::string& path, const nlohmann::json& value,
+		const DocumentInfo::EntityUpdater& update_from_json)
+	{
+		if(auto doc_info_it = _documents_by_id.find(id);
+			doc_info_it != _documents_by_id.end())
+		{
+			doc_info_it->second->update_from_json = update_from_json;
+		}
+
+		auto patch_request = documents::operations::PatchRequest();
+		std::ostringstream script{};
+		script << "this." << path << " = args.val_" << _vals_count << ";";
+		patch_request.script = script.str();
+		patch_request.values.insert_or_assign("val_" + std::to_string(_vals_count), value);
+
+		++_vals_count;
+
+		if(!try_merge_patches(id, patch_request))
+		{
+			defer({ std::make_shared<commands::batches::PatchCommandData>(id, std::optional<std::string>(),
+				patch_request, std::optional<documents::operations::PatchRequest>()) });
+		}
+	}
+
+	bool DocumentSessionImpl::try_merge_patches(const std::string & id, const documents::operations::PatchRequest & patch_request)
+	{
+		std::shared_ptr<commands::batches::CommandDataBase> command{};
+
+		if (auto command_it = _deferred_commands_map.find(in_memory_document_session_operations::IdTypeAndName
+			{ id, commands::batches::CommandType::PATCH, {} });
+			command_it == _deferred_commands_map.end())
+		{
+			return false;
+		}else
+		{
+			command = command_it->second;
+			_deferred_commands.erase(std::find(_deferred_commands.cbegin(), _deferred_commands.cend(),command));
+			// We'll overwrite the _deferred_commands_map when calling defer
+		}
+
+		auto old_patch = std::static_pointer_cast<commands::batches::PatchCommandData>(command);
+		std::ostringstream new_script{};
+		new_script << old_patch->get_patch().script << "\n" << patch_request.script;
+
+		decltype(documents::operations::PatchRequest::values) new_values(std::move(old_patch->get_patch().values));
+		std::copy(patch_request.values.cbegin(), patch_request.values.cend(), std::inserter(new_values, new_values.end()));
+
+		auto new_patch_request = documents::operations::PatchRequest(std::move(new_script).str());
+		new_patch_request.values = std::move(new_values);
+
+		defer({ std::make_shared<commands::batches::PatchCommandData>(id, std::optional<std::string>(),
+			std::move(new_patch_request), std::optional<documents::operations::PatchRequest>()) });
+
+		return true;
+	}
+
 	loaders::LoaderWithInclude DocumentSessionImpl::include(const std::string& path)
 	{
 		return loaders::MultiLoaderWithInclude::create(*this).include(path);
@@ -109,4 +167,10 @@ namespace ravendb::client::documents::session
 			save_changes_operation.set_result(command->get_result());
 		}
 	}
+
+	std::shared_ptr<RawDocumentQuery> DocumentSessionImpl::raw_query(const std::string& query)
+	{
+		return RawDocumentQuery::create(*this, query);
+	}
+
 }

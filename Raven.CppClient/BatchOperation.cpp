@@ -7,6 +7,7 @@
 #include "InMemoryDocumentSessionOperations.h"
 #include "CommandType.h"
 #include "BatchCommand.h"
+#include "PatchStatus.h"
 
 namespace ravendb::client::documents::session::operations
 {
@@ -114,8 +115,7 @@ namespace ravendb::client::documents::session::operations
 				handle_delete(batch_result);
 				break;
 			case commands::batches::CommandType::PATCH:
-				//TODO handle_patch(batch_result);
-				throw std::runtime_error("not implemented");
+				handle_patch(batch_result);
 				break;
 			case commands::batches::CommandType::ATTACHMENT_PUT:
 				//TODO handle_attachment_put(batch_result);
@@ -211,6 +211,71 @@ namespace ravendb::client::documents::session::operations
 		//AfterSaveChangesEventArgs afterSaveChangesEventArgs = new AfterSaveChangesEventArgs(_session, documentInfo.getId(), documentInfo.getEntity());
 		//_session.onAfterSaveChangesInvoke(afterSaveChangesEventArgs);
 	}
+
+	void BatchOperation::handle_patch(const nlohmann::json& batch_result)
+	{
+		documents::operations::PatchStatus status = documents::operations::PatchStatus::UNSET;
+		if(auto patch_status_it = batch_result.find("PatchStatus");
+			patch_status_it == batch_result.end() || patch_status_it->is_null())
+		{
+			throw_missing_field(commands::batches::CommandType::PATCH, "PatchStatus");
+		}else
+		{
+			status = patch_status_it->get<documents::operations::PatchStatus>();
+		}
+		switch (status)
+		{
+		case documents::operations::PatchStatus::CREATED:
+		case documents::operations::PatchStatus::PATCHED:
+		{
+			nlohmann::json document{};
+			if (auto doc_it = batch_result.find("ModifiedDocument");
+				doc_it == batch_result.end())
+			{
+				return;
+			}
+			else
+			{
+				document = *doc_it;
+			}
+
+			auto id = get_string_field(batch_result, commands::batches::CommandType::PUT, "Id");
+			std::shared_ptr<DocumentInfo> document_info{};
+
+			if (auto session_document_info_it = _session.get()._documents_by_id.find(id);
+				session_document_info_it == _session.get()._documents_by_id.end())
+			{
+				return;
+			}
+			else
+			{
+				document_info = get_or_add_modifications(id, session_document_info_it->second, true);
+			}
+			const auto change_vector = get_string_field(batch_result, commands::batches::CommandType::PATCH, "ChangeVector");
+			const auto last_modified = get_string_field(batch_result, commands::batches::CommandType::PATCH, "LastModified");
+
+			using impl::utils::json_utils::set_val_to_json;
+
+			document_info->change_vector = get_string_field(batch_result, commands::batches::CommandType::PATCH, "ChangeVector");
+			set_val_to_json(document_info->metadata, constants::documents::metadata::ID, id);
+			set_val_to_json(document_info->metadata, constants::documents::metadata::CHANGE_VECTOR, change_vector);
+			set_val_to_json(document_info->metadata, constants::documents::metadata::LAST_MODIFIED, last_modified);
+
+			document_info->document = std::move(document);
+			apply_metadata_modifications(id, document_info);
+
+			if (document_info->entity)
+			{
+				_session.get().get_entity_to_json().populate_entity(document_info->entity, id, document_info->document,
+					document_info->update_from_json);
+			}
+		}
+			break;
+		default:
+			break;
+		}
+	}
+
 
 	void BatchOperation::handle_delete(const nlohmann::json& batch_result)
 	{
