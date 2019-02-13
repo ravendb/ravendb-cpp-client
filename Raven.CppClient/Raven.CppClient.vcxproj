@@ -226,6 +226,7 @@
     <ClInclude Include="IOperation.h" />
     <ClInclude Include="IServerOperation.h" />
     <ClInclude Include="IVoidMaintenanceOperation.h" />
+    <ClInclude Include="JavaScriptArray.h" />
     <ClInclude Include="JsonOperation.h" />
     <ClInclude Include="json_utils.h" />
     <ClInclude Include="LeaderStamp.h" />

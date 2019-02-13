@@ -3,6 +3,7 @@
 #include "DocumentsByIdsMap.h"
 #include "LoadOperation.h"
 #include "RawDocumentQuery.h"
+#include "JavaScriptArray.h"
 
 namespace ravendb::client::documents
 {
@@ -35,6 +36,10 @@ namespace ravendb::client::documents::session
 			operations::LoadOperation& operation);
 
 		void patch_internal(const std::string& id, const std::string& path, const nlohmann::json& value,
+			const DocumentInfo::EntityUpdater& update_from_json);
+
+		void patch_internal(const std::string& id, const std::string& script,
+			const std::unordered_map<std::string, nlohmann::json>& values,
 			const DocumentInfo::EntityUpdater& update_from_json);
 
 		void increment_internal(const std::string& id, const std::string& path, const nlohmann::json& value_to_add,
@@ -74,6 +79,11 @@ namespace ravendb::client::documents::session
 
 		template<typename T>
 		void patch(const std::string& id, const std::string& path, const T& value,
+			const DocumentInfo::EntityUpdater& update_from_json);
+
+		template<typename T>
+		void patch(const std::string& id, const std::string& path_to_array, 
+			std::function<void(JavaScriptArray<T>&)> array_adder,
 			const DocumentInfo::EntityUpdater& update_from_json);
 
 		template<typename T>
@@ -122,6 +132,23 @@ namespace ravendb::client::documents::session
 		}
 		patch_internal(id, path, nlohmann::json(value), update_from_json);
 	}
+
+	template <typename T>
+	void DocumentSessionImpl::patch(const std::string& id, const std::string& path_to_array,
+		std::function<void(JavaScriptArray<T>&)> array_adder,
+		const DocumentInfo::EntityUpdater& update_from_json)
+	{
+		if (!update_from_json)
+		{
+			throw std::invalid_argument("'update_from_json' should have a target");
+		}
+
+		auto script_array = JavaScriptArray<T>(_custom_count++, path_to_array);
+		array_adder(script_array);
+
+		patch_internal(id, script_array.get_script(), script_array.get_parameters(), update_from_json);
+	}
+
 
 	template <typename T>
 	void DocumentSessionImpl::increment(const std::string& id, const std::string& path, const T& value_to_add,

@@ -683,7 +683,7 @@ namespace ravendb::client::documents::session
 				}
 				//TODO call EventHelper.invoke()
 
-				result.session_commands.emplace_back(std::make_shared<commands::batches::DeleteCommandData>
+				result.session_commands.push_back(std::make_shared<commands::batches::DeleteCommandData>
 					(doc_info->id, change_vector));
 			}
 		}
@@ -867,7 +867,7 @@ namespace ravendb::client::documents::session
 	void InMemoryDocumentSessionOperations::defer(const std::vector<std::shared_ptr<commands::batches::CommandDataBase>>& commands)
 	{
 		_deferred_commands.insert(_deferred_commands.end(), commands.begin(), commands.end());
-		for (auto command : commands)
+		for (auto& command : commands)
 		{
 			defer_internal(command);
 		}
@@ -885,10 +885,10 @@ namespace ravendb::client::documents::session
 
 	void InMemoryDocumentSessionOperations::add_command(std::shared_ptr<commands::batches::CommandDataBase> command)
 	{
-		_deferred_commands_map.insert({ in_memory_document_session_operations::IdTypeAndName
-			(command->get_id(), command->get_type(), command->get_name()), command });
-		_deferred_commands_map.insert({ in_memory_document_session_operations::IdTypeAndName
-			(command->get_id(), commands::batches::CommandType::CLIENT_ANY_COMMAND, {}), command });
+		_deferred_commands_map.insert_or_assign(in_memory_document_session_operations::IdTypeAndName
+			(command->get_id(), command->get_type(), command->get_name()), command);
+		_deferred_commands_map.insert_or_assign(in_memory_document_session_operations::IdTypeAndName
+			(command->get_id(), commands::batches::CommandType::CLIENT_ANY_COMMAND, {}), command);
 
 		switch (command->get_type())
 		{

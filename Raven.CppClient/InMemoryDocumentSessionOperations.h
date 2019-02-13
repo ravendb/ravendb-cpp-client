@@ -103,9 +103,9 @@ namespace ravendb::client::documents::session
 
 		struct  SaveChangesData
 		{
-			std::vector<std::shared_ptr<commands::batches::CommandDataBase>> deferred_commands{};
+			std::list<std::shared_ptr<commands::batches::CommandDataBase>> deferred_commands{};
 			std::unordered_map<in_memory_document_session_operations::IdTypeAndName, std::shared_ptr<commands::batches::CommandDataBase>> deferred_commands_map{};
-			std::vector< std::shared_ptr<commands::batches::CommandDataBase>> session_commands{};
+			std::list< std::shared_ptr<commands::batches::CommandDataBase>> session_commands{};
 			std::vector<std::shared_ptr<void>> entities{};
 			std::optional<commands::batches::BatchOptions> options{};
 
@@ -171,7 +171,7 @@ namespace ravendb::client::documents::session
 
 		std::reference_wrapper<DocumentStoreBase> _document_store;
 
-		std::vector<std::shared_ptr<commands::batches::CommandDataBase>> _deferred_commands{};
+		std::list<std::shared_ptr<commands::batches::CommandDataBase>> _deferred_commands{};
 
 		std::unordered_map<in_memory_document_session_operations::IdTypeAndName, std::shared_ptr<commands::batches::CommandDataBase>> 
 			_deferred_commands_map{};

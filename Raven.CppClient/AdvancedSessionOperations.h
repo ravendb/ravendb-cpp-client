@@ -175,6 +175,40 @@ namespace ravendb::client::documents::session
 			_session_impl->patch(id, path, value, update_from_json);
 		}
 
+		template<typename U>
+		void patch(const std::string& id, const std::string& path_to_array,
+			std::function<void(JavaScriptArray<U>&)> array_adder,
+			const DocumentInfo::EntityUpdater& update_from_json)
+		{
+			if (!update_from_json)
+			{
+				throw std::invalid_argument("'update_from_json' should have a target");
+			}
+			_session_impl->patch(id, path_to_array, array_adder, update_from_json);
+		}
+
+		template<typename T, typename U>
+		void patch(std::shared_ptr<T> entity, const std::string& path_to_array,
+			std::function<void(JavaScriptArray<U>&)> array_adder,
+			std::optional<DocumentInfo::EntityUpdater> update_from_json = {})
+		{
+			auto&& metadata = _session_impl->get_metadata_for(entity);
+			auto id = std::any_cast<std::string>(metadata->get_dictionary().at(constants::documents::metadata::ID));
+			patch(std::move(id), path_to_array, array_adder, update_from_json ? std::move(update_from_json).value() : DocumentInfo::default_entity_update<T>);
+		}
+
+		template<typename T, typename U>
+		void patch(const std::string& id, const std::string& path_to_array,
+			std::function<void(JavaScriptArray<U>&)> array_adder,
+			const DocumentInfo::EntityUpdater& update_from_json = DocumentInfo::default_entity_update<T>)
+		{
+			if (!update_from_json)
+			{
+				throw std::invalid_argument("'update_from_json' should have a target");
+			}
+			_session_impl->patch(id, path_to_array, array_adder, update_from_json);
+		}
+
 		template<typename V>
 		void patch(const std::string& id, const std::string& path, const V& value,
 			const DocumentInfo::EntityUpdater& update_from_json)

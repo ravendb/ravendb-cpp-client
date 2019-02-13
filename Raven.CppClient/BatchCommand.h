@@ -67,10 +67,10 @@ namespace ravendb::client::documents::commands::batches
 	public:
 		~BatchCommand() override = default;
 
-		BatchCommand(conventions::DocumentConventions conventions, std::vector<std::shared_ptr<CommandDataBase>> commands,
+		BatchCommand(conventions::DocumentConventions conventions, const std::list<std::shared_ptr<CommandDataBase>>& commands,
 			std::optional<BatchOptions> options = {}, session::TransactionMode mode = session::TransactionMode::SINGLE_NODE)
 			: _conventions(std::move(conventions))
-			, _commands(std::move(commands))
+			, _commands(commands.cbegin(), commands.cend())
 			//, _attachment_streams()
 			, _options(std::move(options))
 			, _mode(mode)

@@ -96,6 +96,28 @@ namespace ravendb::client::documents::session
 		}
 	}
 
+	void DocumentSessionImpl::patch_internal(const std::string& id,
+		const std::string& script, const std::unordered_map<std::string, nlohmann::json>& values,
+		const DocumentInfo::EntityUpdater& update_from_json)
+	{
+		if (auto doc_info_it = _documents_by_id.find(id);
+			doc_info_it != _documents_by_id.end() && !doc_info_it->second->update_from_json)
+		{
+			doc_info_it->second->update_from_json = update_from_json;
+		}
+
+		auto patch_request = documents::operations::PatchRequest();
+		patch_request.script = script;
+		patch_request.values = values;
+
+		if (!try_merge_patches(id, patch_request))
+		{
+			defer({ std::make_shared<commands::batches::PatchCommandData>(id, std::optional<std::string>(),
+				patch_request, std::optional<documents::operations::PatchRequest>()) });
+		}
+	}
+
+
 	void DocumentSessionImpl::increment_internal(const std::string& id, const std::string& path, const nlohmann::json& value_to_add,
 		const DocumentInfo::EntityUpdater& update_from_json)
 	{
@@ -137,7 +159,8 @@ namespace ravendb::client::documents::session
 		}else
 		{
 			command = command_it->second;
-			_deferred_commands.erase(std::find(_deferred_commands.cbegin(), _deferred_commands.cend(),command));
+			auto remove_it = std::find(_deferred_commands.cbegin(), _deferred_commands.cend(), command);
+			_deferred_commands.erase(remove_it);
 			// We'll overwrite the _deferred_commands_map when calling defer
 		}
 

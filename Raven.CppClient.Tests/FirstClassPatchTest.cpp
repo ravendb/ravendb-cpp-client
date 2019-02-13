@@ -1,5 +1,5 @@
 #include "pch.h"
-#define __USE_FIDDLER__
+//#define __USE_FIDDLER__
 #include "TestSuiteBase.h"
 #include "DocumentSession.h"
 #include "User.h"
@@ -268,7 +268,6 @@ namespace ravendb::client::tests::client
 		}
 	}
 
-	//TODO implement
 	TEST_F(FirstClassPatchTest, CanIncrement)
 	{
 		auto stuff = std::vector<first_class_patch_test::Stuff>(3);
@@ -353,7 +352,32 @@ namespace ravendb::client::tests::client
 			session.advanced().increment<first_class_patch_test::User>(first_class_patch_test::DOC_ID,
 				"Numbers[0]", 1);
 			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
-			//TODO continue
+
+			session.advanced().patch<first_class_patch_test::User, int32_t>(first_class_patch_test::DOC_ID,
+				"Numbers", [](documents::session::JavaScriptArray<int32_t>& arr)->void
+			{
+				arr.add(77);
+			});
+			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
+
+			session.advanced().patch<first_class_patch_test::User, int32_t>(first_class_patch_test::DOC_ID,
+				"Numbers", [](documents::session::JavaScriptArray<int32_t>& arr)->void
+			{
+				arr.add(88);
+			});
+			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
+
+			std::function<void(documents::session::JavaScriptArray<int32_t>&)> array_adder = []
+			(documents::session::JavaScriptArray<int32_t>& arr) -> void
+			{
+				arr.remove_at(1);
+			};
+
+			session.advanced().patch<first_class_patch_test::User>(first_class_patch_test::DOC_ID,
+				"Numbers", array_adder);
+			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
+
+			session.save_changes();
 		}
 	}
 	TEST_F(FirstClassPatchTest, CanUpdateSessionByPatch)
