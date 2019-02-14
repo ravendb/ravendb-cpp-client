@@ -37,6 +37,7 @@ namespace ravendb::client::impl
 
 	public:
 		CurlHandlesHolder() = default;
+
 		~CurlHandlesHolder() = default;
 
 		class ReturnCurl
@@ -44,12 +45,10 @@ namespace ravendb::client::impl
 			friend CurlHandlesHolder;
 		private:
 			CurlHandleUniquePtr _curl;
+
 			CurlHandlesHolder* _holder;
 
-			ReturnCurl(CurlHandleUniquePtr curl, CurlHandlesHolder& h)
-				: _curl(std::move(curl))
-				, _holder(&h)
-			{}
+			ReturnCurl(CurlHandleUniquePtr curl, CurlHandlesHolder& h);
 
 		public:
 			ReturnCurl(const ReturnCurl& other) = delete;

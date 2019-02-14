@@ -25,6 +25,11 @@ namespace ravendb::client::impl
 		_curl_handles.push(std::move(curl));
 	}
 
+	CurlHandlesHolder::ReturnCurl::ReturnCurl(CurlHandleUniquePtr curl, CurlHandlesHolder& h)
+		: _curl(std::move(curl))
+		, _holder(&h)
+	{}
+
 	CurlHandlesHolder::ReturnCurl::~ReturnCurl()
 	{
 		curl_easy_reset(this->get());

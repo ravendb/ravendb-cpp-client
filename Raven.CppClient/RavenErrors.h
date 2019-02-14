@@ -7,23 +7,24 @@ namespace ravendb::client
 	public:
 		enum class ErrorType : uint8_t
 		{
-			generic,
-			database_does_not_exist,
-			bad_url,
-			internal_server_error,
-			service_not_available,
-			unexpected_response,
-			invalid_response,
+			GENERIC,
+			DATABASE_DOES_NOT_EXIST,
+			BAD_URL,
+			INTERNAL_SERVER_ERROR,
+			SERVICE_NOT_AVAILABLE,
+			UNEXPECTED_RESPONSE,
+			INVALID_RESPONSE,
 		};
 	private:
-		ErrorType _error_type = ErrorType::generic;
+		ErrorType _error_type = ErrorType::GENERIC;
 
 	public:
-		RavenError(const std::string& what_arg, ErrorType error_type = ErrorType::generic)
+		RavenError(const std::string& what_arg, ErrorType error_type = ErrorType::GENERIC)
 			: std::runtime_error(what_arg)
 			, _error_type(error_type)
 		{}
-		RavenError(const char* what_arg, ErrorType error_type = ErrorType::generic)
+
+		RavenError(const char* what_arg, ErrorType error_type = ErrorType::GENERIC)
 			: std::runtime_error(what_arg)
 			, _error_type(error_type)
 		{}

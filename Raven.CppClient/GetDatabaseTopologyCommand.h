@@ -1,40 +1,25 @@
 #pragma once
-#include "stdafx.h"
 #include "RavenCommand.h"
-#include  "Topology.h"
-#include "ServerNode.h"
+#include "Topology.h"
 
-using 
-	ravendb::client::http::RavenCommand,
-	ravendb::client::http::Topology,
-	ravendb::client::http::ServerNode;
+namespace ravendb::client::http
+{
+	struct ServerNode;
+}
 
 namespace ravendb::client::serverwide::commands
 {
-	class GetDatabaseTopologyCommand :public RavenCommand<Topology>
+	class GetDatabaseTopologyCommand :public http::RavenCommand<http::Topology>
 	{
 	public:
+		~GetDatabaseTopologyCommand() override;
 
-		~GetDatabaseTopologyCommand() override = default;
-		GetDatabaseTopologyCommand() = default;
+		GetDatabaseTopologyCommand();
 
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
-		{
-			std::ostringstream urlBuilder;
-			urlBuilder << node.url << "/topology?name=" << node.database;
+		void create_request(CURL* curl, const http::ServerNode& node, std::string& url) override;
 
-			curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override;
 
-			url = urlBuilder.str();
-		}
-		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
-		{
-			_result = response;
-		}
-
-		bool is_read_request() const noexcept override
-		{
-			return true;
-		}
+		bool is_read_request() const noexcept override;
 	};
 }

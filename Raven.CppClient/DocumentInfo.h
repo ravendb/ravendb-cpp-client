@@ -3,7 +3,6 @@
 #include "Constants.h"
 #include "IMetadataDictionary.h"
 
-
 namespace ravendb::client::documents::session
 {
 	struct DocumentInfo

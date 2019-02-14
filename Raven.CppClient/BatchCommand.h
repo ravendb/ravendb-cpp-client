@@ -34,7 +34,7 @@ namespace ravendb::client::documents::commands::batches
 			if(_options->replication_options)
 			{
 				path_builder << "&waitForReplicasTimeout=" <<
-					impl::utils::millis_to_timespan(_options->replication_options->wait_for_replicas_timeout);
+					impl::utils::MillisToTimeSpanConverter(_options->replication_options->wait_for_replicas_timeout);
 				if(_options->replication_options->throw_on_timeout_in_wait_for_replicas)
 				{
 					path_builder << "&throwOnTimeoutInWaitForReplicas=true";
@@ -46,7 +46,7 @@ namespace ravendb::client::documents::commands::batches
 			if (_options->index_options)
 			{
 				path_builder << "&waitForIndexesTimeout=" <<
-					impl::utils::millis_to_timespan(_options->index_options->wait_for_indexes_timeout);
+					impl::utils::MillisToTimeSpanConverter(_options->index_options->wait_for_indexes_timeout);
 				if (_options->index_options->throw_on_timeout_in_wait_for_indexes)
 				{
 					path_builder << "&waitForIndexThrow=true";
@@ -111,7 +111,7 @@ namespace ravendb::client::documents::commands::batches
 
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 		{
-			_result = response;
+			_result = response.get<decltype(_result)>();
 		}
 
 		bool is_read_request() const noexcept override

@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "re_definitions.h"
-
 #include "User.h"
 #include "GetDocumentsCommand.h"
 #include "PutDocumentCommand.h"
@@ -18,6 +17,11 @@ namespace ravendb::client::tests
 		static void SetUpTestCase()
 		{
 			test_suite_executor = definitions::GET_SECURED_REQUEST_EXECUTOR();
+		}
+
+		static void TearDownTestCase()
+		{
+			test_suite_executor.reset();
 		}
 
 		void SetUp() override//create sample document
@@ -42,7 +46,7 @@ namespace ravendb::client::tests
 		}
 	};
 
-	const infrastructure::entities::User SecuredRequestExecutorTests::example_user{ "users/1-A", "Alexander", "Timoshenko", "Israel", 0, 38 };
+	const infrastructure::entities::User SecuredRequestExecutorTests::example_user{ "users/1", "Alexander", "Timoshenko", "Israel", 0, 38 };
 
 
 	TEST_F(SecuredRequestExecutorTests, CanGetDocument)

@@ -54,7 +54,7 @@ namespace ravendb::client::documents::commands::batches
 				set_val_to_json(j, "ReturnDocument", return_document);
 			}
 
-			return std::move(j);
+			return j;
 		}
 
 		void on_before_save_changes(session::InMemoryDocumentSessionOperations& session) override

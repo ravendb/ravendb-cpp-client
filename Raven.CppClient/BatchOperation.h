@@ -1,5 +1,5 @@
 #pragma once
-#include "utils.h"
+#include "CompareStringsIgnoreCase.h"
 
 namespace ravendb::client
 {

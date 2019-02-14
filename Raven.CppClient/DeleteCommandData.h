@@ -27,7 +27,7 @@ namespace ravendb::client::documents::commands::batches
 
 			serialize_extra_fields(j);
 
-			return std::move(j);
+			return j;
 		}
 
 		virtual void serialize_extra_fields(nlohmann::json& json) const

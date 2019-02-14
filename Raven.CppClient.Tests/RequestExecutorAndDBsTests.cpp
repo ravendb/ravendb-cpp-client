@@ -5,6 +5,7 @@
 #include "GetDatabaseNamesOperation.h"
 #include "GetDocumentsCommand.h"
 #include "DeleteDatabasesOperation.h"
+#include "DocumentConventions.h"
 
 namespace ravendb::client::tests
 {
@@ -41,7 +42,7 @@ namespace ravendb::client::tests
 		}
 		catch (RavenError& exception)
 		{
-			ASSERT_EQ(exception.get_error_type(), RavenError::ErrorType::database_does_not_exist);
+			ASSERT_EQ(exception.get_error_type(), RavenError::ErrorType::DATABASE_DOES_NOT_EXIST);
 			SUCCEED();
 			return;
 		}

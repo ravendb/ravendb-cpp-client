@@ -61,7 +61,7 @@ namespace ravendb::client::documents::operations::indexes
 					! impl::utils::json_utils::get_val_from_json(response, "Results", results) ||
 					results.size() != 1 )
 				{
-					throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::invalid_response);
+					throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::INVALID_RESPONSE);
 				}
 				else
 				{

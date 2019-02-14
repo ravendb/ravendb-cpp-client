@@ -32,7 +32,7 @@ namespace ravendb::client::documents::commands::batches
 			set_val_to_json(j, "Document", _document);
 			set_val_to_json(j, "Type", "PUT");
 			
-			return std::move(j);
+			return j;
 		}
 
 		void on_before_save_changes(session::InMemoryDocumentSessionOperations& session) override

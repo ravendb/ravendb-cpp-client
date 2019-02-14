@@ -1,5 +1,9 @@
 #pragma once
-#include "utils.h"
+
+namespace ravendb::client::impl::utils
+{
+	struct CompareStringsIgnoreCase;
+}
 
 namespace ravendb::client::documents::session
 {

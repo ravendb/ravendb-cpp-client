@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 #include "RavenCommand.h"
 
 namespace ravendb::client::http
@@ -9,24 +8,31 @@ namespace ravendb::client::http
 	class VoidRavenCommand : public VoidRavenCommandBase
 	{
 	protected:
-		VoidRavenCommand()
-		{
-			this->_response_type = RavenCommandResponseType::EMPTY;
-		}
+		VoidRavenCommand();
 
 	public:
 		~VoidRavenCommand() override = 0;
 
-		bool is_read_request() const noexcept override
-		{
-			return false;
-		}
+		bool is_read_request() const noexcept override;
 
-		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
-		{
-			_result = nullptr;
-		}
+		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override;
 	};
+
+	inline VoidRavenCommand::VoidRavenCommand()
+	{
+		this->_response_type = RavenCommandResponseType::EMPTY;
+	}
+
 	inline VoidRavenCommand::~VoidRavenCommand() = default;
+
+	inline bool VoidRavenCommand::is_read_request() const noexcept
+	{
+		return false;
+	}
+
+	inline void VoidRavenCommand::set_response(CURL * curl, const nlohmann::json & response, bool from_cache)
+	{
+		_result = nullptr;
+	}
 }
 

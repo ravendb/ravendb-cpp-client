@@ -79,7 +79,7 @@ namespace ravendb::client::documents::operations
 				path_builder << "&details=" << std::boolalpha << _options.retrieve_details;
 				if (_options.stale_timeout)
 				{
-					path_builder << "&staleTimeout=" << impl::utils::millis_to_timespan(*_options.stale_timeout);
+					path_builder << "&staleTimeout=" << impl::utils::MillisToTimeSpanConverter(*_options.stale_timeout);
 				}
 				
 				curl_easy_setopt(curl, CURLOPT_READFUNCTION, impl::utils::read_callback);
