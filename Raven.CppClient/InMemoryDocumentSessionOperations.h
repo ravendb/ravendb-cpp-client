@@ -10,6 +10,7 @@
 #include "utils.h"
 #include "DateTimeOffset.h"
 #include "OperationExecutor.h"
+#include "ILazyOperation.h"
 
 namespace ravendb::client
 {
@@ -51,6 +52,11 @@ namespace ravendb::client
 			{
 				class LoadOperation;
 				class BatchOperation;
+
+				namespace lazy
+				{
+					struct ILazyOperation;
+				}
 			}
 		}
 		namespace operations
@@ -149,6 +155,10 @@ namespace ravendb::client::documents::session
 		const int32_t _client_session_id;
 
 		const std::shared_ptr<http::RequestExecutor> _request_executor{};
+
+		std::vector<std::shared_ptr<operations::lazy::ILazyOperation>> _pending_lazy_operations{};
+
+		std::unordered_map<std::shared_ptr<operations::lazy::ILazyOperation>, std::function<void()>> _on_evaluate_lazy{};
 
 		const bool _generate_document_keys_on_store = true;
 

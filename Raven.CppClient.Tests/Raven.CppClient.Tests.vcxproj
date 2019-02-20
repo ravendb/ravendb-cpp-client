@@ -68,6 +68,7 @@
     <ClCompile Include="DeleteTest.cpp" />
     <ClCompile Include="ds_definitions.cpp" />
     <ClCompile Include="HttpsTest.cpp" />
+    <ClCompile Include="LazyTest.cpp" />
     <ClCompile Include="LoadTest.cpp" />
     <ClCompile Include="LoadTests.cpp" />
     <ClCompile Include="re_definitions.cpp" />

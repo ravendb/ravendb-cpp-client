@@ -2,17 +2,37 @@
 #include "InMemoryDocumentSessionOperations.h"
 #include "DocumentsByIdsMap.h"
 #include "LoadOperation.h"
+#include "RawDocumentQuery.h"
+#include "JavaScriptArray.h"
+#include "ResponseTimeInformation.h"
+#include "Lazy.h"
+#include "LazyLoadOperation.h"
 
-namespace ravendb::client::documents::session
+namespace ravendb::client::documents
 {
-	namespace loaders
+	namespace session::loaders
 	{
 		class LoaderWithInclude;
 	}
+	namespace operations
+	{
+		struct PatchRequest;
+	}
 
+	namespace session::operations::lazy
+	{
+		class LazySessionOperations;
+	}
+}
+
+namespace ravendb::client::documents::session
+{
 	class DocumentSessionImpl : public InMemoryDocumentSessionOperations
 	{
 	private:
+		int32_t _vals_count{};
+		int32_t _custom_count{};
+
 		operations::LoadOperation load_impl(const std::string& id);
 
 		operations::LoadOperation load_impl(const std::vector<std::reference_wrapper<const std::string>>& ids);
@@ -23,12 +43,48 @@ namespace ravendb::client::documents::session
 		void load_internal(const std::vector<std::reference_wrapper<const std::string>>& ids,
 			operations::LoadOperation& operation);
 
+		void patch_internal(const std::string& id, const std::string& path, const nlohmann::json& value,
+			const DocumentInfo::EntityUpdater& update_from_json);
+
+		void patch_internal(const std::string& id, const std::string& script,
+			const std::unordered_map<std::string, nlohmann::json>& values,
+			const DocumentInfo::EntityUpdater& update_from_json);
+
+		void increment_internal(const std::string& id, const std::string& path, const nlohmann::json& value_to_add,
+			const DocumentInfo::EntityUpdater& update_from_json);
+
+		bool try_merge_patches(const std::string& id, const documents::operations::PatchRequest& patch_request);
+
+		//return value = should retry
+		bool execute_lazy_operations_single_step(ResponseTimeInformation& response_time_information,
+			const std::vector<commands::multi_get::GetRequest>& requests);
+
 	public:
-		~DocumentSessionImpl() override = default;
+		~DocumentSessionImpl() override;
 
 		DocumentSessionImpl(DocumentStoreBase& document_store,/* UUID id,*/ SessionOptions options);
 
+		operations::lazy::LazySessionOperations lazily();
+
 		loaders::LoaderWithInclude include(const std::string& path);
+
+		//TODO add custom (de)serializers to/from json
+		template<typename T>
+		Lazy<T> add_lazy_operation(std::shared_ptr<operations::lazy::ILazyOperation> operation,
+			std::function<T(std::shared_ptr<operations::lazy::ILazyOperation>)>
+			get_operation_result,
+			std::function<void()> on_eval);
+
+		ResponseTimeInformation execute_all_pending_lazy_operations();
+
+		//TODO use custom FromJsonConverter/ToJsonConverter
+		template<typename T>
+		Lazy<DocumentsByIdsMap<T>> lazy_load_internal(
+			const std::vector<std::reference_wrapper<const std::string>>& ref_ids,
+			const std::vector<std::string>& includes,
+			std::optional<std::function<void(const DocumentsByIdsMap<T>&)>> on_eval = {},
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {});
 
 		template <typename T>
 		DocumentsByIdsMap<T> load_internal(const std::vector<std::reference_wrapper<const std::string>>& ids,
@@ -50,7 +106,89 @@ namespace ravendb::client::documents::session
 		bool exists(const std::string& id);
 
 		void save_changes();
+
+		std::shared_ptr<RawDocumentQuery> raw_query(const std::string& query);
+
+		template<typename T>
+		void patch(const std::string& id, const std::string& path, const T& value,
+			const DocumentInfo::EntityUpdater& update_from_json);
+
+		template<typename T>
+		void patch(const std::string& id, const std::string& path_to_array, 
+			std::function<void(JavaScriptArray<T>&)> array_adder,
+			const DocumentInfo::EntityUpdater& update_from_json);
+
+		template<typename T>
+		void increment(const std::string& id, const std::string& path, const T& value_to_add,
+			const DocumentInfo::EntityUpdater& update_from_json);
 	};
+
+	template <typename T>
+	Lazy<T> DocumentSessionImpl::add_lazy_operation(std::shared_ptr<operations::lazy::ILazyOperation> operation,
+		std::function<T(std::shared_ptr<operations::lazy::ILazyOperation>)> get_operation_result,
+		 std::function<void()> on_eval)
+	{
+		if (!get_operation_result)
+		{
+			throw std::invalid_argument("'get_operation_result' should have a target");
+		}
+
+		_pending_lazy_operations.push_back(operation);
+
+		auto lazy_value = Lazy<T>([this,get_operation_result,operation]()
+		{
+			execute_all_pending_lazy_operations();
+			return get_operation_result(operation);
+		});
+
+		_on_evaluate_lazy.insert_or_assign(operation, on_eval);
+
+		return std::move(lazy_value);
+	}
+
+	template<typename T>
+	Lazy<DocumentsByIdsMap<T>> DocumentSessionImpl::lazy_load_internal(
+		const std::vector<std::reference_wrapper<const std::string>>& ref_ids,
+		const std::vector<std::string>& includes,
+		std::optional<std::function<void(const DocumentsByIdsMap<T>&)>> on_eval,
+		const std::optional<DocumentInfo::FromJsonConverter>& from_json,
+		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
+	{
+		std::vector<std::string> ids{};
+		std::transform(ref_ids.begin(), ref_ids.end(), std::back_inserter(ids), []
+		(const std::reference_wrapper<const std::string>& id)
+		{
+			return id.get();
+		});
+
+		if (check_if_already_included(ids, includes))
+		{
+			return Lazy<DocumentsByIdsMap<T>>([this, ids = ids, from_json, to_json]()
+			{
+				return load<T>(ids.begin(), ids.end(), from_json, to_json);
+			});
+		}
+
+		auto load_operation = std::make_unique<operations::LoadOperation>(*this);
+		load_operation->by_ids(ref_ids).with_includes(includes);
+
+		auto lazy_load_operation = std::make_shared<operations::lazy::LazyLoadOperation<T>>(*this, std::move(load_operation));
+		lazy_load_operation->by_ids(ids).with_includes(includes);
+
+		auto get_operation_result = [](std::shared_ptr<operations::lazy::ILazyOperation> operation)->DocumentsByIdsMap<T>
+		{
+			auto lazy_load_op = std::static_pointer_cast<operations::lazy::LazyLoadOperation<T>>(operation);
+
+			return lazy_load_op->get_result();
+		};
+
+		return this->add_lazy_operation<DocumentsByIdsMap<T>>(lazy_load_operation,
+			get_operation_result, [=]()
+		{
+			if (on_eval)
+				(*on_eval)(get_operation_result(std::static_pointer_cast<operations::lazy::ILazyOperation>(lazy_load_operation)));
+		});
+	}
 
 	template <typename T>
 	DocumentsByIdsMap<T> DocumentSessionImpl::load_internal(
@@ -83,4 +221,42 @@ namespace ravendb::client::documents::session
 		return load_impl(ids).get_documents<T>(from_json, to_json);
 	}
 
+	template <typename T>
+	void DocumentSessionImpl::patch(const std::string& id, const std::string& path, const T& value,
+		const DocumentInfo::EntityUpdater& update_from_json)
+	{
+		if(!update_from_json)
+		{
+			throw std::invalid_argument("'update_from_json' should have a target");
+		}
+		patch_internal(id, path, nlohmann::json(value), update_from_json);
+	}
+
+	template <typename T>
+	void DocumentSessionImpl::patch(const std::string& id, const std::string& path_to_array,
+		std::function<void(JavaScriptArray<T>&)> array_adder,
+		const DocumentInfo::EntityUpdater& update_from_json)
+	{
+		if (!update_from_json)
+		{
+			throw std::invalid_argument("'update_from_json' should have a target");
+		}
+
+		auto script_array = JavaScriptArray<T>(_custom_count++, path_to_array);
+		array_adder(script_array);
+
+		patch_internal(id, script_array.get_script(), script_array.get_parameters(), update_from_json);
+	}
+
+
+	template <typename T>
+	void DocumentSessionImpl::increment(const std::string& id, const std::string& path, const T& value_to_add,
+		const DocumentInfo::EntityUpdater& update_from_json)
+	{
+		if (!update_from_json)
+		{
+			throw std::invalid_argument("'update_from_json' should have a target");
+		}
+		increment_internal(id, path, nlohmann::json(value_to_add), update_from_json);
+	}
 }

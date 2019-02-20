@@ -2,6 +2,7 @@
 //#define __USE_FIDDLER__
 #include "TestSuiteBase.h"
 #include "DocumentSession.h"
+#include "AdvancedSessionOperations.h"
 #include "RequestExecutor.h"
 #include "User.h"
 #include "Family.h"

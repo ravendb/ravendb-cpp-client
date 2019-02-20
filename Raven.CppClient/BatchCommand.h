@@ -86,7 +86,7 @@ namespace ravendb::client::documents::commands::batches
 			impl::utils::json_utils::set_val_to_json(request_entity, "Commands", serialized_commands);
 			if (_mode == session::TransactionMode::CLUSTER_WIDE)
 			{
-				request_entity["TransactionMode"] = "ClusterWide";
+				impl::utils::json_utils::set_val_to_json(request_entity, "TransactionMode", "ClusterWide");
 			}
 			return request_entity.dump();
 		}())
