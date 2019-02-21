@@ -2,6 +2,7 @@
 #include "InMemoryDocumentSessionOperations.h"
 #include "DocumentsByIdsMap.h"
 #include "LoadOperation.h"
+#include "RawDocumentQuery.h"
 
 namespace ravendb::client::documents::session
 {
@@ -50,6 +51,11 @@ namespace ravendb::client::documents::session
 		bool exists(const std::string& id);
 
 		void save_changes();
+
+		std::shared_ptr<RawDocumentQuery> raw_query(const std::string& query)
+		{
+			return RawDocumentQuery::create(*this, query);
+		}
 	};
 
 	template <typename T>

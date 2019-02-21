@@ -17,6 +17,7 @@ namespace ravendb::client::tests::infrastructure
 		void TearDown() override
 		{
 			utils::delete_all_documents(test_suite_store);
+			utils::delete_all_indexes(test_suite_store);
 		}
 	};
 }

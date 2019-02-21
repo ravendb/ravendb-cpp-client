@@ -149,5 +149,10 @@ namespace ravendb::client::documents::session
 		{
 			return _session_impl->get_entity_to_json();
 		}
+
+		std::shared_ptr<RawDocumentQuery> raw_query(const std::string& query)
+		{
+			return _session_impl->raw_query(query);
+		}
 	};
 }

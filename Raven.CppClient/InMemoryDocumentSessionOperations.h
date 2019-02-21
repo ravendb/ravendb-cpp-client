@@ -152,7 +152,7 @@ namespace ravendb::client::documents::session
 
 		const bool _generate_document_keys_on_store = true;
 
-		SessionInfo _sessionInfo;
+		SessionInfo _session_info;
 
 		commands::batches::BatchOptions _save_changes_options{};
 

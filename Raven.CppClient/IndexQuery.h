@@ -6,8 +6,6 @@ namespace ravendb::client::documents::queries
 {
 	struct IndexQuery : IndexQueryBase<Parameters>
 	{
-		~IndexQuery() override = default;
-
 		bool skip_duplicate_checking = false;
 
 		bool explain_scores = false;
