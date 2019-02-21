@@ -10,13 +10,15 @@ namespace ravendb::client::documents::commands::batches
 {
 	class CommandDataBase
 	{
-	protected:
+	private:
 		std::string id{};
 		std::string name{};
 		std::string change_vector{};
 		CommandType type = CommandType::UNSET;
 
+	protected:
 		CommandDataBase() = default;
+
 		CommandDataBase(std::string id_, std::string name_, std::string change_vector_, CommandType type_)
 			: id(std::move(id_))
 			, name(std::move(name_))

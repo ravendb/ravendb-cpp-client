@@ -35,6 +35,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Microsoft-googletest-v140-windesktop-msvcstl-static-rt-dyn-Disable-gtest_main>
     </Microsoft-googletest-v140-windesktop-msvcstl-static-rt-dyn-Disable-gtest_main>
+    <IncludePath>C:\work\raven-cpp-client;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="Address.h" />
@@ -67,6 +68,7 @@
     <ClCompile Include="CrudTest.cpp" />
     <ClCompile Include="DeleteTest.cpp" />
     <ClCompile Include="ds_definitions.cpp" />
+    <ClCompile Include="FirstClassPatchTest.cpp" />
     <ClCompile Include="HttpsTest.cpp" />
     <ClCompile Include="LoadTest.cpp" />
     <ClCompile Include="LoadTests.cpp" />

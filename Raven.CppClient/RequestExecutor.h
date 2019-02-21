@@ -5,6 +5,7 @@
 #include "RavenCommand.h"
 #include "utils.h"
 #include "CertificateDetails.h"
+#include "RavenErrors.h"
 
 namespace ravendb::client::http
 {
@@ -25,87 +26,7 @@ namespace ravendb::client::http
 
 		//TODO move the non-template part out 
 		template<typename TResult>
-		TResult execute_internal(ServerNode& node, RavenCommand<TResult>& cmd)
-		{
-			char error_buffer[CURL_ERROR_SIZE] = { '\0' };
-			std::string output_buffer;
-			std::map<std::string, std::string> headers;
-			auto return_curl = _curl_holder.checkout_curl();
-			auto curl = return_curl.get();
-
-			std::string url;
-			cmd.create_request(curl, node, url);
-
-			curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-			curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, error_buffer);
-			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ravendb::client::impl::utils::push_to_buffer);
-			curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output_buffer);
-			curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, ravendb::client::impl::utils::push_headers);
-			curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headers);
-			if(_certificate_details)//using certificate
-			{
-				curl_easy_setopt(curl, CURLOPT_SSL_CTX_FUNCTION, ravendb::client::impl::utils::sslctx_function);
-				curl_easy_setopt(curl, CURLOPT_SSL_CTX_DATA, &_certificate_details);
-			}
-
-			if (_set_before_perform)
-			{
-				_set_before_perform(curl);
-			}
-			auto res = curl_easy_perform(curl);
-
-			long statusCode;
-			curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode);
-
-			if (res != CURLE_OK)
-			{
-				std::ostringstream error_builder;
-				error_builder << "Failed request to: "
-					<< url
-					<< ", status code: "
-					<< std::to_string(statusCode)
-					<< "\n"
-					<< error_buffer
-					<< "\n";
-
-				throw RavenError(error_builder.str(), RavenError::ErrorType::generic);
-			}
-			if(_set_after_perform)
-			{
-				_set_after_perform(curl);
-			}
-
-			cmd.status_code = statusCode;
-			switch (statusCode)
-			{
-				case 200:
-				case 201:
-				{
-					auto result = nlohmann::json::parse(output_buffer);
-					cmd.set_response(curl, result, false);
-					break;
-				}
-				case 204:
-					break;
-				case 304:
-					break;
-				case 404:
-					cmd.set_response_not_found(curl);
-					break;
-				case 503:
-					if (headers.find("Database-Missing") != headers.end())
-					{
-						throw RavenError(output_buffer, RavenError::ErrorType::database_does_not_exist);
-					}
-					throw RavenError(output_buffer, RavenError::ErrorType::service_not_available);
-				case 500:
-					throw RavenError(output_buffer, RavenError::ErrorType::internal_server_error);
-				default:
-					throw RavenError(output_buffer, RavenError::ErrorType::unexpected_response);
-			}
-
-			return cmd.get_result();
-		}
+		TResult execute_internal(ServerNode& node, RavenCommand<TResult>& cmd);
 
 		RequestExecutor(
 			std::string db_name,
@@ -123,34 +44,7 @@ namespace ravendb::client::http
 		RequestExecutor& operator=(RequestExecutor&& other) = delete;
 
 		template<typename Result_t>
-		Result_t execute(RavenCommand<Result_t>& cmd)
-		{
-			std::optional<std::ostringstream> errors;
-
-			std::shared_ptr<Topology> topology_local = std::atomic_load(&_topology);
-
-			for (auto& node : topology_local->nodes)
-			{
-				try
-				{
-					 return execute_internal(node, cmd);
-				}
-				catch (RavenError& re)
-				{
-					if(! errors)
-					{
-						errors.emplace();
-					}
-					errors.value() << re.what() << '\n';
-					if (re.get_error_type() == RavenError::ErrorType::database_does_not_exist)
-					{
-						throw RavenError(errors->str(), RavenError::ErrorType::database_does_not_exist);
-					}
-					continue;
-				}
-			}
-			throw RavenError(errors->str(), RavenError::ErrorType::generic);
-		}
+		Result_t execute(RavenCommand<Result_t>& cmd);
 
 		template<typename TResult>
 		TResult execute(std::unique_ptr<RavenCommand<TResult>> cmd_ptr)
@@ -165,4 +59,116 @@ namespace ravendb::client::http
 			ravendb::client::impl::CurlOptionsSetter set_before_perform = {},
 			ravendb::client::impl::CurlOptionsSetter set_after_perform = {});
 	};
+
+	template<typename TResult>
+	TResult RequestExecutor::execute_internal(ServerNode & node, RavenCommand<TResult>& cmd)
+	{
+		char error_buffer[CURL_ERROR_SIZE] = { '\0' };
+		std::string output_buffer;
+		std::map<std::string, std::string> headers;
+		auto return_curl = _curl_holder.checkout_curl();
+		auto curl = return_curl.get();
+
+		std::string url;
+		cmd.create_request(curl, node, url);
+
+		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, error_buffer);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, ravendb::client::impl::utils::push_to_buffer);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output_buffer);
+		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, ravendb::client::impl::utils::push_headers);
+		curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headers);
+		if (_certificate_details)//using certificate
+		{
+			curl_easy_setopt(curl, CURLOPT_SSL_CTX_FUNCTION, ravendb::client::impl::utils::sslctx_function);
+			curl_easy_setopt(curl, CURLOPT_SSL_CTX_DATA, &_certificate_details);
+		}
+
+		if (_set_before_perform)
+		{
+			_set_before_perform(curl);
+		}
+		auto res = curl_easy_perform(curl);
+
+		long statusCode;
+		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode);
+
+		if (res != CURLE_OK)
+		{
+			std::ostringstream error_builder;
+			error_builder << "Failed request to: "
+				<< url
+				<< ", status code: "
+				<< std::to_string(statusCode)
+				<< "\n"
+				<< error_buffer
+				<< "\n";
+
+			throw RavenError(error_builder.str(), RavenError::ErrorType::GENERIC);
+		}
+		if (_set_after_perform)
+		{
+			_set_after_perform(curl);
+		}
+
+		cmd.status_code = statusCode;
+		switch (statusCode)
+		{
+		case 200:
+		case 201:
+		{
+			auto result = nlohmann::json::parse(output_buffer);
+			cmd.set_response(curl, result, false);
+			break;
+		}
+		case 204:
+			break;
+		case 304:
+			break;
+		case 404:
+			cmd.set_response_not_found(curl);
+			break;
+		case 503:
+			if (headers.find("Database-Missing") != headers.end())
+			{
+				throw RavenError(output_buffer, RavenError::ErrorType::DATABASE_DOES_NOT_EXIST);
+			}
+			throw RavenError(output_buffer, RavenError::ErrorType::SERVICE_NOT_AVAILABLE);
+		case 500:
+			throw RavenError(output_buffer, RavenError::ErrorType::INTERNAL_SERVER_ERROR);
+		default:
+			throw RavenError(output_buffer, RavenError::ErrorType::UNEXPECTED_RESPONSE);
+		}
+
+		return cmd.get_result();
+	}
+	template<typename TResult>
+	TResult RequestExecutor::execute(RavenCommand<TResult>& cmd)
+	{
+		std::optional<std::ostringstream> errors;
+
+		std::shared_ptr<Topology> topology_local = std::atomic_load(&_topology);
+
+		for (auto& node : topology_local->nodes)
+		{
+			try
+			{
+				return execute_internal(node, cmd);
+			}
+			catch (RavenError& re)
+			{
+				if (!errors)
+				{
+					errors.emplace();
+				}
+				errors.value() << re.what() << '\n';
+				if (re.get_error_type() == RavenError::ErrorType::DATABASE_DOES_NOT_EXIST)
+				{
+					throw RavenError(errors->str(), RavenError::ErrorType::DATABASE_DOES_NOT_EXIST);
+				}
+				continue;
+			}
+		}
+		throw RavenError(errors->str(), RavenError::ErrorType::GENERIC);
+	}
 }

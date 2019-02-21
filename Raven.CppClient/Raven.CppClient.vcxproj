@@ -151,8 +151,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp" />
     <ClInclude Include="..\..\xxhash_cpp\xxhash\xxhash.hpp" />
+    <ClInclude Include="..\json.hpp" />
     <ClInclude Include="AbstractDocumentQuery.h" />
     <ClInclude Include="BatchCommand.h" />
     <ClInclude Include="BatchCommandResult.h" />
@@ -161,11 +161,13 @@
     <ClInclude Include="CertificateDetails.h" />
     <ClInclude Include="CommandDataBase.h" />
     <ClInclude Include="CommandType.h" />
+    <ClInclude Include="CompareStringsIgnoreCase.h" />
+    <ClInclude Include="MillisToTimespanConverter.h" />
     <ClInclude Include="ConcurrencyCheckMode.h" />
     <ClInclude Include="ConflictSolver.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="CreateDatabaseOperation.h" />
-    <ClInclude Include="CurslSListHolder.h" />
+    <ClInclude Include="CurlSListHolder.h" />
     <ClInclude Include="DatabasePromotionStatus.h" />
     <ClInclude Include="DatabasePutResult.h" />
     <ClInclude Include="DatabaseRecord.h" />
@@ -228,6 +230,7 @@
     <ClInclude Include="IOperation.h" />
     <ClInclude Include="IServerOperation.h" />
     <ClInclude Include="IVoidMaintenanceOperation.h" />
+    <ClInclude Include="JavaScriptArray.h" />
     <ClInclude Include="JsonOperation.h" />
     <ClInclude Include="json_utils.h" />
     <ClInclude Include="Lazy.h" />
@@ -242,6 +245,7 @@
     <ClInclude Include="OperationIdResult.h" />
     <ClInclude Include="Parameters.h" />
     <ClInclude Include="PatchByQueryOperation.h" />
+    <ClInclude Include="PatchCommandData.h" />
     <ClInclude Include="PatchOperation.h" />
     <ClInclude Include="PatchRequest.h" />
     <ClInclude Include="PatchResult.h" />
@@ -296,19 +300,39 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbstractDocumentQuery.cpp" />
+    <ClCompile Include="BatchCommandResult.cpp" />
     <ClCompile Include="BatchOperation.cpp" />
+    <ClCompile Include="ConflictSolver.cpp" />
+    <ClCompile Include="CreateDatabaseOperation.cpp" />
     <ClCompile Include="CurlHandlesHolder.cpp" />
     <ClInclude Include="CurlHandlesHolder.h" />
+    <ClCompile Include="CurlSListHolder.cpp" />
+    <ClCompile Include="DatabasePutResult.cpp" />
+    <ClCompile Include="DatabaseRecord.cpp" />
+    <ClCompile Include="DatabaseTopology.cpp" />
+    <ClCompile Include="DateTimeOffset.cpp" />
+    <ClCompile Include="DeleteDatabaseResult.cpp" />
+    <ClCompile Include="DeleteDatabasesOperation.cpp" />
     <ClCompile Include="DocumentSessionImpl.cpp" />
     <ClCompile Include="DocumentStore.cpp" />
     <ClCompile Include="DocumentStoreBase.cpp" />
     <ClCompile Include="EntityToJson.cpp" />
+    <ClCompile Include="FieldsToFetchToken.cpp" />
+    <ClCompile Include="GetDatabaseNamesOperation.cpp" />
+    <ClCompile Include="GetDatabaseRecordOperation.cpp" />
+    <ClCompile Include="GetDatabaseTopologyCommand.cpp" />
     <ClCompile Include="InMemoryDocumentSessionOperations.cpp" />
     <ClCompile Include="JsonOperation.cpp" />
+    <ClCompile Include="json_utils.cpp" />
+    <ClCompile Include="LeaderStamp.cpp" />
+    <ClCompile Include="MetadataAsDictionary.cpp" />
+    <ClCompile Include="MillisToTimespanConverter.cpp" />
     <ClCompile Include="MultiLoaderWithInclude.cpp" />
     <ClCompile Include="QueryOperation.cpp" />
     <ClCompile Include="QueryToken.cpp" />
     <ClCompile Include="RequestExecutor.cpp" />
+    <ClCompile Include="ScriptResolver.cpp" />
+    <ClCompile Include="ServerNode.cpp" />
     <ClCompile Include="SessionOperationExecutor.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -316,6 +340,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Topology.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

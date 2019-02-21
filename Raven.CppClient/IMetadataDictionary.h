@@ -13,6 +13,6 @@ namespace ravendb::client::documents::session
 
 		virtual bool insert(std::string key, std::any value) = 0;
 	};
-	inline IMetadataDictionary::~IMetadataDictionary() = default;
 
+	inline IMetadataDictionary::~IMetadataDictionary() = default;
 }

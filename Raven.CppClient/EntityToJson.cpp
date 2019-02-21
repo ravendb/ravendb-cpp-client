@@ -48,6 +48,22 @@ namespace ravendb::client::documents::session
 		}
 	}
 
+	void EntityToJson::populate_entity(std::shared_ptr<void> entity, const std::string& id, 
+		const nlohmann::json& document, const DocumentInfo::EntityUpdater& update_from_json)
+	{
+		if(!entity)
+		{
+			throw std::invalid_argument("entity cannot be null");
+		}
+
+		if(!update_from_json)
+		{
+			throw std::invalid_argument("update_from_json should have a target");
+		}
+
+		update_from_json(entity, document);
+	}
+
 	nlohmann::json EntityToJson::convert_entity_to_json(std::shared_ptr<void> entity, std::shared_ptr<DocumentInfo> doc_info,
 		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
 	{

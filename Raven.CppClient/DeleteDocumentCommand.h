@@ -1,5 +1,6 @@
 #pragma once
 #include "VoidRavenCommand.h"
+#include "utils.h"
 
 using
 	ravendb::client::http::VoidRavenCommand,

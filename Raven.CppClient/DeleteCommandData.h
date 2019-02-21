@@ -15,10 +15,10 @@ namespace ravendb::client::documents::commands::batches
 			using ravendb::client::impl::utils::json_utils::set_val_to_json;
 			nlohmann::json j{};
 
-			set_val_to_json(j, "Id", id);
-			if (!impl::utils::is_blank(change_vector))
+			set_val_to_json(j, "Id", get_id());
+			if (!impl::utils::is_blank(get_change_vector()))
 			{
-				set_val_to_json(j, "ChangeVector", change_vector);
+				set_val_to_json(j, "ChangeVector", get_change_vector());
 			}else
 			{
 				set_val_to_json(j, "ChangeVector", nullptr);
@@ -27,7 +27,7 @@ namespace ravendb::client::documents::commands::batches
 
 			serialize_extra_fields(j);
 
-			return std::move(j);
+			return j;
 		}
 
 		virtual void serialize_extra_fields(nlohmann::json& json) const

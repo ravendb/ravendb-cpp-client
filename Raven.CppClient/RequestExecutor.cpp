@@ -27,9 +27,9 @@ namespace ravendb::client::http
 			catch (RavenError& re)
 			{
 				errors << re.what() << '\n';
-				if (re.get_error_type() == RavenError::ErrorType::database_does_not_exist)
+				if (re.get_error_type() == RavenError::ErrorType::DATABASE_DOES_NOT_EXIST)
 				{
-					throw RavenError(errors.str(), RavenError::ErrorType::database_does_not_exist);
+					throw RavenError(errors.str(), RavenError::ErrorType::DATABASE_DOES_NOT_EXIST);
 				}
 				continue;
 			}
@@ -38,7 +38,7 @@ namespace ravendb::client::http
 			return;
 		}
 
-		throw RavenError(errors.str(), RavenError::ErrorType::generic);
+		throw RavenError(errors.str(), RavenError::ErrorType::GENERIC);
 	}
 
 	RequestExecutor::RequestExecutor(
@@ -69,13 +69,13 @@ namespace ravendb::client::http
 		const bool certificateHasHttps = _certificate_details.has_value();
 
 		if (_initial_urls.empty())
-			throw RavenError("No urls has been defined", RavenError::ErrorType::bad_url);
+			throw RavenError("No urls has been defined", RavenError::ErrorType::BAD_URL);
 
 		for (auto& url : _initial_urls)
 		{
 			if (url.empty())
 			{
-				throw RavenError("Empty url is not supported", RavenError::ErrorType::bad_url);
+				throw RavenError("Empty url is not supported", RavenError::ErrorType::BAD_URL);
 			}
 			if (url.back() == '/')
 			{
@@ -87,13 +87,13 @@ namespace ravendb::client::http
 				if (url.compare(0, 5, "https") != 0) // not a match
 				{
 					throw RavenError("Unable to use url '" + url + "', a certificate was specified, so url must use 'https' as the url scheme.",
-						RavenError::ErrorType::bad_url);
+						RavenError::ErrorType::BAD_URL);
 				}
 			}
 			else if (url.compare(0, 5, "http:") != 0) // not a match
 			{
 				throw RavenError("Unable to use url '" + url + "', a certificate was NOT specified, so url must use 'http' as the url scheme.",
-					RavenError::ErrorType::bad_url);
+					RavenError::ErrorType::BAD_URL);
 			}
 		}
 	}

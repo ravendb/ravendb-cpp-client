@@ -1,5 +1,7 @@
 #pragma once
 
+
+//TODO dispose of it in favor of std::function<T(void)>
 namespace ravendb::client::impl
 {
 	template<typename T>

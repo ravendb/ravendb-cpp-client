@@ -47,6 +47,69 @@
     <ClCompile Include="QueryToken.cpp">
       <Filter>ravendb.client\documents\session\tokens</Filter>
     </ClCompile>
+    <ClCompile Include="ConflictSolver.cpp">
+      <Filter>ravendb.client\serverwide</Filter>
+    </ClCompile>
+    <ClCompile Include="DatabaseRecord.cpp">
+      <Filter>ravendb.client\serverwide</Filter>
+    </ClCompile>
+    <ClCompile Include="DatabaseTopology.cpp">
+      <Filter>ravendb.client\serverwide</Filter>
+    </ClCompile>
+    <ClCompile Include="LeaderStamp.cpp">
+      <Filter>ravendb.client\serverwide</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptResolver.cpp">
+      <Filter>ravendb.client\serverwide</Filter>
+    </ClCompile>
+    <ClCompile Include="CreateDatabaseOperation.cpp">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="DatabasePutResult.cpp">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="DeleteDatabaseResult.cpp">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="DeleteDatabasesOperation.cpp">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="GetDatabaseNamesOperation.cpp">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="GetDatabaseRecordOperation.cpp">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="GetDatabaseTopologyCommand.cpp">
+      <Filter>ravendb.client\serverwide\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="CurlSListHolder.cpp">
+      <Filter>ravendb.client\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="DateTimeOffset.cpp">
+      <Filter>ravendb.client\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="MetadataAsDictionary.cpp">
+      <Filter>ravendb.client\json</Filter>
+    </ClCompile>
+    <ClCompile Include="BatchCommandResult.cpp">
+      <Filter>ravendb.client\json</Filter>
+    </ClCompile>
+    <ClCompile Include="MillisToTimespanConverter.cpp">
+      <Filter>ravendb.client\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="json_utils.cpp">
+      <Filter>ravendb.client\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerNode.cpp">
+      <Filter>ravendb.client\http</Filter>
+    </ClCompile>
+    <ClCompile Include="Topology.cpp">
+      <Filter>ravendb.client\http</Filter>
+    </ClCompile>
+    <ClCompile Include="FieldsToFetchToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -120,7 +183,6 @@
     <ClInclude Include="DatabasePromotionStatus.h">
       <Filter>ravendb.client\serverwide\operations</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\json\single_include\nlohmann\json.hpp" />
     <ClInclude Include="..\..\xxhash_cpp\xxhash\xxhash.hpp" />
     <ClInclude Include="json_utils.h">
       <Filter>ravendb.client\impl</Filter>
@@ -323,16 +385,12 @@
     <ClInclude Include="PatchOperation.h">
       <Filter>ravendb.client\documents\operations</Filter>
     </ClInclude>
-    <ClInclude Include="CurslSListHolder.h">
-      <Filter>ravendb.client\impl</Filter>
-    </ClInclude>
     <ClInclude Include="PatchByQueryOperation.h">
       <Filter>ravendb.client\documents\operations</Filter>
     </ClInclude>
     <ClInclude Include="GetOperationStateOperation.h">
       <Filter>ravendb.client\documents\operations</Filter>
     </ClInclude>
-    <ClInclude Include="Constants.h" />
     <ClInclude Include="ConcurrencyCheckMode.h">
       <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
@@ -467,6 +525,25 @@
     </ClInclude>
     <ClInclude Include="Parameters.h">
       <Filter>ravendb.client</Filter>
+    </ClInclude>
+    <ClInclude Include="PatchCommandData.h">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClInclude>
+    <ClInclude Include="JavaScriptArray.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>ravendb.client</Filter>
+    </ClInclude>
+    <ClInclude Include="CurlSListHolder.h">
+      <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\json.hpp" />
+    <ClInclude Include="MillisToTimespanConverter.h">
+      <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="CompareStringsIgnoreCase.h">
+      <Filter>ravendb.client\impl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

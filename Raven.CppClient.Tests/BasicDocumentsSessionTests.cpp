@@ -5,8 +5,6 @@
 #include "SessionOptions.h"
 #include "User.h"
 
-
-
 namespace ravendb::client::tests
 {
 	class BasicDocumentsSessionTests : public infrastructure::TestSuiteBase
@@ -17,6 +15,11 @@ namespace ravendb::client::tests
 		static void SetUpTestCase()
 		{
 			test_suite_store = definitions::GET_DOCUMENT_STORE();
+		}
+
+		static void TearDownTestCase()
+		{
+			test_suite_store.reset();
 		}
 	};
 

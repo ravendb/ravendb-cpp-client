@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 
 namespace ravendb::client::serverwide::operations
 {
@@ -9,11 +8,5 @@ namespace ravendb::client::serverwide::operations
 		std::vector<std::string> pending_deletes{};
 	};
 
-	inline void from_json(const nlohmann::json& j, DeleteDatabaseResult& ddr)
-	{
-		using ravendb::client::impl::utils::json_utils::get_val_from_json;
-
-		get_val_from_json(j, "RaftCommandIndex", ddr.raft_command_index);
-		get_val_from_json(j, "PendingDeletes", ddr.pending_deletes);
-	}
+	void from_json(const nlohmann::json& j, DeleteDatabaseResult& ddr);
 }

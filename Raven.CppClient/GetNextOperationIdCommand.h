@@ -32,7 +32,7 @@ namespace ravendb::client::documents::commands
 		{
 			if(! impl::utils::json_utils::get_val_from_json(response, "Id", _result))
 			{
-				throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::invalid_response);
+				throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::INVALID_RESPONSE);
 			}
 			
 		}

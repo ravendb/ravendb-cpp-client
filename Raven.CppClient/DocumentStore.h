@@ -1,7 +1,7 @@
 #pragma once
 #include <shared_mutex>
 #include "DocumentStoreBase.h"
-#include "utils.h"
+#include "CompareStringsIgnoreCase.h"
 
 namespace ravendb::client::documents
 {

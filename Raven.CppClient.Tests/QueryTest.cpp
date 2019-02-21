@@ -69,7 +69,7 @@ namespace ravendb::client::tests::client
 
 		auto session = test_suite_store->get().open_session();
 
-		auto users = session.advanced().raw_query("from user")
+		auto users = session.advanced().raw_query("from users")
 			->skip(2)
 			->take(1)
 			->to_list<infrastructure::entities::User>();
@@ -84,7 +84,7 @@ namespace ravendb::client::tests::client
 
 		auto session = test_suite_store->get().open_session();
 
-		auto users = session.advanced().raw_query("from User where Age = $p0")
+		auto users = session.advanced().raw_query("from Users where Age = $p0")
 			->add_parameter("p0", 50)
 			->to_list<infrastructure::entities::User>();
 
@@ -99,7 +99,7 @@ namespace ravendb::client::tests::client
 		auto session = test_suite_store->get().open_session();
 
 		ASSERT_EQ(1, 
-			session.advanced().raw_query("from User where Name = $name")
+			session.advanced().raw_query("from Users where Name = $name")
 				->add_parameter("name", "Tuzik")
 				->count());
 	}

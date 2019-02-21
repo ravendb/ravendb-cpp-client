@@ -3,17 +3,28 @@
 #include "DocumentsByIdsMap.h"
 #include "LoadOperation.h"
 #include "RawDocumentQuery.h"
+#include "JavaScriptArray.h"
 
-namespace ravendb::client::documents::session
+namespace ravendb::client::documents
 {
-	namespace loaders
+	namespace session::loaders
 	{
 		class LoaderWithInclude;
 	}
+	namespace operations
+	{
+		struct PatchRequest;
+	}
+}
 
+namespace ravendb::client::documents::session
+{
 	class DocumentSessionImpl : public InMemoryDocumentSessionOperations
 	{
 	private:
+		int32_t _vals_count{};
+		int32_t _custom_count{};
+
 		operations::LoadOperation load_impl(const std::string& id);
 
 		operations::LoadOperation load_impl(const std::vector<std::reference_wrapper<const std::string>>& ids);
@@ -23,6 +34,18 @@ namespace ravendb::client::documents::session
 
 		void load_internal(const std::vector<std::reference_wrapper<const std::string>>& ids,
 			operations::LoadOperation& operation);
+
+		void patch_internal(const std::string& id, const std::string& path, const nlohmann::json& value,
+			const DocumentInfo::EntityUpdater& update_from_json);
+
+		void patch_internal(const std::string& id, const std::string& script,
+			const std::unordered_map<std::string, nlohmann::json>& values,
+			const DocumentInfo::EntityUpdater& update_from_json);
+
+		void increment_internal(const std::string& id, const std::string& path, const nlohmann::json& value_to_add,
+			const DocumentInfo::EntityUpdater& update_from_json);
+
+		bool try_merge_patches(const std::string& id, const documents::operations::PatchRequest& patch_request);
 
 	public:
 		~DocumentSessionImpl() override = default;
@@ -52,10 +75,20 @@ namespace ravendb::client::documents::session
 
 		void save_changes();
 
-		std::shared_ptr<RawDocumentQuery> raw_query(const std::string& query)
-		{
-			return RawDocumentQuery::create(*this, query);
-		}
+		std::shared_ptr<RawDocumentQuery> raw_query(const std::string& query);
+
+		template<typename T>
+		void patch(const std::string& id, const std::string& path, const T& value,
+			const DocumentInfo::EntityUpdater& update_from_json);
+
+		template<typename T>
+		void patch(const std::string& id, const std::string& path_to_array, 
+			std::function<void(JavaScriptArray<T>&)> array_adder,
+			const DocumentInfo::EntityUpdater& update_from_json);
+
+		template<typename T>
+		void increment(const std::string& id, const std::string& path, const T& value_to_add,
+			const DocumentInfo::EntityUpdater& update_from_json);
 	};
 
 	template <typename T>
@@ -89,4 +122,42 @@ namespace ravendb::client::documents::session
 		return load_impl(ids).get_documents<T>(from_json, to_json);
 	}
 
+	template <typename T>
+	void DocumentSessionImpl::patch(const std::string& id, const std::string& path, const T& value,
+		const DocumentInfo::EntityUpdater& update_from_json)
+	{
+		if(!update_from_json)
+		{
+			throw std::invalid_argument("'update_from_json' should have a target");
+		}
+		patch_internal(id, path, nlohmann::json(value), update_from_json);
+	}
+
+	template <typename T>
+	void DocumentSessionImpl::patch(const std::string& id, const std::string& path_to_array,
+		std::function<void(JavaScriptArray<T>&)> array_adder,
+		const DocumentInfo::EntityUpdater& update_from_json)
+	{
+		if (!update_from_json)
+		{
+			throw std::invalid_argument("'update_from_json' should have a target");
+		}
+
+		auto script_array = JavaScriptArray<T>(_custom_count++, path_to_array);
+		array_adder(script_array);
+
+		patch_internal(id, script_array.get_script(), script_array.get_parameters(), update_from_json);
+	}
+
+
+	template <typename T>
+	void DocumentSessionImpl::increment(const std::string& id, const std::string& path, const T& value_to_add,
+		const DocumentInfo::EntityUpdater& update_from_json)
+	{
+		if (!update_from_json)
+		{
+			throw std::invalid_argument("'update_from_json' should have a target");
+		}
+		increment_internal(id, path, nlohmann::json(value_to_add), update_from_json);
+	}
 }

@@ -1,6 +1,7 @@
 #pragma once
-#include "stdafx.h"
-#include "utils.h"
+#include <optional>
+#include "MillisToTimeSpanConverter.h"
+#include "json.hpp"
 
 namespace ravendb::client::impl::utils::json_utils
 {
@@ -111,16 +112,9 @@ namespace ravendb::client::impl::utils::json_utils
 		std::tie(std::ignore, res) = j.emplace(key_name, std::move(temp));
 		return res;
 	}
+
+	template<>
+	bool set_val_to_json(nlohmann::json& j, const std::string& key_name, const std::chrono::milliseconds& field);
+
 }
 
-
-
-//TODO think of something better!
-namespace std::chrono
-{
-	//serialization in C# TimeSpan format : d.hh:mm:ss.sssssss or hh:mm:ss.sssssss
-	inline void to_json(nlohmann::json& j, const std::chrono::milliseconds& msec)
-	{
-		j = ravendb::client::impl::utils::millis_to_timespan(msec);
-	}
-}
