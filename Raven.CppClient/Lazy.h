@@ -1,6 +1,5 @@
 #pragma once
-#include "Supplier.h"
-#include <shared_mutex>
+#include <mutex>
 
 namespace ravendb::client::documents
 {
@@ -8,45 +7,90 @@ namespace ravendb::client::documents
 	class Lazy
 	{
 	private:
-		const std::shared_ptr<impl::Supplier<T>> _value_factory{};
-		mutable std::shared_mutex _m{};
-		mutable std::shared_ptr<T> _value{};
+		class LazyInner
+		{
+		private:
+			const std::function<T()> _value_factory{};
+			std::once_flag _flag;
+			std::optional<T> _value{};
+			std::atomic_bool _is_created = false;
+
+		public:
+			~LazyInner() = default;
+
+			explicit LazyInner(const std::function<T()>& value_factory);
+
+			bool is_value_created() const;
+
+			const T& get_value();
+		};
+
+		std::shared_ptr<LazyInner> _inner;
 
 	public:
-		explicit Lazy(std::shared_ptr<impl::Supplier<T>> value_factory)
-			: _value_factory([&]()
-		{
-			if(!value_factory)
-			{
-				throw std::invalid_argument("value_factory can't be empty");
-			}
-			return value_factory;
-		}())
-		{}
+		~Lazy() = default;
 
-		bool is_value_created() const
-		{
-			std::shared_lock<std::shared_mutex> lock(_m);
-			return _value;
-		}
+		explicit Lazy(const std::function<T()>& value_factory);
 
-		std::shared_ptr<T> get_value() const
-		{
-			{
-				std::shared_lock<std::shared_mutex> lock(_m);
-				if(_value)
-				{
-					return _value;
-				}
-			}
-			{
-				std::unique_lock<std::shared_mutex> lock(_m);
-				if (!_value)
-				{
-					_value = _value_factory.get();
-				}
-				return _value;
-			}
-		}
+		bool is_value_created() const;
+
+		const T& get_value();
+
+		//same as get_value()
+		operator const T&();
 	};
+
+	template <typename T>
+	Lazy<T>::LazyInner::LazyInner(const std::function<T()>& value_factory)
+		: _value_factory([&]()
+	{
+		static_assert(std::is_copy_constructible_v<T> || std::is_move_constructible_v<T>,
+			"T should be copy or move constructible");
+		if (!value_factory)
+		{
+			throw std::invalid_argument("value_factory must have a target");
+		}
+		return value_factory;
+	}())
+	{}
+
+	template <typename T>
+	bool Lazy<T>::LazyInner::is_value_created() const
+	{
+		return _is_created;
+	}
+
+	template <typename T>
+	const T& Lazy<T>::LazyInner::get_value()
+	{
+		std::call_once(_flag, [this]()
+		{
+			_value = _value_factory();
+			_is_created = true;
+		});
+		return *_value;
+	}
+
+	template <typename T>
+	Lazy<T>::Lazy(const std::function<T()>& value_factory)
+		: _inner(std::make_shared<LazyInner>(value_factory))
+	{}
+
+	template <typename T>
+	bool Lazy<T>::is_value_created() const
+	{
+		return _inner->is_value_created();
+	}
+
+	template <typename T>
+	const T& Lazy<T>::get_value()
+	{
+		return _inner->get_value();
+	}
+
+	template <typename T>
+	Lazy<T>::operator const T&()
+	{
+		return _inner->get_value();
+	}
 }

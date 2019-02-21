@@ -4,6 +4,7 @@
 
 namespace ravendb::client::documents::session
 {
+	//TODO try and simplify it !
 	class RawDocumentQuery final : public AbstractDocumentQuery, public QueryBase<RawDocumentQuery>
 	{
 	private:

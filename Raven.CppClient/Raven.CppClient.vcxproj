@@ -162,6 +162,17 @@
     <ClInclude Include="CommandDataBase.h" />
     <ClInclude Include="CommandType.h" />
     <ClInclude Include="CompareStringsIgnoreCase.h" />
+    <ClInclude Include="GetRequest.h" />
+    <ClInclude Include="GetResponse.h" />
+    <ClInclude Include="HttpStatus.h" />
+    <ClInclude Include="EagerSessionOperations.h" />
+    <ClInclude Include="ILazyOperation.h" />
+    <ClInclude Include="Lazy.h" />
+    <ClInclude Include="LazyLoaderWithInclude.h" />
+    <ClInclude Include="LazyLoadOperation.h" />
+    <ClInclude Include="LazyMultiLoaderWithInclude.h" />
+    <ClInclude Include="LazySessionOperations.h" />
+    <ClInclude Include="LazySessionOperationsImpl.h" />
     <ClInclude Include="MillisToTimespanConverter.h" />
     <ClInclude Include="ConcurrencyCheckMode.h" />
     <ClInclude Include="ConflictSolver.h" />
@@ -233,13 +244,14 @@
     <ClInclude Include="JavaScriptArray.h" />
     <ClInclude Include="JsonOperation.h" />
     <ClInclude Include="json_utils.h" />
-    <ClInclude Include="Lazy.h" />
     <ClInclude Include="LeaderStamp.h" />
     <ClInclude Include="LoaderWithInclude.h" />
     <ClInclude Include="LoadOperation.h" />
     <ClInclude Include="MaintenanceOperationExecutor.h" />
     <ClInclude Include="MetadataAsDictionary.h" />
     <ClInclude Include="IMetadataDictionary.h" />
+    <ClInclude Include="MultiGetCommand.h" />
+    <ClInclude Include="MultiGetOperation.h" />
     <ClInclude Include="MultiLoaderWithInclude.h" />
     <ClInclude Include="OperationExecutor.h" />
     <ClInclude Include="OperationIdResult.h" />
@@ -274,6 +286,7 @@
     <ClInclude Include="ReplicationBatchOptions.h" />
     <ClInclude Include="RequestExecutor.h" />
     <ClInclude Include="ResetIndexOperation.h" />
+    <ClInclude Include="ResponseTimeInformation.h" />
     <ClInclude Include="ScriptResolver.h" />
     <ClInclude Include="ServerNode.h" />
     <ClInclude Include="SessionInfo.h" />
@@ -281,6 +294,7 @@
     <ClInclude Include="SessionOptions.h" />
     <ClInclude Include="SetIndexesLockOperation.h" />
     <ClInclude Include="SetIndexesPriorityOperation.h" />
+    <ClInclude Include="SimpleStopWatch.h" />
     <ClInclude Include="SpatialFieldType.h" />
     <ClInclude Include="SpatialOptions.h" />
     <ClInclude Include="SpatialSearchStrategy.h" />
@@ -290,7 +304,6 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StopIndexingOperation.h" />
     <ClInclude Include="StopIndexOperation.h" />
-    <ClInclude Include="Supplier.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TermsQueryResult.h" />
     <ClInclude Include="Topology.h" />
@@ -300,6 +313,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbstractDocumentQuery.cpp" />
+    <ClCompile Include="AdvancedSessionOperations.cpp" />
     <ClCompile Include="BatchCommandResult.cpp" />
     <ClCompile Include="BatchOperation.cpp" />
     <ClCompile Include="ConflictSolver.cpp" />
@@ -313,9 +327,11 @@
     <ClCompile Include="DateTimeOffset.cpp" />
     <ClCompile Include="DeleteDatabaseResult.cpp" />
     <ClCompile Include="DeleteDatabasesOperation.cpp" />
+    <ClCompile Include="DocumentSession.cpp" />
     <ClCompile Include="DocumentSessionImpl.cpp" />
     <ClCompile Include="DocumentStore.cpp" />
     <ClCompile Include="DocumentStoreBase.cpp" />
+    <ClCompile Include="EagerSessionOperations.cpp" />
     <ClCompile Include="EntityToJson.cpp" />
     <ClCompile Include="FieldsToFetchToken.cpp" />
     <ClCompile Include="GetDatabaseNamesOperation.cpp" />
@@ -324,6 +340,8 @@
     <ClCompile Include="InMemoryDocumentSessionOperations.cpp" />
     <ClCompile Include="JsonOperation.cpp" />
     <ClCompile Include="json_utils.cpp" />
+    <ClCompile Include="LazyMultiLoaderWithInclude.cpp" />
+    <ClCompile Include="LazySessionOperationsImpl.cpp" />
     <ClCompile Include="LeaderStamp.cpp" />
     <ClCompile Include="MetadataAsDictionary.cpp" />
     <ClCompile Include="MillisToTimespanConverter.cpp" />

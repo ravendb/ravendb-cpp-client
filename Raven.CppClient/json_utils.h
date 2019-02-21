@@ -48,7 +48,9 @@ namespace ravendb::client::impl::utils::json_utils
 		}
 		return false;
 	}
-	
+
+	//TODO consider using universal references instead on const&
+
 	template<typename T>
 	bool get_val_from_json(const nlohmann::json& j, const std::string& key_name, std::vector<T>& array)
 	{

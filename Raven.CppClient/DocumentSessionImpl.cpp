@@ -7,12 +7,20 @@
 #include "LoaderWithInclude.h"
 #include "PatchRequest.h"
 #include "PatchCommandData.h"
+#include "SimpleStopWatch.h"
+#include "MultiGetOperation.h"
+#include "LazySessionOperations.h"
 
 namespace ravendb::client::documents::session
 {
 	DocumentSessionImpl::DocumentSessionImpl(DocumentStoreBase& document_store, SessionOptions options)
 		: InMemoryDocumentSessionOperations(document_store, std::move(options))
 	{}
+
+	operations::lazy::LazySessionOperations DocumentSessionImpl::lazily()
+	{
+		return operations::lazy::LazySessionOperations(operations::lazy::LazySessionOperationsImpl::create(*this));
+	}
 
 	operations::LoadOperation DocumentSessionImpl::load_impl(const std::string& id)
 	{
@@ -180,9 +188,101 @@ namespace ravendb::client::documents::session
 		return true;
 	}
 
+	bool DocumentSessionImpl::execute_lazy_operations_single_step(ResponseTimeInformation& response_time_information,
+		const std::vector<commands::multi_get::GetRequest>& requests)
+	{
+		auto multi_get_operation = operations::MultiGetOperation(*this);
+		auto multi_get_command = multi_get_operation.create_request(requests);
+		get_request_executor()->execute(multi_get_command);
+
+		auto& responses = multi_get_command.get_result();
+
+		for(auto i = 0; i <_pending_lazy_operations.size(); ++i)
+		{
+			int64_t total_time{};
+
+			const commands::multi_get::GetResponse& response = responses[i];
+
+			if(auto temp_req_time_it = response.headers.find(constants::headers::REQUEST_TIME);
+				temp_req_time_it != response.headers.end())
+			{
+				total_time = std::strtoll(temp_req_time_it->second.c_str(), nullptr, 10);
+			}
+
+			auto time_item = ResponseTimeInformation::ResponseTimeItem();
+			time_item.url = requests[i].get_url_and_query();
+			time_item.duration = std::chrono::milliseconds(total_time);
+
+			response_time_information.duration_break_down.push_back(std::move(time_item));
+
+			if(response.request_has_errors())
+			{
+				std::ostringstream msg{};
+				msg << "Got an error from server, status code: " <<
+					response.status_code << "\r\n" << (response.result ? *response.result : "");
+				throw std::runtime_error(msg.str());
+			}
+			_pending_lazy_operations[i]->handle_response(response);
+			if(_pending_lazy_operations[i]->is_requires_retry())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	DocumentSessionImpl::~DocumentSessionImpl() = default;
+
 	loaders::LoaderWithInclude DocumentSessionImpl::include(const std::string& path)
 	{
 		return loaders::MultiLoaderWithInclude::create(*this).include(path);
+	}
+
+	ResponseTimeInformation DocumentSessionImpl::execute_all_pending_lazy_operations()
+	{
+		std::vector<commands::multi_get::GetRequest> requests{};
+		for (auto i = 0; i < _pending_lazy_operations.size(); ++i)
+		{
+			auto&& req = _pending_lazy_operations[i]->create_request();
+			if (!req)
+			{
+				_pending_lazy_operations.erase(_pending_lazy_operations.begin() + i);
+				--i;
+				continue;
+			}
+			requests.push_back(*std::move(req));
+		}
+
+		if (requests.empty())
+		{
+			return {};
+		}
+
+		impl::SimpleStopWatch sw{};
+
+		increment_request_count();
+
+		auto response_time_duration = ResponseTimeInformation{};
+
+		while (execute_lazy_operations_single_step(response_time_duration, requests))
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		}
+
+		response_time_duration.compute_server_total();
+
+		for (const auto& pending_lazy_operation : _pending_lazy_operations)
+		{
+			if (auto value_it = _on_evaluate_lazy.find(pending_lazy_operation);
+				value_it != _on_evaluate_lazy.end())
+			{
+				value_it->second();
+			}
+		}
+
+		response_time_duration.total_client_duration = sw.millis_elapsed();
+		_pending_lazy_operations.clear();
+		return response_time_duration;
 	}
 
 	bool DocumentSessionImpl::exists(const std::string& id)

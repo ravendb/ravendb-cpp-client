@@ -18,6 +18,6 @@ namespace ravendb::client::documents::commands
 
 		get_val_from_json(j, "Includes", gdr.includes);
 		get_val_from_json(j, "Results", gdr.results);
-		get_val_from_json(j, "NextPageStart", gdr.results);
+		get_val_from_json(j, "NextPageStart", gdr.next_page_start);
 	}
 }

@@ -11,16 +11,17 @@ namespace ravendb::client::http
 	{
 		EMPTY,
 		OBJECT,
+		RAW
 	};
 
-	template<typename Result_t>
+	template<typename TResult>
 	class RavenCommand //abstract
 	{
 	private:
 		std::map<ServerNode, std::exception> _failed_nodes;
 
 	protected:
-		Result_t _result{};
+		TResult _result{};
 		RavenCommandResponseType _response_type = RavenCommandResponseType::OBJECT;
 		bool _can_cache = true;
 		bool _can_cache_aggressively = true;
@@ -39,7 +40,7 @@ namespace ravendb::client::http
 
 		RavenCommandResponseType get_response_type() const noexcept;
 
-		const Result_t& get_result() const noexcept;
+		const TResult& get_result() const noexcept;
 
 		bool can_cache() const noexcept;
 
@@ -71,44 +72,44 @@ namespace ravendb::client::http
 		}
 	}
 
-	template<typename Result_t>
-	RavenCommandResponseType RavenCommand<Result_t>::get_response_type() const noexcept
+	template<typename TResult>
+	RavenCommandResponseType RavenCommand<TResult>::get_response_type() const noexcept
 	{
 		return _response_type;
 	}
 
-	template<typename Result_t>
-	const Result_t & RavenCommand<Result_t>::get_result() const noexcept
+	template<typename TResult>
+	const TResult & RavenCommand<TResult>::get_result() const noexcept
 	{
 		return _result;
 	}
 
-	template<typename Result_t>
-	bool RavenCommand<Result_t>::can_cache() const noexcept
+	template<typename TResult>
+	bool RavenCommand<TResult>::can_cache() const noexcept
 	{
 		return _can_cache;
 	}
 
-	template<typename Result_t>
-	bool RavenCommand<Result_t>::can_cache_aggressively() const noexcept
+	template<typename TResult>
+	bool RavenCommand<TResult>::can_cache_aggressively() const noexcept
 	{
 		return _can_cache_aggressively;
 	}
 
-	template<typename Result_t>
-	void RavenCommand<Result_t>::set_response_not_found(CURL * curl)
+	template<typename TResult>
+	void RavenCommand<TResult>::set_response_not_found(CURL * curl)
 	{
 		_response_type = RavenCommandResponseType::EMPTY;
 	}
 
-	template<typename Result_t>
-	const std::map<ServerNode, std::exception>& RavenCommand<Result_t>::get_failed_nodes() const noexcept
+	template<typename TResult>
+	const std::map<ServerNode, std::exception>& RavenCommand<TResult>::get_failed_nodes() const noexcept
 	{
 		return _failed_nodes;
 	}
 
-	template<typename Result_t>
-	bool RavenCommand<Result_t>::is_failed_with_node(const ServerNode & node) const noexcept
+	template<typename TResult>
+	bool RavenCommand<TResult>::is_failed_with_node(const ServerNode & node) const noexcept
 	{
 		return _failed_nodes.find(node) != _failed_nodes.end();
 	}

@@ -31,7 +31,7 @@ namespace ravendb::client::tests::infrastructure::entities
 		get_val_from_json(j, "Country", a.country);
 		get_val_from_json(j, "City", a.city);
 		get_val_from_json(j, "Street", a.street);
-		get_val_from_json(j, "ZipCode", a.zip_code);`
+		get_val_from_json(j, "ZipCode", a.zip_code);
 	}
 }
 

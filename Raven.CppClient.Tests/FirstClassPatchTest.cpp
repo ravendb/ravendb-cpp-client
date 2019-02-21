@@ -2,6 +2,7 @@
 //#define __USE_FIDDLER__
 #include "TestSuiteBase.h"
 #include "DocumentSession.h"
+#include "AdvancedSessionOperations.h"
 #include "User.h"
 
 namespace first_class_patch_test
@@ -14,7 +15,7 @@ namespace first_class_patch_test
 		std::string kind{};
 	};
 
-	inline void to_json(nlohmann::json& j, const Pet& p)
+	void to_json(nlohmann::json& j, const Pet& p)
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
@@ -22,7 +23,7 @@ namespace first_class_patch_test
 		set_val_to_json(j, "Kind", p.kind);
 	}
 
-	inline void from_json(const nlohmann::json& j, Pet& p)
+	void from_json(const nlohmann::json& j, Pet& p)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
@@ -37,7 +38,7 @@ namespace first_class_patch_test
 		Pet pet{};
 	};
 
-	inline void to_json(nlohmann::json& j, const Friend& f)
+	void to_json(nlohmann::json& j, const Friend& f)
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
@@ -46,7 +47,7 @@ namespace first_class_patch_test
 		set_val_to_json(j, "Pet", f.pet);
 	}
 
-	inline void from_json(const nlohmann::json& j, Friend& f)
+	void from_json(const nlohmann::json& j, Friend& f)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
@@ -64,7 +65,7 @@ namespace first_class_patch_test
 		std::unordered_map<std::string, std::string> dic{};
 	};
 
-	inline void to_json(nlohmann::json& j, const Stuff& s)
+	void to_json(nlohmann::json& j, const Stuff& s)
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
@@ -75,7 +76,7 @@ namespace first_class_patch_test
 		set_val_to_json(j, "Dic", s.dic);
 	}
 
-	inline void from_json(const nlohmann::json& j, Stuff& s)
+	void from_json(const nlohmann::json& j, Stuff& s)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
@@ -93,7 +94,7 @@ namespace first_class_patch_test
 		std::vector<int32_t> numbers{};
 	};
 
-	inline void to_json(nlohmann::json& j, const User& u)
+	void to_json(nlohmann::json& j, const User& u)
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
@@ -103,7 +104,7 @@ namespace first_class_patch_test
 		j["@metadata"]["@collection"] = "Users";
 	}
 
-	inline void from_json(const nlohmann::json& j, User& u)
+	void from_json(const nlohmann::json& j, User& u)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
@@ -142,6 +143,7 @@ namespace ravendb::client::tests::client
 
 		{
 			auto session = test_suite_store->get().open_session();
+
 			session.advanced().patch<first_class_patch_test::User>(first_class_patch_test::DOC_ID,
 				"Numbers[0]", 31);
 			session.advanced().patch<first_class_patch_test::User>(first_class_patch_test::DOC_ID,
@@ -380,6 +382,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 	}
+
 	TEST_F(FirstClassPatchTest, CanUpdateSessionByPatch)
 	{
 		std::vector<first_class_patch_test::Stuff> stuff{ 3 };

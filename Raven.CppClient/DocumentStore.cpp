@@ -44,7 +44,7 @@ namespace ravendb::client::documents
 
 	session::DocumentSession DocumentStore::open_session()
 	{
-		return this->open_session(session::SessionOptions());
+		return open_session(session::SessionOptions());
 	}
 	class session::DocumentSession DocumentStore::open_session(const std::string& database)
 	{

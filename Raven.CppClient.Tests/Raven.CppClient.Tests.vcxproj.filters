@@ -69,6 +69,9 @@
     <ClCompile Include="FirstClassPatchTest.cpp">
       <Filter>ravendb.client.tests\test\client</Filter>
     </ClCompile>
+    <ClCompile Include="LazyTest.cpp">
+      <Filter>ravendb.client.tests\test\client\lazy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -169,6 +172,9 @@
     </Filter>
     <Filter Include="ravendb.client.tests\infrastructure\utils">
       <UniqueIdentifier>{33363449-c257-4b7c-acb3-ea205e91209a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\client\lazy">
+      <UniqueIdentifier>{9e04d126-2840-4531-acc8-e423203df8a8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,7 @@ namespace ravendb::client::documents::session::loaders
 
 	public:
 		~LoaderWithInclude() = default;
+
 		explicit LoaderWithInclude(std::shared_ptr<MultiLoaderWithInclude> multi_loader_with_include)
 			: _multi_loader_with_include(multi_loader_with_include)
 		{}

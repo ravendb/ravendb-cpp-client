@@ -110,6 +110,19 @@
     <ClCompile Include="FieldsToFetchToken.cpp">
       <Filter>ravendb.client\documents\session\tokens</Filter>
     </ClCompile>
+    <ClCompile Include="LazySessionOperationsImpl.cpp" />
+    <ClCompile Include="AdvancedSessionOperations.cpp">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClCompile>
+    <ClCompile Include="EagerSessionOperations.cpp">
+      <Filter>ravendb.client\documents\session\operations\lazy</Filter>
+    </ClCompile>
+    <ClCompile Include="DocumentSession.cpp">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClCompile>
+    <ClCompile Include="LazyMultiLoaderWithInclude.cpp">
+      <Filter>ravendb.client\documents\session\loaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -514,12 +527,6 @@
     <ClInclude Include="FieldsToFetchToken.h">
       <Filter>ravendb.client\documents\session\tokens</Filter>
     </ClInclude>
-    <ClInclude Include="Lazy.h">
-      <Filter>ravendb.client\documents</Filter>
-    </ClInclude>
-    <ClInclude Include="Supplier.h">
-      <Filter>ravendb.client\impl</Filter>
-    </ClInclude>
     <ClInclude Include="QueryBase.h">
       <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
@@ -544,6 +551,51 @@
     </ClInclude>
     <ClInclude Include="CompareStringsIgnoreCase.h">
       <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="LazySessionOperations.h">
+      <Filter>ravendb.client\documents\session\operations\lazy</Filter>
+    </ClInclude>
+    <ClInclude Include="LazySessionOperationsImpl.h">
+      <Filter>ravendb.client\documents\session\operations\lazy</Filter>
+    </ClInclude>
+    <ClInclude Include="ILazyOperation.h">
+      <Filter>ravendb.client\documents\session\operations\lazy</Filter>
+    </ClInclude>
+    <ClInclude Include="GetRequest.h">
+      <Filter>ravendb.client\documents\commands\multy_get</Filter>
+    </ClInclude>
+    <ClInclude Include="GetResponse.h">
+      <Filter>ravendb.client\documents\commands\multy_get</Filter>
+    </ClInclude>
+    <ClInclude Include="HttpStatus.h">
+      <Filter>ravendb.client\http</Filter>
+    </ClInclude>
+    <ClInclude Include="LazyLoadOperation.h">
+      <Filter>ravendb.client\documents\session\operations\lazy</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleStopWatch.h">
+      <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="ResponseTimeInformation.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiGetOperation.h">
+      <Filter>ravendb.client\documents\session\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiGetCommand.h">
+      <Filter>ravendb.client\documents\commands\multy_get</Filter>
+    </ClInclude>
+    <ClInclude Include="Lazy.h">
+      <Filter>ravendb.client\documents</Filter>
+    </ClInclude>
+    <ClInclude Include="EagerSessionOperations.h">
+      <Filter>ravendb.client\documents\session\operations\lazy</Filter>
+    </ClInclude>
+    <ClInclude Include="LazyLoaderWithInclude.h">
+      <Filter>ravendb.client\documents\session\loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="LazyMultiLoaderWithInclude.h">
+      <Filter>ravendb.client\documents\session\loaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -606,6 +658,12 @@
     </Filter>
     <Filter Include="ravendb.client\documents\session\tokens">
       <UniqueIdentifier>{9c81b735-b376-4497-a085-28da06280d81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\session\operations\lazy">
+      <UniqueIdentifier>{2b11d001-a6ff-4d96-a0ac-1a0550a46792}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\commands\multy_get">
+      <UniqueIdentifier>{ac28e723-72be-46e9-af92-8114753c5bad}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

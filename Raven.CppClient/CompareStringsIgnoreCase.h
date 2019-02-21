@@ -7,7 +7,7 @@ namespace ravendb::client::impl::utils
 	{
 		static std::string to_lower_str(const std::string& str);
 
-		bool operator()(const std::string& s1, const std::string s2) const;
+		bool operator()(const std::string& s1, const std::string& s2) const;
 	};
 
 	inline std::string CompareStringsIgnoreCase::to_lower_str(const std::string& str)
@@ -18,7 +18,7 @@ namespace ravendb::client::impl::utils
 		return temp;
 	}
 
-	inline bool CompareStringsIgnoreCase::operator()(const std::string& s1, const std::string s2) const
+	inline bool CompareStringsIgnoreCase::operator()(const std::string& s1, const std::string& s2) const
 	{
 		return to_lower_str(s1) < to_lower_str(s2);
 	}

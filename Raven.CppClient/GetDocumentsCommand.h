@@ -45,7 +45,7 @@ namespace ravendb::client::documents::commands
 			return hash_stream.digest();
 		}
 
-		void prepareRequestWithMultipleIds(std::ostringstream& pathBuilder, CURL* curl) const
+		void prepareRequestWithMultipleIds(std::ostringstream& path_builder, CURL* curl) const
 		{
 			std::size_t totalLen = 0;
 			const auto& uniqueIds = _ids;
@@ -61,13 +61,13 @@ namespace ravendb::client::documents::commands
 				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 				for (const auto& id : uniqueIds)
 				{
-					pathBuilder << "&id=" << ravendb::client::impl::utils::url_escape(curl, id);
+					path_builder << "&id=" << ravendb::client::impl::utils::url_escape(curl, id);
 				}
 			}
 			else // ids too big, must use POST
 			{
 				uint64_t hash = calculate_docs_ids_hash(uniqueIds.cbegin(), uniqueIds.cend());
-				pathBuilder << "&loadHash=" << hash;
+				path_builder << "&loadHash=" << hash;
 
 				curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
 
@@ -133,30 +133,30 @@ namespace ravendb::client::documents::commands
 
 		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 		{
-			std::ostringstream pathBuilder;
-			pathBuilder << node.url << "/databases/" << node.database << "/docs?";
+			std::ostringstream path_builder{};
+			path_builder << node.url << "/databases/" << node.database << "/docs?";
 
 			if (_start.has_value())
 			{
-				pathBuilder << "&start=" << std::to_string(_start.value());
+				path_builder << "&start=" << std::to_string(_start.value());
 			}
 
 			if (_pageSize.has_value())
 			{
-				pathBuilder << "&pageSize=" << std::to_string(_pageSize.value());
+				path_builder << "&pageSize=" << std::to_string(_pageSize.value());
 			}
 
 			if (_metadataOnly)
 			{
-				pathBuilder << "&metadataOnly=true";
+				path_builder << "&metadataOnly=true";
 			}
 
 			if (_use_start_with)
 			{
-				pathBuilder << "&startsWith=" << ravendb::client::impl::utils::url_escape(curl, _start_with);
-				pathBuilder << "&matches=" << ravendb::client::impl::utils::url_escape(curl, _matches);
-				pathBuilder << "&exclude=" << ravendb::client::impl::utils::url_escape(curl, _exclude);
-				pathBuilder << "&startAfter=" << ravendb::client::impl::utils::url_escape(curl, _start_after);
+				path_builder << "&startsWith=" << ravendb::client::impl::utils::url_escape(curl, _start_with);
+				path_builder << "&matches=" << ravendb::client::impl::utils::url_escape(curl, _matches);
+				path_builder << "&exclude=" << ravendb::client::impl::utils::url_escape(curl, _exclude);
+				path_builder << "&startAfter=" << ravendb::client::impl::utils::url_escape(curl, _start_after);
 			}
 
 			curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
@@ -165,25 +165,25 @@ namespace ravendb::client::documents::commands
 			{
 				if (!_id.empty())
 				{
-					pathBuilder << "&id=" << ravendb::client::impl::utils::url_escape(curl, _id);
+					path_builder << "&id=" << ravendb::client::impl::utils::url_escape(curl, _id);
 				}
 				else if (!_ids.empty())
 				{
-					prepareRequestWithMultipleIds(pathBuilder, curl);
+					prepareRequestWithMultipleIds(path_builder, curl);
 				}
 
 				for (auto const& include : _includes)
 				{
-					pathBuilder << "&include=" << include;
+					path_builder << "&include=" << include;
 				}
 			}
 
-			url = pathBuilder.str();
+			url = path_builder.str();
 		}
 
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 		{
-				_result = response;
+				_result = response.get<decltype(_result)>();
 		}
 
 		bool is_read_request() const noexcept override
