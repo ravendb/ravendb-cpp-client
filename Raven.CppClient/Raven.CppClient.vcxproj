@@ -168,7 +168,9 @@
     <ClInclude Include="EagerSessionOperations.h" />
     <ClInclude Include="ILazyOperation.h" />
     <ClInclude Include="Lazy.h" />
+    <ClInclude Include="LazyLoaderWithInclude.h" />
     <ClInclude Include="LazyLoadOperation.h" />
+    <ClInclude Include="LazyMultiLoaderWithInclude.h" />
     <ClInclude Include="LazySessionOperations.h" />
     <ClInclude Include="LazySessionOperationsImpl.h" />
     <ClInclude Include="MillisToTimespanConverter.h" />
@@ -338,6 +340,7 @@
     <ClCompile Include="InMemoryDocumentSessionOperations.cpp" />
     <ClCompile Include="JsonOperation.cpp" />
     <ClCompile Include="json_utils.cpp" />
+    <ClCompile Include="LazyMultiLoaderWithInclude.cpp" />
     <ClCompile Include="LazySessionOperationsImpl.cpp" />
     <ClCompile Include="LeaderStamp.cpp" />
     <ClCompile Include="MetadataAsDictionary.cpp" />

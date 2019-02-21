@@ -36,6 +36,7 @@ namespace ravendb::client::documents
 
 		const T& get_value();
 
+		//same as get_value()
 		operator const T&();
 	};
 

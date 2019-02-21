@@ -4,6 +4,8 @@
 #include "Lazy.h"
 #include "DocumentSessionImpl.h"
 #include "LazyLoadOperation.h"
+#include "LazyMultiLoaderWithInclude.h"
+#include "LazyLoaderWithInclude.h"
 
 namespace ravendb::client::documents::session::operations::lazy
 {
@@ -24,8 +26,11 @@ namespace ravendb::client::documents::session::operations::lazy
 
 		static LazySessionOperations create(DocumentSessionImpl& session);
 
-		//TODO implement
-		//loaders::LazyLoaderWithInclude include(std::string path);
+		loaders::LazyLoaderWithInclude include(std::string path)
+		{
+			auto lazy_loader_with_include = loaders::LazyMultiLoaderWithInclude::create(_session.get());
+			return lazy_loader_with_include.include(path);
+		}
 
 		//TODO use custom FromJsonConverter/ToJsonConverter
 		template<typename TResult>

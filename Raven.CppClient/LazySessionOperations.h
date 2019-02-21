@@ -16,11 +16,11 @@ namespace ravendb::client::documents::session::operations::lazy
 			: _lazy_session_operations_impl(lazy_session_operations_impl)
 		{}
 
-		//TODO implement
-		//LazySessionOperations include(const std::string& path)
-		//{
-		//	return _lazy_session_operations_impl->include(path);
-		//}
+
+		loaders::LazyLoaderWithInclude include(const std::string& path)
+		{
+			return _lazy_session_operations_impl->include(path);
+		}
 
 		template<typename T>
 		Lazy<std::shared_ptr<T>> load(const std::string& id,

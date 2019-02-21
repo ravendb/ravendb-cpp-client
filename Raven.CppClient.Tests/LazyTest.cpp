@@ -6,6 +6,8 @@
 #include "LazySessionOperations.h"
 #include "Company.h"
 #include "User.h"
+#include "Employee.h"
+#include "Order.h"
 
 namespace ravendb::client::tests::client::lazy
 {
@@ -197,6 +199,93 @@ namespace ravendb::client::tests::client::lazy
 			session.advanced().eagerly().execute_all_pending_lazy_operations();
 
 			ASSERT_EQ(old_requests_count, session.advanced().get_number_of_requests());
+		}
+	}
+
+	TEST_F(LazyTest, LazyLoadWithIncludes)
+	{
+		{
+			auto session = test_suite_store->get().open_session();
+
+			auto emp1 = std::make_shared<infrastructure::entities::Employee>();
+			emp1->first_name = "Boris";
+			emp1->id = "employees/1";
+			session.store(emp1, "employees/1");
+
+			auto emp2 = std::make_shared<infrastructure::entities::Employee>();
+			emp2->first_name = "Vitaliy";
+			emp2->id = "employees/2";
+			session.store(emp2, "employees/2");
+
+			auto company = std::make_shared<infrastructure::entities::Company>();
+			company->name = "Pear";
+			company->id = "companies/1";
+			company->employees_ids = { "employees/1" ,"employees/2" };
+			session.store(company, "companies/1");
+
+			auto order1 = std::make_shared<infrastructure::entities::Order>();
+			order1->id = "orders/1";
+			order1->company = "companies/1";
+			order1->employee = "employees/1";
+			session.store(order1, "orders/1");
+
+			auto order2 = std::make_shared<infrastructure::entities::Order>();
+			order2->id = "orders/2";
+			order2->company = "companies/1";
+			order2->employee = "employees/2";
+			session.store(order2, "orders/2");
+
+			session.save_changes();			
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+
+			auto lazy_order = session.advanced().lazily()
+				.include("Employee")
+				.include("Company")
+				.load<infrastructure::entities::Order>("orders/1");
+
+			ASSERT_EQ(0, session.advanced().get_number_of_requests());
+
+			session.advanced().eagerly().execute_all_pending_lazy_operations();
+
+			ASSERT_EQ(1, session.advanced().get_number_of_requests());
+			ASSERT_TRUE(session.advanced().is_loaded("orders/1"));
+			ASSERT_TRUE(session.advanced().is_loaded("employees/1"));
+			ASSERT_TRUE(session.advanced().is_loaded("companies/1"));
+
+			ASSERT_FALSE(lazy_order.is_value_created());
+			ASSERT_EQ("orders/1", lazy_order.get_value()->id);
+			ASSERT_EQ(1, session.advanced().get_number_of_requests());
+
+			auto company = session.load<infrastructure::entities::Company>("companies/1");
+			ASSERT_EQ("Pear", company->name);
+			ASSERT_EQ(1, session.advanced().get_number_of_requests());			
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+			std::vector<std::string> ids = { "orders/1", "orders/2" };
+
+			auto lazy_orders = session.advanced().lazily()
+				.include("Employee")
+				.load<infrastructure::entities::Order>(ids.begin(), ids.end());
+
+			ASSERT_EQ(0, session.advanced().get_number_of_requests());
+
+			session.advanced().eagerly().execute_all_pending_lazy_operations();
+
+			ASSERT_EQ(1, session.advanced().get_number_of_requests());
+			ASSERT_TRUE(session.advanced().is_loaded("employees/1"));
+			ASSERT_TRUE(session.advanced().is_loaded("employees/2"));
+			ASSERT_TRUE(session.advanced().is_loaded("orders/1"));
+
+			ASSERT_FALSE(lazy_orders.is_value_created());
+			ASSERT_EQ(2, lazy_orders.get_value().size());
+			ASSERT_EQ(1, session.advanced().get_number_of_requests());
+
+			auto empl = session.load<infrastructure::entities::Employee>("employees/1");
+			ASSERT_EQ("Boris", empl->first_name);
+			ASSERT_EQ(1, session.advanced().get_number_of_requests());
 		}
 	}
 }

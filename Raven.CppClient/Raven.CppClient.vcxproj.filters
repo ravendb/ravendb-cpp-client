@@ -120,6 +120,9 @@
     <ClCompile Include="DocumentSession.cpp">
       <Filter>ravendb.client\documents\session</Filter>
     </ClCompile>
+    <ClCompile Include="LazyMultiLoaderWithInclude.cpp">
+      <Filter>ravendb.client\documents\session\loaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -587,6 +590,12 @@
     </ClInclude>
     <ClInclude Include="EagerSessionOperations.h">
       <Filter>ravendb.client\documents\session\operations\lazy</Filter>
+    </ClInclude>
+    <ClInclude Include="LazyLoaderWithInclude.h">
+      <Filter>ravendb.client\documents\session\loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="LazyMultiLoaderWithInclude.h">
+      <Filter>ravendb.client\documents\session\loaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
