@@ -81,12 +81,13 @@ namespace ravendb::client::documents::session
 	}
 
 	void DocumentSessionImpl::patch_internal(const std::string& id, const std::string& path, const nlohmann::json& value,
-		const DocumentInfo::EntityUpdater& update_from_json)
+		const std::optional<DocumentInfo::EntityUpdater>& update_from_json)
 	{
 		if(auto doc_info_it = _documents_by_id.find(id);
-			doc_info_it != _documents_by_id.end() && !doc_info_it->second->update_from_json)
+			doc_info_it != _documents_by_id.end() &&
+			update_from_json.has_value())
 		{
-			doc_info_it->second->update_from_json = update_from_json;
+			doc_info_it->second->update_from_json = *update_from_json;
 		}
 
 		auto patch_request = documents::operations::PatchRequest();
@@ -106,12 +107,13 @@ namespace ravendb::client::documents::session
 
 	void DocumentSessionImpl::patch_internal(const std::string& id,
 		const std::string& script, const std::unordered_map<std::string, nlohmann::json>& values,
-		const DocumentInfo::EntityUpdater& update_from_json)
+		const std::optional<DocumentInfo::EntityUpdater>& update_from_json)
 	{
 		if (auto doc_info_it = _documents_by_id.find(id);
-			doc_info_it != _documents_by_id.end() && !doc_info_it->second->update_from_json)
+			doc_info_it != _documents_by_id.end() &&
+			update_from_json.has_value())
 		{
-			doc_info_it->second->update_from_json = update_from_json;
+			doc_info_it->second->update_from_json = *update_from_json;
 		}
 
 		auto patch_request = documents::operations::PatchRequest();
@@ -127,12 +129,13 @@ namespace ravendb::client::documents::session
 
 
 	void DocumentSessionImpl::increment_internal(const std::string& id, const std::string& path, const nlohmann::json& value_to_add,
-		const DocumentInfo::EntityUpdater& update_from_json)
+		const std::optional<DocumentInfo::EntityUpdater>& update_from_json)
 	{
 		if (auto doc_info_it = _documents_by_id.find(id);
-			doc_info_it != _documents_by_id.end() && !doc_info_it->second->update_from_json)
+			doc_info_it != _documents_by_id.end() &&
+			update_from_json.has_value())
 		{
-			doc_info_it->second->update_from_json = update_from_json;
+			doc_info_it->second->update_from_json = *update_from_json;
 		}
 
 		auto patch_request = documents::operations::PatchRequest();

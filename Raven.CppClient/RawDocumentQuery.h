@@ -4,58 +4,58 @@
 
 namespace ravendb::client::documents::session
 {
-	//TODO try and simplify it !
-	class RawDocumentQuery final : public AbstractDocumentQuery, public QueryBase<RawDocumentQuery>
+	class RawDocumentQuery : public AbstractDocumentQuery, public IQueryBase<RawDocumentQuery>
 	{
 	private:
-		class InnerImpl final : public AbstractInner
-		{
-		public:
-			~InnerImpl() override = default;
-
-			void inner_skip(int32_t count) override
-			{
-				_query_base_ptr.lock()->_skip(count);
-			}
-
-			void inner_take(int32_t count) override
-			{
-				_query_base_ptr.lock()->_take(count);
-			}
-
-			void inner_no_tracking() override
-			{
-				_query_base_ptr.lock()->_no_tracking();
-			}
-
-			void inner_no_caching() override
-			{
-				_query_base_ptr.lock()->_no_caching();
-			}
-
-			void inner_using_default_operator(queries::QueryOperator query_operator) override
-			{
-				_query_base_ptr.lock()->_using_default_operator(query_operator);
-			}
-
-			void inner_add_parameter(std::string name, nlohmann::json value) override
-			{
-				_query_base_ptr.lock()->_add_parameter(std::move(name), std::move(value));
-			}
-		};
+		std::weak_ptr<RawDocumentQuery> _weak_this{};
 
 		RawDocumentQuery(InMemoryDocumentSessionOperations& session, std::string raw_query)
 			: AbstractDocumentQuery(session, {}, {}, false, {}, {}, {})
-			, QueryBase(std::make_unique<InnerImpl>())
 		{
 			query_raw = std::move(raw_query);
 		}
 
-	public:	
+	public:
+		std::shared_ptr<RawDocumentQuery> skip(int32_t count)
+		{
+			_skip(count);
+			return _weak_this.lock();
+		}
+
+		std::shared_ptr<RawDocumentQuery> take(int32_t count)
+		{
+			_take(count);
+			return _weak_this.lock();
+		}
+
+		std::shared_ptr<RawDocumentQuery> no_tracking()
+		{
+			_no_tracking();
+			return _weak_this.lock();
+		}
+
+		std::shared_ptr<RawDocumentQuery> no_caching()
+		{
+			_no_caching();
+			return _weak_this.lock();
+		}
+
+		std::shared_ptr<RawDocumentQuery> using_default_operator(queries::QueryOperator query_operator)
+		{
+			_using_default_operator(query_operator);
+			return _weak_this.lock();
+		}
+
+		std::shared_ptr<RawDocumentQuery> add_parameter(std::string name, nlohmann::json value)
+		{
+			_add_parameter(std::move(name), std::move(value));
+			return _weak_this.lock();
+		}
+
 		static std::shared_ptr<RawDocumentQuery> create(InMemoryDocumentSessionOperations& session, std::string raw_query)
 		{
 			auto new_object = std::shared_ptr<RawDocumentQuery>(new RawDocumentQuery(session, std::move(raw_query)));
-			new_object->set_this_ptr(new_object);
+			new_object->_weak_this = new_object;
 
 			return new_object;
 		}

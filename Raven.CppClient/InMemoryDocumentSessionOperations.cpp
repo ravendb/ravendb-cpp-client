@@ -209,7 +209,8 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<void> InMemoryDocumentSessionOperations::track_entity(const std::string& id, const nlohmann::json& document,
 		const nlohmann::json& metadata, bool no_tracking_,
 		const DocumentInfo::FromJsonConverter& from_json_converter,
-		const DocumentInfo::ToJsonConverter& to_json_converter)
+		const DocumentInfo::ToJsonConverter& to_json_converter,
+		const DocumentInfo::EntityUpdater& update_from_json)
 	{
 		if (!from_json_converter)
 		{
@@ -218,6 +219,10 @@ namespace ravendb::client::documents::session
 		if (!to_json_converter)
 		{
 			throw std::invalid_argument("to_json_converter must have a target");
+		}
+		if (!update_from_json)
+		{
+			throw std::invalid_argument("update_from_json must have a target");
 		}
 
 		// if noTracking is session-wide then we want to override the passed argument
@@ -245,6 +250,7 @@ namespace ravendb::client::documents::session
 			}
 			doc_info_it->second->from_json_converter = from_json_converter;
 			doc_info_it->second->to_json_converter = to_json_converter;
+			doc_info_it->second->update_from_json = update_from_json;
 			return doc_info_it->second->entity;
 		}
 
@@ -264,6 +270,7 @@ namespace ravendb::client::documents::session
 			}
 			doc_info->from_json_converter = from_json_converter;
 			doc_info->to_json_converter = to_json_converter;
+			doc_info->update_from_json = update_from_json;
 			return doc_info->entity;
 		}
 
@@ -285,6 +292,7 @@ namespace ravendb::client::documents::session
 			doc_info->change_vector = change_vector;
 			doc_info->from_json_converter = from_json_converter;
 			doc_info->to_json_converter = to_json_converter;
+			doc_info->update_from_json = update_from_json;
 
 			_documents_by_id.insert({ doc_info->id, doc_info });
 			_documents_by_entity.insert({ entity, doc_info });
@@ -393,7 +401,9 @@ namespace ravendb::client::documents::session
 
 	void InMemoryDocumentSessionOperations::store_internal(std::shared_ptr<void> entity,
 		std::optional<std::string> change_vector, std::optional<std::string> id,
-		ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json,
+		ConcurrencyCheckMode force_concurrency_check,
+		const DocumentInfo::ToJsonConverter& to_json,
+		const DocumentInfo::EntityUpdater& update_from_json,
 		const type_info& type)
 	{
 		if (no_tracking)
@@ -407,6 +417,10 @@ namespace ravendb::client::documents::session
 		if (!to_json)
 		{
 			throw std::invalid_argument("to_json must have a target");
+		}
+		if (!update_from_json)
+		{
+			throw std::invalid_argument("update_from_json must have a target");
 		}
 
 		if (auto doc_info_it = _documents_by_entity.find(entity);
@@ -477,17 +491,23 @@ namespace ravendb::client::documents::session
 			impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::ID, *id);
 		}
 
-		store_entity_in_unit_of_work(id, entity, change_vector, std::move(metadata), force_concurrency_check, to_json);
+		store_entity_in_unit_of_work(id, entity, change_vector, std::move(metadata), force_concurrency_check, to_json, update_from_json);
 	}
 
 	void InMemoryDocumentSessionOperations::store_entity_in_unit_of_work(std::optional<std::string>& id,
 		std::shared_ptr<void> entity, std::optional<std::string>& change_vector, nlohmann::json metadata,
-		ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json)
+		ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json,
+		const DocumentInfo::EntityUpdater& update_from_json)
 	{
 		if (!to_json)
 		{
 			throw std::invalid_argument("to_json must have a target");
 		}
+		if (!update_from_json)
+		{
+			throw std::invalid_argument("update_from_json must have a target");
+		}
+
 		_deleted_entities.erase(entity);
 		if (id)
 		{
@@ -507,6 +527,7 @@ namespace ravendb::client::documents::session
 		doc_info->concurrency_check_mode = force_concurrency_check;
 		doc_info->entity = entity;
 		doc_info->to_json_converter = to_json;
+		doc_info->update_from_json = update_from_json;
 		doc_info->new_document = true;
 
 		_documents_by_entity.insert({ entity, doc_info });

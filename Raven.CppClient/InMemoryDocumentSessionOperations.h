@@ -237,7 +237,8 @@ namespace ravendb::client::documents::session
 			const nlohmann::json& metadata,
 			bool no_tracking_,
 			const DocumentInfo::FromJsonConverter& from_json_converter,
-			const DocumentInfo::ToJsonConverter& to_json_converter);
+			const DocumentInfo::ToJsonConverter& to_json_converter,
+			const DocumentInfo::EntityUpdater& update_from_json);
 
 		void register_external_loaded_into_the_session(std::shared_ptr<DocumentInfo> info);
 
@@ -316,7 +317,8 @@ namespace ravendb::client::documents::session
 
 		void store_entity_in_unit_of_work(std::optional<std::string>& id, std::shared_ptr<void> entity,
 			std::optional<std::string>& change_vector, nlohmann::json metadata,
-			ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json);
+			ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json,
+			const DocumentInfo::EntityUpdater& update_from_json);
 
 		void assert_is_unique_instance(std::shared_ptr<void> entity, const std::string& id) const;
 
@@ -342,7 +344,9 @@ namespace ravendb::client::documents::session
 
 		void store_internal(std::shared_ptr<void> entity,
 			std::optional<std::string> change_vector, std::optional<std::string> id,
-			ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json,
+			ConcurrencyCheckMode force_concurrency_check,
+			const DocumentInfo::ToJsonConverter& to_json,
+			const DocumentInfo::EntityUpdater& update_from_json,
 			const type_info& type);
 
 		//TODO void prepare_compare_exchange_entities(const SaveChangesData& result);
@@ -418,9 +422,11 @@ namespace ravendb::client::documents::session
 			document_found.to_json_converter ? document_found.to_json_converter : DocumentInfo::default_to_json<T>;
 		if (to_json)
 			to_json_converter = *to_json;
+		DocumentInfo::EntityUpdater update_from_json = DocumentInfo::default_entity_update<T>;
+
 		return std::static_pointer_cast<T>(track_entity(
 			document_found.id, document_found.document, document_found.metadata, no_tracking,
-			from_json_converter, to_json_converter));
+			from_json_converter, to_json_converter, update_from_json));
 	}
 
 	template<typename T>
@@ -447,6 +453,7 @@ namespace ravendb::client::documents::session
 		store_internal(std::static_pointer_cast<void>(entity), {}, {},
 			!has_id ? ConcurrencyCheckMode::FORCED : ConcurrencyCheckMode::AUTO,
 			to_json ? *to_json : DocumentInfo::default_to_json<T>,
+			DocumentInfo::default_entity_update<T>,
 			typeid(T));
 	}
 
@@ -454,7 +461,9 @@ namespace ravendb::client::documents::session
 	void InMemoryDocumentSessionOperations::store(std::shared_ptr<T> entity, std::string id, const std::optional<DocumentInfo::ToJsonConverter>& to_json)
 	{
 		store_internal(std::static_pointer_cast<void>(entity), {}, std::move(id), ConcurrencyCheckMode::AUTO,
-			to_json ? *to_json : DocumentInfo::default_to_json<T>, typeid(T));
+			to_json ? *to_json : DocumentInfo::default_to_json<T>,
+			DocumentInfo::default_entity_update<T>, 
+			typeid(T));
 	}
 
 	template<typename T>
@@ -463,6 +472,7 @@ namespace ravendb::client::documents::session
 		store_internal(std::static_pointer_cast<void>(entity), std::move(change_vector), std::move(id),
 			!change_vector ? ConcurrencyCheckMode::DISABLED : ConcurrencyCheckMode::FORCED,
 			to_json ? *to_json : DocumentInfo::default_to_json<T>,
+			DocumentInfo::default_entity_update<T>,
 			typeid(T));
 	}
 

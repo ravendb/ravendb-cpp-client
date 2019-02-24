@@ -5,6 +5,7 @@
 #include "IndexQuery.h"
 #include "QueryResult.h"
 #include "QueryOperation.h"
+#include "Lazy.h"
 
 namespace ravendb::client::documents
 {
@@ -58,26 +59,17 @@ namespace ravendb::client::documents::session
 		
 		std::optional<std::string> query_raw{};
 
-	public:
-		const std::optional<std::string>& get_index_name() const;
+		std::vector<std::function<void(const QueryResult&)>> after_query_executed_callback{};
 
-		const std::optional<std::string>& get_collection_name() const;
+	private:
+		void assert_no_raw_query() const;
 
-		const DocumentConventions& get_conventions() const;
-
-		std::reference_wrapper<DocumentSessionImpl> get_session() const;
-
-		const std::optional<operations::QueryOperation>& get_query_operation() const;
+		void execute_actual_query();
 
 		template<typename T>
-		std::vector<std::shared_ptr<T>> to_list();
-
-		int32_t count();
-
-		queries::QueryResult get_query_result();
+		std::vector<std::shared_ptr<T>> execute_query_operation(std::optional<int32_t> take);
 
 	protected:
-
 		void _using_default_operator(queries::QueryOperator query_operator);
 
 		queries::IndexQuery get_index_query() const;
@@ -102,20 +94,28 @@ namespace ravendb::client::documents::session
 			/*std::vector<DeclareToken>*/void* load_tokens, std::optional<std::string> from_alias);
 
 		operations::QueryOperation initialize_query_operation() const;
-		
 
 		queries::IndexQuery generate_index_query(std::string query) const;
 
 		void init_sync();
 
-	private:
-		void assert_no_raw_query() const;
+	public:
+		const std::optional<std::string>& get_index_name() const;
 
-		void execute_actual_query();
+		const std::optional<std::string>& get_collection_name() const;
+
+		const DocumentConventions& get_conventions() const;
+
+		std::reference_wrapper<DocumentSessionImpl> get_session() const;
+
+		const std::optional<operations::QueryOperation>& get_query_operation() const;
 
 		template<typename T>
-		std::vector<std::shared_ptr<T>> execute_query_operation(std::optional<int32_t> take);
+		std::vector<std::shared_ptr<T>> to_list();
 
+		int32_t count();
+
+		queries::QueryResult get_query_result();
 	};
 
 	template <typename T>

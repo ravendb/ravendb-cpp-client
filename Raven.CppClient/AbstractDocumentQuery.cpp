@@ -69,8 +69,8 @@ namespace ravendb::client::documents::session
 		/*std::vector<DeclareToken>*/void* load_tokens, std::optional<std::string> from_alias)
 		: index_name(std::move(index_name))
 		, collection_name(std::move(collection_name))
-		, the_session(session)
 		, _conventions(session.get_conventions())
+		, the_session(session)
 	{}
 
 	void AbstractDocumentQuery::_wait_for_non_stale_results(std::optional<std::chrono::milliseconds> wait_timeout)
@@ -106,8 +106,6 @@ namespace ravendb::client::documents::session
 	{
 		start = count;
 	}
-
-
 
 	queries::IndexQuery AbstractDocumentQuery::generate_index_query(std::string query) const
 	{

@@ -527,9 +527,6 @@
     <ClInclude Include="FieldsToFetchToken.h">
       <Filter>ravendb.client\documents\session\tokens</Filter>
     </ClInclude>
-    <ClInclude Include="QueryBase.h">
-      <Filter>ravendb.client\documents\session</Filter>
-    </ClInclude>
     <ClInclude Include="Parameters.h">
       <Filter>ravendb.client</Filter>
     </ClInclude>
@@ -596,6 +593,9 @@
     </ClInclude>
     <ClInclude Include="LazyMultiLoaderWithInclude.h">
       <Filter>ravendb.client\documents\session\loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="IQueryBase.h">
+      <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

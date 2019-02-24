@@ -167,7 +167,7 @@ namespace ravendb::client::documents::session::operations
 				{
 					if(!id.empty())
 					{
-						results.insert({id, nullptr});
+						results.insert_or_assign(id, nullptr);
 					}
 				});
 
@@ -178,7 +178,7 @@ namespace ravendb::client::documents::session::operations
 						continue;
 					}
 					auto doc_info = DocumentInfo(doc);
-					results.insert({doc_info.id, _session.get().track_entity<T>(doc_info, from_json, to_json)});
+					results.insert_or_assign(doc_info.id, _session.get().track_entity<T>(doc_info, from_json, to_json));
 				}
 			}
 
@@ -186,7 +186,7 @@ namespace ravendb::client::documents::session::operations
 			{
 				if(!id.empty())
 				{
-					results.insert({id, get_document<T>(id, from_json, to_json)});
+					results.insert_or_assign(id, get_document<T>(id, from_json, to_json));
 				}
 			}
 			return results;

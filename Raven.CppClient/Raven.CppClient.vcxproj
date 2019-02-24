@@ -267,7 +267,7 @@
     <ClInclude Include="PutIndexResult.h" />
     <ClInclude Include="PutResult.h" />
     <ClInclude Include="GenericQueryResult.h" />
-    <ClInclude Include="QueryBase.h" />
+    <ClInclude Include="IQueryBase.h" />
     <ClInclude Include="QueryCommand.h" />
     <ClInclude Include="QueryOperation.h" />
     <ClInclude Include="QueryOperationOptions.h" />
