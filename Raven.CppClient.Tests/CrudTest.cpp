@@ -73,7 +73,7 @@ namespace ravendb::client::tests::client
 
 		{
 			auto session = test_suite_store->get().open_session();
-			auto users = session.advanced().raw_query("from Users where LastName = 'user1'")->to_list<infrastructure::entities::User>();
+			auto users = session.advanced().raw_query<infrastructure::entities::User>("from Users where LastName = 'user1'")->to_list();
 
 			ASSERT_EQ(1, users.size());
 		}

@@ -83,7 +83,8 @@ namespace ravendb::client::documents::session
 
 		const EntityToJson& get_entity_to_json() const;
 
-		std::shared_ptr<RawDocumentQuery> raw_query(const std::string& query);
+		template<typename T>
+		std::shared_ptr<RawDocumentQuery<T>> raw_query(const std::string& query);
 
 		template<typename T, typename V>
 		void patch(std::shared_ptr<T> entity, const std::string& path, const V& value,
@@ -121,6 +122,12 @@ namespace ravendb::client::documents::session
 		template<typename V>
 		void increment(const std::string& id, const std::string& path, const V& value_to_add,
 			const DocumentInfo::EntityUpdater& update_from_json);
+
+		template<typename T>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> document_query(
+			std::optional<std::string> index_name,
+			std::optional<std::string> collection_name,
+			bool is_map_reduced);
 	};
 
 	template <typename T>
@@ -164,6 +171,12 @@ namespace ravendb::client::documents::session
 	void AdvancedSessionOperations::ignore_changes_for(std::shared_ptr<T> entity)
 	{
 		_session_impl->ignore_changes_for(entity);
+	}
+
+	template <typename T>
+	std::shared_ptr<RawDocumentQuery<T>> AdvancedSessionOperations::raw_query(const std::string& query)
+	{
+		return _session_impl->raw_query<T>(query);
 	}
 
 	template <typename T, typename V>
@@ -248,5 +261,14 @@ namespace ravendb::client::documents::session
 			throw std::invalid_argument("'update_from_json' should have a target");
 		}
 		_session_impl->increment(id, path, value_to_add, update_from_json);
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> AdvancedSessionOperations::document_query(
+		std::optional<std::string> index_name,
+		std::optional<std::string> collection_name,
+		bool is_map_reduced)
+	{
+		return _session_impl->document_query<T>(std::move(index_name), std::move(collection_name), is_map_reduced);
 	}
 }

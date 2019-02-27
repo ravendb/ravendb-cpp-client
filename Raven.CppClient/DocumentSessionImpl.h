@@ -7,6 +7,7 @@
 #include "ResponseTimeInformation.h"
 #include "Lazy.h"
 #include "LazyLoadOperation.h"
+#include "DocumentQuery.h"
 
 namespace ravendb::client::documents
 {
@@ -106,7 +107,17 @@ namespace ravendb::client::documents::session
 
 		void save_changes();
 
-		std::shared_ptr<RawDocumentQuery> raw_query(const std::string& query);
+		template<typename T>
+		std::shared_ptr<RawDocumentQuery<T>> raw_query(const std::string& query);
+
+		template<typename T>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> query();
+
+		template <typename T>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> document_query(
+			std::optional<std::string> index_name,
+			std::optional<std::string> collection_name,
+			bool is_map_reduced);
 
 		template<typename T>
 		void patch(const std::string& id, const std::string& path, const T& value,
@@ -218,6 +229,29 @@ namespace ravendb::client::documents::session
 		std::transform(first, last, std::back_inserter(ids), [](const std::string& id) {return std::cref(id); });
 
 		return load_impl(ids).get_documents<T>(from_json, to_json);
+	}
+
+	template <typename T>
+	std::shared_ptr<RawDocumentQuery<T>> DocumentSessionImpl::raw_query(const std::string& query)
+	{
+		return RawDocumentQuery<T>::create(*this, query);
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentSessionImpl::query()
+	{
+		return document_query<T>({}, {}, false);
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentSessionImpl::document_query(
+		std::optional<std::string> index_name,
+		std::optional<std::string> collection_name,
+		bool is_map_reduced)
+	{
+		process_query_parameters<T>(index_name, collection_name, get_conventions());
+
+		return DocumentQuery<T>::create(*this, index_name, collection_name, is_map_reduced);
 	}
 
 	template <typename T>

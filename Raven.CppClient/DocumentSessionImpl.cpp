@@ -322,10 +322,4 @@ namespace ravendb::client::documents::session
 			save_changes_operation.set_result(command->get_result());
 		}
 	}
-
-	std::shared_ptr<RawDocumentQuery> DocumentSessionImpl::raw_query(const std::string& query)
-	{
-		return RawDocumentQuery::create(*this, query);
-	}
-
 }

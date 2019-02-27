@@ -12,6 +12,8 @@
 #include "DateTimeOffset.h"
 #include "OperationExecutor.h"
 #include "ILazyOperation.h"
+#include "DocumentConventions.h"
+#include "utils.h"
 
 namespace ravendb::client
 {
@@ -168,6 +170,7 @@ namespace ravendb::client::documents::session
 		//Translate between an ID and its associated entity
 		DocumentsById _included_documents_by_id{};
 
+		//TODO use the Data Structure that maintains the insertion order
 		//hold the data required to manage the data for RavenDB's Unit of Work
 		std::unordered_map<std::shared_ptr<void>, std::shared_ptr<DocumentInfo>> _documents_by_entity{};
 
@@ -177,6 +180,11 @@ namespace ravendb::client::documents::session
 
 		std::unordered_map<in_memory_document_session_operations::IdTypeAndName, std::shared_ptr<commands::batches::CommandDataBase>> 
 			_deferred_commands_map{};
+
+		template<typename T>
+		void process_query_parameters(std::optional<std::string>& index_name,
+			std::optional<std::string>& collection_name,
+			const conventions::DocumentConventions& conventions);
 
 	public:
 		virtual ~InMemoryDocumentSessionOperations() = 0;
@@ -494,5 +502,45 @@ namespace ravendb::client::documents::session
 		evict_internal(std::static_pointer_cast<void>(entity));
 	}
 
+	template<typename T>
+	void InMemoryDocumentSessionOperations::process_query_parameters(std::optional<std::string>& index_name,
+		std::optional<std::string>& collection_name, const conventions::DocumentConventions& conventions)
+	{
+		const bool has_index = index_name && !impl::utils::is_blank(*index_name);
+		const bool has_collection = collection_name && !collection_name->empty();
+
+		if (has_index && has_collection)
+		{
+			throw std::runtime_error("Parameters 'index_name' and 'collection_name' are mutually exclusive."
+				" Please specify only one of them.");
+		}
+
+		if (!has_index && !has_collection)
+		{
+			//TODO get collection name from the type or conventions 
+
+			nlohmann::json sample_document = T();
+			
+			if (auto it1 = sample_document.find(constants::documents::metadata::KEY); 
+				it1 != sample_document.end())
+			{
+				if(auto it2 = it1->find(constants::documents::metadata::COLLECTION);
+					it2 != it1->end())
+				{
+					collection_name = it2->get<std::string>();
+				}
+			}
+			else
+			{
+				//TODO probably would be transferred to DocumentConventions 
+				//TODO the code is duplicated(!) from InMemoryDocumentSessionOperations::store_internal()
+				{
+					auto&& type = typeid(T);
+					std::string_view type_name = type.name();
+					collection_name = type_name.substr(type_name.find_last_of(':') + 1);
+				}
+			}
+		}
+	}
 }
 

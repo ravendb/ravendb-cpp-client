@@ -2,6 +2,7 @@
 #include "QueryCommand.h"
 #include "FieldsToFetchToken.h"
 #include "InMemoryDocumentSessionOperations.h"
+#include "SimpleStopWatch.h"
 
 namespace ravendb::client::documents::session::operations
 {
@@ -15,6 +16,8 @@ namespace ravendb::client::documents::session::operations
 		const bool _index_entries_only;
 		queries::QueryResult _current_query_result{};
 		const std::optional<tokens::FieldsToFetchToken> _fields_to_fetch;
+
+		//TODO use impl::SimpleStopWatch
 		std::chrono::time_point<std::chrono::steady_clock> _start_time_for_stopwatch;
 
 	public:

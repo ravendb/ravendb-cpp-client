@@ -38,9 +38,6 @@
     <ClCompile Include="MultiLoaderWithInclude.cpp">
       <Filter>ravendb.client\documents\session\loaders</Filter>
     </ClCompile>
-    <ClCompile Include="AbstractDocumentQuery.cpp">
-      <Filter>ravendb.client\documents\session</Filter>
-    </ClCompile>
     <ClCompile Include="QueryOperation.cpp">
       <Filter>ravendb.client\documents\session\operations</Filter>
     </ClCompile>
@@ -122,6 +119,12 @@
     </ClCompile>
     <ClCompile Include="LazyMultiLoaderWithInclude.cpp">
       <Filter>ravendb.client\documents\session\loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="DeclareToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="FromToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -595,6 +598,36 @@
       <Filter>ravendb.client\documents\session\loaders</Filter>
     </ClInclude>
     <ClInclude Include="IQueryBase.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="IDocumentQueryBaseSingle.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="LazyQueryOperation.h">
+      <Filter>ravendb.client\documents\session\operations\lazy</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexQueryContent.h">
+      <Filter>ravendb.client\documents\session\operations\lazy</Filter>
+    </ClInclude>
+    <ClInclude Include="IDocumentQuery.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="IDocumentQueryBase.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="OrderingType.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="DocumentQuery.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="DeclareToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="FromToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="IRawDocumentQuery.h">
       <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,6 +1,8 @@
 #pragma once
 #include "IndexQueryBase.h"
 #include "Parameters.h"
+//TODO put in final project
+#include "C:\work\xxhash_cpp\xxhash\xxhash.hpp"
 
 namespace ravendb::client::documents::queries
 {
@@ -16,9 +18,21 @@ namespace ravendb::client::documents::queries
 
 		IndexQuery() = default;
 
-		IndexQuery(std::string query_str)
+		explicit IndexQuery(std::string query_str)
 		{
 			query = std::move(query_str);
+		}
+
+		std::string get_query_hash() const
+		{
+			xxh::hash_state_t<64> hash_stream;
+
+			nlohmann::json query_json{};
+			to_json(query_json, *this);
+
+			hash_stream.update(query_json.dump());
+
+			return std::to_string(hash_stream.digest());
 		}
 	};
 
