@@ -288,4 +288,48 @@ namespace ravendb::client::tests::client::lazy
 			ASSERT_EQ(1, session.advanced().get_number_of_requests());
 		}
 	}
+
+	TEST_F(LazyTest, CanRequestServerOnceForAllLazyOperations)
+	{
+		{
+			auto session = test_suite_store->get().open_session();
+
+			auto user1 = std::make_shared<infrastructure::entities::User>();
+			user1->name = "Vanya";
+			user1->id = "users/1";
+			session.store(user1, user1->id);
+
+			auto user2 = std::make_shared<infrastructure::entities::User>();
+			user2->name = "Vasya";
+			user2->id = "users/2";
+			session.store(user2, user2->id);
+
+			auto empl = std::make_shared<infrastructure::entities::Employee>();
+			empl->first_name = "Misha";
+			session.store(empl, "employees/1");
+
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+
+			auto lazy_load = session.advanced()
+				.lazily()
+				.load<infrastructure::entities::Employee>("employees/1");
+
+			auto lazy_query = session.query<infrastructure::entities::User>()
+				->lazily();
+
+			auto empl = lazy_load.get_value();
+
+			ASSERT_EQ("Misha", empl->first_name);
+
+			auto names = std::set<std::string>{ lazy_query.get_value()[0]->name, lazy_query.get_value()[1]->name };
+
+			ASSERT_TRUE(names.find("Vasya") != names.end());
+			ASSERT_TRUE(names.find("Vanya") != names.end());
+
+			ASSERT_EQ(1, session.advanced().get_number_of_requests());
+		}
+	}
 }

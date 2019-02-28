@@ -27,7 +27,7 @@ namespace ravendb::client::documents::session::tokens
 		, _source_alias(std::move(source_alias))
 	{}
 
-	void FieldsToFetchToken::write_to(std::ostringstream & oss)
+	void FieldsToFetchToken::write_to(std::ostringstream & oss) const
 	{
 		for (auto i = 0; i < _fields_to_fetch.size(); ++i)
 		{

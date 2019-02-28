@@ -5,7 +5,10 @@
 namespace ravendb::client::documents::session
 {
 	class AdvancedSessionOperations;
+}
 
+namespace ravendb::client::documents::session
+{
 	class DocumentSession
 	{
 	private:
@@ -70,6 +73,9 @@ namespace ravendb::client::documents::session
 		DocumentsByIdsMap<T> load(const std::vector<std::string>& ids,
 		                          const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
 		                          const std::optional<DocumentInfo::ToJsonConverter>& to_json = {});
+
+		template<typename T>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> query();
 	};
 
 	template <typename T>
@@ -134,5 +140,11 @@ namespace ravendb::client::documents::session
 	                                           const std::optional<DocumentInfo::ToJsonConverter>& to_json)
 	{
 		return _session_impl->load<T>(ids.cbegin(), ids.cend(), from_json, to_json);
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentSession::query()
+	{
+		return _session_impl->query<T>();
 	}
 }

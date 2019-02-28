@@ -12,6 +12,8 @@
 #include "DateTimeOffset.h"
 #include "OperationExecutor.h"
 #include "ILazyOperation.h"
+#include "DocumentConventions.h"
+#include "utils.h"
 
 namespace ravendb::client
 {
@@ -168,6 +170,7 @@ namespace ravendb::client::documents::session
 		//Translate between an ID and its associated entity
 		DocumentsById _included_documents_by_id{};
 
+		//TODO use the Data Structure that maintains the insertion order
 		//hold the data required to manage the data for RavenDB's Unit of Work
 		std::unordered_map<std::shared_ptr<void>, std::shared_ptr<DocumentInfo>> _documents_by_entity{};
 
@@ -177,6 +180,11 @@ namespace ravendb::client::documents::session
 
 		std::unordered_map<in_memory_document_session_operations::IdTypeAndName, std::shared_ptr<commands::batches::CommandDataBase>> 
 			_deferred_commands_map{};
+
+		template<typename T>
+		void process_query_parameters(std::optional<std::string>& index_name,
+			std::optional<std::string>& collection_name,
+			const conventions::DocumentConventions& conventions);
 
 	public:
 		virtual ~InMemoryDocumentSessionOperations() = 0;
@@ -237,7 +245,8 @@ namespace ravendb::client::documents::session
 			const nlohmann::json& metadata,
 			bool no_tracking_,
 			const DocumentInfo::FromJsonConverter& from_json_converter,
-			const DocumentInfo::ToJsonConverter& to_json_converter);
+			const DocumentInfo::ToJsonConverter& to_json_converter,
+			const DocumentInfo::EntityUpdater& update_from_json);
 
 		void register_external_loaded_into_the_session(std::shared_ptr<DocumentInfo> info);
 
@@ -316,7 +325,8 @@ namespace ravendb::client::documents::session
 
 		void store_entity_in_unit_of_work(std::optional<std::string>& id, std::shared_ptr<void> entity,
 			std::optional<std::string>& change_vector, nlohmann::json metadata,
-			ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json);
+			ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json,
+			const DocumentInfo::EntityUpdater& update_from_json);
 
 		void assert_is_unique_instance(std::shared_ptr<void> entity, const std::string& id) const;
 
@@ -342,7 +352,9 @@ namespace ravendb::client::documents::session
 
 		void store_internal(std::shared_ptr<void> entity,
 			std::optional<std::string> change_vector, std::optional<std::string> id,
-			ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json,
+			ConcurrencyCheckMode force_concurrency_check,
+			const DocumentInfo::ToJsonConverter& to_json,
+			const DocumentInfo::EntityUpdater& update_from_json,
 			const type_info& type);
 
 		//TODO void prepare_compare_exchange_entities(const SaveChangesData& result);
@@ -418,9 +430,11 @@ namespace ravendb::client::documents::session
 			document_found.to_json_converter ? document_found.to_json_converter : DocumentInfo::default_to_json<T>;
 		if (to_json)
 			to_json_converter = *to_json;
+		DocumentInfo::EntityUpdater update_from_json = DocumentInfo::default_entity_update<T>;
+
 		return std::static_pointer_cast<T>(track_entity(
 			document_found.id, document_found.document, document_found.metadata, no_tracking,
-			from_json_converter, to_json_converter));
+			from_json_converter, to_json_converter, update_from_json));
 	}
 
 	template<typename T>
@@ -447,6 +461,7 @@ namespace ravendb::client::documents::session
 		store_internal(std::static_pointer_cast<void>(entity), {}, {},
 			!has_id ? ConcurrencyCheckMode::FORCED : ConcurrencyCheckMode::AUTO,
 			to_json ? *to_json : DocumentInfo::default_to_json<T>,
+			DocumentInfo::default_entity_update<T>,
 			typeid(T));
 	}
 
@@ -454,7 +469,9 @@ namespace ravendb::client::documents::session
 	void InMemoryDocumentSessionOperations::store(std::shared_ptr<T> entity, std::string id, const std::optional<DocumentInfo::ToJsonConverter>& to_json)
 	{
 		store_internal(std::static_pointer_cast<void>(entity), {}, std::move(id), ConcurrencyCheckMode::AUTO,
-			to_json ? *to_json : DocumentInfo::default_to_json<T>, typeid(T));
+			to_json ? *to_json : DocumentInfo::default_to_json<T>,
+			DocumentInfo::default_entity_update<T>, 
+			typeid(T));
 	}
 
 	template<typename T>
@@ -463,6 +480,7 @@ namespace ravendb::client::documents::session
 		store_internal(std::static_pointer_cast<void>(entity), std::move(change_vector), std::move(id),
 			!change_vector ? ConcurrencyCheckMode::DISABLED : ConcurrencyCheckMode::FORCED,
 			to_json ? *to_json : DocumentInfo::default_to_json<T>,
+			DocumentInfo::default_entity_update<T>,
 			typeid(T));
 	}
 
@@ -484,5 +502,45 @@ namespace ravendb::client::documents::session
 		evict_internal(std::static_pointer_cast<void>(entity));
 	}
 
+	template<typename T>
+	void InMemoryDocumentSessionOperations::process_query_parameters(std::optional<std::string>& index_name,
+		std::optional<std::string>& collection_name, const conventions::DocumentConventions& conventions)
+	{
+		const bool has_index = index_name && !impl::utils::is_blank(*index_name);
+		const bool has_collection = collection_name && !collection_name->empty();
+
+		if (has_index && has_collection)
+		{
+			throw std::runtime_error("Parameters 'index_name' and 'collection_name' are mutually exclusive."
+				" Please specify only one of them.");
+		}
+
+		if (!has_index && !has_collection)
+		{
+			//TODO get collection name from the type or conventions 
+
+			nlohmann::json sample_document = T();
+			
+			if (auto it1 = sample_document.find(constants::documents::metadata::KEY); 
+				it1 != sample_document.end())
+			{
+				if(auto it2 = it1->find(constants::documents::metadata::COLLECTION);
+					it2 != it1->end())
+				{
+					collection_name = it2->get<std::string>();
+				}
+			}
+			else
+			{
+				//TODO probably would be transferred to DocumentConventions 
+				//TODO the code is duplicated(!) from InMemoryDocumentSessionOperations::store_internal()
+				{
+					auto&& type = typeid(T);
+					std::string_view type_name = type.name();
+					collection_name = type_name.substr(type_name.find_last_of(':') + 1);
+				}
+			}
+		}
+	}
 }
 

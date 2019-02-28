@@ -2,6 +2,7 @@
 #include "QueryCommand.h"
 #include "FieldsToFetchToken.h"
 #include "InMemoryDocumentSessionOperations.h"
+#include "SimpleStopWatch.h"
 
 namespace ravendb::client::documents::session::operations
 {
@@ -15,6 +16,8 @@ namespace ravendb::client::documents::session::operations
 		const bool _index_entries_only;
 		queries::QueryResult _current_query_result{};
 		const std::optional<tokens::FieldsToFetchToken> _fields_to_fetch;
+
+		//TODO use impl::SimpleStopWatch
 		std::chrono::time_point<std::chrono::steady_clock> _start_time_for_stopwatch;
 
 	public:
@@ -108,7 +111,7 @@ namespace ravendb::client::documents::session::operations
 			projection_it == metadata.end() || !projection_it->get<bool>())
 		{
 			return std::static_pointer_cast<T>(session.track_entity(id, document, metadata, disable_entities_tracking,
-				DocumentInfo::default_from_json<T>, DocumentInfo::default_to_json<T>));
+				DocumentInfo::default_from_json<T>, DocumentInfo::default_to_json<T>, DocumentInfo::default_entity_update<T>));
 		}
 
 		if (fields_to_fetch && fields_to_fetch->_projections && fields_to_fetch->_projections->size() == 1)// we only select a single field

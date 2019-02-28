@@ -162,15 +162,24 @@
     <ClInclude Include="CommandDataBase.h" />
     <ClInclude Include="CommandType.h" />
     <ClInclude Include="CompareStringsIgnoreCase.h" />
+    <ClInclude Include="DeclareToken.h" />
+    <ClInclude Include="DocumentQuery.h" />
+    <ClInclude Include="FromToken.h" />
     <ClInclude Include="GetRequest.h" />
     <ClInclude Include="GetResponse.h" />
     <ClInclude Include="HttpStatus.h" />
     <ClInclude Include="EagerSessionOperations.h" />
+    <ClInclude Include="IDocumentQuery.h" />
+    <ClInclude Include="IDocumentQueryBase.h" />
+    <ClInclude Include="IDocumentQueryBaseSingle.h" />
     <ClInclude Include="ILazyOperation.h" />
+    <ClInclude Include="IndexQueryContent.h" />
+    <ClInclude Include="IRawDocumentQuery.h" />
     <ClInclude Include="Lazy.h" />
     <ClInclude Include="LazyLoaderWithInclude.h" />
     <ClInclude Include="LazyLoadOperation.h" />
     <ClInclude Include="LazyMultiLoaderWithInclude.h" />
+    <ClInclude Include="LazyQueryOperation.h" />
     <ClInclude Include="LazySessionOperations.h" />
     <ClInclude Include="LazySessionOperationsImpl.h" />
     <ClInclude Include="MillisToTimespanConverter.h" />
@@ -255,6 +264,7 @@
     <ClInclude Include="MultiLoaderWithInclude.h" />
     <ClInclude Include="OperationExecutor.h" />
     <ClInclude Include="OperationIdResult.h" />
+    <ClInclude Include="OrderingType.h" />
     <ClInclude Include="Parameters.h" />
     <ClInclude Include="PatchByQueryOperation.h" />
     <ClInclude Include="PatchCommandData.h" />
@@ -267,7 +277,7 @@
     <ClInclude Include="PutIndexResult.h" />
     <ClInclude Include="PutResult.h" />
     <ClInclude Include="GenericQueryResult.h" />
-    <ClInclude Include="QueryBase.h" />
+    <ClInclude Include="IQueryBase.h" />
     <ClInclude Include="QueryCommand.h" />
     <ClInclude Include="QueryOperation.h" />
     <ClInclude Include="QueryOperationOptions.h" />
@@ -312,7 +322,6 @@
     <ClInclude Include="VoidRavenCommand.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AbstractDocumentQuery.cpp" />
     <ClCompile Include="AdvancedSessionOperations.cpp" />
     <ClCompile Include="BatchCommandResult.cpp" />
     <ClCompile Include="BatchOperation.cpp" />
@@ -325,6 +334,7 @@
     <ClCompile Include="DatabaseRecord.cpp" />
     <ClCompile Include="DatabaseTopology.cpp" />
     <ClCompile Include="DateTimeOffset.cpp" />
+    <ClCompile Include="DeclareToken.cpp" />
     <ClCompile Include="DeleteDatabaseResult.cpp" />
     <ClCompile Include="DeleteDatabasesOperation.cpp" />
     <ClCompile Include="DocumentSession.cpp" />
@@ -334,6 +344,7 @@
     <ClCompile Include="EagerSessionOperations.cpp" />
     <ClCompile Include="EntityToJson.cpp" />
     <ClCompile Include="FieldsToFetchToken.cpp" />
+    <ClCompile Include="FromToken.cpp" />
     <ClCompile Include="GetDatabaseNamesOperation.cpp" />
     <ClCompile Include="GetDatabaseRecordOperation.cpp" />
     <ClCompile Include="GetDatabaseTopologyCommand.cpp" />

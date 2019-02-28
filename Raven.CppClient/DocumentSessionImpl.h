@@ -7,6 +7,7 @@
 #include "ResponseTimeInformation.h"
 #include "Lazy.h"
 #include "LazyLoadOperation.h"
+#include "DocumentQuery.h"
 
 namespace ravendb::client::documents
 {
@@ -44,14 +45,14 @@ namespace ravendb::client::documents::session
 			operations::LoadOperation& operation);
 
 		void patch_internal(const std::string& id, const std::string& path, const nlohmann::json& value,
-			const DocumentInfo::EntityUpdater& update_from_json);
+			const std::optional<DocumentInfo::EntityUpdater>& update_from_json);
 
 		void patch_internal(const std::string& id, const std::string& script,
 			const std::unordered_map<std::string, nlohmann::json>& values,
-			const DocumentInfo::EntityUpdater& update_from_json);
+			const std::optional<DocumentInfo::EntityUpdater>& update_from_json);
 
 		void increment_internal(const std::string& id, const std::string& path, const nlohmann::json& value_to_add,
-			const DocumentInfo::EntityUpdater& update_from_json);
+			const std::optional<DocumentInfo::EntityUpdater>& update_from_json);
 
 		bool try_merge_patches(const std::string& id, const documents::operations::PatchRequest& patch_request);
 
@@ -71,8 +72,7 @@ namespace ravendb::client::documents::session
 		//TODO add custom (de)serializers to/from json
 		template<typename T>
 		Lazy<T> add_lazy_operation(std::shared_ptr<operations::lazy::ILazyOperation> operation,
-			std::function<T(std::shared_ptr<operations::lazy::ILazyOperation>)>
-			get_operation_result,
+			std::function<T(std::shared_ptr<operations::lazy::ILazyOperation>)> get_operation_result,
 			std::function<void()> on_eval);
 
 		ResponseTimeInformation execute_all_pending_lazy_operations();
@@ -107,20 +107,30 @@ namespace ravendb::client::documents::session
 
 		void save_changes();
 
-		std::shared_ptr<RawDocumentQuery> raw_query(const std::string& query);
+		template<typename T>
+		std::shared_ptr<RawDocumentQuery<T>> raw_query(const std::string& query);
+
+		template<typename T>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> query();
+
+		template <typename T>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> document_query(
+			std::optional<std::string> index_name,
+			std::optional<std::string> collection_name,
+			bool is_map_reduced);
 
 		template<typename T>
 		void patch(const std::string& id, const std::string& path, const T& value,
-			const DocumentInfo::EntityUpdater& update_from_json);
+			const std::optional<DocumentInfo::EntityUpdater>& update_from_json);
 
 		template<typename T>
 		void patch(const std::string& id, const std::string& path_to_array, 
 			std::function<void(JavaScriptArray<T>&)> array_adder,
-			const DocumentInfo::EntityUpdater& update_from_json);
+			const std::optional<DocumentInfo::EntityUpdater>& update_from_json);
 
 		template<typename T>
 		void increment(const std::string& id, const std::string& path, const T& value_to_add,
-			const DocumentInfo::EntityUpdater& update_from_json);
+			const std::optional<DocumentInfo::EntityUpdater>& update_from_json);
 	};
 
 	template <typename T>
@@ -222,26 +232,40 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	void DocumentSessionImpl::patch(const std::string& id, const std::string& path, const T& value,
-		const DocumentInfo::EntityUpdater& update_from_json)
+	std::shared_ptr<RawDocumentQuery<T>> DocumentSessionImpl::raw_query(const std::string& query)
 	{
-		if(!update_from_json)
-		{
-			throw std::invalid_argument("'update_from_json' should have a target");
-		}
+		return RawDocumentQuery<T>::create(*this, query);
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentSessionImpl::query()
+	{
+		return document_query<T>({}, {}, false);
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentSessionImpl::document_query(
+		std::optional<std::string> index_name,
+		std::optional<std::string> collection_name,
+		bool is_map_reduced)
+	{
+		process_query_parameters<T>(index_name, collection_name, get_conventions());
+
+		return DocumentQuery<T>::create(*this, index_name, collection_name, is_map_reduced);
+	}
+
+	template <typename T>
+	void DocumentSessionImpl::patch(const std::string& id, const std::string& path, const T& value,
+		const std::optional<DocumentInfo::EntityUpdater>& update_from_json)
+	{	
 		patch_internal(id, path, nlohmann::json(value), update_from_json);
 	}
 
 	template <typename T>
 	void DocumentSessionImpl::patch(const std::string& id, const std::string& path_to_array,
 		std::function<void(JavaScriptArray<T>&)> array_adder,
-		const DocumentInfo::EntityUpdater& update_from_json)
+		const std::optional<DocumentInfo::EntityUpdater>& update_from_json)
 	{
-		if (!update_from_json)
-		{
-			throw std::invalid_argument("'update_from_json' should have a target");
-		}
-
 		auto script_array = JavaScriptArray<T>(_custom_count++, path_to_array);
 		array_adder(script_array);
 
@@ -251,12 +275,8 @@ namespace ravendb::client::documents::session
 
 	template <typename T>
 	void DocumentSessionImpl::increment(const std::string& id, const std::string& path, const T& value_to_add,
-		const DocumentInfo::EntityUpdater& update_from_json)
+		const std::optional<DocumentInfo::EntityUpdater>& update_from_json)
 	{
-		if (!update_from_json)
-		{
-			throw std::invalid_argument("'update_from_json' should have a target");
-		}
 		increment_internal(id, path, nlohmann::json(value_to_add), update_from_json);
 	}
 }

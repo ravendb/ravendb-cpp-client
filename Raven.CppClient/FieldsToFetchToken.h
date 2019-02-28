@@ -17,6 +17,6 @@ namespace ravendb::client::documents::session::tokens
 			std::optional<std::vector<std::string>> projections,
 			bool custom_function, std::optional<std::string> source_alias);
 
-		void write_to(std::ostringstream& oss) override;
+		void write_to(std::ostringstream& oss) const override;
 	};
 }

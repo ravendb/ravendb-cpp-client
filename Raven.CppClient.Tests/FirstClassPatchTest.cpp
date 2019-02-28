@@ -144,9 +144,9 @@ namespace ravendb::client::tests::client
 		{
 			auto session = test_suite_store->get().open_session();
 
-			session.advanced().patch<first_class_patch_test::User>(first_class_patch_test::DOC_ID,
+			session.advanced().patch(first_class_patch_test::DOC_ID,
 				"Numbers[0]", 31);
-			session.advanced().patch<first_class_patch_test::User>(first_class_patch_test::DOC_ID,
+			session.advanced().patch(first_class_patch_test::DOC_ID,
 				"LastLogin", time_point);
 			session.save_changes();
 		}
@@ -166,7 +166,7 @@ namespace ravendb::client::tests::client
 		}
 	}
 
-	TEST_F(FirstClassPatchTest, TrowOnPatchAndModify)
+	TEST_F(FirstClassPatchTest, ThrowOnPatchAndModify)
 	{
 		auto user = std::make_shared<first_class_patch_test::User>();
 		user->numbers.push_back(66);
@@ -217,7 +217,7 @@ namespace ravendb::client::tests::client
 			auto new_stuff = first_class_patch_test::Stuff();
 			new_stuff.key = 4;
 			new_stuff.phone = "9255864406";
-			session.advanced().patch<first_class_patch_test::User>(first_class_patch_test::DOC_ID,
+			session.advanced().patch(first_class_patch_test::DOC_ID,
 				"Stuff[1]", new_stuff);
 			session.save_changes();
 		}
@@ -286,7 +286,7 @@ namespace ravendb::client::tests::client
 		}
 		{
 			auto session = test_suite_store->get().open_session();
-			session.advanced().increment<first_class_patch_test::User>(first_class_patch_test::DOC_ID,
+			session.advanced().increment(first_class_patch_test::DOC_ID,
 				"Numbers[0]", 1);
 			session.save_changes();
 		}
@@ -331,19 +331,19 @@ namespace ravendb::client::tests::client
 
 		{
 			auto session = test_suite_store->get().open_session();
-			session.advanced().patch<first_class_patch_test::User>(first_class_patch_test::DOC_ID,
+			session.advanced().patch(first_class_patch_test::DOC_ID,
 				"Numbers[0]", 31);
 			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
 
-			session.advanced().patch<first_class_patch_test::User>(first_class_patch_test::DOC_ID,
+			session.advanced().patch(first_class_patch_test::DOC_ID,
 				"LastLogin", time_point);
 			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
 
-			session.advanced().patch<first_class_patch_test::User>(DOC_ID2,
+			session.advanced().patch(DOC_ID2,
 				"Numbers[0]", 123);
 			ASSERT_EQ(2, session.get_session_implementation().get_deferred_commands_count());
 
-			session.advanced().patch<first_class_patch_test::User>(DOC_ID2,
+			session.advanced().patch(DOC_ID2,
 				"LastLogin", time_point);
 			ASSERT_EQ(2, session.get_session_implementation().get_deferred_commands_count());
 
@@ -351,18 +351,18 @@ namespace ravendb::client::tests::client
 		}
 		{
 			auto session = test_suite_store->get().open_session();
-			session.advanced().increment<first_class_patch_test::User>(first_class_patch_test::DOC_ID,
+			session.advanced().increment(first_class_patch_test::DOC_ID,
 				"Numbers[0]", 1);
 			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
 
-			session.advanced().patch<first_class_patch_test::User, int32_t>(first_class_patch_test::DOC_ID,
+			session.advanced().patch<int32_t>(first_class_patch_test::DOC_ID,
 				"Numbers", [](documents::session::JavaScriptArray<int32_t>& arr)->void
 			{
 				arr.add(77);
 			});
 			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
 
-			session.advanced().patch<first_class_patch_test::User, int32_t>(first_class_patch_test::DOC_ID,
+			session.advanced().patch<int32_t>(first_class_patch_test::DOC_ID,
 				"Numbers", [](documents::session::JavaScriptArray<int32_t>& arr)->void
 			{
 				arr.add(88);
@@ -375,7 +375,7 @@ namespace ravendb::client::tests::client
 				arr.remove_at(1);
 			};
 
-			session.advanced().patch<first_class_patch_test::User>(first_class_patch_test::DOC_ID,
+			session.advanced().patch(first_class_patch_test::DOC_ID,
 				"Numbers", array_adder);
 			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
 
@@ -403,7 +403,7 @@ namespace ravendb::client::tests::client
 			auto new_stuff = first_class_patch_test::Stuff();
 			new_stuff.key = 4;
 			new_stuff.phone = "9255864406";
-			session.advanced().patch<first_class_patch_test::User>(first_class_patch_test::DOC_ID,
+			session.advanced().patch(first_class_patch_test::DOC_ID,
 				"Stuff[1]", new_stuff);
 			session.save_changes();
 
