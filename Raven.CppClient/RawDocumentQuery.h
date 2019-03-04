@@ -19,6 +19,11 @@ namespace ravendb::client::documents::session
 		}
 
 	public:
+		std::shared_ptr<DocumentConventions> get_conventions() const
+		{
+			return AbstractDocumentQuery<T>::get_conventions();
+		}
+
 		std::shared_ptr<RawDocumentQuery> skip(int32_t count)
 		{
 			AbstractDocumentQuery<T>::_skip(count);

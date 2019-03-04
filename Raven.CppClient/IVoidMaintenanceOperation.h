@@ -14,7 +14,7 @@ namespace ravendb::client::documents::operations
 	{
 		~IVoidMaintenanceOperation() override = 0;
 
-		std::unique_ptr<VoidRavenCommandBase> get_command(const DocumentConventions& conventions) const override = 0;
+		std::unique_ptr<VoidRavenCommandBase> get_command(std::shared_ptr<DocumentConventions> conventions) const override = 0;
 	};
 
 	inline IVoidMaintenanceOperation::~IVoidMaintenanceOperation() = default;

@@ -25,7 +25,7 @@ namespace ravendb::client::documents::operations::indexes
 			: _index_definition(std::move(definition))
 		{}
 
-		std::unique_ptr<RavenCommand<bool>> get_command(const DocumentConventions& conventions) const override
+		std::unique_ptr<RavenCommand<bool>> get_command(std::shared_ptr<DocumentConventions> conventions) const override
 		{
 			return std::make_unique<IndexHasChangedCommand>(conventions, _index_definition);
 		}
@@ -39,7 +39,7 @@ namespace ravendb::client::documents::operations::indexes
 		public:
 			~IndexHasChangedCommand() override = default;
 
-			IndexHasChangedCommand(const DocumentConventions& conventions, const IndexDefinition& definition)
+			IndexHasChangedCommand(std::shared_ptr<DocumentConventions> conventions, const IndexDefinition& definition)
 				: _definition(definition)
 			{}
 

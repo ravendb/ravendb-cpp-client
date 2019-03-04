@@ -3,7 +3,6 @@
 #include "MetadataAsDictionary.h"
 #include "DocumentInfo.h"
 #include "json_utils.h"
-#include "DocumentConventions.h"
 #include "InMemoryDocumentSessionOperations.h"
 #include "CommandType.h"
 #include "BatchCommand.h"
@@ -30,7 +29,7 @@ namespace ravendb::client::documents::session::operations
 		session.increment_request_count();
 		_entities = result.entities;
 
-		return std::optional<commands::batches::BatchCommand>(std::in_place, /*_session.get().conventions*/conventions::DocumentConventions(),
+		return std::optional<commands::batches::BatchCommand>(std::in_place, _session.get().get_conventions(),
 			result.session_commands, result.options, session.get_transaction_mode());
 	}
 

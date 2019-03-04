@@ -126,6 +126,12 @@
     <ClCompile Include="FromToken.cpp">
       <Filter>ravendb.client\documents\session\tokens</Filter>
     </ClCompile>
+    <ClCompile Include="DocumentConventions.cpp">
+      <Filter>ravendb.client\documents\conventions</Filter>
+    </ClCompile>
+    <ClCompile Include="ReflectionUtil.cpp">
+      <Filter>ravendb.client\impl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -630,6 +636,18 @@
     <ClInclude Include="IRawDocumentQuery.h">
       <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
+    <ClInclude Include="ReadBalanceBehavior.h">
+      <Filter>ravendb.client\http</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientConfiguration.h">
+      <Filter>ravendb.client\documents\operations\configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="ReflectionUtil.h">
+      <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="Inflector.h">
+      <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
@@ -697,6 +715,9 @@
     </Filter>
     <Filter Include="ravendb.client\documents\commands\multy_get">
       <UniqueIdentifier>{ac28e723-72be-46e9-af92-8114753c5bad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\operations\configuration">
+      <UniqueIdentifier>{1168f432-954f-4e6e-8201-125f19497297}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

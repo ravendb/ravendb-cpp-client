@@ -47,8 +47,8 @@ namespace ravendb::client::documents::session::tokens
 		{
 			writer << "from ";
 
-			if(auto it = std::find_if(_collection_name->begin(), _collection_name->end(), []
-				(const int& c)
+			if(auto it = std::find_if(_collection_name->begin(), _collection_name->end(),
+				[](const int& c)
 				{
 					return (bool)std::isspace(c);
 				});

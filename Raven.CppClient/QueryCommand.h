@@ -16,7 +16,7 @@ namespace ravendb::client::documents::commands
 	class QueryCommand : public RavenCommand<QueryResult>
 	{
 	private:
-		DocumentConventions _conventions;
+		const std::shared_ptr<DocumentConventions> _conventions;
 		IndexQuery _index_query;
 		bool _metadata_only = false;
 		bool _index_entries_only = false;
@@ -24,8 +24,8 @@ namespace ravendb::client::documents::commands
 	public:
 		~QueryCommand() override = default;
 
-		QueryCommand(DocumentConventions conventions, IndexQuery index_query, bool metadata_only, bool index_entries_only)
-			: _conventions(std::move(conventions))
+		QueryCommand(std::shared_ptr<DocumentConventions> conventions, IndexQuery index_query, bool metadata_only, bool index_entries_only)
+			: _conventions(conventions)
 			, _index_query(std::move(index_query))
 			, _metadata_only(metadata_only)
 			, _index_entries_only(index_entries_only)

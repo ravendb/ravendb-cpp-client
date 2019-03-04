@@ -17,17 +17,20 @@ namespace query_test
 		auto user1 = std::make_shared<ravendb::client::tests::infrastructure::entities::User>();
 		user1->name = "Vlad";
 		user1->age = 30;
-		session.store(user1, "users/1");
+		user1->id = "users/1";
+		session.store(user1, user1->id);
 
 		auto user2 = std::make_shared<ravendb::client::tests::infrastructure::entities::User>();
 		user2->name = "Slava";
 		user2->age = 50;
-		session.store(user2, "users/2");
+		user2->id = "users/2";
+		session.store(user2, user2->id);
 
 		auto user3 = std::make_shared<ravendb::client::tests::infrastructure::entities::User>();
 		user3->name = "Tuzik";
 		user3->age = 2;
-		session.store(user3, "users/3");
+		user3->id = "users/3";
+		session.store(user3, user3->id);
 
 		session.save_changes();
 

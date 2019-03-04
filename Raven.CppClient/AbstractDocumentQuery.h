@@ -31,7 +31,7 @@ namespace ravendb::client::documents::session
 
 		int32_t _current_clause_depth{};
 
-		DocumentConventions _conventions;
+		std::shared_ptr<DocumentConventions> _conventions;
 
 	protected:
 		queries::QueryOperator default_operator = queries::QueryOperator::AND;
@@ -114,7 +114,7 @@ namespace ravendb::client::documents::session
 
 		const std::optional<std::string>& get_collection_name() const;
 
-		const DocumentConventions& get_conventions() const;
+		std::shared_ptr<DocumentConventions> get_conventions() const;
 
 		std::reference_wrapper<DocumentSessionImpl> get_session() const;
 
@@ -345,7 +345,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	const DocumentConventions& AbstractDocumentQuery<T>::get_conventions() const
+	std::shared_ptr<DocumentConventions> AbstractDocumentQuery<T>::get_conventions() const
 	{
 		return _conventions;
 	}

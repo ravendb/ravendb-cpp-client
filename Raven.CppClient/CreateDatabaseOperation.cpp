@@ -14,7 +14,7 @@ namespace ravendb::client::serverwide::operations
 	{}
 
 	std::unique_ptr<http::RavenCommand<DatabasePutResult>> CreateDatabaseOperation::get_command(
-		const documents::conventions::DocumentConventions& conventions)
+		const std::shared_ptr<documents::conventions::DocumentConventions> conventions)
 	{
 		return std::make_unique<CreateDatabaseCommand>(conventions, _database_record, _replication_factor);
 	}
@@ -22,7 +22,7 @@ namespace ravendb::client::serverwide::operations
 	CreateDatabaseOperation::CreateDatabaseCommand::~CreateDatabaseCommand() = default;
 
 	CreateDatabaseOperation::CreateDatabaseCommand::CreateDatabaseCommand(
-		const documents::conventions::DocumentConventions& conventions, DatabaseRecord database_record, int32_t replication_factor)
+		std::shared_ptr<documents::conventions::DocumentConventions> conventions, DatabaseRecord database_record, int32_t replication_factor)
 		: _conventions(conventions)
 		, _database_record(std::move(database_record))
 		, _replication_factor(replication_factor)

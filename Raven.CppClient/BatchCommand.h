@@ -16,7 +16,7 @@ namespace ravendb::client::documents::commands::batches
 	class BatchCommand : public RavenCommand<json::BatchCommandResult>
 	{
 	private:
-		const conventions::DocumentConventions _conventions;
+		const std::shared_ptr<conventions::DocumentConventions> _conventions;
 		const std::vector<std::shared_ptr<CommandDataBase>> _commands;
 		//TODO add std::unordered_set<std::istream> _attachment_streams{};
 		const std::optional<BatchOptions> _options;
@@ -67,9 +67,9 @@ namespace ravendb::client::documents::commands::batches
 	public:
 		~BatchCommand() override = default;
 
-		BatchCommand(conventions::DocumentConventions conventions, const std::list<std::shared_ptr<CommandDataBase>>& commands,
+		BatchCommand(std::shared_ptr<conventions::DocumentConventions> conventions, const std::list<std::shared_ptr<CommandDataBase>>& commands,
 			std::optional<BatchOptions> options = {}, session::TransactionMode mode = session::TransactionMode::SINGLE_NODE)
-			: _conventions(std::move(conventions))
+			: _conventions(conventions)
 			, _commands(commands.cbegin(), commands.cend())
 			//, _attachment_streams()
 			, _options(std::move(options))

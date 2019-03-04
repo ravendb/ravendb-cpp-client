@@ -30,13 +30,13 @@ namespace ravendb::client::serverwide::operations
 
 		CreateDatabaseOperation(DatabaseRecord database_record, int32_t replication_factor = 1);
 
-		std::unique_ptr<http::RavenCommand<DatabasePutResult>> get_command(const documents::conventions::DocumentConventions& conventions) override;
+		std::unique_ptr<http::RavenCommand<DatabasePutResult>> get_command(std::shared_ptr<documents::conventions::DocumentConventions> conventions) override;
 
 	private:
 		class CreateDatabaseCommand : public http::RavenCommand<DatabasePutResult>
 		{
 		private:
-			const documents::conventions::DocumentConventions _conventions;
+			const std::shared_ptr<documents::conventions::DocumentConventions> _conventions;
 			const DatabaseRecord _database_record;
 			const int32_t _replication_factor;
 			const std::string _database_name;
@@ -46,7 +46,7 @@ namespace ravendb::client::serverwide::operations
 
 			~CreateDatabaseCommand() override;
 
-			CreateDatabaseCommand(const documents::conventions::DocumentConventions& conventions,
+			CreateDatabaseCommand(std::shared_ptr<documents::conventions::DocumentConventions> conventions,
 				DatabaseRecord database_record, int32_t replication_factor);
 
 			void create_request(CURL* curl, const http::ServerNode& node, std::string& url) override;

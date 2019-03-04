@@ -14,6 +14,7 @@
 #include "ILazyOperation.h"
 #include "DocumentConventions.h"
 #include "utils.h"
+#include "../Raven.CppClient.Tests/re_definitions.h"
 
 namespace ravendb::client
 {
@@ -184,7 +185,7 @@ namespace ravendb::client::documents::session
 		template<typename T>
 		void process_query_parameters(std::optional<std::string>& index_name,
 			std::optional<std::string>& collection_name,
-			const conventions::DocumentConventions& conventions);
+			std::shared_ptr<conventions::DocumentConventions> conventions);
 
 	public:
 		virtual ~InMemoryDocumentSessionOperations() = 0;
@@ -203,7 +204,7 @@ namespace ravendb::client::documents::session
 
 		std::string store_identifier() const;
 
-		const conventions::DocumentConventions& get_conventions() const;
+		std::shared_ptr<conventions::DocumentConventions> get_conventions() const;
 
 		size_t get_deferred_commands_count() const;
 
@@ -355,7 +356,7 @@ namespace ravendb::client::documents::session
 			ConcurrencyCheckMode force_concurrency_check,
 			const DocumentInfo::ToJsonConverter& to_json,
 			const DocumentInfo::EntityUpdater& update_from_json,
-			const type_info& type);
+			std::type_index type);
 
 		//TODO void prepare_compare_exchange_entities(const SaveChangesData& result);
 
@@ -458,6 +459,7 @@ namespace ravendb::client::documents::session
 	{
 		//TODO check if has id
 		bool has_id = false;
+		get_conventions()->register_type<T>();
 		store_internal(std::static_pointer_cast<void>(entity), {}, {},
 			!has_id ? ConcurrencyCheckMode::FORCED : ConcurrencyCheckMode::AUTO,
 			to_json ? *to_json : DocumentInfo::default_to_json<T>,
@@ -468,6 +470,7 @@ namespace ravendb::client::documents::session
 	template<typename T>
 	void InMemoryDocumentSessionOperations::store(std::shared_ptr<T> entity, std::string id, const std::optional<DocumentInfo::ToJsonConverter>& to_json)
 	{
+		get_conventions()->register_type<T>();
 		store_internal(std::static_pointer_cast<void>(entity), {}, std::move(id), ConcurrencyCheckMode::AUTO,
 			to_json ? *to_json : DocumentInfo::default_to_json<T>,
 			DocumentInfo::default_entity_update<T>, 
@@ -477,6 +480,7 @@ namespace ravendb::client::documents::session
 	template<typename T>
 	void InMemoryDocumentSessionOperations::store(std::shared_ptr<T> entity, std::optional<std::string> change_vector, std::optional<std::string> id, const std::optional<DocumentInfo::ToJsonConverter>& to_json)
 	{
+		get_conventions()->register_type<T>();
 		store_internal(std::static_pointer_cast<void>(entity), std::move(change_vector), std::move(id),
 			!change_vector ? ConcurrencyCheckMode::DISABLED : ConcurrencyCheckMode::FORCED,
 			to_json ? *to_json : DocumentInfo::default_to_json<T>,
@@ -504,7 +508,7 @@ namespace ravendb::client::documents::session
 
 	template<typename T>
 	void InMemoryDocumentSessionOperations::process_query_parameters(std::optional<std::string>& index_name,
-		std::optional<std::string>& collection_name, const conventions::DocumentConventions& conventions)
+		std::optional<std::string>& collection_name, std::shared_ptr<conventions::DocumentConventions> conventions)
 	{
 		const bool has_index = index_name && !impl::utils::is_blank(*index_name);
 		const bool has_collection = collection_name && !collection_name->empty();
@@ -517,29 +521,33 @@ namespace ravendb::client::documents::session
 
 		if (!has_index && !has_collection)
 		{
-			//TODO get collection name from the type or conventions 
-
-			nlohmann::json sample_document = T();
+			conventions->register_type<T>();
+			auto collection_name_temp = conventions->get_collection_name(typeid(T));
+			collection_name = impl::utils::is_blank(collection_name_temp) ?
+				constants::documents::metadata::ALL_DOCUMENTS_COLLECTION : collection_name_temp;
 			
-			if (auto it1 = sample_document.find(constants::documents::metadata::KEY); 
-				it1 != sample_document.end())
-			{
-				if(auto it2 = it1->find(constants::documents::metadata::COLLECTION);
-					it2 != it1->end())
-				{
-					collection_name = it2->get<std::string>();
-				}
-			}
-			else
-			{
-				//TODO probably would be transferred to DocumentConventions 
-				//TODO the code is duplicated(!) from InMemoryDocumentSessionOperations::store_internal()
-				{
-					auto&& type = typeid(T);
-					std::string_view type_name = type.name();
-					collection_name = type_name.substr(type_name.find_last_of(':') + 1);
-				}
-			}
+			//TODO erase later when is functional and tested
+			//nlohmann::json sample_document = T();
+			//
+			//if (auto it1 = sample_document.find(constants::documents::metadata::KEY); 
+			//	it1 != sample_document.end())
+			//{
+			//	if(auto it2 = it1->find(constants::documents::metadata::COLLECTION);
+			//		it2 != it1->end())
+			//	{
+			//		collection_name = it2->get<std::string>();
+			//	}
+			//}
+			//else
+			//{
+			//	//TODO probably would be transferred to DocumentConventions 
+			//	//TODO the code is duplicated(!) from InMemoryDocumentSessionOperations::store_internal()
+			//	{
+			//		auto&& type = typeid(T);
+			//		std::string_view type_name = type.name();
+			//		collection_name = type_name.substr(type_name.find_last_of(':') + 1);
+			//	}
+			//}
 		}
 	}
 }

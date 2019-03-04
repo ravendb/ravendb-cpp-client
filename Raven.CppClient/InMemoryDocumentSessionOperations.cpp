@@ -52,13 +52,9 @@ namespace ravendb::client::documents::session
 		return res.str();
 	}
 
-	const conventions::DocumentConventions& InMemoryDocumentSessionOperations::get_conventions() const
+	std::shared_ptr<conventions::DocumentConventions> InMemoryDocumentSessionOperations::get_conventions() const
 	{
-		//TODO implement
-		//return _request_executor.get_conventions();
-		//throw std::runtime_error("Not implemented");
-		static conventions::DocumentConventions conv{};
-		return conv;
+		return _request_executor->get_conventions();
 	}
 
 	size_t InMemoryDocumentSessionOperations::get_deferred_commands_count() const
@@ -404,7 +400,7 @@ namespace ravendb::client::documents::session
 		ConcurrencyCheckMode force_concurrency_check,
 		const DocumentInfo::ToJsonConverter& to_json,
 		const DocumentInfo::EntityUpdater& update_from_json,
-		const type_info& type)
+		std::type_index type)
 	{
 		if (no_tracking)
 		{
@@ -430,8 +426,10 @@ namespace ravendb::client::documents::session
 			if (change_vector)
 			{
 				doc_info->change_vector = std::move(change_vector).value();
-				doc_info->concurrency_check_mode = force_concurrency_check;
 			}
+
+			doc_info->concurrency_check_mode = force_concurrency_check;
+
 			if (!doc_info->to_json_converter)
 			{
 				doc_info->to_json_converter = to_json;
@@ -463,32 +461,49 @@ namespace ravendb::client::documents::session
 		// to detect if they generate duplicates.
 		assert_is_unique_instance(entity, id ? *id : std::string());
 
-		nlohmann::json metadata = nlohmann::json::object();
+		
 		
 		//TODO generate and set collection name
+
+		auto metadata = get_conventions()->get_serialized_type(type)->at(constants::documents::metadata::KEY);
+
+		auto& collection_name = metadata.at(constants::documents::metadata::COLLECTION);
+		if(collection_name.is_null())
+		{
+			collection_name = get_conventions()->get_collection_name(type);
+		}
+
+		auto& cpp_type = metadata.at(constants::documents::metadata::RAVEN_C_PLUS_PLUS_TYPE);
+		if(cpp_type.is_null())
+		{
+			cpp_type = get_conventions()->get_c_plus_plus_class_name(type);
+		}
+
+
+	//TODO erase later when above is functional and tested
+		////this part is unique to C++ : metadata check from the entity serialized
+		////TODO probably would be transferred to DocumentConventions 
+		//auto temp_doc_info = std::make_shared<DocumentInfo>();
+		//temp_doc_info->to_json_converter = to_json;
+		//auto document = EntityToJson::convert_entity_to_json(entity, temp_doc_info);
+		
+		//metadata = document[constants::documents::metadata::KEY];
+		//if(metadata.find(constants::documents::metadata::COLLECTION) == metadata.end())
+		//{
+		//	std::ostringstream collection{};
+		//	std::string_view type_name = type.name();
+		//	collection << type_name.substr(type_name.find_last_of(':') + 1);
+		//	impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::COLLECTION, collection.str());			
+		//}
+		//if (id)
+		//{
+		//	impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::ID, *id);
+		//}
+
 
 		if (id)
 		{
 			_known_missing_ids.erase(*id);
-		}
-
-		//this part is unique to C++ : metadata check from the entity serialized
-		//TODO probably would be transferred to DocumentConventions 
-		auto temp_doc_info = std::make_shared<DocumentInfo>();
-		temp_doc_info->to_json_converter = to_json;
-		auto document = EntityToJson::convert_entity_to_json(entity, temp_doc_info);
-
-		metadata = document[constants::documents::metadata::KEY];
-		if(metadata.find(constants::documents::metadata::COLLECTION) == metadata.end())
-		{
-			std::ostringstream collection{};
-			std::string_view type_name = type.name();
-			collection << type_name.substr(type_name.find_last_of(':') + 1);
-			impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::COLLECTION, collection.str());			
-		}
-		if (id)
-		{
-			impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::ID, *id);
 		}
 
 		store_entity_in_unit_of_work(id, entity, change_vector, std::move(metadata), force_concurrency_check, to_json, update_from_json);

@@ -21,6 +21,11 @@ namespace ravendb::client::documents::session
 		static std::shared_ptr<DocumentQuery> create(InMemoryDocumentSessionOperations& session, std::optional<std::string> index_name,
 			std::optional<std::string> collection_name, bool is_group_by);
 
+		std::shared_ptr<DocumentConventions> get_conventions() const
+		{
+			return AbstractDocumentQuery<T>::get_conventions();
+		}
+
 		std::vector<std::shared_ptr<T>> to_list()
 		{
 			return 	AbstractDocumentQuery<T>::to_list();

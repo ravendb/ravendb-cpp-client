@@ -159,6 +159,7 @@
     <ClInclude Include="BatchOperation.h" />
     <ClInclude Include="BatchOptions.h" />
     <ClInclude Include="CertificateDetails.h" />
+    <ClInclude Include="ClientConfiguration.h" />
     <ClInclude Include="CommandDataBase.h" />
     <ClInclude Include="CommandType.h" />
     <ClInclude Include="CompareStringsIgnoreCase.h" />
@@ -174,6 +175,7 @@
     <ClInclude Include="IDocumentQueryBaseSingle.h" />
     <ClInclude Include="ILazyOperation.h" />
     <ClInclude Include="IndexQueryContent.h" />
+    <ClInclude Include="Inflector.h" />
     <ClInclude Include="IRawDocumentQuery.h" />
     <ClInclude Include="Lazy.h" />
     <ClInclude Include="LazyLoaderWithInclude.h" />
@@ -293,6 +295,8 @@
     <ClInclude Include="GetDocumentsCommand.h" />
     <ClInclude Include="ravendb.h" />
     <ClInclude Include="RawDocumentQuery.h" />
+    <ClInclude Include="ReadBalanceBehavior.h" />
+    <ClInclude Include="ReflectionUtil.h" />
     <ClInclude Include="ReplicationBatchOptions.h" />
     <ClInclude Include="RequestExecutor.h" />
     <ClInclude Include="ResetIndexOperation.h" />
@@ -337,6 +341,7 @@
     <ClCompile Include="DeclareToken.cpp" />
     <ClCompile Include="DeleteDatabaseResult.cpp" />
     <ClCompile Include="DeleteDatabasesOperation.cpp" />
+    <ClCompile Include="DocumentConventions.cpp" />
     <ClCompile Include="DocumentSession.cpp" />
     <ClCompile Include="DocumentSessionImpl.cpp" />
     <ClCompile Include="DocumentStore.cpp" />
@@ -359,6 +364,7 @@
     <ClCompile Include="MultiLoaderWithInclude.cpp" />
     <ClCompile Include="QueryOperation.cpp" />
     <ClCompile Include="QueryToken.cpp" />
+    <ClCompile Include="ReflectionUtil.cpp" />
     <ClCompile Include="RequestExecutor.cpp" />
     <ClCompile Include="ScriptResolver.cpp" />
     <ClCompile Include="ServerNode.cpp" />

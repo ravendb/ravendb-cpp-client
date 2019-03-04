@@ -23,7 +23,7 @@ namespace ravendb::client::documents::operations
 			: _id(id)
 		{}
 
-		std::unique_ptr<RavenCommand<nlohmann::json>> get_command(const DocumentConventions& conventions) const override
+		std::unique_ptr<RavenCommand<nlohmann::json>> get_command(std::shared_ptr<DocumentConventions> conventions) const override
 		{
 			return std::make_unique<GetOperationStateCommand>(DocumentConventions::default_conventions(), _id);
 		}
@@ -32,14 +32,14 @@ namespace ravendb::client::documents::operations
 		class GetOperationStateCommand : public RavenCommand<nlohmann::json>
 		{
 		private:
-			const DocumentConventions _conventions;
+			const std::shared_ptr<DocumentConventions> _conventions;
 			const int64_t _id;
 
 		public:
 			~GetOperationStateCommand() override = default;
 
-			GetOperationStateCommand(DocumentConventions conventions, int64_t id)
-				: _conventions(std::move(conventions))
+			GetOperationStateCommand(std::shared_ptr<DocumentConventions> conventions, int64_t id)
+				: _conventions(conventions)
 				, _id(id)
 			{}
 

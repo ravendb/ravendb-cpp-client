@@ -22,7 +22,7 @@ namespace ravendb::client::serverwide::operations
 
 		//using std::unique_ptr for polymorphism
 		virtual std::unique_ptr<http::RavenCommand<TResult>> get_command(
-			const documents::conventions::DocumentConventions& conventions) = 0;
+			std::shared_ptr<documents::conventions::DocumentConventions> conventions) = 0;
 	};
 
 	template <typename TResult>

@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "CertificateDetails.h"
 #include "RavenErrors.h"
+#include "DocumentConventions.h"
 
 namespace ravendb::client::http
 {
@@ -20,6 +21,8 @@ namespace ravendb::client::http
 		impl::CurlOptionsSetter _set_before_perform = {};
 		impl::CurlOptionsSetter _set_after_perform = {};
 
+		std::shared_ptr<documents::conventions::DocumentConventions> _conventions{};
+
 		void validate_urls();
 
 		void first_topology_update();
@@ -32,8 +35,9 @@ namespace ravendb::client::http
 			std::string db_name,
 			std::vector<std::string> initial_urls,
 			std::optional<impl::CertificateDetails> certificate_details,
-			ravendb::client::impl::CurlOptionsSetter set_before_perform,
-			ravendb::client::impl::CurlOptionsSetter set_after_perform);
+			std::shared_ptr<documents::conventions::DocumentConventions> conventions,
+			impl::CurlOptionsSetter set_before_perform,
+			impl::CurlOptionsSetter set_after_perform);
 
 	public:
 		~RequestExecutor();
@@ -42,6 +46,8 @@ namespace ravendb::client::http
 		RequestExecutor(RequestExecutor&& other) = delete;
 		RequestExecutor& operator=(const RequestExecutor& other) = delete;
 		RequestExecutor& operator=(RequestExecutor&& other) = delete;
+
+		std::shared_ptr<documents::conventions::DocumentConventions> get_conventions() const;
 
 		template<typename Result_t>
 		Result_t execute(RavenCommand<Result_t>& cmd);
@@ -55,6 +61,7 @@ namespace ravendb::client::http
 		static std::unique_ptr<RequestExecutor> create(
 			std::vector<std::string> urls,
 			std::string db,
+			std::shared_ptr<documents::conventions::DocumentConventions> conventions,
 			std::optional<impl::CertificateDetails> certificate_details = {},
 			ravendb::client::impl::CurlOptionsSetter set_before_perform = {},
 			ravendb::client::impl::CurlOptionsSetter set_after_perform = {});

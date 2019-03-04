@@ -26,7 +26,7 @@ namespace ravendb::client::documents::operations::indexes
 			, _page_size(page_size)
 		{}
 
-		std::unique_ptr<RavenCommand<std::vector<IndexDefinition>>> get_command(const DocumentConventions& conventions) const override
+		std::unique_ptr<RavenCommand<std::vector<IndexDefinition>>> get_command(std::shared_ptr<DocumentConventions> conventions) const override
 		{
 			return std::make_unique<GetIndexesCommand>(_start, _page_size);
 		}

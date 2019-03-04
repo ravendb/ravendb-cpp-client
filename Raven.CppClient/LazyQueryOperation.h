@@ -14,7 +14,7 @@ namespace ravendb::client::documents::session::operations::lazy
 		using ResultType = std::vector<std::shared_ptr<T>>;
 
 	private:
-		const DocumentConventions _conventions;
+		std::shared_ptr<DocumentConventions> _conventions;
 		std::shared_ptr<QueryOperation> _query_operation;
 		const std::vector<std::function<void(const QueryResult&)>> _after_query_executed;
 
@@ -27,7 +27,7 @@ namespace ravendb::client::documents::session::operations::lazy
 	public:
 		~LazyQueryOperation() override = default;
 
-		LazyQueryOperation(DocumentConventions conventions, std::shared_ptr<QueryOperation> query_operation,
+		LazyQueryOperation(std::shared_ptr<DocumentConventions> conventions, std::shared_ptr<QueryOperation> query_operation,
 			std::vector<std::function<void(const QueryResult&)>> after_query_executed);
 
 		std::optional<commands::multi_get::GetRequest> create_request() override;
@@ -59,9 +59,9 @@ namespace ravendb::client::documents::session::operations::lazy
 	}
 
 	template <typename T>
-	LazyQueryOperation<T>::LazyQueryOperation(DocumentConventions conventions, std::shared_ptr<QueryOperation> query_operation,
+	LazyQueryOperation<T>::LazyQueryOperation(std::shared_ptr<DocumentConventions> conventions, std::shared_ptr<QueryOperation> query_operation,
 		std::vector<std::function<void(const QueryResult&)>> after_query_executed)
-		: _conventions(std::move(conventions))
+		: _conventions(conventions)
 		, _query_operation(query_operation)
 		, _after_query_executed(std::move(after_query_executed))
 	{}

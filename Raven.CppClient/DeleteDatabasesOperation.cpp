@@ -47,7 +47,7 @@ namespace ravendb::client::serverwide::operations
 	}
 
 	std::unique_ptr<http::RavenCommand<DeleteDatabaseResult>> DeleteDatabasesOperation::get_command(
-		const documents::conventions::DocumentConventions& conventions)
+		std::shared_ptr<documents::conventions::DocumentConventions> conventions)
 	{
 		return std::make_unique<DeleteDatabaseCommand>(conventions, _parameters);
 	}
@@ -56,7 +56,7 @@ namespace ravendb::client::serverwide::operations
 	DeleteDatabasesOperation::DeleteDatabaseCommand::~DeleteDatabaseCommand() = default;
 
 	DeleteDatabasesOperation::DeleteDatabaseCommand::DeleteDatabaseCommand(
-		const documents::conventions::DocumentConventions & conventions, const delete_db_op::Parameters & parameters)
+		std::shared_ptr<documents::conventions::DocumentConventions> conventions, const delete_db_op::Parameters & parameters)
 		:_parameters_str([&]
 	{
 		nlohmann::json j = parameters;
