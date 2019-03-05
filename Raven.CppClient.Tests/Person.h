@@ -17,7 +17,7 @@ namespace ravendb::client::tests::infrastructure::entities
 		set_val_to_json(j, "Id", p.id);
 		set_val_to_json(j, "Name", p.name);
 		set_val_to_json(j, "AddressId", p.address_id);
-		j["@metadata"]["@collection"] = "Persons";
+		//j["@metadata"]["@collection"] = "Persons";
 	}
 
 	inline void from_json(const nlohmann::json& j, Person& p)

@@ -26,7 +26,6 @@ namespace ravendb::client::tests::infrastructure::entities
 	inline void to_json(nlohmann::json& j, const User& u)
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
-		using ravendb::client::impl::utils::json_utils::create_metadata;
 
 		set_val_to_json(j, "Id", u.id);
 		set_val_to_json(j, "Name", u.name);
@@ -34,8 +33,6 @@ namespace ravendb::client::tests::infrastructure::entities
 		set_val_to_json(j, "AddressId", u.address_id);
 		set_val_to_json(j, "Count", u.count);
 		set_val_to_json(j, "Age", u.age);
-
-		create_metadata(j, "ravendb::client::tests::infrastructure::entities::User");
 	}
 
 	inline void from_json(const nlohmann::json& j, User& u)

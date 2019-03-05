@@ -54,7 +54,7 @@ namespace ravendb::client::tests::client
 		};
 	};
 
-	TEST_F(CrudTest, EntitiesAreSavedUsingLowerCase)
+	TEST_F(CrudTest, EntitiesAreSavedUsingCustomPropertyNamingStrategy)
 	{
 		{
 			auto session = test_suite_store->get().open_session();
@@ -80,7 +80,7 @@ namespace ravendb::client::tests::client
 	}
 
 
-	//TODO implement
+	//IRRELEVANT : Json properties' naming are custom ANYWAY.
 	TEST_F(CrudTest, CanCustomizePropertyNamingStrategy)
 	{
 		SUCCEED();

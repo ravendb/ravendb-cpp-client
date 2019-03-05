@@ -306,8 +306,8 @@ namespace ravendb::client::documents::session
 		void register_includes(const nlohmann::json& includes);
 
 		//TODO register_missing_includes is NOT fully implemented since it DOESN'T parse the include path
-		//TODO but use it as is (only works with simple path)
-		//TODO this behaviour is NOT implemented in Java client ether.
+		//TODO but uses them as is (only works with simple path)
+		//TODO this behaviour is NOT implemented in Java client nether.
 		void register_missing_includes(const nlohmann::json& results, const nlohmann::json& includes,
 			const std::vector<std::string>& include_paths);
 
@@ -459,7 +459,7 @@ namespace ravendb::client::documents::session
 	{
 		//TODO check if has id
 		bool has_id = false;
-		get_conventions()->register_type<T>();
+
 		store_internal(std::static_pointer_cast<void>(entity), {}, {},
 			!has_id ? ConcurrencyCheckMode::FORCED : ConcurrencyCheckMode::AUTO,
 			to_json ? *to_json : DocumentInfo::default_to_json<T>,
@@ -470,7 +470,6 @@ namespace ravendb::client::documents::session
 	template<typename T>
 	void InMemoryDocumentSessionOperations::store(std::shared_ptr<T> entity, std::string id, const std::optional<DocumentInfo::ToJsonConverter>& to_json)
 	{
-		get_conventions()->register_type<T>();
 		store_internal(std::static_pointer_cast<void>(entity), {}, std::move(id), ConcurrencyCheckMode::AUTO,
 			to_json ? *to_json : DocumentInfo::default_to_json<T>,
 			DocumentInfo::default_entity_update<T>, 
@@ -480,7 +479,6 @@ namespace ravendb::client::documents::session
 	template<typename T>
 	void InMemoryDocumentSessionOperations::store(std::shared_ptr<T> entity, std::optional<std::string> change_vector, std::optional<std::string> id, const std::optional<DocumentInfo::ToJsonConverter>& to_json)
 	{
-		get_conventions()->register_type<T>();
 		store_internal(std::static_pointer_cast<void>(entity), std::move(change_vector), std::move(id),
 			!change_vector ? ConcurrencyCheckMode::DISABLED : ConcurrencyCheckMode::FORCED,
 			to_json ? *to_json : DocumentInfo::default_to_json<T>,
@@ -521,33 +519,9 @@ namespace ravendb::client::documents::session
 
 		if (!has_index && !has_collection)
 		{
-			conventions->register_type<T>();
 			auto collection_name_temp = conventions->get_collection_name(typeid(T));
 			collection_name = impl::utils::is_blank(collection_name_temp) ?
 				constants::documents::metadata::ALL_DOCUMENTS_COLLECTION : collection_name_temp;
-			
-			//TODO erase later when is functional and tested
-			//nlohmann::json sample_document = T();
-			//
-			//if (auto it1 = sample_document.find(constants::documents::metadata::KEY); 
-			//	it1 != sample_document.end())
-			//{
-			//	if(auto it2 = it1->find(constants::documents::metadata::COLLECTION);
-			//		it2 != it1->end())
-			//	{
-			//		collection_name = it2->get<std::string>();
-			//	}
-			//}
-			//else
-			//{
-			//	//TODO probably would be transferred to DocumentConventions 
-			//	//TODO the code is duplicated(!) from InMemoryDocumentSessionOperations::store_internal()
-			//	{
-			//		auto&& type = typeid(T);
-			//		std::string_view type_name = type.name();
-			//		collection_name = type_name.substr(type_name.find_last_of(':') + 1);
-			//	}
-			//}
 		}
 	}
 }

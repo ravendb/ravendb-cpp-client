@@ -10,7 +10,7 @@ namespace ravendb::client::documents
 	class DocumentStoreBase : public IDocumentStore
 	{
 	private:
-		std::shared_ptr<conventions::DocumentConventions> _conventions{};
+		mutable std::shared_ptr<conventions::DocumentConventions> _conventions{};
 
 	protected:
 		std::vector<std::string> urls{};

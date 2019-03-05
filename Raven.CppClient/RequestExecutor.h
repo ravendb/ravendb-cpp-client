@@ -63,8 +63,8 @@ namespace ravendb::client::http
 			std::string db,
 			std::shared_ptr<documents::conventions::DocumentConventions> conventions,
 			std::optional<impl::CertificateDetails> certificate_details = {},
-			ravendb::client::impl::CurlOptionsSetter set_before_perform = {},
-			ravendb::client::impl::CurlOptionsSetter set_after_perform = {});
+			impl::CurlOptionsSetter set_before_perform = {},
+			impl::CurlOptionsSetter set_after_perform = {});
 	};
 
 	template<typename TResult>

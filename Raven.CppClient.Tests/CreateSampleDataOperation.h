@@ -6,7 +6,7 @@ namespace ravendb::client::tests::infrastructure
 	class CreateSampleDataOperation : documents::operations::IVoidMaintenanceOperation
 	{
 	public:
-		std::unique_ptr<VoidRavenCommandBase> get_command(const DocumentConventions& conventions) const override;
+		std::unique_ptr<VoidRavenCommandBase> get_command(std::shared_ptr<DocumentConventions> conventions) const override;
 
 	private:
 		class CreateSampleDataCommand : public http::VoidRavenCommand

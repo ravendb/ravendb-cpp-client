@@ -119,9 +119,9 @@ namespace ravendb::client::tests::definitions
 		static const auto unsec_conn_details = ConnectionDetailsHolder(UNSECURED_RE_DETAILS, false);
 		
 		return is_secured ?
-			http::RequestExecutor::create({ sec_conn_details.get_url() }, db,
+			http::RequestExecutor::create({ sec_conn_details.get_url() }, db, documents::conventions::DocumentConventions::default_conventions(),
 				sec_conn_details.get_cert_det(), set_no_proxy) :
-			http::RequestExecutor::create({ unsec_conn_details.get_url() }, db,
+			http::RequestExecutor::create({ unsec_conn_details.get_url() }, db, documents::conventions::DocumentConventions::default_conventions(),
 				{}, use_fiddler ? set_for_fiddler : set_no_proxy);
 	}
 

@@ -107,7 +107,6 @@
     <ClCompile Include="FieldsToFetchToken.cpp">
       <Filter>ravendb.client\documents\session\tokens</Filter>
     </ClCompile>
-    <ClCompile Include="LazySessionOperationsImpl.cpp" />
     <ClCompile Include="AdvancedSessionOperations.cpp">
       <Filter>ravendb.client\documents\session</Filter>
     </ClCompile>
@@ -129,8 +128,11 @@
     <ClCompile Include="DocumentConventions.cpp">
       <Filter>ravendb.client\documents\conventions</Filter>
     </ClCompile>
-    <ClCompile Include="ReflectionUtil.cpp">
+    <ClCompile Include="GetCppClassName.cpp">
       <Filter>ravendb.client\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="LazySessionOperationsImpl.cpp">
+      <Filter>ravendb.client\documents\session\operations\lazy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -642,10 +644,10 @@
     <ClInclude Include="ClientConfiguration.h">
       <Filter>ravendb.client\documents\operations\configuration</Filter>
     </ClInclude>
-    <ClInclude Include="ReflectionUtil.h">
+    <ClInclude Include="Inflector.h">
       <Filter>ravendb.client\impl</Filter>
     </ClInclude>
-    <ClInclude Include="Inflector.h">
+    <ClInclude Include="GetCppClassName.h">
       <Filter>ravendb.client\impl</Filter>
     </ClInclude>
   </ItemGroup>

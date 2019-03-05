@@ -18,7 +18,7 @@ namespace ravendb::client::constants
 			constexpr char REVISION_COUNTERS[] = "@counters-snapshot";
 			constexpr char INDEX_SCORE[] = "@index-score";
 			constexpr char LAST_MODIFIED[] = "@last-modified";
-			constexpr char RAVEN_C_PLUS_PLUS_TYPE[] = "Raven-C-Plus-Plus-Type";
+			constexpr char RAVEN_CPP_TYPE[] = "Raven-CPP-Type";
 			constexpr char CHANGE_VECTOR[] = "@change-vector";
 			constexpr char EXPIRES[] = "@expires";
 			constexpr char ALL_DOCUMENTS_COLLECTION[] = "@all_docs";

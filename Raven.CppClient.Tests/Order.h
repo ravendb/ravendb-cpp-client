@@ -34,7 +34,7 @@ namespace ravendb::client::tests::infrastructure::entities
 		set_val_to_json(j, "ShipVia", o.ship_via);
 		set_val_to_json(j, "Freight", o.freight);
 		set_val_to_json(j, "Lines", o.lines);
-		j["@metadata"]["@collection"] = "Orders";
+		//j["@metadata"]["@collection"] = "Orders";
 	}
 
 	inline void from_json(const nlohmann::json& j, Order& o)

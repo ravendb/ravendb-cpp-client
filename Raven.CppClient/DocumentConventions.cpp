@@ -1,15 +1,12 @@
 #include "stdafx.h"
 #include "DocumentConventions.h"
 #include "Constants.h"
-#include "ReflectionUtil.h"
-#include "utils.h"
 #include "CompareStringsIgnoreCase.h"
 #include "Inflector.h"
+#include "GetCppClassName.h"
 
 namespace ravendb::client::documents::conventions
 {
-	std::unordered_map<std::type_index, DocumentConventions::DefaultTypeSerialized> DocumentConventions::_registered_types{};
-
 	std::unordered_map<std::type_index, std::string> DocumentConventions::_cached_default_type_collection_names{};
 
 	void DocumentConventions::assert_not_frozen() const
@@ -23,10 +20,9 @@ namespace ravendb::client::documents::conventions
 
 	DocumentConventions::DocumentConventions()
 		: _identity_part_separator("/")
-		
-		, _find_identity_property([](const std::string& property)->bool
+		, _find_identity_property([]()->std::optional<std::string>
 	{
-		return property == constants::documents::metadata::ID_PROPERTY;
+		return "id";
 	})
 		, _transform_class_collection_name_to_document_id_prefix([](const std::string& collection_name)->std::string
 	{
@@ -34,22 +30,22 @@ namespace ravendb::client::documents::conventions
 	})
 		, _find_identity_property_name_from_collection_name([](const std::string&)->std::string
 	{
-		return constants::documents::metadata::ID_PROPERTY;
+		return "Id";
 	})
 		, _find_collection_name([](std::type_index type)->std::string
 	{
 		return default_get_collection_name(type);
 	})
-		, _find_c_plus_plus_class_name([](std::type_index type)->std::string
+		, _find_cpp_class_name([](std::type_index type)->std::string
 	{
-		return impl::ReflectionUtil::get_full_name_without_version(type);
+		return impl::utils::GetCppClassName()(type);
 	})
-		, _find_c_plus_plus_class([](const std::string& id, const nlohmann::json& doc)->std::optional<std::string>
+		, _find_cpp_class([](const std::string& id, const nlohmann::json& doc)->std::optional<std::string>
 	{
 		if (auto metadata_it = doc.find(constants::documents::metadata::KEY);
 			metadata_it != doc.end())
 		{
-			if (auto cpp_type_it = metadata_it->find(constants::documents::metadata::RAVEN_C_PLUS_PLUS_TYPE);
+			if (auto cpp_type_it = metadata_it->find(constants::documents::metadata::RAVEN_CPP_TYPE);
 				cpp_type_it != metadata_it->end())
 			{
 				return cpp_type_it->get<std::string>();
@@ -65,7 +61,8 @@ namespace ravendb::client::documents::conventions
 	DocumentConventions::DocumentConventions(const DocumentConventions& other)
 		: _frozen{ other._frozen },
 		_original_configuration{
-		  std::make_unique<operations::configuration::ClientConfiguration>(*other._original_configuration) },
+		  other._original_configuration ? std::make_unique<operations::configuration::ClientConfiguration>(*other._original_configuration) :
+		  std::make_unique<operations::configuration::ClientConfiguration>()},
 		_id_property_cache{ other._id_property_cache },
 		_save_enums_as_integers{ other._save_enums_as_integers },
 		_identity_part_separator{ other._identity_part_separator },
@@ -77,8 +74,8 @@ namespace ravendb::client::documents::conventions
 		_find_identity_property_name_from_collection_name{
 		  other._find_identity_property_name_from_collection_name },
 		_find_collection_name{ other._find_collection_name },
-		_find_c_plus_plus_class_name{ other._find_c_plus_plus_class_name },
-		_find_c_plus_plus_class{ other._find_c_plus_plus_class },
+		_find_cpp_class_name{ other._find_cpp_class_name },
+		_find_cpp_class{ other._find_cpp_class },
 		_use_optimistic_concurrency{ other._use_optimistic_concurrency },
 		_throw_if_query_page_size_is_not_set{ other._throw_if_query_page_size_is_not_set },
 		_max_number_of_requests_per_session{ other._max_number_of_requests_per_session },
@@ -158,28 +155,28 @@ namespace ravendb::client::documents::conventions
 		_use_optimistic_concurrency = use_optimistic_concurrency;
 	}
 
-	std::function<std::optional<std::string>(const std::string&, const nlohmann::json&)> DocumentConventions::
-	get_find_c_plus_plus_class() const
+	std::function<std::optional<std::string>(const std::string&, const nlohmann::json&)> 
+		DocumentConventions::get_find_cpp_class() const
 	{
-		return _find_c_plus_plus_class;
+		return _find_cpp_class;
 	}
 
-	void DocumentConventions::get_find_c_plus_plus_class(
-		std::function<std::optional<std::string>(const std::string&, const nlohmann::json&)> find_c_plus_plus_class)
+	void DocumentConventions::set_find_cpp_class(
+		std::function<std::optional<std::string>(const std::string&, const nlohmann::json&)> find_cpp_class)
 	{
 		assert_not_frozen();
-		_find_c_plus_plus_class = find_c_plus_plus_class;
+		_find_cpp_class = find_cpp_class;
 	}
 
-	std::function<std::string(std::type_index)> DocumentConventions::get_find_c_plus_plus_class_name() const
+	std::function<std::string(std::type_index)> DocumentConventions::get_find_cpp_class_name() const
 	{
-		return _find_c_plus_plus_class_name;
+		return _find_cpp_class_name;
 	}
 
-	void DocumentConventions::set_find_c_plus_plus_class_name(std::function<std::string(std::type_index)> find_c_plus_plus_class_name)
+	void DocumentConventions::set_find_cpp_class_name(std::function<std::string(std::type_index)> find_cpp_class_name)
 	{
 		assert_not_frozen();
-		_find_c_plus_plus_class_name = find_c_plus_plus_class_name;
+		_find_cpp_class_name = find_cpp_class_name;
 	}
 
 	std::function<std::optional<std::string>(std::type_index)> DocumentConventions::get_find_collection_name() const
@@ -229,12 +226,12 @@ namespace ravendb::client::documents::conventions
 		_transform_class_collection_name_to_document_id_prefix = transform_class_collection_name_to_document_id_prefix;
 	}
 
-	std::function<bool(const std::string&)> DocumentConventions::get_find_identity_property() const
+	std::function<std::optional<std::string>()> DocumentConventions::get_find_identity_property() const
 	{
 		return _find_identity_property;
 	}
 
-	void DocumentConventions::set_find_identity_property(std::function<bool(const std::string&)> find_identity_property)
+	void DocumentConventions::set_find_identity_property(std::function<std::optional<std::string>()> find_identity_property)
 	{
 		assert_not_frozen();
 		_find_identity_property = find_identity_property;
@@ -280,24 +277,14 @@ namespace ravendb::client::documents::conventions
 		return conventions;
 	}
 
-	std::optional<nlohmann::json> DocumentConventions::get_serialized_type(std::type_index type)
+	std::optional<std::string> DocumentConventions::get_cpp_class(const std::string& id, const nlohmann::json& document)
 	{
-		if(auto it = _registered_types.find(type);
-			it != _registered_types.end())
-		{
-			return (it->second)();
-		}
-		return {};
+		return _find_cpp_class(id, document);
 	}
 
-	std::optional<std::string> DocumentConventions::get_c_plus_plus_class(const std::string& id, const nlohmann::json& document)
+	std::string DocumentConventions::get_cpp_class_name(std::type_index entity_type)
 	{
-		return _find_c_plus_plus_class(id, document);
-	}
-
-	std::string DocumentConventions::get_c_plus_plus_class_name(std::type_index entity_type)
-	{
-		return _find_c_plus_plus_class_name(entity_type);
+		return _find_cpp_class_name(entity_type);
 	}
 
 	std::optional<std::string> DocumentConventions::get_identity_property(std::type_index type)
@@ -308,31 +295,13 @@ namespace ravendb::client::documents::conventions
 			return it->second;
 		}
 
-		if (auto j = get_serialized_type(type);
-			j.has_value())
+		auto id_property = _find_identity_property();
+		if(id_property)
 		{
-			if (auto&& id_field = j
-				->at(constants::documents::metadata::KEY)
-				.at(constants::documents::metadata::ID_PROPERTY);
-				!id_field.is_null())
-			{
-				return id_field.get<std::string>();
-			}
-
-			for (const auto& [field, value] : static_cast<const nlohmann::json::object_t&>(j.value()))
-			{
-				if(_find_identity_property(field))
-				{
-					_id_property_cache.insert_or_assign(type, field);
-					return field;
-				}
-			}
-			return {};
-		}else
-		{
-			throw std::invalid_argument("The type 'type' is not registered at DocumentConventions."
-				" Please register in DocumentConventions first.");
+			_id_property_cache.insert_or_assign(type, *id_property);
 		}
+
+		return std::move(id_property);
 	}
 
 	void DocumentConventions::update_from(const operations::configuration::ClientConfiguration& configuration)
@@ -409,30 +378,18 @@ namespace ravendb::client::documents::conventions
 			return it->second;
 		}
 
-		auto full_name = get_serialized_type(type);
-		if (!full_name)
+		auto&& full_class_name = impl::utils::GetCppClassName()(type);
+		std::string simple_class_name{};
+		if (auto pos = full_class_name.find_last_of(':');
+			pos != std::string::npos)
 		{
-			throw std::invalid_argument("The type 'type' is not registered at DocumentConventions."
-				" Please register in DocumentConventions first.");
+			simple_class_name = full_class_name.substr(pos+1);
 		}
-
-		if(auto collection_name_it = full_name
-			->at(constants::documents::metadata::KEY)
-			.at(constants::documents::metadata::COLLECTION);
-			!collection_name_it.is_null() )
+		else
 		{
-			auto collection_name = collection_name_it.get<std::string>();
-			_cached_default_type_collection_names.insert_or_assign(type, collection_name);
-			return collection_name;
+			simple_class_name = full_class_name;
 		}
-
-		auto&& full_type_name = full_name
-			->at(constants::documents::metadata::KEY)
-			.at(constants::documents::metadata::RAVEN_C_PLUS_PLUS_TYPE)
-			.get<std::string>();
-		auto simple_type_name = full_type_name.substr(full_type_name.find_last_of(':') + 1);
-
-		auto result = impl::Inflector::pluralize(simple_type_name);
+		auto result = impl::Inflector::pluralize(simple_class_name);
 
 		_cached_default_type_collection_names.insert_or_assign(type, result);
 

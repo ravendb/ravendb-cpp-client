@@ -166,6 +166,7 @@
     <ClInclude Include="DeclareToken.h" />
     <ClInclude Include="DocumentQuery.h" />
     <ClInclude Include="FromToken.h" />
+    <ClInclude Include="GetCppClassName.h" />
     <ClInclude Include="GetRequest.h" />
     <ClInclude Include="GetResponse.h" />
     <ClInclude Include="HttpStatus.h" />
@@ -296,7 +297,6 @@
     <ClInclude Include="ravendb.h" />
     <ClInclude Include="RawDocumentQuery.h" />
     <ClInclude Include="ReadBalanceBehavior.h" />
-    <ClInclude Include="ReflectionUtil.h" />
     <ClInclude Include="ReplicationBatchOptions.h" />
     <ClInclude Include="RequestExecutor.h" />
     <ClInclude Include="ResetIndexOperation.h" />
@@ -350,6 +350,7 @@
     <ClCompile Include="EntityToJson.cpp" />
     <ClCompile Include="FieldsToFetchToken.cpp" />
     <ClCompile Include="FromToken.cpp" />
+    <ClCompile Include="GetCppClassName.cpp" />
     <ClCompile Include="GetDatabaseNamesOperation.cpp" />
     <ClCompile Include="GetDatabaseRecordOperation.cpp" />
     <ClCompile Include="GetDatabaseTopologyCommand.cpp" />
@@ -364,7 +365,6 @@
     <ClCompile Include="MultiLoaderWithInclude.cpp" />
     <ClCompile Include="QueryOperation.cpp" />
     <ClCompile Include="QueryToken.cpp" />
-    <ClCompile Include="ReflectionUtil.cpp" />
     <ClCompile Include="RequestExecutor.cpp" />
     <ClCompile Include="ScriptResolver.cpp" />
     <ClCompile Include="ServerNode.cpp" />

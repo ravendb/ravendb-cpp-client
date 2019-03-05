@@ -107,11 +107,11 @@ namespace ravendb::client::http
 
 	std::unique_ptr<RequestExecutor> RequestExecutor::create(
 		std::vector<std::string> urls,
-		std::string db,		
+		std::string db,
 		std::shared_ptr<documents::conventions::DocumentConventions> conventions,
 		std::optional<impl::CertificateDetails> certificate_details,
-		ravendb::client::impl::CurlOptionsSetter set_before_perform,
-		ravendb::client::impl::CurlOptionsSetter set_after_perform)
+		impl::CurlOptionsSetter set_before_perform,
+		impl::CurlOptionsSetter set_after_perform)
 	{
 		//using explicit call to PRIVATE ctor
 		auto rq = std::unique_ptr<RequestExecutor>(new RequestExecutor(

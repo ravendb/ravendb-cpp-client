@@ -128,10 +128,10 @@ namespace ravendb::client::impl::utils::json_utils
 	//If id_field is not specified, 
 	//the entity's id will be taken from default id field, if present,
 	//or will be derived from the entity's collection name.
-	void create_metadata(nlohmann::json& j,
-		const std::string& full_class_name,
-		const std::optional<std::string>& collection_name = {},
-		const std::optional<std::string>& id_field = {});
+	//void create_metadata(nlohmann::json& j,
+	//	const std::string& full_class_name,
+	//	const std::optional<std::string>& collection_name = {},
+	//	const std::optional<std::string>& id_field = {});
 	
 }
 

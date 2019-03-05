@@ -465,19 +465,15 @@ namespace ravendb::client::documents::session
 		
 		//TODO generate and set collection name
 
-		auto metadata = get_conventions()->get_serialized_type(type)->at(constants::documents::metadata::KEY);
+		auto collection_name = get_request_executor()->get_conventions()->get_collection_name(type);
 
-		auto& collection_name = metadata.at(constants::documents::metadata::COLLECTION);
-		if(collection_name.is_null())
-		{
-			collection_name = get_conventions()->get_collection_name(type);
-		}
+		auto metadata = nlohmann::json::object();
 
-		auto& cpp_type = metadata.at(constants::documents::metadata::RAVEN_C_PLUS_PLUS_TYPE);
-		if(cpp_type.is_null())
-		{
-			cpp_type = get_conventions()->get_c_plus_plus_class_name(type);
-		}
+		impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::COLLECTION, collection_name);
+
+		auto cpp_type = get_request_executor()->get_conventions()->get_cpp_class_name(type);
+
+		impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::RAVEN_CPP_TYPE, cpp_type);
 
 
 	//TODO erase later when above is functional and tested

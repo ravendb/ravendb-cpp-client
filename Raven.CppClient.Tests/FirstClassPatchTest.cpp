@@ -101,7 +101,7 @@ namespace first_class_patch_test
 		set_val_to_json(j, "Stuff", u.stuff);
 		set_val_to_json(j, "LastLogin", u.last_login);
 		set_val_to_json(j, "Numbers", u.numbers);
-		j["@metadata"]["@collection"] = "Users";
+		//j["@metadata"]["@collection"] = "Users";
 	}
 
 	void from_json(const nlohmann::json& j, User& u)
@@ -125,6 +125,7 @@ namespace ravendb::client::tests::client
 		}
 	};
 
+	//TODO use id generator
 	TEST_F(FirstClassPatchTest, CanPatch)
 	{
 		std::vector<first_class_patch_test::Stuff> stuff{3};
@@ -166,6 +167,7 @@ namespace ravendb::client::tests::client
 		}
 	}
 
+	//TODO use id generator
 	TEST_F(FirstClassPatchTest, ThrowOnPatchAndModify)
 	{
 		auto user = std::make_shared<first_class_patch_test::User>();
@@ -199,6 +201,7 @@ namespace ravendb::client::tests::client
 		}
 	}
 
+	//TODO use id generator
 	TEST_F(FirstClassPatchTest, CanPatchComplex)
 	{
 		std::vector<first_class_patch_test::Stuff> stuff{3};
@@ -270,6 +273,7 @@ namespace ravendb::client::tests::client
 		}
 	}
 
+	//TODO use id generator
 	TEST_F(FirstClassPatchTest, CanIncrement)
 	{
 		auto stuff = std::vector<first_class_patch_test::Stuff>(3);

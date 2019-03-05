@@ -64,7 +64,7 @@ namespace ravendb::client::tests::client::documents
 	};
 
 	//TODO rewrite this test with ID generator
-	TEST_F(LoadTest, loadWithIncludes)
+	TEST_F(LoadTest, LoadWithIncludes)
 	{
 		std::string bar_id{};
 		{
@@ -103,7 +103,7 @@ namespace ravendb::client::tests::client::documents
 	}
 
 	//TODO rewrite this test with ID generator
-	//TODO this test MAY be influenced from non-implemented feature(IncludesUtils)
+	//TODO this test MAY be influenced from non-implemented feature(IncludesUtils = include path parsing)
 	TEST_F(LoadTest, LoadWithIncludesAndMissingDocument)
 	{
 		std::string bar_id{};

@@ -16,7 +16,9 @@ namespace ravendb::client::impl::utils
 
 	std::string url_escape(CURL* curl, const std::string& val);
 
-	bool is_blank(const std::string& str);//TODO use it for validate string arguments
+	//TODO use it for validate string arguments
+	bool is_blank(const std::string& str);
+
 }
 
 

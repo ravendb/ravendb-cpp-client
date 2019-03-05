@@ -1,27 +1,19 @@
 #pragma once
 #include <typeindex>
 #include "ClientConfiguration.h"
-#include "Constants.h"
-
 
 namespace ravendb::client::documents::conventions
 {
 	class DocumentConventions
 	{
-	public:
-		using DefaultTypeSerialized = std::function<const nlohmann::json&()>;
-
 	private:
-		static std::unordered_map<std::type_index, DefaultTypeSerialized> _registered_types;
-
 		static std::unordered_map<std::type_index, std::string> _cached_default_type_collection_names;
 
 		//TODO
 		//std::vector<std::pair<std::type_index, IValueForQueryConverter<Object>>> _list_of_query_value_to_object_converters{};
 
-		//TODO find out if is useful 
-		//std::vector<std::pair<std::type_index, std::function<std::string(std::string, std::type_index)>>>
-		//	_list_of_registered_id_conventions{};
+		std::unordered_multimap<std::type_index, std::function<std::string(std::string, std::shared_ptr<void>)>>
+			_list_of_registered_id_conventions{};
 
 		bool _frozen = false;
 		std::unique_ptr<operations::configuration::ClientConfiguration> _original_configuration{};
@@ -30,7 +22,7 @@ namespace ravendb::client::documents::conventions
 		std::string _identity_part_separator{};
 		bool _disable_topology_updates = false;
 
-		std::function<bool(const std::string&)> _find_identity_property{};
+		std::function<std::optional<std::string>()> _find_identity_property{};
 
 		std::function<std::string(const std::string&)> _transform_class_collection_name_to_document_id_prefix{};
 		std::function<std::string(const std::string&, std::type_index)> _document_id_generator{};
@@ -38,8 +30,8 @@ namespace ravendb::client::documents::conventions
 
 		std::function<std::optional<std::string>(std::type_index)> _find_collection_name{};
 
-		std::function<std::string(std::type_index)> _find_c_plus_plus_class_name{};
-		std::function<std::optional<std::string>(const std::string&, const nlohmann::json&)> _find_c_plus_plus_class{};
+		std::function<std::string(std::type_index)> _find_cpp_class_name{};
+		std::function<std::optional<std::string>(const std::string&, const nlohmann::json&)> _find_cpp_class{};
 
 		bool _use_optimistic_concurrency = true;
 		bool _throw_if_query_page_size_is_not_set = false;
@@ -47,18 +39,15 @@ namespace ravendb::client::documents::conventions
 
 		http::ReadBalanceBehavior _read_balance_behaviour{};
 		int32_t _max_http_cache_size{};
-		//TODO
+
+		//TODO probably unused
 		//ObjectMapper _entityMapper;
+
 		std::optional<bool> _use_compression{};
 
 
 		void assert_not_frozen() const;
 	public:
-		template<typename T>
-		static void register_type();
-
-		static std::optional<nlohmann::json> get_serialized_type(std::type_index type);
-
 		~DocumentConventions() = default;
 
 		static std::shared_ptr<DocumentConventions> default_conventions();
@@ -93,14 +82,14 @@ namespace ravendb::client::documents::conventions
 
 		void set_use_optimistic_concurrency(bool use_optimistic_concurrency);
 
-		std::function<std::optional<std::string>(const std::string&, const nlohmann::json&)> get_find_c_plus_plus_class() const;
+		std::function<std::optional<std::string>(const std::string&, const nlohmann::json&)> get_find_cpp_class() const;
 
-		void get_find_c_plus_plus_class(std::function<std::optional<std::string>(const std::string&, const nlohmann::json&)>
-			find_c_plus_plus_class);
+		void set_find_cpp_class(std::function<std::optional<std::string>(const std::string&, const nlohmann::json&)>
+			find_cpp_class);
 
-		std::function<std::string(std::type_index)> get_find_c_plus_plus_class_name() const;
+		std::function<std::string(std::type_index)> get_find_cpp_class_name() const;
 
-		void set_find_c_plus_plus_class_name(std::function<std::string(std::type_index)> find_c_plus_plus_class_name);
+		void set_find_cpp_class_name(std::function<std::string(std::type_index)> find_cpp_class_name);
 
 		std::function<std::optional<std::string>(std::type_index)> get_find_collection_name() const;
 
@@ -121,9 +110,9 @@ namespace ravendb::client::documents::conventions
 		void set_transform_class_collection_name_to_document_id_prefix(std::function<std::string(const std::string&)>
 			transform_class_collection_name_to_document_id_prefix);
 
-		std::function<bool(const std::string&)> get_find_identity_property() const;
+		std::function<std::optional<std::string>()> get_find_identity_property() const;
 
-		void set_find_identity_property(std::function<bool(const std::string&)> find_identity_property);
+		void set_find_identity_property(std::function<std::optional<std::string>()> find_identity_property);
 
 		bool is_disable_topology_updates() const;
 
@@ -142,11 +131,11 @@ namespace ravendb::client::documents::conventions
 		std::string get_collection_name(std::type_index type) const;
 
 		template<typename T>
-		std::string generate_document_id(const std::string database, const T& entity);
+		std::string generate_document_id(const std::string database, std::shared_ptr<T> entity);
 
-		std::optional<std::string> get_c_plus_plus_class(const std::string& id, const nlohmann::json& document);
+		std::optional<std::string> get_cpp_class(const std::string& id, const nlohmann::json& document);
 
-		std::string get_c_plus_plus_class_name(std::type_index entity_type);
+		std::string get_cpp_class_name(std::type_index entity_type);
 
 		std::optional<std::string> get_identity_property(std::type_index type);
 
@@ -162,37 +151,14 @@ namespace ravendb::client::documents::conventions
 	};
 
 	template <typename T>
-	void DocumentConventions::register_type()
+	std::string DocumentConventions::generate_document_id(const std::string database_name, std::shared_ptr<T> entity)
 	{
-		static_assert(std::is_default_constructible_v<T>, "'T' should be default constructible");
-
-		static DefaultTypeSerialized dts = []()->const nlohmann::json&
+		for(const auto& [key, value] : _list_of_registered_id_conventions)
 		{
-			static const nlohmann::json j = T();
-			return  j;
-		};
-
-		_registered_types.insert_or_assign(typeid(T), dts);
-	}
-
-	template <typename T>
-	std::string DocumentConventions::generate_document_id(const std::string database_name, const T& entity)
-	{
-		nlohmann::json j = entity;
-
-		if(auto&& id = j
-			.at(constants::documents::metadata::KEY)
-			.at(constants::documents::metadata::ID);
-			!id.is_null())
-		{
-			return id.get<std::string>;
-		}
-		if (auto&& id_field = j
-			.at(constants::documents::metadata::KEY)
-			.at(constants::documents::metadata::ID_PROPERTY);
-			!id_field.is_null())
-		{
-			return j.at(id_field.get<std::string>).get<std::string>();
+			if(std::type_index(typeid(T)) == key)
+			{
+				return value(database_name, std::static_pointer_cast<void>(entity));
+			}
 		}
 
 		return _document_id_generator(database_name, typeid(T));
