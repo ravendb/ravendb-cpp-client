@@ -274,6 +274,133 @@ namespace ravendb::client::tests::client
 	}
 
 	//TODO use id generator
+	TEST_F(FirstClassPatchTest, CanAddToArray)
+	{
+		std::vector<first_class_patch_test::Stuff> stuff(1);
+		stuff[0].key = 6;
+
+		auto user = std::make_shared<first_class_patch_test::User>();
+		user->stuff = stuff;
+		user->numbers = { 1,2 };
+
+		{
+			auto session = test_suite_store->get().open_session();
+			session.store(user, first_class_patch_test::DOC_ID);
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+			session.advanced().patch(first_class_patch_test::DOC_ID, "Numbers",
+				std::function<void(documents::session::JavaScriptArray<int32_t>&)>(
+					[](documents::session::JavaScriptArray<int32_t>& arr)->void
+			{
+				arr.add(3);
+			}));
+			session.advanced().patch(first_class_patch_test::DOC_ID, "Stuff",
+				std::function<void(documents::session::JavaScriptArray<first_class_patch_test::Stuff>&)>(
+					[](documents::session::JavaScriptArray<first_class_patch_test::Stuff>& arr)->void
+			{
+				first_class_patch_test::Stuff stuff1{};
+				stuff1.key = 75;
+				arr.add(stuff1);
+			}));
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+			auto loaded = session.load<first_class_patch_test::User>(first_class_patch_test::DOC_ID);
+
+			ASSERT_EQ(3, loaded->numbers[2]);
+			ASSERT_EQ(75, loaded->stuff[1].key);
+
+			session.advanced().patch(loaded, "Numbers",
+				std::function<void(documents::session::JavaScriptArray<int32_t>&)>(
+					[](documents::session::JavaScriptArray<int32_t>& arr)->void
+			{
+				arr.add({ 101, 102, 103 });
+			}));
+			session.advanced().patch(first_class_patch_test::DOC_ID, "Stuff",
+				std::function<void(documents::session::JavaScriptArray<first_class_patch_test::Stuff>&)>(
+					[](documents::session::JavaScriptArray<first_class_patch_test::Stuff>& arr)->void
+			{
+				first_class_patch_test::Stuff s1{};
+				s1.key = 102;
+				first_class_patch_test::Stuff s2{};
+				s2.phone = "123456";
+
+				arr.add(s1).add(s2);
+			}));
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+			auto loaded = session.load<first_class_patch_test::User>(first_class_patch_test::DOC_ID);
+			ASSERT_EQ(6, loaded->numbers.size());
+			ASSERT_EQ(103, loaded->numbers[5]);
+
+			ASSERT_EQ(102, loaded->stuff[2].key);
+			ASSERT_EQ("123456", loaded->stuff[3].phone);
+
+			session.advanced().patch(loaded, "Numbers",
+				std::function<void(documents::session::JavaScriptArray<int32_t>&)>(
+					[](documents::session::JavaScriptArray<int32_t>& arr)->void
+			{
+				arr.add({ 201, 202, 203 });
+			}));
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+			auto loaded = session.load<first_class_patch_test::User>(first_class_patch_test::DOC_ID);
+			ASSERT_EQ(9, loaded->numbers.size());
+			ASSERT_EQ(202, loaded->numbers[7]);
+		}
+	}
+
+	//TODO use id generator
+	TEST_F(FirstClassPatchTest, CanRemoveFromArray)
+	{
+		std::vector<first_class_patch_test::Stuff> stuff{ 2 };
+		stuff[0].key = 6;
+		stuff[1].phone = "123456";
+
+		auto user = std::make_shared<first_class_patch_test::User>();
+		user->stuff = stuff;
+		user->numbers = { 1, 2, 3 };
+
+		{
+			auto session = test_suite_store->get().open_session();
+			session.store(user, first_class_patch_test::DOC_ID);
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+			session.advanced().patch(first_class_patch_test::DOC_ID, "Numbers",
+				std::function<void(documents::session::JavaScriptArray<int32_t>&)>(
+					[](documents::session::JavaScriptArray<int32_t>& arr)->void
+			{
+				arr.remove_at(1);
+			}));
+			session.advanced().patch(first_class_patch_test::DOC_ID, "Stuff",
+				std::function<void(documents::session::JavaScriptArray<first_class_patch_test::Stuff>&)>(
+					[](documents::session::JavaScriptArray<first_class_patch_test::Stuff>& arr)->void
+			{
+				arr.remove_at(0);
+			}));
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get().open_session();
+			auto loaded = session.load<first_class_patch_test::User>(first_class_patch_test::DOC_ID);
+
+			ASSERT_EQ(2, loaded->numbers.size());
+			ASSERT_EQ(3, loaded->numbers[1]);
+			ASSERT_EQ(1, loaded->stuff.size());
+			ASSERT_EQ("123456", loaded->stuff[0].phone);
+		}
+	}
+
+	//TODO use id generator
 	TEST_F(FirstClassPatchTest, CanIncrement)
 	{
 		auto stuff = std::vector<first_class_patch_test::Stuff>(3);

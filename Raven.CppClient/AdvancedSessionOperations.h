@@ -86,17 +86,6 @@ namespace ravendb::client::documents::session
 		template<typename T>
 		std::shared_ptr<RawDocumentQuery<T>> raw_query(const std::string& query);
 
-		template<typename T, typename V>
-		void patch(std::shared_ptr<T> entity, const std::string& path, const V& value,
-			std::optional<DocumentInfo::EntityUpdater> update_from_json = {});
-
-		template<typename V>
-		void patch(const std::string& id, const std::string& path, const V& value);
-
-		template<typename V>
-		void patch(const std::string& id, const std::string& path, const V& value,
-			const DocumentInfo::EntityUpdater& update_from_json);
-
 		template<typename T, typename U>
 		void patch(std::shared_ptr<T> entity, const std::string& path_to_array,
 			std::function<void(JavaScriptArray<U>&)> array_adder,
@@ -111,6 +100,16 @@ namespace ravendb::client::documents::session
 			const std::function<void(JavaScriptArray<U>&)>& array_adder,
 			const DocumentInfo::EntityUpdater& update_from_json);
 
+		template<typename T, typename V>
+		void patch(std::shared_ptr<T> entity, const std::string& path, const V& value,
+			std::optional<DocumentInfo::EntityUpdater> update_from_json = {});
+
+		template<typename V>
+		void patch(const std::string& id, const std::string& path, const V& value);
+
+		template<typename V>
+		void patch(const std::string& id, const std::string& path, const V& value,
+			const DocumentInfo::EntityUpdater& update_from_json);
 
 		template<typename T, typename V>
 		void increment(std::shared_ptr<T> entity, const std::string& path, const V& value_to_add,

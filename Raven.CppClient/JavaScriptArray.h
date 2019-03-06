@@ -1,4 +1,5 @@
 #pragma once
+#include <iterator>
 
 namespace ravendb::client::documents::session
 {
@@ -41,7 +42,7 @@ namespace ravendb::client::documents::session
 
 		JavaScriptArray& add(const std::vector<U>& us)
 		{
-			return add(us.cbegin(), us.cend());
+			return add(us.begin(), us.end());
 		}
 
 		template<typename InputIt >
@@ -49,17 +50,23 @@ namespace ravendb::client::documents::session
 		{
 			static_assert(std::is_same_v<typename std::iterator_traits<InputIt>::value_type, U>, "Invalid iterator type");
 
-			std::ostringstream args{};
+			std::ostringstream args_oss{};
 
-			std::transform(first, last, std::ostream_iterator(args,","), [](const U& value)->std::string
+			std::transform(first, last, std::ostream_iterator<std::string>(args_oss, ","), [this](const U& value)->std::string
 			{
 				auto argument_name = get_next_argument_name();
 				_parameters.insert_or_assign(argument_name, value);
 				return "args." + argument_name;
 			});
 
+			std::string args = args_oss.str();
+			if (!args.empty())
+			{
+				args.pop_back();
+			}
+
 			std::ostringstream script_line{};
-			script_line << "this." << _path_to_array << ".push(" << args.str() << ");";
+			script_line << "this." << _path_to_array << ".push(" << args << ");";
 			_script_lines.push_back(script_line.str());
 
 			return *this;

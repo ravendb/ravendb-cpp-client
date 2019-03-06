@@ -120,12 +120,12 @@ namespace ravendb::client::documents::session
 			bool is_map_reduced);
 
 		template<typename T>
-		void patch(const std::string& id, const std::string& path, const T& value,
+		void patch(const std::string& id, const std::string& path_to_array,
+			std::function<void(JavaScriptArray<T>&)> array_adder,
 			const std::optional<DocumentInfo::EntityUpdater>& update_from_json);
 
 		template<typename T>
-		void patch(const std::string& id, const std::string& path_to_array, 
-			std::function<void(JavaScriptArray<T>&)> array_adder,
+		void patch(const std::string& id, const std::string& path, const T& value,
 			const std::optional<DocumentInfo::EntityUpdater>& update_from_json);
 
 		template<typename T>
