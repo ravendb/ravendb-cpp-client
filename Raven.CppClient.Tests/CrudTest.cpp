@@ -57,7 +57,7 @@ namespace ravendb::client::tests::client
 	TEST_F(CrudTest, EntitiesAreSavedUsingCustomPropertyNamingStrategy)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			auto user1 = std::make_shared<infrastructure::entities::User>();
 			user1->last_name = "user1";
 			session.store(user1, "users/1");
@@ -65,14 +65,14 @@ namespace ravendb::client::tests::client
 		}
 
 		auto documents_command = documents::commands::GetDocumentsCommand("users/1", {}, false);
-		test_suite_store->get().get_request_executor()->execute(documents_command);
+		test_suite_store->get()->get_request_executor()->execute(documents_command);
 		auto result = documents_command.get_result();
 
 		auto user_json = result.results.at(0);
 		ASSERT_TRUE(user_json.find("LastName") != user_json.end());
 
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			auto users = session.advanced().raw_query<infrastructure::entities::User>("from Users where LastName = 'user1'")->to_list();
 
 			ASSERT_EQ(1, users.size());
@@ -88,7 +88,7 @@ namespace ravendb::client::tests::client
 	
 	TEST_F(CrudTest, CrudOperations)
 	{
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 		auto user1 = std::make_shared<infrastructure::entities::User>();
 		user1->last_name = "user1";
 		session.store(user1, "users/1");
@@ -133,7 +133,7 @@ namespace ravendb::client::tests::client
 
 	TEST_F(CrudTest, CrudOperationsWithWhatChanged)
 	{
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 		auto user1 = std::make_shared<infrastructure::entities::User>();
 		user1->last_name = "user1";
 		session.store(user1, "users/1");
@@ -182,7 +182,7 @@ namespace ravendb::client::tests::client
 
 	TEST_F(CrudTest, CrudOperationsWithArrayInObject)
 	{
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 
 		auto family = std::make_shared<infrastructure::entities::Family>();
 		family->names = { "Hibernating Rhinos", "RavenDB" };
@@ -196,7 +196,7 @@ namespace ravendb::client::tests::client
 	}
 	TEST_F(CrudTest, CrudOperationsWithArrayInObject2)
 	{
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 
 		auto family = std::make_shared<infrastructure::entities::Family>();
 		family->names = { "Hibernating Rhinos", "RavenDB" };
@@ -214,7 +214,7 @@ namespace ravendb::client::tests::client
 
 	TEST_F(CrudTest, CrudOperationsWithArrayInObject3)
 	{
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 
 		auto family = std::make_shared<infrastructure::entities::Family>();
 		family->names = { "Hibernating Rhinos", "RavenDB" };
@@ -229,7 +229,7 @@ namespace ravendb::client::tests::client
 
 	TEST_F(CrudTest, CrudOperationsWithArrayInObject4)
 	{
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 
 		auto family = std::make_shared<infrastructure::entities::Family>();
 		family->names = { "Hibernating Rhinos", "RavenDB" };
@@ -244,7 +244,7 @@ namespace ravendb::client::tests::client
 
 	TEST_F(CrudTest, CrudOperationsWithNull)
 	{
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 
 		auto user = std::make_shared<infrastructure::entities::NullableUser>();
 
@@ -260,7 +260,7 @@ namespace ravendb::client::tests::client
 
 	TEST_F(CrudTest, CrudOperationsWithArrayOfObjects)
 	{
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 
 		auto member1 = std::make_shared<infrastructure::entities::Member>();
 		member1->name = "Hibernating Rhinos";
@@ -351,7 +351,7 @@ namespace ravendb::client::tests::client
 	TEST_F(CrudTest, CrudOperationsWithArrayOfArrays)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			infrastructure::entities::Arr1 a1 = { {"a", "b"} };
 			infrastructure::entities::Arr1 a2 = { {"c", "d"} };
@@ -389,7 +389,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto new_arr = session.load<infrastructure::entities::Arr2>("arr/1", arr2_from_json, arr2_to_json);
 
@@ -416,7 +416,7 @@ namespace ravendb::client::tests::client
 	TEST_F(CrudTest, CrudCanUpdatePropertyToNull)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			auto user = std::make_shared<infrastructure::entities::NullableUser>();
 			user->first_name = "user1";
 
@@ -424,13 +424,13 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			auto user = session.load<infrastructure::entities::NullableUser>("n_users/1");
 			user->first_name.reset();
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			auto user = session.load<infrastructure::entities::NullableUser>("n_users/1");
 			ASSERT_FALSE(user->first_name.has_value());
 		}
@@ -439,7 +439,7 @@ namespace ravendb::client::tests::client
 	TEST_F(CrudTest, CrudCanUpdatePropertyFromNullToObject)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			auto poc = std::make_shared<infrastructure::entities::Poc>();
 			poc->name = "User";
 			poc->obj.reset();
@@ -448,7 +448,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			auto poc = session.load<infrastructure::entities::Poc>("pocs/1");
 			ASSERT_FALSE(poc->obj.has_value());
 
@@ -457,7 +457,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			auto poc = session.load<infrastructure::entities::Poc>("pocs/1");
 			ASSERT_TRUE(poc->obj.has_value());
 		}

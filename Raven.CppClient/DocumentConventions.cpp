@@ -7,6 +7,8 @@
 
 namespace ravendb::client::documents::conventions
 {
+	std::unordered_map<std::type_index, EntityIdHelper> DocumentConventions::_id_helpers{};
+
 	std::unordered_map<std::type_index, std::string> DocumentConventions::_cached_default_type_collection_names{};
 
 	void DocumentConventions::assert_not_frozen() const
@@ -20,17 +22,9 @@ namespace ravendb::client::documents::conventions
 
 	DocumentConventions::DocumentConventions()
 		: _identity_part_separator("/")
-		, _find_identity_property([]()->std::optional<std::string>
-	{
-		return "id";
-	})
 		, _transform_class_collection_name_to_document_id_prefix([](const std::string& collection_name)->std::string
 	{
 		return default_transform_collection_name_to_document_id_prefix(collection_name);
-	})
-		, _find_identity_property_name_from_collection_name([](const std::string&)->std::string
-	{
-		return "Id";
 	})
 		, _find_collection_name([](std::type_index type)->std::string
 	{
@@ -62,17 +56,13 @@ namespace ravendb::client::documents::conventions
 		: _frozen{ other._frozen },
 		_original_configuration{
 		  other._original_configuration ? std::make_unique<operations::configuration::ClientConfiguration>(*other._original_configuration) :
-		  std::make_unique<operations::configuration::ClientConfiguration>()},
-		_id_property_cache{ other._id_property_cache },
+			std::make_unique<operations::configuration::ClientConfiguration>()},
 		_save_enums_as_integers{ other._save_enums_as_integers },
 		_identity_part_separator{ other._identity_part_separator },
 		_disable_topology_updates{ other._disable_topology_updates },
-		_find_identity_property{ other._find_identity_property },
 		_transform_class_collection_name_to_document_id_prefix{
 			  other._transform_class_collection_name_to_document_id_prefix},
 		_document_id_generator{ other._document_id_generator },
-		_find_identity_property_name_from_collection_name{
-		  other._find_identity_property_name_from_collection_name },
 		_find_collection_name{ other._find_collection_name },
 		_find_cpp_class_name{ other._find_cpp_class_name },
 		_find_cpp_class{ other._find_cpp_class },
@@ -83,6 +73,21 @@ namespace ravendb::client::documents::conventions
 		_max_http_cache_size{ other._max_http_cache_size },
 		_use_compression{ other._use_compression }
 	{}
+
+	void DocumentConventions::add_entity_id_helper(std::type_index type, EntityIdHelper id_helper)
+	{
+		_id_helpers.insert_or_assign(type, std::move(id_helper));
+	}
+
+	std::optional<EntityIdHelper> DocumentConventions::get_entity_id_helper(std::type_index type)
+	{
+		if(auto it = _id_helpers.find(type);
+			it != _id_helpers.end())
+		{
+			return it->second;
+		}
+		return {};
+	}
 
 	bool DocumentConventions::has_explicitly_set_compression_usage() const
 	{
@@ -190,25 +195,15 @@ namespace ravendb::client::documents::conventions
 		_find_collection_name = find_collection_name;
 	}
 
-	std::function<std::string(const std::string&)> DocumentConventions::get_find_identity_property_name_from_collection_name() const
-	{
-		return _find_identity_property_name_from_collection_name;
-	}
 
-	void DocumentConventions::set_find_identity_property_name_from_collection_name(
-		std::function<std::string(const std::string&)> find_identity_property_name_from_collection_name)
-	{
-		assert_not_frozen();
-		_find_identity_property_name_from_collection_name = find_identity_property_name_from_collection_name;
-	}
-
-	std::function<std::string(const std::string&, std::type_index)> DocumentConventions::get_document_id_generator() const
+	std::function<std::string(const std::string&, std::shared_ptr<void>, std::type_index)> 
+		DocumentConventions::get_document_id_generator() const
 	{
 		return _document_id_generator;
 	}
 
 	void DocumentConventions::set_document_id_generator(
-		std::function<std::string(const std::string&, std::type_index)> document_id_generator)
+		std::function<std::string(const std::string&, std::shared_ptr<void>, std::type_index)> document_id_generator)
 	{
 		assert_not_frozen();
 		_document_id_generator = document_id_generator;
@@ -224,17 +219,6 @@ namespace ravendb::client::documents::conventions
 	{
 		assert_not_frozen();
 		_transform_class_collection_name_to_document_id_prefix = transform_class_collection_name_to_document_id_prefix;
-	}
-
-	std::function<std::optional<std::string>()> DocumentConventions::get_find_identity_property() const
-	{
-		return _find_identity_property;
-	}
-
-	void DocumentConventions::set_find_identity_property(std::function<std::optional<std::string>()> find_identity_property)
-	{
-		assert_not_frozen();
-		_find_identity_property = find_identity_property;
 	}
 
 	bool DocumentConventions::is_disable_topology_updates() const
@@ -285,23 +269,6 @@ namespace ravendb::client::documents::conventions
 	std::string DocumentConventions::get_cpp_class_name(std::type_index entity_type)
 	{
 		return _find_cpp_class_name(entity_type);
-	}
-
-	std::optional<std::string> DocumentConventions::get_identity_property(std::type_index type)
-	{
-		if (auto it = _id_property_cache.find(type);
-			it != _id_property_cache.end())
-		{
-			return it->second;
-		}
-
-		auto id_property = _find_identity_property();
-		if(id_property)
-		{
-			_id_property_cache.insert_or_assign(type, *id_property);
-		}
-
-		return std::move(id_property);
 	}
 
 	void DocumentConventions::update_from(const operations::configuration::ClientConfiguration& configuration)
@@ -380,8 +347,8 @@ namespace ravendb::client::documents::conventions
 
 		auto&& full_class_name = impl::utils::GetCppClassName()(type);
 		std::string simple_class_name{};
-		if (auto pos = full_class_name.find_last_of(':');
-			pos != std::string::npos)
+		if (auto pos = full_class_name.find_last_of("::");
+			pos != std::string::npos )
 		{
 			simple_class_name = full_class_name.substr(pos+1);
 		}

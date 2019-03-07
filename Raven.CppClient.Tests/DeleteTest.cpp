@@ -18,7 +18,7 @@ namespace ravendb::client::tests::client
 
 	TEST_F(DeleteTest, DeleteDocumentByEntity)
 	{
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 
 		auto user = std::make_shared<infrastructure::entities::User>();
 		user->name = "RavenDB";
@@ -37,7 +37,7 @@ namespace ravendb::client::tests::client
 
 	TEST_F(DeleteTest, DeleteDocumentById)
 	{
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 
 		auto user = std::make_shared<infrastructure::entities::User>();
 		user->name = "RavenDB";

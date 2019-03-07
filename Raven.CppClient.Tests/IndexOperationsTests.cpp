@@ -50,6 +50,7 @@ namespace ravendb::client::tests
 		void SetUp() override//create sample document and sample index
 		{
 			nlohmann::json j = example_user;
+			j["@metadata"]["@collection"] = "Users";
 			documents::commands::PutDocumentCommand cmd(example_user.id, {}, j);
 			test_suite_executor->get().execute(cmd);
 
@@ -344,7 +345,9 @@ namespace ravendb::client::tests
 	{
 		auto invalid_user = example_user;
 		invalid_user.age = 0;
-		documents::commands::PutDocumentCommand cmd(invalid_user.id, {}, nlohmann::json(invalid_user));
+		nlohmann::json invalid_user_json = invalid_user;
+		invalid_user_json["@metadata"]["@collection"] = "Users";
+		documents::commands::PutDocumentCommand cmd(invalid_user.id, {}, invalid_user_json);
 		test_suite_executor->get().execute(cmd);
 
 		auto invalid_index = example_index;
@@ -397,7 +400,9 @@ namespace ravendb::client::tests
 		}
 		{
 			infrastructure::entities::User user = { "Users/2","Johnnie","Walker","GB",0,150 };
-			documents::commands::PutDocumentCommand cmd(user.id, {}, nlohmann::json(user));
+			nlohmann::json user_json = user;
+			user_json["@metadata"]["@collection"] = "Users";
+			documents::commands::PutDocumentCommand cmd(user.id, {}, user_json);
 			test_suite_executor->get().execute(cmd);
 		}
 		{

@@ -40,7 +40,7 @@ namespace ravendb::client::documents::operations
 		{}
 		
 		std::unique_ptr<RavenCommand<OperationIdResult>> get_command
-		(const IDocumentStore& store, std::shared_ptr<DocumentConventions> conventions, HttpCache& cache) const override
+		(std::shared_ptr<IDocumentStore> store, std::shared_ptr<DocumentConventions> conventions, HttpCache& cache) const override
 		{
 			return std::make_unique<PatchByQueryCommand>(conventions, _query_to_update, _options);
 		}

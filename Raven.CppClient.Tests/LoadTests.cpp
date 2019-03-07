@@ -25,7 +25,7 @@ namespace ravendb::client::tests::client
 	TEST_F(LoadTests, LoadDocumentById)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			auto user = std::make_shared<infrastructure::entities::User>();
 			user->name = "RavenDB";
 
@@ -33,7 +33,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			auto user = session.load<infrastructure::entities::User>("users/1");
 
 			ASSERT_TRUE(user);
@@ -45,7 +45,7 @@ namespace ravendb::client::tests::client
 	{
 		std::vector<std::string> ids = { "users/1", "users/2" };
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto user1 = std::make_shared<infrastructure::entities::User>();
 			user1->name = "RavenDB";
@@ -57,7 +57,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto users = session.load<infrastructure::entities::User>(ids);
 			ASSERT_EQ(2, users.size());
@@ -68,7 +68,7 @@ namespace ravendb::client::tests::client
 	TEST_F(LoadTests, LoadNullShouldReturnNull)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto user1 = std::make_shared<infrastructure::entities::User>();
 			user1->name = "RavenDB";
@@ -80,7 +80,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto user1 = session.load<infrastructure::entities::User>(std::string());
 			ASSERT_FALSE(user1);
@@ -90,7 +90,7 @@ namespace ravendb::client::tests::client
 	TEST_F(LoadTests, LoadMultiIdsWithNullShouldReturnDictionaryWithoutNulls)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto user1 = std::make_shared<infrastructure::entities::User>();
 			user1->name = "RavenDB";
@@ -102,7 +102,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			std::vector<std::string> ordered_array_of_ids_with_empty = { "users/1", {}, "users/2", {} };
 			auto users1 = session.load<infrastructure::entities::User>(ordered_array_of_ids_with_empty.begin(), ordered_array_of_ids_with_empty.end());
@@ -124,7 +124,7 @@ namespace ravendb::client::tests::client
 	TEST_F(LoadTests, LoadDocumentWithIntsArrayAndLongsArray)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto geek1 = std::make_shared<infrastructure::entities::GeekPerson>();
 			geek1->name = "Moshe";
@@ -141,7 +141,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto geek1 = session.load<infrastructure::entities::GeekPerson>("geeks/1");
 			auto geek2 = session.load<infrastructure::entities::GeekPerson>("geeks/2");
@@ -159,7 +159,7 @@ namespace ravendb::client::tests::client
 	{
 		std::vector<std::string> ids{};
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			// Length of all the ids together should be larger than 1024 for POST request
 			for (int i = 0; i < 200; ++i)
 			{
@@ -173,7 +173,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto users = session.load<infrastructure::entities::User>(ids.begin(), ids.end());
 			auto user77 = users.at(std::string("users/77"));

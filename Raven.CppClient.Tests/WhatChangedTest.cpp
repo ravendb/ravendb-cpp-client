@@ -179,7 +179,7 @@ namespace ravendb::client::tests::client
 	TEST_F(WhatChangedTest, WhatChangedNewField)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto basic_name = std::make_shared<what_changed_test::BasicName>();
 			basic_name->name = "Alexander";
@@ -189,7 +189,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto user = session.load<what_changed_test::NameAndAge>("users/1");
 			user->age = 38;
@@ -204,7 +204,7 @@ namespace ravendb::client::tests::client
 	TEST_F(WhatChangedTest, WhatChangedRemovedField)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto name_and_age = std::make_shared<what_changed_test::NameAndAge>();
 			name_and_age->age = 38;
@@ -215,7 +215,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto basic_age = session.load<what_changed_test::BasicAge>("users/2");
 			auto changes = session.advanced().what_changed();
@@ -229,7 +229,7 @@ namespace ravendb::client::tests::client
 	TEST_F(WhatChangedTest, WhatChangedChangeField)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto basic_age = std::make_shared<what_changed_test::BasicAge>();
 			basic_age->age = 38;
@@ -239,7 +239,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto integer = session.load<what_changed_test::Integer>("users/3");
 			auto changes = session.advanced().what_changed();
@@ -256,7 +256,7 @@ namespace ravendb::client::tests::client
 	TEST_F(WhatChangedTest, WhatChangedArrayValueChanged)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto arr = std::make_shared<what_changed_test::Arr>();
 			arr->array = { std::string("a"), int32_t(1), std::string("b") };
@@ -271,7 +271,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto arr = session.load<what_changed_test::Arr>("users/4");
 			arr->array = { std::string("a"), int32_t(2), std::string("c") };
@@ -296,7 +296,7 @@ namespace ravendb::client::tests::client
 	TEST_F(WhatChangedTest, WhatChangedArrayValueAdded)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto arr = std::make_shared<what_changed_test::Arr>();
 			arr->array = { std::string("a"), int32_t(1), std::string("b") };
@@ -304,7 +304,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto arr = session.load<what_changed_test::Arr>("arrs/1");
 			arr->array = { std::string("a"), int32_t(1), std::string("b"), std::string("c"), int32_t(2) };
@@ -329,7 +329,7 @@ namespace ravendb::client::tests::client
 	TEST_F(WhatChangedTest, WhatChangedArrayValueRemoved)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto arr = std::make_shared<what_changed_test::Arr>();
 			arr->array = { std::string("a"), int32_t(1), std::string("b") };
@@ -337,7 +337,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto arr = session.load<what_changed_test::Arr>("arr/1");
 			arr->array = { std::string("a") };
@@ -364,7 +364,7 @@ namespace ravendb::client::tests::client
 		//but have the same value, we consider them unchanged
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto an_int = std::make_shared<what_changed_test::Integer>();
 			an_int->number = 1;
@@ -377,13 +377,13 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			session.load<what_changed_test::Double>("num/1");
 			ASSERT_TRUE(session.advanced().what_changed().empty());
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			session.load<what_changed_test::Integer>("num/2");
 			ASSERT_TRUE(session.advanced().what_changed().empty());
@@ -392,7 +392,7 @@ namespace ravendb::client::tests::client
 
 	TEST_F(WhatChangedTest, WhatChangedShouldBeIdempotentOperation)
 	{
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 
 		auto user1 = std::make_shared<infrastructure::entities::User>();
 		user1->name = "user1";
@@ -426,7 +426,7 @@ namespace ravendb::client::tests::client
 	TEST_F(WhatChangedTest, WhatChangedHasChanges)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto user1 = std::make_shared<infrastructure::entities::User>();
 			user1->name = "user11";
@@ -440,7 +440,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			ASSERT_FALSE(session.advanced().has_changes());
 

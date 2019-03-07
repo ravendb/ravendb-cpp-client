@@ -20,7 +20,7 @@ namespace ravendb::client::documents::session
 	std::atomic_int32_t InMemoryDocumentSessionOperations::_client_session_id_counter{};
 	std::atomic_int32_t InMemoryDocumentSessionOperations::_instances_counter{};
 
-	std::reference_wrapper<IDocumentStore> InMemoryDocumentSessionOperations::get_document_store() const
+	std::shared_ptr<IDocumentStore> InMemoryDocumentSessionOperations::get_document_store() const
 	{
 		return _document_store;
 	}
@@ -48,7 +48,7 @@ namespace ravendb::client::documents::session
 	std::string InMemoryDocumentSessionOperations::store_identifier() const
 	{
 		std::ostringstream res;
-		res << _document_store.get().get_identifier() << ";" << database_name;
+		res << _document_store->get_identifier() << ";" << database_name;
 		return res.str();
 	}
 
@@ -81,17 +81,19 @@ namespace ravendb::client::documents::session
 		_transaction_mode = mode;
 	}
 
-	InMemoryDocumentSessionOperations::InMemoryDocumentSessionOperations(DocumentStoreBase& document_store, SessionOptions options)
-		: id(0)//TODO set id	
+	InMemoryDocumentSessionOperations::InMemoryDocumentSessionOperations(std::shared_ptr<DocumentStoreBase> document_store,
+		SessionOptions options)
+		: _document_store(document_store)
+		, id(0)//TODO set id	
 		, database_name([&]
 	{
 		if (!impl::utils::is_blank(options.database))
 		{
 			return std::move(options.database);
 		}
-		if (!impl::utils::is_blank(document_store.get_database()))
+		if (!impl::utils::is_blank(document_store->get_database()))
 		{
-			return document_store.get_database();
+			return document_store->get_database();
 		}
 		throw_no_database();
 		return std::string{};//not suppose to happen - just shut the warning
@@ -102,9 +104,8 @@ namespace ravendb::client::documents::session
 		, _entity_to_json(*this)
 		, _client_session_id(++_client_session_id_counter)
 		, _request_executor(options.request_executor ? options.request_executor : 
-			document_store.get_request_executor(database_name))
-		, _session_info(_client_session_id, /*document_store.get_last_transaction_index(database_name)*/{}, options.no_caching)
-		, _document_store(document_store)
+			document_store->get_request_executor(database_name))
+		, _session_info(_client_session_id, /*document_store->get_last_transaction_index(database_name)*/{}, options.no_caching)
 
 
 
@@ -1075,7 +1076,7 @@ namespace ravendb::client::documents::session
 	void InMemoryDocumentSessionOperations::update_session_after_changes(const json::BatchCommandResult& result)
 	{
 		auto&& returned_transaction_index = result.transaction_index;
-		_document_store.get().set_last_transaction_index(database_name, returned_transaction_index);
+		_document_store->set_last_transaction_index(database_name, returned_transaction_index);
 		_session_info.last_cluster_transaction_index = returned_transaction_index;
 	}
 

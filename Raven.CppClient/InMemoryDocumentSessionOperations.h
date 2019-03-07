@@ -14,7 +14,6 @@
 #include "ILazyOperation.h"
 #include "DocumentConventions.h"
 #include "utils.h"
-#include "../Raven.CppClient.Tests/re_definitions.h"
 
 namespace ravendb::client
 {
@@ -100,7 +99,7 @@ namespace ravendb::client::documents::session
 		friend operations::LoadOperation;
 		friend operations::BatchOperation;
 
-		static const int32_t DEFAULT_MAX_NUMBER_OF_REQUESTS_PER_SESSION = 32;
+		static const int32_t DEFAULT_MAX_NUMBER_OF_REQUESTS_PER_SESSION = 30;
 
 		struct  SaveChangesData
 		{
@@ -116,6 +115,10 @@ namespace ravendb::client::documents::session
 				, options(session._save_changes_options)
 			{}
 		};
+
+	protected:
+		std::shared_ptr<DocumentStoreBase> _document_store;
+
 	public:
 		const int64_t id;
 
@@ -147,6 +150,7 @@ namespace ravendb::client::documents::session
 		const EntityToJson _entity_to_json;
 
 	protected:
+
 		const int32_t _client_session_id;
 
 		const std::shared_ptr<http::RequestExecutor> _request_executor{};
@@ -175,8 +179,6 @@ namespace ravendb::client::documents::session
 		//hold the data required to manage the data for RavenDB's Unit of Work
 		std::unordered_map<std::shared_ptr<void>, std::shared_ptr<DocumentInfo>> _documents_by_entity{};
 
-		std::reference_wrapper<DocumentStoreBase> _document_store;
-
 		std::list<std::shared_ptr<commands::batches::CommandDataBase>> _deferred_commands{};
 
 		std::unordered_map<in_memory_document_session_operations::IdTypeAndName, std::shared_ptr<commands::batches::CommandDataBase>> 
@@ -190,7 +192,7 @@ namespace ravendb::client::documents::session
 	public:
 		virtual ~InMemoryDocumentSessionOperations() = 0;
 
-		std::reference_wrapper<IDocumentStore> get_document_store() const;
+		std::shared_ptr<IDocumentStore> get_document_store() const;
 
 		std::shared_ptr<http::RequestExecutor> get_request_executor() const;
 
@@ -318,7 +320,7 @@ namespace ravendb::client::documents::session
 		bool check_if_already_included(const std::vector<std::string>& ids, const std::vector<std::string>& includes);
 
 	protected:
-		InMemoryDocumentSessionOperations(DocumentStoreBase& document_store,/* UUID id,*/ SessionOptions options);
+		InMemoryDocumentSessionOperations(std::shared_ptr<DocumentStoreBase> document_store,/* UUID id,*/ SessionOptions options);
 
 		void increment_request_count();
 

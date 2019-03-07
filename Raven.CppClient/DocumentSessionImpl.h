@@ -63,7 +63,7 @@ namespace ravendb::client::documents::session
 	public:
 		~DocumentSessionImpl() override;
 
-		DocumentSessionImpl(DocumentStoreBase& document_store,/* UUID id,*/ SessionOptions options);
+		DocumentSessionImpl(std::shared_ptr<DocumentStoreBase> document_store,/* UUID id,*/ SessionOptions options);
 
 		operations::lazy::LazySessionOperations lazily();
 

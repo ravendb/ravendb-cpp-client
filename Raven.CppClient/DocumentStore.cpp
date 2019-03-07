@@ -8,6 +8,36 @@ namespace ravendb::client::documents
 {
 	DocumentStore::~DocumentStore() = default;
 
+	std::shared_ptr<DocumentStore> DocumentStore::create()
+	{
+		auto object = std::shared_ptr<DocumentStore>(new DocumentStore());
+		object->_weak_this = object;
+		object->initiate_operation_executors();
+		return object;
+	}
+
+	std::shared_ptr<DocumentStore> DocumentStore::create(std::string url, std::string database)
+	{
+		auto object = std::shared_ptr<DocumentStore>(new DocumentStore(std::move(url), std::move(database)));
+		object->_weak_this = object;
+		object->initiate_operation_executors();
+		return object;
+	}
+
+	std::shared_ptr<DocumentStore> DocumentStore::create(std::vector<std::string> urls, std::string database)
+	{
+		auto object = std::shared_ptr<DocumentStore>(new DocumentStore(std::move(urls), std::move(database)));
+		object->_weak_this = object;
+		object->initiate_operation_executors();
+		return object;
+	}
+
+	void DocumentStore::initiate_operation_executors()
+	{
+		_maintenance_operation_executor = std::make_shared<operations::MaintenanceOperationExecutor>(_weak_this.lock());
+		_operation_executor = std::make_shared<operations::OperationExecutor>(_weak_this.lock());
+	}
+
 	DocumentStore::DocumentStore() = default;
 
 	DocumentStore::DocumentStore(std::string url, std::string database)
@@ -55,7 +85,7 @@ namespace ravendb::client::documents
 		assert_initialized();
 		//TODO ensure_not_closed();
 
-		auto session_impl = std::make_shared<session::DocumentSessionImpl>(*this, options);
+		auto session_impl = std::make_shared<session::DocumentSessionImpl>(_weak_this.lock(), options);
 		//TODO
 		//register_events(session_impl);
 		//after_session_created(session_impl);
@@ -93,17 +123,17 @@ namespace ravendb::client::documents
 		}
 	}
 
-	std::reference_wrapper<IDocumentStore> DocumentStore::initialize()
+	std::shared_ptr<IDocumentStore> DocumentStore::initialize()
 	{
 		if(is_initialized)
 		{
-			return *this;
+			return _weak_this.lock();
 		}
 		assert_valid_configuration();
 
 		//TODO take care of the HiLo
 		is_initialized = true;
-		return *this;
+		return _weak_this.lock();
 	}
 
 	std::shared_ptr<operations::MaintenanceOperationExecutor> DocumentStore::get_maintenance() const
@@ -115,4 +145,5 @@ namespace ravendb::client::documents
 	{
 		return _operation_executor;
 	}
+
 }

@@ -18,7 +18,7 @@ namespace ravendb::client::tests::client
 	TEST_F(TrackEntityTest, DeletingEntityThatIsNotTrackedShouldThrow)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			try
 			{
 				session.delete_document(std::make_shared<infrastructure::entities::User>());
@@ -35,7 +35,7 @@ namespace ravendb::client::tests::client
 	TEST_F(TrackEntityTest, LoadingDeletedDocumentShouldReturnNull)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto user1 = std::make_shared<infrastructure::entities::User>();
 			user1->name = "Svyatoslav";
@@ -50,13 +50,13 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			session.delete_document("users/1");
 			session.delete_document("users/2");
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			ASSERT_FALSE(session.load<infrastructure::entities::User>("users/1"));
 			ASSERT_FALSE(session.load<infrastructure::entities::User>("users/2"));
@@ -65,7 +65,7 @@ namespace ravendb::client::tests::client
 
 	TEST_F(TrackEntityTest, StoringDocumentWithTheSameIdInTheSameSessionShouldThrow)
 	{
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 
 		auto user = std::make_shared<infrastructure::entities::User>();
 		user->id = "users/1";

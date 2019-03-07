@@ -46,5 +46,7 @@ namespace ravendb::client::tests::infrastructure::entities
 		get_val_from_json(j, "Count", u.count);
 		get_val_from_json(j, "Age", u.age);
 	}
+
+	
 }
 

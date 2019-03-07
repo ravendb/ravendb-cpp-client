@@ -22,7 +22,7 @@ namespace ravendb::client::documents::session
 
 		operations::lazy::EagerSessionOperations eagerly();
 
-		std::reference_wrapper<IDocumentStore> get_document_store() const;
+		std::shared_ptr<IDocumentStore> get_document_store() const;
 
 		std::unordered_map<std::string, std::shared_ptr<void>>& get_external_state() const;
 

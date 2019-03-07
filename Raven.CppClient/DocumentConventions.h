@@ -1,32 +1,32 @@
 #pragma once
 #include <typeindex>
 #include "ClientConfiguration.h"
+#include "EntityIdHelper.h"
 
 namespace ravendb::client::documents::conventions
 {
+	//TODO consider using the BUILDER pattern 
 	class DocumentConventions
 	{
 	private:
+		static std::unordered_map<std::type_index, EntityIdHelper> _id_helpers;
+
 		static std::unordered_map<std::type_index, std::string> _cached_default_type_collection_names;
 
 		//TODO
 		//std::vector<std::pair<std::type_index, IValueForQueryConverter<Object>>> _list_of_query_value_to_object_converters{};
 
-		std::unordered_multimap<std::type_index, std::function<std::string(std::string, std::shared_ptr<void>)>>
+		std::unordered_map<std::type_index, std::function<std::string(std::string, std::shared_ptr<void>)>>
 			_list_of_registered_id_conventions{};
 
 		bool _frozen = false;
 		std::unique_ptr<operations::configuration::ClientConfiguration> _original_configuration{};
-		std::unordered_map<std::type_index, std::string> _id_property_cache{};
 		bool _save_enums_as_integers = false;
 		std::string _identity_part_separator{};
 		bool _disable_topology_updates = false;
 
-		std::function<std::optional<std::string>()> _find_identity_property{};
-
 		std::function<std::string(const std::string&)> _transform_class_collection_name_to_document_id_prefix{};
-		std::function<std::string(const std::string&, std::type_index)> _document_id_generator{};
-		std::function<std::string(const std::string&)> _find_identity_property_name_from_collection_name{};
+		std::function<std::string(const std::string&, std::shared_ptr<void>, std::type_index)> _document_id_generator{};
 
 		std::function<std::optional<std::string>(std::type_index)> _find_collection_name{};
 
@@ -39,14 +39,11 @@ namespace ravendb::client::documents::conventions
 
 		http::ReadBalanceBehavior _read_balance_behaviour{};
 		int32_t _max_http_cache_size{};
-
-		//TODO probably unused
-		//ObjectMapper _entityMapper;
-
 		std::optional<bool> _use_compression{};
 
 
 		void assert_not_frozen() const;
+
 	public:
 		~DocumentConventions() = default;
 
@@ -55,6 +52,10 @@ namespace ravendb::client::documents::conventions
 		DocumentConventions();
 
 		DocumentConventions(const DocumentConventions& other);
+
+		static void add_entity_id_helper(std::type_index type, EntityIdHelper id_helper);
+
+		static std::optional<EntityIdHelper> get_entity_id_helper(std::type_index type);
 
 		bool has_explicitly_set_compression_usage() const;
 
@@ -95,24 +96,15 @@ namespace ravendb::client::documents::conventions
 
 		void set_find_collection_name(std::function<std::optional<std::string>(std::type_index)> find_collection_name);
 
-		std::function<std::string(const std::string&)> get_find_identity_property_name_from_collection_name() const;
+		std::function<std::string(const std::string&, std::shared_ptr<void>, std::type_index)> get_document_id_generator() const;
 
-		void set_find_identity_property_name_from_collection_name(std::function<std::string(const std::string&)>
-			find_identity_property_name_from_collection_name);
-
-		std::function<std::string(const std::string&, std::type_index)> get_document_id_generator() const;
-
-		void set_document_id_generator(std::function<std::string(const std::string&, std::type_index)>
+		void set_document_id_generator(std::function<std::string(const std::string&, std::shared_ptr<void>, std::type_index)>
 			document_id_generator);
 
 		std::function<std::string(const std::string&)> get_transform_class_collection_name_to_document_id_prefix() const;
 
 		void set_transform_class_collection_name_to_document_id_prefix(std::function<std::string(const std::string&)>
 			transform_class_collection_name_to_document_id_prefix);
-
-		std::function<std::optional<std::string>()> get_find_identity_property() const;
-
-		void set_find_identity_property(std::function<std::optional<std::string>()> find_identity_property);
 
 		bool is_disable_topology_updates() const;
 
@@ -137,31 +129,23 @@ namespace ravendb::client::documents::conventions
 
 		std::string get_cpp_class_name(std::type_index entity_type);
 
-		std::optional<std::string> get_identity_property(std::type_index type);
-
 		void update_from(const operations::configuration::ClientConfiguration& configuration);
-
 
 		static std::string default_transform_collection_name_to_document_id_prefix(const std::string& collection_name);
 
-		
-
 		void freeze();
-
 	};
+
 
 	template <typename T>
 	std::string DocumentConventions::generate_document_id(const std::string database_name, std::shared_ptr<T> entity)
 	{
-		for(const auto& [key, value] : _list_of_registered_id_conventions)
+		if(auto it =_list_of_registered_id_conventions.find(typeid(T));
+			it != _list_of_registered_id_conventions.end())
 		{
-			if(std::type_index(typeid(T)) == key)
-			{
-				return value(database_name, std::static_pointer_cast<void>(entity));
-			}
+			return (it->second)(database_name, std::static_pointer_cast<void>(entity));
 		}
 
-		return _document_id_generator(database_name, typeid(T));
-
+		return _document_id_generator(database_name, std::static_pointer_cast<void>(entity), typeid(T));
 	}
 }

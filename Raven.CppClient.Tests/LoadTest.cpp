@@ -68,7 +68,7 @@ namespace ravendb::client::tests::client::documents
 	{
 		std::string bar_id{};
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			auto foo = std::make_shared<load_test::Foo>();
 			foo->name = "Beginning";
 			//TODO generate ID
@@ -85,7 +85,7 @@ namespace ravendb::client::tests::client::documents
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			std::vector<std::string> temp_ids = { bar_id };
 			auto bar = session.include("FooId").load<load_test::Bar>(temp_ids.begin(), temp_ids.end());
 
@@ -108,7 +108,7 @@ namespace ravendb::client::tests::client::documents
 	{
 		std::string bar_id{};
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			auto bar = std::make_shared<load_test::Bar>();
 			bar->name = "End";
 			bar->foo_id = "non_exists/1";
@@ -118,7 +118,7 @@ namespace ravendb::client::tests::client::documents
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			std::vector<std::string> temp_ids = { bar_id };
 			auto bar = session.include("FooId").load<load_test::Bar>(temp_ids.begin(), temp_ids.end());
 

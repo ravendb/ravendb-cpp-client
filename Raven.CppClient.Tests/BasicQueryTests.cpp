@@ -7,12 +7,6 @@
 #include "DeleteByQueryOperation.h"
 #include "DocumentStore.h"
 
-namespace
-{
-	class FakeStore : public ravendb::client::documents::DocumentStore
-	{};
-}
-
 namespace ravendb::client::tests
 {
 	class BasicQueryTests : public ::testing::Test
@@ -117,9 +111,8 @@ namespace ravendb::client::tests
 
 		documents::queries::QueryOperationOptions query_op_options({}, false, std::chrono::seconds(1), false);
 		auto op3 = documents::operations::DeleteByQueryOperation(custom_index_query, query_op_options);
-		FakeStore store;
 		HttpCache cache;
-		auto&& res3 = test_suite_executor->get().execute(op3.get_command(store, {}, cache));
+		auto&& res3 = test_suite_executor->get().execute(op3.get_command(documents::DocumentStore::create(), {}, cache));
 		ASSERT_GT(res3.operation_id, 0);
 
 		std::this_thread::sleep_for(std::chrono::seconds(1));//TODO something better

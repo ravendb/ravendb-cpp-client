@@ -134,6 +134,12 @@
     <ClCompile Include="LazySessionOperationsImpl.cpp">
       <Filter>ravendb.client\documents\session\operations\lazy</Filter>
     </ClCompile>
+    <ClCompile Include="NextHiLoCommand.cpp">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="HiLoIdGenerator.cpp">
+      <Filter>ravendb.client\documents\identity</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -650,6 +656,18 @@
     <ClInclude Include="GetCppClassName.h">
       <Filter>ravendb.client\impl</Filter>
     </ClInclude>
+    <ClInclude Include="NextHiLoCommand.h">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityIdHelper.h">
+      <Filter>ravendb.client</Filter>
+    </ClInclude>
+    <ClInclude Include="HiLoResult.h">
+      <Filter>ravendb.client\documents\identity</Filter>
+    </ClInclude>
+    <ClInclude Include="HiLoIdGenerator.h">
+      <Filter>ravendb.client\documents\identity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
@@ -720,6 +738,9 @@
     </Filter>
     <Filter Include="ravendb.client\documents\operations\configuration">
       <UniqueIdentifier>{1168f432-954f-4e6e-8201-125f19497297}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\identity">
+      <UniqueIdentifier>{18798fdf-15e7-4c7a-ac4d-6c63a22299e9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

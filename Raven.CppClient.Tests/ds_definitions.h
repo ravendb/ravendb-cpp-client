@@ -18,13 +18,13 @@ namespace ravendb::client::tests::definitions
 	class DocumentStoreScope
 	{
 	private:
-		documents::DocumentStore _document_store{};
+		std::shared_ptr<documents::DocumentStore> _document_store = documents::DocumentStore::create();
 	public:
 		explicit DocumentStoreScope(const std::string& db_name, bool is_secured = false, bool use_fiddler = false);
 
 		~DocumentStoreScope();
 
-		documents::DocumentStore& get() noexcept
+		std::shared_ptr<documents::DocumentStore> get() noexcept
 		{
 			return _document_store;
 		}

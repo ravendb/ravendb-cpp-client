@@ -18,7 +18,7 @@ namespace ravendb::client::tests::client
 	TEST_F(HttpsTest, CanConnectWithCertificate)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto user = std::make_shared<infrastructure::entities::User>();
 			user->name = "Alexander";
@@ -26,7 +26,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto user = session.load<infrastructure::entities::User>("users/1");
 			ASSERT_TRUE(user);

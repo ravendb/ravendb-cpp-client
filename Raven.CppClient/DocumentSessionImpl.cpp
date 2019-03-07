@@ -13,7 +13,7 @@
 
 namespace ravendb::client::documents::session
 {
-	DocumentSessionImpl::DocumentSessionImpl(DocumentStoreBase& document_store, SessionOptions options)
+	DocumentSessionImpl::DocumentSessionImpl(std::shared_ptr<DocumentStoreBase> document_store, SessionOptions options)
 		: InMemoryDocumentSessionOperations(document_store, std::move(options))
 	{}
 

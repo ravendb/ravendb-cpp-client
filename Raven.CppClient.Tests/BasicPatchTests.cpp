@@ -9,12 +9,7 @@
 #include "DeleteDocumentCommand.h"
 #include "GetOperationStateOperation.h"
 #include "DocumentStore.h"
-
-namespace
-{
-	class FakeStore : public ravendb::client::documents::DocumentStore
-	{};
-}
+#include "ds_definitions.h"
 
 namespace ravendb::client::tests
 {
@@ -47,8 +42,10 @@ namespace ravendb::client::tests
 	TEST_F(BasicPatchTests, CanPatchSingleDocument)
 	{
 		infrastructure::entities::User user{"users/1","Alexander","Timoshenko","Israel"};
+		nlohmann::json user_json = user;
+		user_json["@metadata"]["@collection"] = "Users";
 
-		auto put_doc_cmd = documents::commands::PutDocumentCommand(user.id, {}, user);
+		auto put_doc_cmd = documents::commands::PutDocumentCommand(user.id, {}, user_json);
 		auto&& res1 = test_suite_executor->get().execute(put_doc_cmd);
 		ASSERT_EQ(res1.id, user.id);
 
@@ -56,7 +53,8 @@ namespace ravendb::client::tests
 			documents::operations::PatchRequest(R"(this.LastName = "The Great")"));
 
 		HttpCache cache;
-		auto&& res2 = test_suite_executor->get().execute(op.get_command(FakeStore(), {}, cache));
+		auto&& res2 = test_suite_executor->get().execute(op.get_command(
+			documents::DocumentStore::create(), {}, cache));
 
 		auto check_user = user;
 		check_user.last_name = "The Great";
@@ -83,7 +81,10 @@ namespace ravendb::client::tests
 			users[i].last_name = std::to_string(i+1);
 			users[i].id = "users/" + std::to_string(i + 1);
 
-			auto put_doc_cmd = documents::commands::PutDocumentCommand(users[i].id, {}, users[i]);
+			nlohmann::json user_json = users[i];
+			user_json["@metadata"]["@collection"] = "Users";
+
+			auto put_doc_cmd = documents::commands::PutDocumentCommand(users[i].id, {}, user_json);
 			auto res = test_suite_executor->get().execute(put_doc_cmd);
 			ASSERT_EQ(res.id, users[i].id);
 		}
@@ -101,7 +102,8 @@ namespace ravendb::client::tests
 
 		{
 			HttpCache cache;
-			auto&& res = test_suite_executor->get().execute(op.get_command(FakeStore(), {}, cache));
+			auto&& res = test_suite_executor->get().execute(op.get_command(
+				documents::DocumentStore::create(), {}, cache));
 			EXPECT_GT(res.operation_id, 0);
 		}
 		//wait for completion
@@ -119,8 +121,10 @@ namespace ravendb::client::tests
 	TEST_F(BasicPatchTests, ThrowsOnInvalidScript)
 	{
 		infrastructure::entities::User user{ "users/1","Alexander","Timoshenko","Israel" };
+		nlohmann::json user_json = user;
+		user_json["@metadata"]["@collection"] = "Users";
 
-		auto put_doc_cmd = documents::commands::PutDocumentCommand(user.id, {}, user);
+		auto put_doc_cmd = documents::commands::PutDocumentCommand(user.id, {},user_json);
 		auto&& res1 = test_suite_executor->get().execute(put_doc_cmd);
 		ASSERT_EQ(res1.id, user.id);
 
@@ -132,7 +136,8 @@ namespace ravendb::client::tests
 			})";
 		auto op2 = documents::operations::PatchByQueryOperation(update_query);
 		HttpCache cache;
-		auto&& res2 = test_suite_executor->get().execute(op2.get_command(FakeStore(), {}, cache));
+		auto&& res2 = test_suite_executor->get().execute(op2.get_command(
+			documents::DocumentStore::create(), {}, cache));
 
 		std::this_thread::sleep_for(std::chrono::seconds(3));//TODO use TBD waitForCompletion()
 

@@ -164,11 +164,14 @@
     <ClInclude Include="CommandType.h" />
     <ClInclude Include="CompareStringsIgnoreCase.h" />
     <ClInclude Include="DeclareToken.h" />
+    <ClInclude Include="EntityIdHelper.h" />
     <ClInclude Include="DocumentQuery.h" />
     <ClInclude Include="FromToken.h" />
     <ClInclude Include="GetCppClassName.h" />
     <ClInclude Include="GetRequest.h" />
     <ClInclude Include="GetResponse.h" />
+    <ClInclude Include="HiLoIdGenerator.h" />
+    <ClInclude Include="HiLoResult.h" />
     <ClInclude Include="HttpStatus.h" />
     <ClInclude Include="EagerSessionOperations.h" />
     <ClInclude Include="IDocumentQuery.h" />
@@ -265,6 +268,7 @@
     <ClInclude Include="MultiGetCommand.h" />
     <ClInclude Include="MultiGetOperation.h" />
     <ClInclude Include="MultiLoaderWithInclude.h" />
+    <ClInclude Include="NextHiLoCommand.h" />
     <ClInclude Include="OperationExecutor.h" />
     <ClInclude Include="OperationIdResult.h" />
     <ClInclude Include="OrderingType.h" />
@@ -354,6 +358,7 @@
     <ClCompile Include="GetDatabaseNamesOperation.cpp" />
     <ClCompile Include="GetDatabaseRecordOperation.cpp" />
     <ClCompile Include="GetDatabaseTopologyCommand.cpp" />
+    <ClCompile Include="HiLoIdGenerator.cpp" />
     <ClCompile Include="InMemoryDocumentSessionOperations.cpp" />
     <ClCompile Include="JsonOperation.cpp" />
     <ClCompile Include="json_utils.cpp" />
@@ -363,6 +368,7 @@
     <ClCompile Include="MetadataAsDictionary.cpp" />
     <ClCompile Include="MillisToTimespanConverter.cpp" />
     <ClCompile Include="MultiLoaderWithInclude.cpp" />
+    <ClCompile Include="NextHiLoCommand.cpp" />
     <ClCompile Include="QueryOperation.cpp" />
     <ClCompile Include="QueryToken.cpp" />
     <ClCompile Include="RequestExecutor.cpp" />

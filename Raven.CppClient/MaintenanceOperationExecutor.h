@@ -10,7 +10,7 @@ namespace ravendb::client::documents::operations
 	class MaintenanceOperationExecutor
 	{
 	public:
-		MaintenanceOperationExecutor(const DocumentStore&)
+		MaintenanceOperationExecutor(std::shared_ptr<DocumentStore> store)
 		{}
 		//TODO implement !
 	};

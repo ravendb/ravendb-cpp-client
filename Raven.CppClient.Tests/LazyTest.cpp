@@ -23,7 +23,7 @@ namespace ravendb::client::tests::client::lazy
 	TEST_F(LazyTest, CanLazilyLoadEntity)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			for (auto i = 0; i <= 6; ++i)
 			{
 				auto company = std::make_shared<infrastructure::entities::Company>();
@@ -34,7 +34,7 @@ namespace ravendb::client::tests::client::lazy
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto lazy_company = session.advanced().lazily().load<infrastructure::entities::Company>("companies/1");
 			ASSERT_FALSE(lazy_company.is_value_created());
@@ -77,7 +77,7 @@ namespace ravendb::client::tests::client::lazy
 	TEST_F(LazyTest, CanExecuteAllPendingLazyOperations)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto company1 = std::make_shared<infrastructure::entities::Company>();
 			company1->id = "companies/1";
@@ -90,7 +90,7 @@ namespace ravendb::client::tests::client::lazy
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			std::shared_ptr<infrastructure::entities::Company> company1_ptr{};
 			std::shared_ptr<infrastructure::entities::Company> company2_ptr{};
@@ -123,7 +123,7 @@ namespace ravendb::client::tests::client::lazy
 	TEST_F(LazyTest, WithQueuedActions_Load)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto user = std::make_shared<infrastructure::entities::User>();
 			user->name = "Alexander";
@@ -133,7 +133,7 @@ namespace ravendb::client::tests::client::lazy
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			std::shared_ptr<infrastructure::entities::User> user_ptr{};
 
@@ -149,14 +149,37 @@ namespace ravendb::client::tests::client::lazy
 		}
 	}
 
-	//TODO implement
-	//TEST_F(LazyTest, CanUseCacheWhenLazyLoading)
-	//{}
+	TEST_F(LazyTest, CanUseCacheWhenLazyLoading)
+	{
+		{
+			auto session = test_suite_store->get()->open_session();
+			auto user = std::make_shared<infrastructure::entities::User>();
+			user->name = "Alexander";
+			session.store(user, "users/1");
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get()->open_session();
+			auto lazy_loaded = session.advanced().lazily().load<infrastructure::entities::User>("users/1");
+
+			ASSERT_EQ(0, session.advanced().get_number_of_requests());
+
+			ASSERT_EQ("Alexander", lazy_loaded.get_value()->name);
+
+			ASSERT_EQ(1, session.advanced().get_number_of_requests());
+
+			auto loaded = session.load<infrastructure::entities::User>("users/1");
+			ASSERT_EQ("Alexander", loaded->name);
+
+			ASSERT_EQ(1, session.advanced().get_number_of_requests());
+		}
+
+	}
 
 	TEST_F(LazyTest, DontLazyLoadAlreadyLoadedValues)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto user1 = std::make_shared<infrastructure::entities::User>();
 			user1->name = "Alexander";
@@ -176,7 +199,7 @@ namespace ravendb::client::tests::client::lazy
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto lazy_load = session.advanced().lazily().load<infrastructure::entities::User>
 				(std::vector<std::string>{"users/2", "users/3"});
@@ -205,7 +228,7 @@ namespace ravendb::client::tests::client::lazy
 	TEST_F(LazyTest, LazyLoadWithIncludes)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto emp1 = std::make_shared<infrastructure::entities::Employee>();
 			emp1->first_name = "Boris";
@@ -238,7 +261,7 @@ namespace ravendb::client::tests::client::lazy
 			session.save_changes();			
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto lazy_order = session.advanced().lazily()
 				.include("Employee")
@@ -263,7 +286,7 @@ namespace ravendb::client::tests::client::lazy
 			ASSERT_EQ(1, session.advanced().get_number_of_requests());			
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 			std::vector<std::string> ids = { "orders/1", "orders/2" };
 
 			auto lazy_orders = session.advanced().lazily()
@@ -292,7 +315,7 @@ namespace ravendb::client::tests::client::lazy
 	TEST_F(LazyTest, CanRequestServerOnceForAllLazyOperations)
 	{
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto user1 = std::make_shared<infrastructure::entities::User>();
 			user1->name = "Vanya";
@@ -311,7 +334,7 @@ namespace ravendb::client::tests::client::lazy
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = test_suite_store->get()->open_session();
 
 			auto lazy_load = session.advanced()
 				.lazily()

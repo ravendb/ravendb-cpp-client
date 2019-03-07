@@ -30,34 +30,34 @@ namespace ravendb::client::tests
 	{
 		std::string doc_id = "users/1";
 
-		const auto session_options = documents::session::SessionOptions{ test_suite_store->get().get_database(),
+		const auto session_options = documents::session::SessionOptions{ test_suite_store->get()->get_database(),
 			false, true, {},
 			documents::session::TransactionMode::SINGLE_NODE };
 		{
-			auto session = test_suite_store->get().open_session(session_options);
+			auto session = test_suite_store->get()->open_session(session_options);
 			auto user = session.load<infrastructure::entities::User>(example_user.id);
 			ASSERT_FALSE(user);
 		}
 		{
-			auto session = test_suite_store->get().open_session(session_options);
+			auto session = test_suite_store->get()->open_session(session_options);
 			auto user = std::make_shared<infrastructure::entities::User>(example_user);
 			session.store(user, user->id);
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session(session_options);
+			auto session = test_suite_store->get()->open_session(session_options);
 			auto user = session.load<infrastructure::entities::User>(example_user.id);
 			ASSERT_TRUE(user);
 			ASSERT_EQ(user->name, example_user.name);
 			ASSERT_EQ(user->last_name, example_user.last_name);
 		}
 		{
-			auto session = test_suite_store->get().open_session(session_options);
+			auto session = test_suite_store->get()->open_session(session_options);
 			session.delete_document(example_user.id);
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session(session_options);
+			auto session = test_suite_store->get()->open_session(session_options);
 			auto user = session.load<infrastructure::entities::User>(example_user.id);
 			ASSERT_FALSE(user);
 		}

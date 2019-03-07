@@ -10,9 +10,9 @@
 
 namespace query_test
 {
-	void add_users(ravendb::client::documents::DocumentStore& store)
+	void add_users(std::shared_ptr<ravendb::client::documents::DocumentStore> store)
 	{
-		auto session = store.open_session();
+		auto session = store->open_session();
 
 		auto user1 = std::make_shared<ravendb::client::tests::infrastructure::entities::User>();
 		user1->name = "Vlad";
@@ -49,7 +49,7 @@ namespace query_test
 			})" };
 
 		auto op = ravendb::client::documents::operations::indexes::PutIndexesOperation({ index });
-		store.get_request_executor()->execute(op.get_command({}));
+		store->get_request_executor()->execute(op.get_command({}));
 
 		//waiting for indexing TODO something better
 		std::this_thread::sleep_for(std::chrono::duration<int>(3));
@@ -71,7 +71,7 @@ namespace ravendb::client::tests::client
 	{
 		query_test::add_users(test_suite_store->get());
 
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 
 		auto query_result = session.advanced().document_query<infrastructure::entities::User>(
 			{}, "Users", false)
@@ -94,7 +94,7 @@ namespace ravendb::client::tests::client
 	{
 		query_test::add_users(test_suite_store->get());
 
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 
 		auto lazy_result1 = session.query<infrastructure::entities::User>()
 			->lazily();
@@ -118,7 +118,7 @@ namespace ravendb::client::tests::client
 	{
 		query_test::add_users(test_suite_store->get());
 
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 
 		auto users1 = session.query<infrastructure::entities::User>()
 			->to_list();
@@ -139,7 +139,7 @@ namespace ravendb::client::tests::client
 	{
 		query_test::add_users(test_suite_store->get());
 
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 
 		auto users1 = session.advanced().raw_query<infrastructure::entities::User>("from users")
 			->to_list();
@@ -157,7 +157,7 @@ namespace ravendb::client::tests::client
 	{
 		query_test::add_users(test_suite_store->get());
 
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 
 		auto users = session.advanced().raw_query<infrastructure::entities::User>("from Users where Age = $p0")
 			->add_parameter("p0", 30)
@@ -171,7 +171,7 @@ namespace ravendb::client::tests::client
 	{
 		query_test::add_users(test_suite_store->get());
 
-		auto session = test_suite_store->get().open_session();
+		auto session = test_suite_store->get()->open_session();
 
 		ASSERT_EQ(1,
 			session.advanced().raw_query<infrastructure::entities::User>("from Users where Name = $name")

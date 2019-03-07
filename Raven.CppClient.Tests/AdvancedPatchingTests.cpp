@@ -8,12 +8,6 @@
 #include "PatchOperation.h"
 #include "DocumentStore.h"
 
-namespace
-{
-	class FakeStore : public ravendb::client::documents::DocumentStore
-	{};
-}
-
 namespace ravendb::client::tests
 {
 	namespace adv_patching_tests
@@ -35,7 +29,7 @@ namespace ravendb::client::tests
 			set_val_to_json(j, "Owner", ct.owner);
 			set_val_to_json(j, "Comments", ct.comments);
 			set_val_to_json(j, "Date", ct.date);
-			j["@metadata"]["@collection"] = "CustomTypes";
+			//j["@metadata"]["@collection"] = "CustomTypes";
 		}
 
 		inline void from_json(const nlohmann::json& j, CustomType& ct)
@@ -88,7 +82,7 @@ namespace ravendb::client::tests
 		auto op = documents::operations::PatchOperation(custom_type.id, {}, patch);
 
 		HttpCache cache;
-		auto&& res2 = test_suite_executor->get().execute(op.get_command(FakeStore(), {}, cache));
+		auto&& res2 = test_suite_executor->get().execute(op.get_command(documents::DocumentStore::create(), {}, cache));
 
 		ASSERT_EQ(res2.status, documents::operations::PatchStatus::PATCHED);
 
