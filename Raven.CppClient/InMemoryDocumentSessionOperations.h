@@ -14,6 +14,7 @@
 #include "ILazyOperation.h"
 #include "DocumentConventions.h"
 #include "utils.h"
+#include "GenerateEntityIdOnTheClient.h"
 
 namespace ravendb::client
 {
@@ -138,19 +139,17 @@ namespace ravendb::client::documents::session
 
 		static std::atomic_int32_t _instances_counter;
 
-		const int32_t _hash = ++_instances_counter;//unused
+		const int32_t _hash = _instances_counter.fetch_add(1) + 1;//unused
 
 		TransactionMode _transaction_mode;
 
 		int32_t _number_of_requests{};
 
-		//TODO
-		//GenerateEntityIdOnTheClient generate_entity_id_on_the_client;
-
 		const EntityToJson _entity_to_json;
 
-	protected:
+		std::unique_ptr<identity::GenerateEntityIdOnTheClient> _generate_entity_id_on_the_client{};
 
+	protected:
 		const int32_t _client_session_id;
 
 		const std::shared_ptr<http::RequestExecutor> _request_executor{};
@@ -159,7 +158,7 @@ namespace ravendb::client::documents::session
 
 		std::unordered_map<std::shared_ptr<operations::lazy::ILazyOperation>, std::function<void()>> _on_evaluate_lazy{};
 
-		const bool _generate_document_keys_on_store = true;
+		bool _generate_document_keys_on_store = true;
 
 		SessionInfo _session_info;
 
@@ -184,11 +183,6 @@ namespace ravendb::client::documents::session
 		std::unordered_map<in_memory_document_session_operations::IdTypeAndName, std::shared_ptr<commands::batches::CommandDataBase>> 
 			_deferred_commands_map{};
 
-		template<typename T>
-		void process_query_parameters(std::optional<std::string>& index_name,
-			std::optional<std::string>& collection_name,
-			std::shared_ptr<conventions::DocumentConventions> conventions);
-
 	public:
 		virtual ~InMemoryDocumentSessionOperations() = 0;
 
@@ -210,7 +204,7 @@ namespace ravendb::client::documents::session
 
 		size_t get_deferred_commands_count() const;
 
-		//TODO get_generate_entity_id_on_the_client()
+		const identity::GenerateEntityIdOnTheClient& get_generate_entity_id_on_the_client() const;
 
 		const EntityToJson& get_entity_to_json() const;
 
@@ -324,7 +318,9 @@ namespace ravendb::client::documents::session
 
 		void increment_request_count();
 
-		//TODO virtual std::string generate_id(std::shared_ptr<void> entity) = 0;
+		virtual std::string generate_id(std::type_index type, std::shared_ptr<void> entity) const = 0;
+
+		virtual void remember_entity_for_document_id_generator(std::type_index type, std::shared_ptr<void> entity);
 
 		void store_entity_in_unit_of_work(std::optional<std::string>& id, std::shared_ptr<void> entity,
 			std::optional<std::string>& change_vector, nlohmann::json metadata,
@@ -339,6 +335,11 @@ namespace ravendb::client::documents::session
 			std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>>& changes_collection) const;
 
 		void update_session_after_changes(const json::BatchCommandResult& result);
+
+		template<typename T>
+		void process_query_parameters(std::optional<std::string>& index_name,
+			std::optional<std::string>& collection_name,
+			std::shared_ptr<conventions::DocumentConventions> conventions);
 
 	private:
 		std::shared_ptr<IMetadataDictionary> get_metadata_for_internal(std::shared_ptr<void> entity) const;
@@ -459,8 +460,8 @@ namespace ravendb::client::documents::session
 	template<typename T>
 	void InMemoryDocumentSessionOperations::store(std::shared_ptr<T> entity, const std::optional<DocumentInfo::ToJsonConverter>& to_json)
 	{
-		//TODO check if has id
-		bool has_id = false;
+		std::string id{};
+		bool has_id = _generate_entity_id_on_the_client->try_get_id_from_instance(typeid(T), entity).has_value();
 
 		store_internal(std::static_pointer_cast<void>(entity), {}, {},
 			!has_id ? ConcurrencyCheckMode::FORCED : ConcurrencyCheckMode::AUTO,

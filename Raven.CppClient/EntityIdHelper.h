@@ -1,13 +1,15 @@
 #pragma once
+#include <typeindex>
+#include <optional>
 
 namespace ravendb::client
 {
 	class EntityIdHelper
 	{
 	public:
-		using IdGet = std::function<std::string(std::shared_ptr<void> entity)>;
+		using IdGet = std::function<std::optional<std::string>(std::type_index type, std::shared_ptr<void> entity)>;
 
-		using IdSet = std::function<void(std::shared_ptr<void> entity, const std::string& id)>;
+		using IdSet = std::function<bool(std::type_index type, std::shared_ptr<void> entity, const std::string& id)>;
 
 	private:
 		IdGet id_get;
@@ -18,9 +20,9 @@ namespace ravendb::client
 			IdGet id_get_param,
 			IdSet id_set_param);
 
-		std::string get_id(std::shared_ptr<void> entity) const;
+		std::optional<std::string> try_get_id(std::type_index type, std::shared_ptr<void> entity) const;
 
-		void set_id(std::shared_ptr<void> entity, const std::string& id) const;
+		bool try_set_id(std::type_index type, std::shared_ptr<void> entity, const std::string& id) const;
 	};
 
 	inline EntityIdHelper::EntityIdHelper(IdGet id_get_param, IdSet id_set_param)
@@ -28,13 +30,13 @@ namespace ravendb::client
 		, id_set(id_set_param)
 	{}
 
-	inline std::string EntityIdHelper::get_id(std::shared_ptr<void> entity) const
+	inline std::optional<std::string> EntityIdHelper::try_get_id(std::type_index type, std::shared_ptr<void> entity) const
 	{
-		return id_get(entity);
+		return id_get(type, entity);
 	}
 
-	inline void EntityIdHelper::set_id(std::shared_ptr<void> entity, const std::string& id) const
+	inline bool EntityIdHelper::try_set_id(std::type_index type, std::shared_ptr<void> entity, const std::string& id) const
 	{
-		id_set(entity, id);
+		return id_set(type, entity, id);
 	}
 }

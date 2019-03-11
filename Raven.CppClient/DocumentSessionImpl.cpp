@@ -234,6 +234,11 @@ namespace ravendb::client::documents::session
 		return false;
 	}
 
+	std::string DocumentSessionImpl::generate_id(std::type_index type, std::shared_ptr<void> entity) const
+	{
+		return get_conventions()->generate_document_id(database_name, type, entity);
+	}
+
 	DocumentSessionImpl::~DocumentSessionImpl() = default;
 
 	loaders::LoaderWithInclude DocumentSessionImpl::include(const std::string& path)

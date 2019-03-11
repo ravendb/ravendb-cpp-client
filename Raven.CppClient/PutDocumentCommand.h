@@ -3,14 +3,9 @@
 #include "RavenCommand.h"
 #include "PutResult.h"
 
-using 
-	ravendb::client::http::RavenCommand,
-	ravendb::client::documents::commands::batches::PutResult,
-	ravendb::client::http::ServerNode;
-
 namespace ravendb::client::documents::commands
 {
-	class PutDocumentCommand : public RavenCommand<PutResult>
+	class PutDocumentCommand : public http::RavenCommand<batches::PutResult>
 	{
 	private:
 		std::string _id;
@@ -31,7 +26,7 @@ namespace ravendb::client::documents::commands
 			, _document(std::move(document))
 		{}
 
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+		void create_request(CURL* curl, const http::ServerNode& node, std::string& url) override
 		{
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/databases/" << node.database

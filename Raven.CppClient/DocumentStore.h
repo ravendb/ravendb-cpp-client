@@ -3,6 +3,11 @@
 #include "DocumentStoreBase.h"
 #include "CompareStringsIgnoreCase.h"
 
+namespace ravendb::client::documents::identity
+{
+	class MultiDatabaseHiLoIdGenerator;
+}
+
 namespace ravendb::client::documents
 {
 	class DocumentStore : public DocumentStoreBase
@@ -10,6 +15,8 @@ namespace ravendb::client::documents
 	private:
 		mutable std::map<std::string, std::shared_ptr<http::RequestExecutor>, impl::utils::CompareStringsIgnoreCase> _request_executors{};
 		mutable std::shared_mutex _request_executors_mutex{};
+
+		std::unique_ptr<identity::MultiDatabaseHiLoIdGenerator>_multi_db_hilo{};
 
 		std::shared_ptr<operations::MaintenanceOperationExecutor> _maintenance_operation_executor{};	
 		std::shared_ptr<operations::OperationExecutor> _operation_executor{};			
@@ -41,6 +48,8 @@ namespace ravendb::client::documents
 		std::string get_identifier() const override;
 
 		void set_identifier(std::string identifier) override;
+
+		void close();
 
 		session::DocumentSession open_session() override;
 		session::DocumentSession open_session(const std::string& database) override;

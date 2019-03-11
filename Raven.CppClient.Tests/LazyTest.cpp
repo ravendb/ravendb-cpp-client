@@ -8,6 +8,12 @@
 #include "User.h"
 #include "Employee.h"
 #include "Order.h"
+#include "EntityIdHelperUtil.h"
+
+CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::User, id);
+CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::Company, id);
+CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::Employee, id);
+CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::Order, id);
 
 namespace ravendb::client::tests::client::lazy
 {
@@ -17,6 +23,11 @@ namespace ravendb::client::tests::client::lazy
 		static void SetUpTestCase()
 		{
 			test_suite_store = definitions::GET_DOCUMENT_STORE();
+
+			register_entity_id_helper<infrastructure::entities::User>();
+			register_entity_id_helper<infrastructure::entities::Company>();
+			register_entity_id_helper<infrastructure::entities::Employee>();
+			register_entity_id_helper<infrastructure::entities::Order>();
 		}
 	};
 
@@ -28,7 +39,6 @@ namespace ravendb::client::tests::client::lazy
 			{
 				auto company = std::make_shared<infrastructure::entities::Company>();
 				std::string id = "companies/" + std::to_string(i);
-				company->id = id;
 				session.store(company, id);
 			}
 			session.save_changes();
@@ -127,8 +137,7 @@ namespace ravendb::client::tests::client::lazy
 
 			auto user = std::make_shared<infrastructure::entities::User>();
 			user->name = "Alexander";
-			user->id = "users/1";
-			session.store(user, user->id);
+			session.store(user, "users/1");
 
 			session.save_changes();
 		}
@@ -164,12 +173,12 @@ namespace ravendb::client::tests::client::lazy
 
 			ASSERT_EQ(0, session.advanced().get_number_of_requests());
 
-			ASSERT_EQ("Alexander", lazy_loaded.get_value()->name);
+			auto loaded = session.load<infrastructure::entities::User>("users/1");
+			ASSERT_EQ("Alexander", loaded->name);
 
 			ASSERT_EQ(1, session.advanced().get_number_of_requests());
 
-			auto loaded = session.load<infrastructure::entities::User>("users/1");
-			ASSERT_EQ("Alexander", loaded->name);
+			ASSERT_EQ("Alexander", lazy_loaded.get_value()->name);
 
 			ASSERT_EQ(1, session.advanced().get_number_of_requests());
 		}
@@ -183,18 +192,15 @@ namespace ravendb::client::tests::client::lazy
 
 			auto user1 = std::make_shared<infrastructure::entities::User>();
 			user1->name = "Alexander";
-			user1->id = "users/1";
-			session.store(user1, user1->id);
+			session.store(user1, "users/1");
 
 			auto user2 = std::make_shared<infrastructure::entities::User>();
 			user2->name = "Boris";
-			user2->id = "users/2";
-			session.store(user2, user2->id);
+			session.store(user2, "users/2");
 
 			auto user3 = std::make_shared<infrastructure::entities::User>();
 			user3->name = "Dmitriy";
-			user3->id = "users/3";
-			session.store(user3, user3->id);
+			session.store(user3, "users/3");
 
 			session.save_changes();
 		}

@@ -63,7 +63,6 @@ namespace ravendb::client::tests::client::documents
 		}
 	};
 
-	//TODO rewrite this test with ID generator
 	TEST_F(LoadTest, LoadWithIncludes)
 	{
 		std::string bar_id{};
@@ -71,15 +70,13 @@ namespace ravendb::client::tests::client::documents
 			auto session = test_suite_store->get()->open_session();
 			auto foo = std::make_shared<load_test::Foo>();
 			foo->name = "Beginning";
-			//TODO generate ID
-			session.store(foo, "foos/1");
+			session.store(foo);
 
 			auto foo_id = *session.advanced().get_document_id(foo);
 			auto bar = std::make_shared<load_test::Bar>();
 			bar->name = "End";
 			bar->foo_id = foo_id;
-			//TODO generate ID
-			session.store(bar, "bars/1");
+			session.store(bar);
 
 			bar_id = *session.advanced().get_document_id(bar);
 			session.save_changes();
@@ -102,7 +99,6 @@ namespace ravendb::client::tests::client::documents
 		}
 	}
 
-	//TODO rewrite this test with ID generator
 	//TODO this test MAY be influenced from non-implemented feature(IncludesUtils = include path parsing)
 	TEST_F(LoadTest, LoadWithIncludesAndMissingDocument)
 	{
@@ -112,8 +108,7 @@ namespace ravendb::client::tests::client::documents
 			auto bar = std::make_shared<load_test::Bar>();
 			bar->name = "End";
 			bar->foo_id = "non_exists/1";
-			//TODO generate ID
-			session.store(bar, "bars/1");
+			session.store(bar);
 			bar_id = *session.advanced().get_document_id(bar);
 			session.save_changes();
 		}

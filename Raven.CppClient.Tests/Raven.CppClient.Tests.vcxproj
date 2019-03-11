@@ -67,8 +67,10 @@
     <ClCompile Include="CreateSampleDataOperation.cpp" />
     <ClCompile Include="CrudTest.cpp" />
     <ClCompile Include="DeleteTest.cpp" />
+    <ClCompile Include="DocumentIdPropertyTest.cpp" />
     <ClCompile Include="ds_definitions.cpp" />
     <ClCompile Include="FirstClassPatchTest.cpp" />
+    <ClCompile Include="HiLoTest.cpp" />
     <ClCompile Include="HttpsTest.cpp" />
     <ClCompile Include="LazyTest.cpp" />
     <ClCompile Include="LoadTest.cpp" />

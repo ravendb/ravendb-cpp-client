@@ -4,6 +4,10 @@
 #include "DocumentSession.h"
 #include "User.h"
 #include "GeekPerson.h"
+#include "AdvancedSessionOperations.h"
+#include "EntityIdHelperUtil.h"
+
+CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::User, id);
 
 namespace ravendb::client::tests::client
 {
@@ -13,13 +17,37 @@ namespace ravendb::client::tests::client
 		static void SetUpTestCase()
 		{
 			test_suite_store = definitions::GET_DOCUMENT_STORE();
+
+			register_entity_id_helper<infrastructure::entities::User>();
 		}
 	};
 
-	//TODO implement
 	TEST_F(LoadTests, LoadCanUseCache)
 	{
-		SUCCEED();
+		{
+			auto session = test_suite_store->get()->open_session();
+			auto user = std::make_shared<infrastructure::entities::User>();
+			user->name = "RavenDB";
+
+			session.store(user, "users/1");
+			session.save_changes();
+		}
+		{
+			auto session = test_suite_store->get()->open_session();
+			auto user = session.load<infrastructure::entities::User>("users/1");
+
+			ASSERT_TRUE(user);
+			ASSERT_EQ(std::string("RavenDB"), user->name);
+
+			ASSERT_EQ(1, session.advanced().get_number_of_requests());
+
+			auto user2 = session.load<infrastructure::entities::User>("users/1");
+
+			ASSERT_TRUE(user2);
+			ASSERT_EQ(std::string("RavenDB"), user2->name);
+
+			ASSERT_EQ(1, session.advanced().get_number_of_requests());
+		}
 	}
 
 	TEST_F(LoadTests, LoadDocumentById)
@@ -64,7 +92,6 @@ namespace ravendb::client::tests::client
 		}
 	}
 
-	//rewrite using id generator
 	TEST_F(LoadTests, LoadNullShouldReturnNull)
 	{
 		{
@@ -75,8 +102,8 @@ namespace ravendb::client::tests::client
 			auto user2 = std::make_shared<infrastructure::entities::User>();
 			user2->name = "Hibernating Rhinos";
 
-			session.store(user1, "users/1");
-			session.store(user2, "users/2");
+			session.store(user1);
+			session.store(user2);
 			session.save_changes();
 		}
 		{
@@ -154,7 +181,6 @@ namespace ravendb::client::tests::client
 		}
 	}
 
-	//TODO originally id is checked
 	TEST_F(LoadTests, ShouldLoadManyIdsAsPostRequest)
 	{
 		std::vector<std::string> ids{};
@@ -179,8 +205,8 @@ namespace ravendb::client::tests::client
 			auto user77 = users.at(std::string("users/77"));
 
 			ASSERT_TRUE(user77);
-			//may be rewritten to use GenerateEntityIdOnTheClient().trySetIdentity(entity, id);
-			ASSERT_EQ(std::string("Person 77"), user77->name);
+
+			ASSERT_EQ("users/77", user77->id);
 		}
 	}
 

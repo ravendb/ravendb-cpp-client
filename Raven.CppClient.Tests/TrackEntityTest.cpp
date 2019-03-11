@@ -45,8 +45,8 @@ namespace ravendb::client::tests::client
 			user2->name = "Izyaslav";
 			user2->id = "users/2";
 
-			session.store(user1, user1->id);
-			session.store(user1, user2->id);
+			session.store(user1);
+			session.store(user2);
 			session.save_changes();
 		}
 		{
@@ -71,7 +71,7 @@ namespace ravendb::client::tests::client
 		user->id = "users/1";
 		user->name = "User1";
 
-		session.store(user, user->id);
+		session.store(user);
 		session.save_changes();
 
 		auto new_user = std::make_shared<infrastructure::entities::User>();
@@ -80,7 +80,7 @@ namespace ravendb::client::tests::client
 
 		try
 		{
-			session.store(new_user, new_user->id);
+			session.store(new_user);
 		}
 		catch (std::runtime_error& e)
 		{

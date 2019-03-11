@@ -34,6 +34,7 @@ namespace ravendb::client::tests::infrastructure::entities
 		set_val_to_json(j, "Contacts", c.contacts);
 		set_val_to_json(j, "Type", c.type);
 		set_val_to_json(j, "EmployeesIds", c.employees_ids);
+		//TODO erase once proper "pluralize" is ready
 		j["@metadata"]["@collection"] = "Companies";
 	}
 

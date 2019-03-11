@@ -2,6 +2,7 @@
 #include <typeindex>
 #include "ClientConfiguration.h"
 #include "EntityIdHelper.h"
+#include <shared_mutex>
 
 namespace ravendb::client::documents::conventions
 {
@@ -9,6 +10,7 @@ namespace ravendb::client::documents::conventions
 	class DocumentConventions
 	{
 	private:
+		static std::shared_mutex _ids_helpers_guard;
 		static std::unordered_map<std::type_index, EntityIdHelper> _id_helpers;
 
 		static std::unordered_map<std::type_index, std::string> _cached_default_type_collection_names;
@@ -53,6 +55,7 @@ namespace ravendb::client::documents::conventions
 
 		DocumentConventions(const DocumentConventions& other);
 
+		//changed to the new one if already exists
 		static void add_entity_id_helper(std::type_index type, EntityIdHelper id_helper);
 
 		static std::optional<EntityIdHelper> get_entity_id_helper(std::type_index type);
@@ -122,8 +125,8 @@ namespace ravendb::client::documents::conventions
 
 		std::string get_collection_name(std::type_index type) const;
 
-		template<typename T>
-		std::string generate_document_id(const std::string database, std::shared_ptr<T> entity);
+		std::string generate_document_id(const std::string database_name,
+			std::type_index type, std::shared_ptr<void> entity);
 
 		std::optional<std::string> get_cpp_class(const std::string& id, const nlohmann::json& document);
 
@@ -135,17 +138,4 @@ namespace ravendb::client::documents::conventions
 
 		void freeze();
 	};
-
-
-	template <typename T>
-	std::string DocumentConventions::generate_document_id(const std::string database_name, std::shared_ptr<T> entity)
-	{
-		if(auto it =_list_of_registered_id_conventions.find(typeid(T));
-			it != _list_of_registered_id_conventions.end())
-		{
-			return (it->second)(database_name, std::static_pointer_cast<void>(entity));
-		}
-
-		return _document_id_generator(database_name, std::static_pointer_cast<void>(entity), typeid(T));
-	}
 }

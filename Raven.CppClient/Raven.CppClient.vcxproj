@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\xxhash_cpp\xxhash\xxhash.hpp" />
     <ClInclude Include="..\json.hpp" />
+    <ClInclude Include="..\Raven.CppClient.Tests\EntityIdHelperUtil.h" />
     <ClInclude Include="AbstractDocumentQuery.h" />
     <ClInclude Include="BatchCommand.h" />
     <ClInclude Include="BatchCommandResult.h" />
@@ -167,11 +168,13 @@
     <ClInclude Include="EntityIdHelper.h" />
     <ClInclude Include="DocumentQuery.h" />
     <ClInclude Include="FromToken.h" />
+    <ClInclude Include="GenerateEntityIdOnTheClient.h" />
     <ClInclude Include="GetCppClassName.h" />
     <ClInclude Include="GetRequest.h" />
     <ClInclude Include="GetResponse.h" />
     <ClInclude Include="HiLoIdGenerator.h" />
     <ClInclude Include="HiLoResult.h" />
+    <ClInclude Include="HiLoReturnCommand.h" />
     <ClInclude Include="HttpStatus.h" />
     <ClInclude Include="EagerSessionOperations.h" />
     <ClInclude Include="IDocumentQuery.h" />
@@ -265,9 +268,11 @@
     <ClInclude Include="MaintenanceOperationExecutor.h" />
     <ClInclude Include="MetadataAsDictionary.h" />
     <ClInclude Include="IMetadataDictionary.h" />
+    <ClInclude Include="MultiDatabaseHiLoIdGenerator.h" />
     <ClInclude Include="MultiGetCommand.h" />
     <ClInclude Include="MultiGetOperation.h" />
     <ClInclude Include="MultiLoaderWithInclude.h" />
+    <ClInclude Include="MultiTypeHiLoIdGenerator.h" />
     <ClInclude Include="NextHiLoCommand.h" />
     <ClInclude Include="OperationExecutor.h" />
     <ClInclude Include="OperationIdResult.h" />
@@ -354,11 +359,13 @@
     <ClCompile Include="EntityToJson.cpp" />
     <ClCompile Include="FieldsToFetchToken.cpp" />
     <ClCompile Include="FromToken.cpp" />
+    <ClCompile Include="GenerateEntityIdOnTheClient.cpp" />
     <ClCompile Include="GetCppClassName.cpp" />
     <ClCompile Include="GetDatabaseNamesOperation.cpp" />
     <ClCompile Include="GetDatabaseRecordOperation.cpp" />
     <ClCompile Include="GetDatabaseTopologyCommand.cpp" />
     <ClCompile Include="HiLoIdGenerator.cpp" />
+    <ClCompile Include="HiLoReturnCommand.cpp" />
     <ClCompile Include="InMemoryDocumentSessionOperations.cpp" />
     <ClCompile Include="JsonOperation.cpp" />
     <ClCompile Include="json_utils.cpp" />
@@ -367,7 +374,9 @@
     <ClCompile Include="LeaderStamp.cpp" />
     <ClCompile Include="MetadataAsDictionary.cpp" />
     <ClCompile Include="MillisToTimespanConverter.cpp" />
+    <ClCompile Include="MultiDatabaseHiLoIdGenerator.cpp" />
     <ClCompile Include="MultiLoaderWithInclude.cpp" />
+    <ClCompile Include="MultiTypeHiLoIdGenerator.cpp" />
     <ClCompile Include="NextHiLoCommand.cpp" />
     <ClCompile Include="QueryOperation.cpp" />
     <ClCompile Include="QueryToken.cpp" />

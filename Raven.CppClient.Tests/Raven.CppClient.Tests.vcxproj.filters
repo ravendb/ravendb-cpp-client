@@ -72,6 +72,12 @@
     <ClCompile Include="LazyTest.cpp">
       <Filter>ravendb.client.tests\test\client\lazy</Filter>
     </ClCompile>
+    <ClCompile Include="DocumentIdPropertyTest.cpp">
+      <Filter>ravendb.client.tests\test\client\documents</Filter>
+    </ClCompile>
+    <ClCompile Include="HiLoTest.cpp">
+      <Filter>ravendb.client.tests\test\client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

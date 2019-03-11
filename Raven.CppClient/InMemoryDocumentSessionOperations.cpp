@@ -62,6 +62,12 @@ namespace ravendb::client::documents::session
 		return _deferred_commands.size();
 	}
 
+	const identity::GenerateEntityIdOnTheClient& InMemoryDocumentSessionOperations::
+		get_generate_entity_id_on_the_client() const
+	{
+		return *_generate_entity_id_on_the_client;
+	}
+
 	const EntityToJson& InMemoryDocumentSessionOperations::get_entity_to_json() const
 	{
 		return _entity_to_json;
@@ -102,14 +108,17 @@ namespace ravendb::client::documents::session
 		, _operation_executor(std::make_shared<documents::operations::SessionOperationExecutor>(*this))
 		, _transaction_mode(options.transaction_mode)
 		, _entity_to_json(*this)
-		, _client_session_id(++_client_session_id_counter)
+		, _client_session_id(_client_session_id_counter.fetch_add(1) + 1)
 		, _request_executor(options.request_executor ? options.request_executor : 
 			document_store->get_request_executor(database_name))
 		, _session_info(_client_session_id, /*document_store->get_last_transaction_index(database_name)*/{}, options.no_caching)
-
-
-
-	{}
+	{
+		_generate_entity_id_on_the_client = std::make_unique<identity::GenerateEntityIdOnTheClient>(
+			_request_executor->get_conventions(), [this](std::type_index type, std::shared_ptr<void> entity)
+		{
+			return this->generate_id(type, entity);
+		});
+	}
 
 	std::shared_ptr<IMetadataDictionary> InMemoryDocumentSessionOperations::get_metadata_for_internal(std::shared_ptr<void> entity) const
 	{
@@ -440,8 +449,18 @@ namespace ravendb::client::documents::session
 
 		if (!id)
 		{
-			//TODO generate id or
-			throw std::runtime_error("Not implemented");
+			if(_generate_document_keys_on_store)
+			{
+				id = _generate_entity_id_on_the_client->generate_document_key_for_storage(type, entity);
+			}
+			else
+			{
+				remember_entity_for_document_id_generator(type, entity);
+			}
+		}
+		else
+		{
+			_generate_entity_id_on_the_client->try_set_identity(type, entity, *id);
 		}
 
 		if (auto it = _deferred_commands_map.find(
@@ -504,6 +523,13 @@ namespace ravendb::client::documents::session
 		}
 
 		store_entity_in_unit_of_work(id, entity, change_vector, std::move(metadata), force_concurrency_check, to_json, update_from_json);
+	}
+
+	void InMemoryDocumentSessionOperations::remember_entity_for_document_id_generator(std::type_index type,
+		std::shared_ptr<void> entity)
+	{
+		throw std::runtime_error("You cannot set _generate_document_keys_on_store to false"
+			" without implementing remember_entity_for_document_id_generator");
 	}
 
 	void InMemoryDocumentSessionOperations::store_entity_in_unit_of_work(std::optional<std::string>& id,

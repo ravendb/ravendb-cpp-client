@@ -8,7 +8,7 @@ namespace ravendb::client::documents
 
 	std::shared_ptr<conventions::DocumentConventions> DocumentStoreBase::get_conventions() const
 	{
-		return _conventions ? _conventions : _conventions = conventions::DocumentConventions::default_conventions();
+		return _conventions ? _conventions : _conventions = std::make_shared<conventions::DocumentConventions>();
 	}
 
 	void DocumentStoreBase::set_conventions(std::shared_ptr<conventions::DocumentConventions> conventions)

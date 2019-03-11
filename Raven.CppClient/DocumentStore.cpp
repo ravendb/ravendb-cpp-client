@@ -3,6 +3,8 @@
 #include "DocumentSession.h"
 #include "SessionOptions.h"
 #include "MaintenanceOperationExecutor.h"
+#include "MultiDatabaseHiLoIdGenerator.h"
+#include "GetCppClassName.h"
 
 namespace ravendb::client::documents
 {
@@ -72,6 +74,16 @@ namespace ravendb::client::documents
 		_identifier = std::move(identifier);
 	}
 
+	void DocumentStore::close()
+	{
+		//TODO implement the rest
+
+		if(_multi_db_hilo)
+		{
+			_multi_db_hilo->return_unused_range();
+		}
+	}
+
 	session::DocumentSession DocumentStore::open_session()
 	{
 		return open_session(session::SessionOptions());
@@ -131,8 +143,26 @@ namespace ravendb::client::documents
 		}
 		assert_valid_configuration();
 
-		//TODO take care of the HiLo
+		if(!get_conventions()->get_document_id_generator())// don't overwrite what the user is doing
+		{
+			_multi_db_hilo = std::make_unique<identity::MultiDatabaseHiLoIdGenerator>(_weak_this.lock(), get_conventions());
+
+			get_conventions()->set_document_id_generator([this]
+				(const std::string& db_name , std::shared_ptr<void> entity, std::type_index type)->std::string
+			{
+				auto&& res = _multi_db_hilo->generate_document_id(db_name, type, entity);
+				if(!res)
+				{
+					throw std::runtime_error("Could not generate id for the entity of type"
+						+ impl::utils::GetCppClassName()(type));
+				}
+				return *res;
+			});
+		}
+
+		get_conventions()->freeze();
 		is_initialized = true;
+
 		return _weak_this.lock();
 	}
 

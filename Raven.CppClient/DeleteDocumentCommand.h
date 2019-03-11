@@ -2,13 +2,9 @@
 #include "VoidRavenCommand.h"
 #include "utils.h"
 
-using
-	ravendb::client::http::VoidRavenCommand,
-	ravendb::client::http::ServerNode;
-
 namespace ravendb::client::documents::commands
 {
-	class DeleteDocumentCommand : public VoidRavenCommand
+	class DeleteDocumentCommand : public http::VoidRavenCommand
 	{
 	private:
 		std::string _id;
@@ -26,7 +22,7 @@ namespace ravendb::client::documents::commands
 			, _change_vector(std::move(change_vector))
 		{}
 
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+		void create_request(CURL* curl, const http::ServerNode& node, std::string& url) override
 		{
 			std::ostringstream pathBuilder;
 			pathBuilder << node.url << "/databases/" << node.database

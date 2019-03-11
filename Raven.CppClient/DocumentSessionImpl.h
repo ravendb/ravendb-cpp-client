@@ -60,6 +60,9 @@ namespace ravendb::client::documents::session
 		bool execute_lazy_operations_single_step(ResponseTimeInformation& response_time_information,
 			const std::vector<commands::multi_get::GetRequest>& requests);
 
+	protected:
+		std::string generate_id(std::type_index type, std::shared_ptr<void> entity) const override;
+
 	public:
 		~DocumentSessionImpl() override;
 

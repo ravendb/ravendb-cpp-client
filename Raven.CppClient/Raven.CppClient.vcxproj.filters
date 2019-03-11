@@ -140,6 +140,18 @@
     <ClCompile Include="HiLoIdGenerator.cpp">
       <Filter>ravendb.client\documents\identity</Filter>
     </ClCompile>
+    <ClCompile Include="HiLoReturnCommand.cpp">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="GenerateEntityIdOnTheClient.cpp">
+      <Filter>ravendb.client\documents\identity</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiTypeHiLoIdGenerator.cpp">
+      <Filter>ravendb.client\documents\identity</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiDatabaseHiLoIdGenerator.cpp">
+      <Filter>ravendb.client\documents\identity</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -667,6 +679,21 @@
     </ClInclude>
     <ClInclude Include="HiLoIdGenerator.h">
       <Filter>ravendb.client\documents\identity</Filter>
+    </ClInclude>
+    <ClInclude Include="HiLoReturnCommand.h">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="GenerateEntityIdOnTheClient.h">
+      <Filter>ravendb.client\documents\identity</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiTypeHiLoIdGenerator.h">
+      <Filter>ravendb.client\documents\identity</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiDatabaseHiLoIdGenerator.h">
+      <Filter>ravendb.client\documents\identity</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Raven.CppClient.Tests\EntityIdHelperUtil.h">
+      <Filter>ravendb.client</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
