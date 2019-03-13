@@ -62,14 +62,14 @@ namespace ravendb::client::documents::operations::indexes
 
 			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 			{
-				std::ostringstream pathBuilder;
-				pathBuilder << node.url << "/databases/" << node.database
+				std::ostringstream path_builder;
+				path_builder << node.url << "/databases/" << node.database
 					<< "/admin/indexes/start?name=" << impl::utils::url_escape(curl, _index_name);
 
 				curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
 				curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, "");
 
-				url = pathBuilder.str();
+				url = path_builder.str();
 			}
 		};
 	};

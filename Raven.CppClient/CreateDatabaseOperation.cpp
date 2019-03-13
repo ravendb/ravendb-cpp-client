@@ -42,8 +42,8 @@ namespace ravendb::client::serverwide::operations
 
 	void CreateDatabaseOperation::CreateDatabaseCommand::create_request(CURL* curl, const http::ServerNode& node, std::string& url)
 	{
-		std::ostringstream pathBuilder;
-		pathBuilder << node.url << "/admin/databases?name=" << _database_name
+		std::ostringstream path_builder;
+		path_builder << node.url << "/admin/databases?name=" << _database_name
 			<< "&replicationFactor=" << _replication_factor;
 
 		curl_easy_setopt(curl, CURLOPT_READFUNCTION, ravendb::client::impl::utils::read_callback);
@@ -52,7 +52,7 @@ namespace ravendb::client::serverwide::operations
 		curl_easy_setopt(curl, CURLOPT_READDATA, &_database_document);
 		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_database_document.length());
 
-		url = pathBuilder.str();
+		url = path_builder.str();
 	}
 
 	void CreateDatabaseOperation::CreateDatabaseCommand::set_response(CURL* curl, const nlohmann::json& response, bool from_cache)

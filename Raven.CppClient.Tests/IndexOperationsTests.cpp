@@ -374,7 +374,7 @@ namespace ravendb::client::tests
 		{
 			ASSERT_EQ(expected_size, 
 				std::find_if(res.cbegin(), res.cend(),
-				[&](const IndexErrors& err)
+				[&](const documents::indexes::IndexErrors& err)
 				{return err.name == index_name; })->errors.size());
 		};
 

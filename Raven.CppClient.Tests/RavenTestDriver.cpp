@@ -5,6 +5,8 @@
 #include "CreateDatabaseOperation.h"
 #include "RequestExecutor.h"
 #include "DeleteDatabasesOperation.h"
+#include "SimpleStopWatch.h"
+#include "GetStatisticsOperation.h"
 
 namespace ravendb::client::tests::driver
 {
@@ -156,8 +158,47 @@ namespace ravendb::client::tests::driver
 	void RavenTestDriver::wait_for_indexing(std::shared_ptr<documents::IDocumentStore> store,
 		const std::optional<std::string>& database, const std::optional<std::chrono::milliseconds>& timeout)
 	{
-		//TODO implement
-		std::this_thread::sleep_for(std::chrono::seconds(5));
+		std::chrono::microseconds wait_timeout = timeout ? *timeout : std::chrono::minutes(1);
+
+		impl::SimpleStopWatch sp{};
+
+		while(sp.millis_elapsed() < wait_timeout)
+		{
+			auto database_statistics = store->get_request_executor(store->get_database())->
+				execute(documents::operations::GetStatisticsOperation().get_command(store->get_conventions()));
+
+			std::vector<std::reference_wrapper<documents::operations::IndexInformation>> indexes{};
+
+			for(auto& index : database_statistics.indexes)
+			{
+				if(index.state != documents::indexes::IndexState::DISABLED)
+				{
+					indexes.emplace_back(std::ref(index));
+				}
+			}
+
+			if(std::all_of(indexes.cbegin(), indexes.cend(),
+				[](const std::reference_wrapper<documents::operations::IndexInformation>& index_ref)
+			{
+				auto prefix = std::string_view(constants::documents::indexing::SIDE_BY_SIDE_INDEX_NAME_PREFIX);
+				return  !index_ref.get().is_stale &&
+					index_ref.get().name.substr(0, prefix.length()) != prefix;
+			}))
+			{
+				return;
+			}
+
+			if(std::any_of(indexes.cbegin(), indexes.cend(),
+				[](const std::reference_wrapper<documents::operations::IndexInformation>& index_ref)
+			{
+				return index_ref.get().state == documents::indexes::IndexState::ERRONEOUS;
+			}))
+			{
+				break;
+			}
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		}
 	}
 
 	void RavenTestDriver::close()

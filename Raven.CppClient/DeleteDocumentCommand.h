@@ -24,14 +24,14 @@ namespace ravendb::client::documents::commands
 
 		void create_request(CURL* curl, const http::ServerNode& node, std::string& url) override
 		{
-			std::ostringstream pathBuilder;
-			pathBuilder << node.url << "/databases/" << node.database
+			std::ostringstream path_builder;
+			path_builder << node.url << "/databases/" << node.database
 				<< "/docs?id=" << impl::utils::url_escape(curl, _id);
 
 			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 			add_change_vector_if_not_null(curl, _change_vector);
 
-			url = pathBuilder.str();
+			url = path_builder.str();
 		}
 	};
 }

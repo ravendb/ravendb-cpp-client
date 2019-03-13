@@ -83,14 +83,14 @@ namespace ravendb::client::documents::operations::indexes
 
 			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 			{
-				std::ostringstream pathBuilder;
-				pathBuilder << node.url << "/databases/" << node.database
+				std::ostringstream path_builder;
+				path_builder << node.url << "/databases/" << node.database
 					<< "/indexes/set-lock";
 
 				curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
 				curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, _parameters_json.dump().c_str());
 
-				url = pathBuilder.str();
+				url = path_builder.str();
 			}
 		};
 

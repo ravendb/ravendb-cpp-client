@@ -98,20 +98,20 @@ namespace ravendb::client::documents::operations::indexes
 
 			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 			{
-				std::ostringstream pathBuilder;
-				pathBuilder << node.url << "/databases/" << node.database
+				std::ostringstream path_builder;
+				path_builder << node.url << "/databases/" << node.database
 					<< "/indexes/terms?name=" << impl::utils::url_escape(curl, _index_name)
 					<< "&field=" << impl::utils::url_escape(curl, _field)
 					<< "&fromValue=" << impl::utils::url_escape(curl, _from_value)
 					<< "&pageSize=";
 				if (_page_size)
 				{
-					pathBuilder << _page_size.value();
+					path_builder << _page_size.value();
 				}
 
 				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 
-				url = pathBuilder.str();
+				url = path_builder.str();
 			}
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override

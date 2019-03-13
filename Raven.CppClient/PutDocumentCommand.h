@@ -28,8 +28,8 @@ namespace ravendb::client::documents::commands
 
 		void create_request(CURL* curl, const http::ServerNode& node, std::string& url) override
 		{
-			std::ostringstream pathBuilder;
-			pathBuilder << node.url << "/databases/" << node.database
+			std::ostringstream path_builder;
+			path_builder << node.url << "/databases/" << node.database
 				<< "/docs?id=" << ravendb::client::impl::utils::url_escape(curl, _id);
 
 			curl_easy_setopt(curl, CURLOPT_READFUNCTION, ravendb::client::impl::utils::read_callback);
@@ -40,7 +40,7 @@ namespace ravendb::client::documents::commands
 
 			add_change_vector_if_not_null(curl, _change_vector);
 
-			url = pathBuilder.str();
+			url = path_builder.str();
 		}
 
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override

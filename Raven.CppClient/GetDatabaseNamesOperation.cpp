@@ -26,13 +26,13 @@ namespace ravendb::client::serverwide::operations
 
 	void GetDatabaseNamesOperation::GetDatabaseNamesCommand::create_request(CURL * curl, const http::ServerNode & node, std::string & url)
 	{
-		std::ostringstream pathBuilder;
-		pathBuilder << node.url << "/databases?start=" << _start
+		std::ostringstream path_builder;
+		path_builder << node.url << "/databases?start=" << _start
 			<< "&pageSize=" << _page_size << "&namesOnly=true";
 
 		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 
-		url = pathBuilder.str();
+		url = path_builder.str();
 	}
 
 	void GetDatabaseNamesOperation::GetDatabaseNamesCommand::set_response(CURL * curl, const nlohmann::json & response, bool from_cache)

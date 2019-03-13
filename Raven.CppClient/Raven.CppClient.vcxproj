@@ -164,6 +164,7 @@
     <ClInclude Include="CommandDataBase.h" />
     <ClInclude Include="CommandType.h" />
     <ClInclude Include="CompareStringsIgnoreCase.h" />
+    <ClInclude Include="DatabaseStatistics.h" />
     <ClInclude Include="DeclareToken.h" />
     <ClInclude Include="EntityIdHelper.h" />
     <ClInclude Include="DocumentQuery.h" />
@@ -172,6 +173,7 @@
     <ClInclude Include="GetCppClassName.h" />
     <ClInclude Include="GetRequest.h" />
     <ClInclude Include="GetResponse.h" />
+    <ClInclude Include="GetStatisticsOperation.h" />
     <ClInclude Include="HiLoIdGenerator.h" />
     <ClInclude Include="HiLoResult.h" />
     <ClInclude Include="HiLoReturnCommand.h" />
@@ -181,6 +183,7 @@
     <ClInclude Include="IDocumentQueryBase.h" />
     <ClInclude Include="IDocumentQueryBaseSingle.h" />
     <ClInclude Include="ILazyOperation.h" />
+    <ClInclude Include="IndexInformation.h" />
     <ClInclude Include="IndexQueryContent.h" />
     <ClInclude Include="Inflector.h" />
     <ClInclude Include="IRawDocumentQuery.h" />
@@ -318,6 +321,7 @@
     <ClInclude Include="SetIndexesLockOperation.h" />
     <ClInclude Include="SetIndexesPriorityOperation.h" />
     <ClInclude Include="SimpleStopWatch.h" />
+    <ClInclude Include="Size.h" />
     <ClInclude Include="SpatialFieldType.h" />
     <ClInclude Include="SpatialOptions.h" />
     <ClInclude Include="SpatialSearchStrategy.h" />

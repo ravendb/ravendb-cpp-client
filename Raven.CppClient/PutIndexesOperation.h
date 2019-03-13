@@ -77,8 +77,8 @@ namespace ravendb::client::documents::operations::indexes
 
 			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 			{
-				std::ostringstream pathBuilder;
-				pathBuilder << node.url << "/databases/" << node.database
+				std::ostringstream path_builder;
+				path_builder << node.url << "/databases/" << node.database
 					<< "/admin/indexes";
 
 				curl_easy_setopt(curl, CURLOPT_READFUNCTION, ravendb::client::impl::utils::read_callback);
@@ -87,7 +87,7 @@ namespace ravendb::client::documents::operations::indexes
 				curl_easy_setopt(curl, CURLOPT_READDATA, &_index_to_add_str);
 				curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_index_to_add_str.length());
 
-				url = pathBuilder.str();
+				url = path_builder.str();
 			}
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override

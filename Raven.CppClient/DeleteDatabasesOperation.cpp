@@ -66,8 +66,8 @@ namespace ravendb::client::serverwide::operations
 
 	void DeleteDatabasesOperation::DeleteDatabaseCommand::create_request(CURL * curl, const http::ServerNode & node, std::string & url)
 	{
-		std::ostringstream pathBuilder;
-		pathBuilder << node.url << "/admin/databases";
+		std::ostringstream path_builder;
+		path_builder << node.url << "/admin/databases";
 
 		curl_easy_setopt(curl, CURLOPT_READFUNCTION, impl::utils::read_callback);
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
@@ -75,7 +75,7 @@ namespace ravendb::client::serverwide::operations
 		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_parameters_str.length());
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 
-		url = pathBuilder.str();
+		url = path_builder.str();
 	}
 
 	void DeleteDatabasesOperation::DeleteDatabaseCommand::set_response(CURL * curl, const nlohmann::json & response, bool from_cache)

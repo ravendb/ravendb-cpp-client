@@ -4,11 +4,6 @@
 #include "RavenCommand.h"
 #include "ServerNode.h"
 
-using
-ravendb::client::http::RavenCommand,
-ravendb::client::http::ServerNode;
-
-
 namespace ravendb::client::documents::operations
 {
 	class GetOperationStateOperation : public operations::IMaintenanceOperation<nlohmann::json>
@@ -19,7 +14,7 @@ namespace ravendb::client::documents::operations
 	public:
 		~GetOperationStateOperation() override = default;
 
-		GetOperationStateOperation(int64_t id)
+		explicit GetOperationStateOperation(int64_t id)
 			: _id(id)
 		{}
 
@@ -45,13 +40,13 @@ namespace ravendb::client::documents::operations
 
 			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 			{
-				std::ostringstream pathBuilder;
-				pathBuilder << node.url << "/databases/" << node.database
+				std::ostringstream path_builder;
+				path_builder << node.url << "/databases/" << node.database
 					<< "/operations/state?id=" << _id;
 
 				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 
-				url = pathBuilder.str();
+				url = path_builder.str();
 			}
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
