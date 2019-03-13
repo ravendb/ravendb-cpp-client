@@ -42,8 +42,10 @@
     <ClInclude Include="Arr.h" />
     <ClInclude Include="Company.h" />
     <ClInclude Include="CompanyType.h" />
+    <ClInclude Include="ConnectionDetailsHolder.h" />
     <ClInclude Include="Contact.h" />
     <ClInclude Include="CreateSampleDataOperation.h" />
+    <ClInclude Include="raven_test_definitions.h" />
     <ClInclude Include="ds_definitions.h" />
     <ClInclude Include="Employee.h" />
     <ClInclude Include="Family.h" />
@@ -56,7 +58,7 @@
     <ClInclude Include="Post.h" />
     <ClInclude Include="re_definitions.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="TestSuiteBase.h" />
+    <ClInclude Include="RavenTestDriver.h" />
     <ClInclude Include="User.h" />
     <ClInclude Include="test_utils.h" />
   </ItemGroup>
@@ -64,8 +66,10 @@
     <ClCompile Include="AdvancedPatchingTests.cpp" />
     <ClCompile Include="BasicQueryTests.cpp" />
     <ClCompile Include="BasicDocumentsSessionTests.cpp" />
+    <ClCompile Include="ConnectionDetailsHolder.cpp" />
     <ClCompile Include="CreateSampleDataOperation.cpp" />
     <ClCompile Include="CrudTest.cpp" />
+    <ClCompile Include="raven_test_definitions.cpp" />
     <ClCompile Include="DeleteTest.cpp" />
     <ClCompile Include="DocumentIdPropertyTest.cpp" />
     <ClCompile Include="ds_definitions.cpp" />
@@ -90,6 +94,7 @@
     </ClCompile>
     <ClCompile Include="RequestExecutorAndDBsTests.cpp" />
     <ClCompile Include="SecuredRequestExecutorTests.cpp" />
+    <ClCompile Include="RavenTestDriver.cpp" />
     <ClCompile Include="test_utils.cpp" />
     <ClCompile Include="TrackEntityTest.cpp" />
     <ClCompile Include="WhatChangedTest.cpp" />

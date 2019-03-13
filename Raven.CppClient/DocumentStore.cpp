@@ -120,9 +120,14 @@ namespace ravendb::client::documents
 		}
 		{
 			auto lock = std::unique_lock(_request_executors_mutex);
+			if (auto it = _request_executors.find(db_name);
+				it != _request_executors.end())
+			{
+				return it->second;
+			}
 			std::shared_ptr<http::RequestExecutor> re = http::RequestExecutor::create(
 				get_urls(), db_name, get_conventions(), _certificate_details, _set_before_perform, _set_after_perform);
-			_request_executors.insert({ db_name, re });
+			_request_executors.insert_or_assign(db_name, re);
 			return re;
 		}
 	}

@@ -34,7 +34,7 @@ namespace ravendb::client::documents::identity
 
 		//IMPORTANT : from https://en.cppreference.com/w/cpp/memory/shared_ptr
 		//All member functions(including copy constructor and copy assignment) can be called by multiple threads
-		//on different instances of shared_ptr without additional synchronization even (sic!)
+		//on different instances of shared_ptr without additional synchronization even
 		//if these instances are copies and share ownership of the same object.
 		std::shared_ptr<RangeValue> _range;
 

@@ -1,8 +1,8 @@
 #include "pch.h"
-//#define __USE_FIDDLER__
-#include "TestSuiteBase.h"
+#include "RavenTestDriver.h"
 #include "DocumentSession.h"
 #include "AdvancedSessionOperations.h"
+#include "raven_test_definitions.h"
 
 namespace load_test
 {
@@ -54,20 +54,21 @@ namespace load_test
 
 namespace ravendb::client::tests::client::documents
 {
-	class LoadTest : public infrastructure::TestSuiteBase
+	class LoadTest : public driver::RavenTestDriver
 	{
 	protected:
-		static void SetUpTestCase()
+		void customise_store(std::shared_ptr<ravendb::client::documents::DocumentStore> store) override
 		{
-			test_suite_store = definitions::GET_DOCUMENT_STORE();
+			//store->set_before_perform(infrastructure::set_for_fiddler);
 		}
 	};
 
 	TEST_F(LoadTest, LoadWithIncludes)
 	{
 		std::string bar_id{};
+		auto store = get_document_store(TEST_NAME);
 		{
-			auto session = test_suite_store->get()->open_session();
+			auto session = store->open_session();
 			auto foo = std::make_shared<load_test::Foo>();
 			foo->name = "Beginning";
 			session.store(foo);
@@ -82,7 +83,7 @@ namespace ravendb::client::tests::client::documents
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get()->open_session();
+			auto session = store->open_session();
 			std::vector<std::string> temp_ids = { bar_id };
 			auto bar = session.include("FooId").load<load_test::Bar>(temp_ids.begin(), temp_ids.end());
 
@@ -103,8 +104,9 @@ namespace ravendb::client::tests::client::documents
 	TEST_F(LoadTest, LoadWithIncludesAndMissingDocument)
 	{
 		std::string bar_id{};
+		auto store = get_document_store(TEST_NAME);
 		{
-			auto session = test_suite_store->get()->open_session();
+			auto session = store->open_session();
 			auto bar = std::make_shared<load_test::Bar>();
 			bar->name = "End";
 			bar->foo_id = "non_exists/1";
@@ -113,7 +115,7 @@ namespace ravendb::client::tests::client::documents
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get()->open_session();
+			auto session = store->open_session();
 			std::vector<std::string> temp_ids = { bar_id };
 			auto bar = session.include("FooId").load<load_test::Bar>(temp_ids.begin(), temp_ids.end());
 

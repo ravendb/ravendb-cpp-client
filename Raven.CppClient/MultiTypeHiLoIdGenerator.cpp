@@ -52,8 +52,8 @@ namespace ravendb::client::documents::identity
 			{
 				_id_generator_by_tag.insert_or_assign(tag, create_generator_for(tag));
 			}
+			return _id_generator_by_tag.at(tag)->generate_document_id();
 		}
-		return _id_generator_by_tag.at(tag)->generate_document_id();
 	}
 
 	void MultiTypeHiLoIdGenerator::return_unused_range() const

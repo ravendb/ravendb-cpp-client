@@ -481,10 +481,6 @@ namespace ravendb::client::documents::session
 		// to detect if they generate duplicates.
 		assert_is_unique_instance(entity, id ? *id : std::string());
 
-		
-		
-		//TODO generate and set collection name
-
 		auto collection_name = get_request_executor()->get_conventions()->get_collection_name(type);
 
 		auto metadata = nlohmann::json::object();
@@ -494,28 +490,6 @@ namespace ravendb::client::documents::session
 		auto cpp_type = get_request_executor()->get_conventions()->get_cpp_class_name(type);
 
 		impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::RAVEN_CPP_TYPE, cpp_type);
-
-
-	//TODO erase later when above is functional and tested
-		////this part is unique to C++ : metadata check from the entity serialized
-		////TODO probably would be transferred to DocumentConventions 
-		//auto temp_doc_info = std::make_shared<DocumentInfo>();
-		//temp_doc_info->to_json_converter = to_json;
-		//auto document = EntityToJson::convert_entity_to_json(entity, temp_doc_info);
-		
-		//metadata = document[constants::documents::metadata::KEY];
-		//if(metadata.find(constants::documents::metadata::COLLECTION) == metadata.end())
-		//{
-		//	std::ostringstream collection{};
-		//	std::string_view type_name = type.name();
-		//	collection << type_name.substr(type_name.find_last_of(':') + 1);
-		//	impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::COLLECTION, collection.str());			
-		//}
-		//if (id)
-		//{
-		//	impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::ID, *id);
-		//}
-
 
 		if (id)
 		{

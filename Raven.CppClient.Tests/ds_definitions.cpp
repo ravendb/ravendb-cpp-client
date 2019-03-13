@@ -1,31 +1,47 @@
 #include "pch.h"
 #include "ds_definitions.h"
 #include "re_definitions.h"
+#include "raven_test_definitions.h"
 #include "RequestExecutor.h"
 #include "DatabaseRecord.h"
 #include "CreateDatabaseOperation.h"
 #include "DeleteDatabasesOperation.h"
+#include "ConnectionDetailsHolder.h"
+#include "raven_test_definitions.h"
 
 namespace ravendb::client::tests::definitions
 {
+	
 	DocumentStoreScope::DocumentStoreScope(const std::string& db_name, bool is_secured, bool use_fiddler)
 	{
-		static const auto sec_conn_details = ConnectionDetailsHolder(SECURED_RE_DETAILS, true);
-		static const auto unsec_conn_details = ConnectionDetailsHolder(UNSECURED_RE_DETAILS, false);
+		static const auto sec_conn_details = infrastructure::ConnectionDetailsHolder(
+			infrastructure::SECURED_RE_DETAILS_FILE_NAME, true);
+		static const auto unsec_conn_details = infrastructure::ConnectionDetailsHolder(
+			infrastructure::UNSECURED_RE_DETAILS_FILE_NAME, false);
 
 		_document_store->set_database(db_name);
 
 		if (is_secured)
 		{
 			_document_store->set_urls({ sec_conn_details.get_url() });
-			_document_store->set_certificate_details(sec_conn_details.get_cert_det());
-			_document_store->set_before_perform(set_no_proxy);
+			_document_store->set_certificate_details(sec_conn_details.get_certificate_details());
+			_document_store->set_before_perform(infrastructure::set_no_proxy);
 		}
 		else
 		{
 			_document_store->set_urls({ unsec_conn_details.get_url() });
-			_document_store->set_before_perform(use_fiddler ? set_for_fiddler : set_no_proxy);
+			_document_store->set_before_perform(use_fiddler ? infrastructure::set_for_fiddler : infrastructure::set_no_proxy);
 		}
+
+		_document_store->get_conventions()->set_find_collection_name([](std::type_index type)->std::optional<std::string>
+		{
+			if (std::string_view(type.name()).find("Hilo") != std::string_view::npos)
+				return "@hilo";
+			else
+				return {};
+		});
+
+		// todo: add ability to call a "customize document store" function for each test
 
 		_document_store->initialize();
 

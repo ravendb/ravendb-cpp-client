@@ -1,6 +1,6 @@
 #include "pch.h"
-//#define __USE_FIDDLER__
-#include "TestSuiteBase.h"
+#include "RavenTestDriver.h"
+#include "raven_test_definitions.h"
 #include "DocumentSession.h"
 #include "AdvancedSessionOperations.h"
 #include "RequestExecutor.h"
@@ -49,29 +49,30 @@ namespace query_test
 			})" };
 
 		auto op = ravendb::client::documents::operations::indexes::PutIndexesOperation({ index });
-		store->get_request_executor()->execute(op.get_command({}));
+		store->get_request_executor()->execute(op.get_command(store->get_conventions()));
 
-		//waiting for indexing TODO something better
-		std::this_thread::sleep_for(std::chrono::duration<int>(3));
+		ravendb::client::tests::driver::RavenTestDriver::wait_for_indexing(store);
 	}
 }
 
 namespace ravendb::client::tests::client
 {
-	class QueryTest : public infrastructure::TestSuiteBase
+	class QueryTest : public driver::RavenTestDriver
 	{
 	protected:
-		static void SetUpTestCase()
+		void customise_store(std::shared_ptr<documents::DocumentStore> store) override
 		{
-			test_suite_store = definitions::GET_DOCUMENT_STORE();
+			//store->set_before_perform(infrastructure::set_for_fiddler);
 		}
 	};
 
 	TEST_F(QueryTest, QuerySimple)
 	{
-		query_test::add_users(test_suite_store->get());
+		auto store = get_document_store(TEST_NAME);
 
-		auto session = test_suite_store->get()->open_session();
+		query_test::add_users(store);
+
+		auto session = store->open_session();
 
 		auto query_result = session.advanced().document_query<infrastructure::entities::User>(
 			{}, "Users", false)
@@ -92,9 +93,11 @@ namespace ravendb::client::tests::client
 
 	TEST_F(QueryTest, QueryLazily)
 	{
-		query_test::add_users(test_suite_store->get());
+		auto store = get_document_store(TEST_NAME);
 
-		auto session = test_suite_store->get()->open_session();
+		query_test::add_users(store);
+
+		auto session = store->open_session();
 
 		auto lazy_result1 = session.query<infrastructure::entities::User>()
 			->lazily();
@@ -116,9 +119,11 @@ namespace ravendb::client::tests::client
 	//TODO be more specific about the result, since the order is not guarantied
 	TEST_F(QueryTest, QuerySkipTake)
 	{
-		query_test::add_users(test_suite_store->get());
+		auto store = get_document_store(TEST_NAME);
 
-		auto session = test_suite_store->get()->open_session();
+		query_test::add_users(store);
+
+		auto session = store->open_session();
 
 		auto users1 = session.query<infrastructure::entities::User>()
 			->to_list();
@@ -137,9 +142,11 @@ namespace ravendb::client::tests::client
 	//TODO be more specific about the result, since the order is not guarantied
 	TEST_F(QueryTest, RawQuerySkipTake)
 	{
-		query_test::add_users(test_suite_store->get());
+		auto store = get_document_store(TEST_NAME);
 
-		auto session = test_suite_store->get()->open_session();
+		query_test::add_users(store);
+
+		auto session = store->open_session();
 
 		auto users1 = session.advanced().raw_query<infrastructure::entities::User>("from users")
 			->to_list();
@@ -155,9 +162,11 @@ namespace ravendb::client::tests::client
 
 	TEST_F(QueryTest, ParametersInRawQuery)
 	{
-		query_test::add_users(test_suite_store->get());
+		auto store = get_document_store(TEST_NAME);
 
-		auto session = test_suite_store->get()->open_session();
+		query_test::add_users(store);
+
+		auto session = store->open_session();
 
 		auto users = session.advanced().raw_query<infrastructure::entities::User>("from Users where Age = $p0")
 			->add_parameter("p0", 30)
@@ -169,9 +178,11 @@ namespace ravendb::client::tests::client
 
 	TEST_F(QueryTest, QueryParameters)
 	{
-		query_test::add_users(test_suite_store->get());
+		auto store = get_document_store(TEST_NAME);
 
-		auto session = test_suite_store->get()->open_session();
+		query_test::add_users(store);
+
+		auto session = store->open_session();
 
 		ASSERT_EQ(1,
 			session.advanced().raw_query<infrastructure::entities::User>("from Users where Name = $name")

@@ -1,24 +1,26 @@
 #include "pch.h"
-//#define __USE_FIDDLER__
-#include "TestSuiteBase.h"
+#include "RavenTestDriver.h"
+#include "raven_test_definitions.h"
 #include "DocumentSession.h"
 #include "User.h"
 
 
 namespace ravendb::client::tests::client
 {
-	class DeleteTest : public infrastructure::TestSuiteBase
+	class DeleteTest : public driver::RavenTestDriver
 	{
 	protected:
-		static void SetUpTestCase()
+		void customise_store(std::shared_ptr<documents::DocumentStore> store) override
 		{
-			test_suite_store = definitions::GET_DOCUMENT_STORE();
+			//store->set_before_perform(infrastructure::set_for_fiddler);
 		}
 	};
 
 	TEST_F(DeleteTest, DeleteDocumentByEntity)
 	{
-		auto session = test_suite_store->get()->open_session();
+		auto store = get_document_store(TEST_NAME);
+
+		auto session = store->open_session();
 
 		auto user = std::make_shared<infrastructure::entities::User>();
 		user->name = "RavenDB";
@@ -37,7 +39,9 @@ namespace ravendb::client::tests::client
 
 	TEST_F(DeleteTest, DeleteDocumentById)
 	{
-		auto session = test_suite_store->get()->open_session();
+		auto store = get_document_store(TEST_NAME);
+
+		auto session = store->open_session();
 
 		auto user = std::make_shared<infrastructure::entities::User>();
 		user->name = "RavenDB";

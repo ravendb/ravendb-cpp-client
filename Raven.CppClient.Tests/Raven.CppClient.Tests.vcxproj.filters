@@ -7,34 +7,34 @@
       <Filter>ravendb.client.tests\definitions</Filter>
     </ClCompile>
     <ClCompile Include="RequestExecutorAndDBsTests.cpp">
-      <Filter>ravendb.client.tests\C++ client tests\RequestExecutor</Filter>
+      <Filter>ravendb.client.tests\old C++ client tests\RequestExecutor</Filter>
     </ClCompile>
     <ClCompile Include="SecuredRequestExecutorTests.cpp">
-      <Filter>ravendb.client.tests\C++ client tests\RequestExecutor</Filter>
+      <Filter>ravendb.client.tests\old C++ client tests\RequestExecutor</Filter>
     </ClCompile>
     <ClCompile Include="ds_definitions.cpp">
       <Filter>ravendb.client.tests\definitions</Filter>
     </ClCompile>
     <ClCompile Include="AdvancedPatchingTests.cpp">
-      <Filter>ravendb.client.tests\C++ client tests</Filter>
+      <Filter>ravendb.client.tests\old C++ client tests</Filter>
     </ClCompile>
     <ClCompile Include="BasicDocumentCommandsTests.cpp">
-      <Filter>ravendb.client.tests\C++ client tests</Filter>
+      <Filter>ravendb.client.tests\old C++ client tests</Filter>
     </ClCompile>
     <ClCompile Include="BasicDocumentsSessionTests.cpp">
-      <Filter>ravendb.client.tests\C++ client tests</Filter>
+      <Filter>ravendb.client.tests\old C++ client tests</Filter>
     </ClCompile>
     <ClCompile Include="BasicPatchTests.cpp">
-      <Filter>ravendb.client.tests\C++ client tests</Filter>
+      <Filter>ravendb.client.tests\old C++ client tests</Filter>
     </ClCompile>
     <ClCompile Include="BasicQueryTests.cpp">
-      <Filter>ravendb.client.tests\C++ client tests</Filter>
+      <Filter>ravendb.client.tests\old C++ client tests</Filter>
     </ClCompile>
     <ClCompile Include="GetDocumentsCommandTests.cpp">
-      <Filter>ravendb.client.tests\C++ client tests</Filter>
+      <Filter>ravendb.client.tests\old C++ client tests</Filter>
     </ClCompile>
     <ClCompile Include="IndexOperationsTests.cpp">
-      <Filter>ravendb.client.tests\C++ client tests</Filter>
+      <Filter>ravendb.client.tests\old C++ client tests</Filter>
     </ClCompile>
     <ClCompile Include="LoadTest.cpp">
       <Filter>ravendb.client.tests\test\client\documents</Filter>
@@ -77,6 +77,15 @@
     </ClCompile>
     <ClCompile Include="HiLoTest.cpp">
       <Filter>ravendb.client.tests\test\client</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenTestDriver.cpp">
+      <Filter>ravendb.client.tests\driver</Filter>
+    </ClCompile>
+    <ClCompile Include="raven_test_definitions.cpp">
+      <Filter>ravendb.client.tests\infrastructure</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectionDetailsHolder.cpp">
+      <Filter>ravendb.client.tests\infrastructure</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -138,7 +147,13 @@
     <ClInclude Include="test_utils.h">
       <Filter>ravendb.client.tests\infrastructure\utils</Filter>
     </ClInclude>
-    <ClInclude Include="TestSuiteBase.h">
+    <ClInclude Include="RavenTestDriver.h">
+      <Filter>ravendb.client.tests\driver</Filter>
+    </ClInclude>
+    <ClInclude Include="raven_test_definitions.h">
+      <Filter>ravendb.client.tests\infrastructure</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectionDetailsHolder.h">
       <Filter>ravendb.client.tests\infrastructure</Filter>
     </ClInclude>
   </ItemGroup>
@@ -164,12 +179,6 @@
     <Filter Include="ravendb.client.tests\test">
       <UniqueIdentifier>{e60f1d61-bd60-4c99-869a-6c04c738644c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ravendb.client.tests\C++ client tests">
-      <UniqueIdentifier>{7c4395f2-2ac4-4def-bfe1-e0bbd1041d6b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ravendb.client.tests\C++ client tests\RequestExecutor">
-      <UniqueIdentifier>{fed010f5-d988-46d5-a578-09fdda2ece62}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ravendb.client.tests\test\client">
       <UniqueIdentifier>{9c644875-0be0-4418-b505-961724366078}</UniqueIdentifier>
     </Filter>
@@ -181,6 +190,15 @@
     </Filter>
     <Filter Include="ravendb.client.tests\test\client\lazy">
       <UniqueIdentifier>{9e04d126-2840-4531-acc8-e423203df8a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\driver">
+      <UniqueIdentifier>{2ad4695f-8971-4347-9e43-18f68b4fc0fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\old C++ client tests">
+      <UniqueIdentifier>{7c4395f2-2ac4-4def-bfe1-e0bbd1041d6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\old C++ client tests\RequestExecutor">
+      <UniqueIdentifier>{fed010f5-d988-46d5-a578-09fdda2ece62}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -1,11 +1,12 @@
 #include "pch.h"
-//#define __USE_FIDDLER__
-#include "TestSuiteBase.h"
+#include "RavenTestDriver.h"
+#include "raven_test_definitions.h"
 #include "DocumentSession.h"
 #include "HiLoIdGenerator.h"
 #include "MultiDatabaseHiLoIdGenerator.h"
 #include "User.h"
-#include "re_definitions.h"
+#include "EntityIdHelperUtil.h"
+#include <future>
 
 namespace hilo_test
 {
@@ -48,22 +49,38 @@ namespace hilo_test
 	}
 }
 
+CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::User, id);
 
 namespace ravendb::client::tests::client
 {
-	class HiloTest : public infrastructure::TestSuiteBase
+	class HiloTest : public driver::RavenTestDriver
 	{
 	protected:
+		void customise_store(std::shared_ptr<documents::DocumentStore> store) override
+		{
+			RavenTestDriver::customise_store(store);
+
+			store->get_conventions()->set_find_collection_name([](std::type_index type)->std::optional<std::string>
+			{
+				if(type == std::type_index(typeid(hilo_test::HiloDoc)))
+					return "@hilo";
+				else
+					return {};
+			});
+
+			//store->set_before_perform(infrastructure::set_for_fiddler);
+		}
+
 		static void SetUpTestCase()
 		{
-			test_suite_store = definitions::GET_DOCUMENT_STORE();
+			register_entity_id_helper<infrastructure::entities::User>();
 		}
 	};
 
 	TEST_F(HiloTest, HiloCanNotGoDown)
 	{
-		auto store = test_suite_store->get();
-		{
+		auto store = get_document_store(TEST_NAME);
+		{			
 			auto session = store->open_session();
 
 			auto hilo_doc = std::make_shared<hilo_test::HiloDoc>();
@@ -95,7 +112,7 @@ namespace ravendb::client::tests::client
 
 	TEST_F(HiloTest, HiLoMultiDb)
 	{
-		auto store = test_suite_store->get();
+		auto store = get_document_store(TEST_NAME);
 
 		auto session = store->open_session();
 		auto hilo_doc = std::make_shared<hilo_test::HiloDoc>();
@@ -120,7 +137,7 @@ namespace ravendb::client::tests::client
 
 	TEST_F(HiloTest, CapacityShouldDouble)
 	{
-		auto store = test_suite_store->get();
+		auto store = get_document_store(TEST_NAME);
 
 		auto hilo_id_generator = documents::identity::HiLoIdGenerator("users", store, store->get_database(),
 			store->get_conventions()->get_identity_part_separator());
@@ -153,15 +170,12 @@ namespace ravendb::client::tests::client
 
 	TEST_F(HiloTest, ReturnUnusedRangeOnClose)
 	{
-		auto store = test_suite_store->get();
+		auto store = get_document_store(TEST_NAME);
 
 		auto new_store = documents::DocumentStore::create();
 		new_store->set_urls(store->get_urls());
 		new_store->set_database(store->get_database());
-#ifdef __USE_FIDDLER__
-		new_store->set_before_perform(definitions::set_for_fiddler);
-#endif
-
+		customise_store(new_store);
 		new_store->initialize();
 
 		{
@@ -181,9 +195,7 @@ namespace ravendb::client::tests::client
 		new_store = documents::DocumentStore::create();
 		new_store->set_urls(store->get_urls());
 		new_store->set_database(store->get_database());
-#ifdef __USE_FIDDLER__
-		new_store->set_before_perform(definitions::set_for_fiddler);
-#endif
+		customise_store(new_store);
 		new_store->initialize();
 
 		{
@@ -197,6 +209,43 @@ namespace ravendb::client::tests::client
 
 	TEST_F(HiloTest, DoesNotGetAnotherRangeWhenDoingParallelRequests)
 	{
-		//TODO implement
+		auto store = get_document_store(TEST_NAME);
+
+		const auto parallel_level = 32;
+
+		std::vector<std::shared_ptr<infrastructure::entities::User>> users{};
+		users.reserve(parallel_level);
+
+		for(auto i=0 ; i< parallel_level ; ++i)
+		{
+			users.push_back(std::make_shared<infrastructure::entities::User>());
+		}
+
+		std::vector<std::future<void>> futures{};
+		futures.reserve(parallel_level);
+
+		for (auto& user : users)
+		{
+			futures.push_back(std::async(std::launch::async, [&]()
+			{
+				auto session = store->open_session();
+				session.store(user);
+				session.save_changes();
+			}));
+		}
+		for(auto& fut : futures)
+		{
+			fut.wait();
+		}
+
+		for (auto& user : users)
+		{
+			auto from = user->id.find('/') + 1;
+			auto to = user->id.find('-');
+			int64_t id_num = INT64_MAX;
+			std::istringstream(user->id.substr(from, to - from)) >> id_num;
+			ASSERT_GT(id_num, 0);
+			ASSERT_LT(id_num, 33);
+		}
 	}
 }

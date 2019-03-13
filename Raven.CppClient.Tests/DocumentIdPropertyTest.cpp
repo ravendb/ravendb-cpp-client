@@ -1,6 +1,6 @@
 #include "pch.h"
-//#define __USE_FIDDLER__
-#include "TestSuiteBase.h"
+#include "RavenTestDriver.h"
+#include "raven_test_definitions.h"
 #include "DocumentSession.h"
 #include "User.h"
 #include "EntityIdHelperUtil.h"
@@ -11,21 +11,25 @@ CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::Us
 
 namespace ravendb::client::tests::client::documents
 {
-	class DocumentIdPropertyTest : public infrastructure::TestSuiteBase
+	class DocumentIdPropertyTest : public driver::RavenTestDriver
 	{
 	protected:
+		void customise_store(std::shared_ptr<ravendb::client::documents::DocumentStore> store) override
+		{
+			//store->set_before_perform(infrastructure::set_for_fiddler);
+		}
+
 		static void SetUpTestCase()
 		{
-			test_suite_store = definitions::GET_DOCUMENT_STORE();
-
 			register_entity_id_helper<infrastructure::entities::User>();
 		}
 	};
 
 	TEST_F(DocumentIdPropertyTest, CanSetIdPropertyFromStore)
 	{
+		auto store = get_document_store(TEST_NAME);
 		{
-			auto session = test_suite_store->get()->open_session();
+			auto session = store->open_session();
 
 			auto user = std::make_shared<infrastructure::entities::User>();
 			session.store(user, "users/1");
@@ -34,7 +38,7 @@ namespace ravendb::client::tests::client::documents
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get()->open_session();
+			auto session = store->open_session();
 
 			auto user = session.load<infrastructure::entities::User>("users/1");
 			ASSERT_EQ("users/1", user->id);
@@ -44,8 +48,9 @@ namespace ravendb::client::tests::client::documents
 	TEST_F(DocumentIdPropertyTest, CanSetIdPropertyFromHilo)
 	{
 		std::string user_id{};
+		auto store = get_document_store(TEST_NAME);
 		{
-			auto session = test_suite_store->get()->open_session();
+			auto session = store->open_session();
 
 			auto user = std::make_shared<infrastructure::entities::User>();
 			session.store(user);
@@ -56,7 +61,7 @@ namespace ravendb::client::tests::client::documents
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get()->open_session();
+			auto session = store->open_session();
 
 			auto user = session.load<infrastructure::entities::User>(user_id);
 			ASSERT_EQ(user_id, user->id);
@@ -66,8 +71,9 @@ namespace ravendb::client::tests::client::documents
 	TEST_F(DocumentIdPropertyTest, CanGetIdFromProperty)
 	{
 		std::string user_id = "custom_user_id/1";
+		auto store = get_document_store(TEST_NAME);
 		{
-			auto session = test_suite_store->get()->open_session();
+			auto session = store->open_session();
 
 			auto user = std::make_shared<infrastructure::entities::User>();
 			user->id = user_id;
@@ -77,7 +83,7 @@ namespace ravendb::client::tests::client::documents
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get()->open_session();
+			auto session = store->open_session();
 
 			auto get_doc_command = ravendb::client::documents::commands::GetDocumentsCommand(user_id, {}, true);
 			auto re = session.advanced().get_request_executor();
