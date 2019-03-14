@@ -9,16 +9,18 @@ namespace ravendb::client::documents::session
 	private:
 		std::weak_ptr<DocumentQuery> _weak_this{};
 
-		DocumentQuery(InMemoryDocumentSessionOperations& session, std::optional<std::string> index_name,
+		DocumentQuery(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::optional<std::string> index_name,
 			std::optional<std::string> collection_name, bool is_group_by, std::optional<tokens::DeclareToken> declare_token,
 			/*std::vector<DeclareToken>*/void* load_tokens, std::optional<std::string> from_alias);
 
 	public:
-		static std::shared_ptr<DocumentQuery> create(InMemoryDocumentSessionOperations& session, std::optional<std::string> index_name,
+		static std::shared_ptr<DocumentQuery> create(std::shared_ptr<InMemoryDocumentSessionOperations> session,
+			std::optional<std::string> index_name,
 			std::optional<std::string> collection_name, bool is_group_by, std::optional<tokens::DeclareToken> declare_token,
 			/*std::vector<DeclareToken>*/void* load_tokens, std::optional<std::string> from_alias);
 
-		static std::shared_ptr<DocumentQuery> create(InMemoryDocumentSessionOperations& session, std::optional<std::string> index_name,
+		static std::shared_ptr<DocumentQuery> create(std::shared_ptr<InMemoryDocumentSessionOperations> session,
+			std::optional<std::string> index_name,
 			std::optional<std::string> collection_name, bool is_group_by);
 
 		std::shared_ptr<DocumentConventions> get_conventions() const
@@ -57,7 +59,7 @@ namespace ravendb::client::documents::session
 
 
 	template <typename T>
-	DocumentQuery<T>::DocumentQuery(InMemoryDocumentSessionOperations& session, std::optional<std::string> index_name,
+	DocumentQuery<T>::DocumentQuery(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::optional<std::string> index_name,
 		std::optional<std::string> collection_name, bool is_group_by, std::optional<tokens::DeclareToken> declare_token,
 		void* load_tokens, std::optional<std::string> from_alias)
 		: AbstractDocumentQuery<T>(session, std::move(index_name), std::move(collection_name), is_group_by,
@@ -65,7 +67,7 @@ namespace ravendb::client::documents::session
 	{}
 
 	template <typename T>
-	std::shared_ptr<DocumentQuery<T>> DocumentQuery<T>::create(InMemoryDocumentSessionOperations& session,
+	std::shared_ptr<DocumentQuery<T>> DocumentQuery<T>::create(std::shared_ptr<InMemoryDocumentSessionOperations> session,
 		std::optional<std::string> index_name, std::optional<std::string> collection_name, bool is_group_by)
 	{
 		return create(session, std::move(index_name), std::move(collection_name), 
@@ -86,7 +88,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::shared_ptr<DocumentQuery<T>> DocumentQuery<T>::create(InMemoryDocumentSessionOperations& session,
+	std::shared_ptr<DocumentQuery<T>> DocumentQuery<T>::create(std::shared_ptr<InMemoryDocumentSessionOperations> session,
 		std::optional<std::string> index_name, std::optional<std::string> collection_name, bool is_group_by,
 		std::optional<tokens::DeclareToken> declare_token, void* load_tokens, std::optional<std::string> from_alias)
 	{

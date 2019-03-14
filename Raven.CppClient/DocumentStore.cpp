@@ -97,7 +97,7 @@ namespace ravendb::client::documents
 		assert_initialized();
 		//TODO ensure_not_closed();
 
-		auto session_impl = std::make_shared<session::DocumentSessionImpl>(_weak_this.lock(), options);
+		auto session_impl = session::DocumentSessionImpl::create(_weak_this.lock(), options);
 		//TODO
 		//register_events(session_impl);
 		//after_session_created(session_impl);

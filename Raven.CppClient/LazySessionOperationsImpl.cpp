@@ -4,7 +4,7 @@
 
 namespace ravendb::client::documents::session::operations::lazy
 {
-	LazySessionOperations LazySessionOperationsImpl::create(DocumentSessionImpl & session)
+	LazySessionOperations LazySessionOperationsImpl::create(std::shared_ptr<DocumentSessionImpl> session)
 	{
 		auto object = std::shared_ptr<LazySessionOperationsImpl>(new LazySessionOperationsImpl(session));
 		

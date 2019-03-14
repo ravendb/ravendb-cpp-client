@@ -60,13 +60,16 @@ namespace ravendb::client::documents::session
 		bool execute_lazy_operations_single_step(ResponseTimeInformation& response_time_information,
 			const std::vector<commands::multi_get::GetRequest>& requests);
 
+		DocumentSessionImpl(std::shared_ptr<DocumentStoreBase> document_store,/* UUID id,*/ SessionOptions options);
+
 	protected:
 		std::string generate_id(std::type_index type, std::shared_ptr<void> entity) const override;
 
 	public:
 		~DocumentSessionImpl() override;
 
-		DocumentSessionImpl(std::shared_ptr<DocumentStoreBase> document_store,/* UUID id,*/ SessionOptions options);
+		static std::shared_ptr<DocumentSessionImpl> create(std::shared_ptr<DocumentStoreBase> document_store,/* UUID id,*/
+			SessionOptions options);
 
 		operations::lazy::LazySessionOperations lazily();
 
@@ -182,10 +185,10 @@ namespace ravendb::client::documents::session
 			});
 		}
 
-		auto load_operation = std::make_unique<operations::LoadOperation>(*this);
+		auto load_operation = std::make_unique<operations::LoadOperation>(_weak_this.lock());
 		load_operation->by_ids(ref_ids).with_includes(includes);
 
-		auto lazy_load_operation = std::make_shared<operations::lazy::LazyLoadOperation<T>>(*this, std::move(load_operation));
+		auto lazy_load_operation = std::make_shared<operations::lazy::LazyLoadOperation<T>>(_weak_this.lock(), std::move(load_operation));
 		lazy_load_operation->by_ids(ids).with_includes(includes);
 
 		auto get_operation_result = [](std::shared_ptr<operations::lazy::ILazyOperation> operation)->DocumentsByIdsMap<T>
@@ -237,7 +240,7 @@ namespace ravendb::client::documents::session
 	template <typename T>
 	std::shared_ptr<RawDocumentQuery<T>> DocumentSessionImpl::raw_query(const std::string& query)
 	{
-		return RawDocumentQuery<T>::create(*this, query);
+		return RawDocumentQuery<T>::create(_weak_this.lock(), query);
 	}
 
 	template <typename T>
@@ -254,7 +257,7 @@ namespace ravendb::client::documents::session
 	{
 		process_query_parameters<T>(index_name, collection_name, get_conventions());
 
-		return DocumentQuery<T>::create(*this, index_name, collection_name, is_map_reduced);
+		return DocumentQuery<T>::create(_weak_this.lock(), index_name, collection_name, is_map_reduced);
 	}
 
 	template <typename T>

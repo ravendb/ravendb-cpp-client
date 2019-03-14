@@ -11,9 +11,9 @@ namespace ravendb::client::documents::operations
 	class SessionOperationExecutor : public OperationExecutor
 	{
 	private:
-		const std::reference_wrapper<session::InMemoryDocumentSessionOperations> _session;
+		const std::shared_ptr<session::InMemoryDocumentSessionOperations> _session;
 
 	public:
-		SessionOperationExecutor(session::InMemoryDocumentSessionOperations& session);
+		SessionOperationExecutor(std::shared_ptr<session::InMemoryDocumentSessionOperations> session);
 	};
 }

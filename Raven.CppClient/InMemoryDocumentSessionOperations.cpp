@@ -70,7 +70,7 @@ namespace ravendb::client::documents::session
 
 	const EntityToJson& InMemoryDocumentSessionOperations::get_entity_to_json() const
 	{
-		return _entity_to_json;
+		return *_entity_to_json;
 	}
 
 	TransactionMode InMemoryDocumentSessionOperations::get_transaction_mode() const
@@ -105,9 +105,7 @@ namespace ravendb::client::documents::session
 		return std::string{};//not suppose to happen - just shut the warning
 	}())
 		, no_tracking(options.no_tracking)
-		, _operation_executor(std::make_shared<documents::operations::SessionOperationExecutor>(*this))
 		, _transaction_mode(options.transaction_mode)
-		, _entity_to_json(*this)
 		, _client_session_id(_client_session_id_counter.fetch_add(1) + 1)
 		, _request_executor(options.request_executor ? options.request_executor : 
 			document_store->get_request_executor(database_name))
@@ -118,6 +116,17 @@ namespace ravendb::client::documents::session
 		{
 			return this->generate_id(type, entity);
 		});
+	}
+
+	void InMemoryDocumentSessionOperations::initialize()
+	{
+		_entity_to_json = std::make_unique<EntityToJson>(_weak_this.lock());
+		_operation_executor = std::make_shared<documents::operations::SessionOperationExecutor>(_weak_this.lock());
+	}
+
+	void InMemoryDocumentSessionOperations::set_weak_this(std::shared_ptr<InMemoryDocumentSessionOperations> ptr)
+	{
+		_weak_this = ptr;
 	}
 
 	std::shared_ptr<IMetadataDictionary> InMemoryDocumentSessionOperations::get_metadata_for_internal(std::shared_ptr<void> entity) const
@@ -496,7 +505,7 @@ namespace ravendb::client::documents::session
 			_known_missing_ids.erase(*id);
 		}
 
-		store_entity_in_unit_of_work(id, entity, change_vector, std::move(metadata), force_concurrency_check, to_json, update_from_json);
+		store_entity_in_unit_of_work(id, entity, type, change_vector, std::move(metadata), force_concurrency_check, to_json, update_from_json);
 	}
 
 	void InMemoryDocumentSessionOperations::remember_entity_for_document_id_generator(std::type_index type,
@@ -507,7 +516,7 @@ namespace ravendb::client::documents::session
 	}
 
 	void InMemoryDocumentSessionOperations::store_entity_in_unit_of_work(std::optional<std::string>& id,
-		std::shared_ptr<void> entity, std::optional<std::string>& change_vector, nlohmann::json metadata,
+		std::shared_ptr<void> entity, std::type_index type, std::optional<std::string>& change_vector, nlohmann::json metadata,
 		ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json,
 		const DocumentInfo::EntityUpdater& update_from_json)
 	{
@@ -531,6 +540,7 @@ namespace ravendb::client::documents::session
 		{
 			doc_info->id = *id;
 		}
+		doc_info->exact_type = type;
 		doc_info->metadata = std::move(metadata);
 		if (change_vector)
 		{
@@ -589,7 +599,7 @@ namespace ravendb::client::documents::session
 
 		for (auto& deferred_command : result.deferred_commands)
 		{
-			deferred_command->on_before_save_changes(*this);
+			deferred_command->on_before_save_changes(_weak_this.lock());
 		}
 		return result;
 	}

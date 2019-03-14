@@ -57,9 +57,9 @@ namespace ravendb::client::documents::commands::batches
 			return j;
 		}
 
-		void on_before_save_changes(session::InMemoryDocumentSessionOperations& session) override
+		void on_before_save_changes(std::shared_ptr<session::InMemoryDocumentSessionOperations> session) override
 		{
-			return_document = session.is_loaded(get_id());
+			return_document = session->is_loaded(get_id());
 		}
 	};
 }

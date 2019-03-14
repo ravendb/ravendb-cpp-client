@@ -19,12 +19,13 @@ namespace ravendb::client::documents::session
 
 	operations::lazy::LazySessionOperations DocumentSessionImpl::lazily()
 	{
-		return operations::lazy::LazySessionOperations(operations::lazy::LazySessionOperationsImpl::create(*this));
+		return operations::lazy::LazySessionOperations(operations::lazy::LazySessionOperationsImpl::create(
+			std::static_pointer_cast<DocumentSessionImpl>(_weak_this.lock())));
 	}
 
 	operations::LoadOperation DocumentSessionImpl::load_impl(const std::string& id)
 	{
-		auto load_op = operations::LoadOperation(*this);
+		auto load_op = operations::LoadOperation(_weak_this.lock());
 		load_op.by_id(id);
 		auto cmd = load_op.create_request();
 
@@ -39,7 +40,7 @@ namespace ravendb::client::documents::session
 
 	operations::LoadOperation DocumentSessionImpl::load_impl(const std::vector<std::reference_wrapper<const std::string>>& ids)
 	{
-		auto load_op = operations::LoadOperation(*this);
+		auto load_op = operations::LoadOperation(_weak_this.lock());
 		load_internal(ids, load_op);
 
 		return load_op;
@@ -49,7 +50,7 @@ namespace ravendb::client::documents::session
 		const std::vector<std::reference_wrapper<const std::string>>& ids,
 		const std::vector<std::string>& includes)
 	{
-		auto load_op = operations::LoadOperation(*this);
+		auto load_op = operations::LoadOperation(_weak_this.lock());
 		load_op.by_ids(ids);
 		load_op.with_includes(includes);
 
@@ -194,7 +195,7 @@ namespace ravendb::client::documents::session
 	bool DocumentSessionImpl::execute_lazy_operations_single_step(ResponseTimeInformation& response_time_information,
 		const std::vector<commands::multi_get::GetRequest>& requests)
 	{
-		auto multi_get_operation = operations::MultiGetOperation(*this);
+		auto multi_get_operation = operations::MultiGetOperation(_weak_this.lock());
 		auto multi_get_command = multi_get_operation.create_request(requests);
 		get_request_executor()->execute(multi_get_command);
 
@@ -241,9 +242,18 @@ namespace ravendb::client::documents::session
 
 	DocumentSessionImpl::~DocumentSessionImpl() = default;
 
+	std::shared_ptr<DocumentSessionImpl> DocumentSessionImpl::create(std::shared_ptr<DocumentStoreBase> document_store,
+		SessionOptions options)
+	{
+		auto object = std::shared_ptr<DocumentSessionImpl>(new DocumentSessionImpl(document_store, options));
+		object->_weak_this = object;
+		object->initialize();
+		return object;
+	}
+
 	loaders::LoaderWithInclude DocumentSessionImpl::include(const std::string& path)
 	{
-		return loaders::MultiLoaderWithInclude::create(*this).include(path);
+		return loaders::MultiLoaderWithInclude::create(std::static_pointer_cast<DocumentSessionImpl>(_weak_this.lock())).include(path);
 	}
 
 	ResponseTimeInformation DocumentSessionImpl::execute_all_pending_lazy_operations()
@@ -310,7 +320,7 @@ namespace ravendb::client::documents::session
 
 	void DocumentSessionImpl::save_changes()
 	{
-		auto save_changes_operation = operations::BatchOperation(*this);
+		auto save_changes_operation = operations::BatchOperation(_weak_this.lock());
 		if (auto command = save_changes_operation.create_request();
 			!command)
 		{

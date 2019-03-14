@@ -33,7 +33,7 @@ namespace ravendb::client::documents::commands::batches
 		virtual void serialize_extra_fields(nlohmann::json& json) const
 		{}//empty by design
 
-		void on_before_save_changes(session::InMemoryDocumentSessionOperations& session) override
+		void on_before_save_changes(std::shared_ptr<session::InMemoryDocumentSessionOperations> session) override
 		{}
 	};
 }

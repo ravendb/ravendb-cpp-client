@@ -9,18 +9,18 @@ namespace ravendb::client::documents::session::loaders
 	class LazyMultiLoaderWithInclude
 	{
 	private:
-		std::reference_wrapper<DocumentSessionImpl> _session;
+		std::shared_ptr<DocumentSessionImpl> _session;
 		std::vector<std::string> _includes{};
 		std::weak_ptr<LazyMultiLoaderWithInclude> _weak_this{};
 
-		explicit LazyMultiLoaderWithInclude(DocumentSessionImpl& session)
+		explicit LazyMultiLoaderWithInclude(std::shared_ptr<DocumentSessionImpl> session)
 			: _session(session)
 		{}
 
 	public:
 		~LazyMultiLoaderWithInclude() = default;
 
-		static LazyLoaderWithInclude create(DocumentSessionImpl& session);
+		static LazyLoaderWithInclude create(std::shared_ptr<DocumentSessionImpl> session);
 
 		LazyLoaderWithInclude include(std::string path);
 
@@ -42,7 +42,7 @@ namespace ravendb::client::documents::session::loaders
 		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
 	{
 		auto id_ref = std::vector<std::reference_wrapper<const std::string>>{std::cref(id)};
-		Lazy<DocumentsByIdsMap<T>> lazy_results = _session.get().lazy_load_internal<T>(id_ref, _includes, {}, from_json, to_json);
+		Lazy<DocumentsByIdsMap<T>> lazy_results = _session->lazy_load_internal<T>(id_ref, _includes, {}, from_json, to_json);
 
 		return Lazy<std::shared_ptr<T>>([=]()mutable -> std::shared_ptr<T>
 		{
@@ -66,6 +66,6 @@ namespace ravendb::client::documents::session::loaders
 		std::vector<std::reference_wrapper<const std::string>> ids{};
 		std::transform(first, last, std::back_inserter(ids), [](const std::string& id) { return std::cref(id); });
 
-		return _session.get().lazy_load_internal<T>(ids, _includes, {}, from_json, to_json);
+		return _session->lazy_load_internal<T>(ids, _includes, {}, from_json, to_json);
 	}
 }

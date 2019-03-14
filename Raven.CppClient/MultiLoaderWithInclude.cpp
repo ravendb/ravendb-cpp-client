@@ -4,7 +4,7 @@
 
 namespace ravendb::client::documents::session::loaders
 {
-	LoaderWithInclude MultiLoaderWithInclude::create(DocumentSessionImpl& session)
+	LoaderWithInclude MultiLoaderWithInclude::create(std::shared_ptr<DocumentSessionImpl> session)
 	{
 		auto multi_loader = std::shared_ptr<MultiLoaderWithInclude>(new MultiLoaderWithInclude(session));
 

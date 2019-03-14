@@ -38,7 +38,7 @@ namespace ravendb::client::documents::session
 
 		Parameters query_parameters{};
 
-		std::reference_wrapper<InMemoryDocumentSessionOperations> the_session;
+		std::shared_ptr<InMemoryDocumentSessionOperations> the_session;
 
 		std::optional<int32_t> page_size{};
 
@@ -99,7 +99,7 @@ namespace ravendb::client::documents::session
 		void _order_by(const std::string& field, OrderingType ordering = OrderingType::STRING);
 
 		//TODO see what to send by value/reference
-		AbstractDocumentQuery(InMemoryDocumentSessionOperations& session, std::optional<std::string> index_name,
+		AbstractDocumentQuery(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::optional<std::string> index_name,
 			std::optional<std::string> collection_name, bool is_group_by, std::optional<tokens::DeclareToken> declare_token,
 			/*std::vector<LoadToken>*/void* load_tokens, std::optional<std::string> from_alias);
 
@@ -116,7 +116,7 @@ namespace ravendb::client::documents::session
 
 		std::shared_ptr<DocumentConventions> get_conventions() const;
 
-		std::reference_wrapper<DocumentSessionImpl> get_session() const;
+		std::shared_ptr<DocumentSessionImpl> get_session() const;
 
 		const std::shared_ptr<operations::QueryOperation>& get_query_operation() const;
 
@@ -177,7 +177,7 @@ namespace ravendb::client::documents::session
 	void AbstractDocumentQuery<T>::execute_actual_query()
 	{
 		auto command = query_operation->create_request();
-		the_session.get().get_request_executor()->execute(command/*, the_session.get()._session_info*/);
+		the_session->get_request_executor()->execute(command/*, the_session->_session_info*/);
 		query_operation->set_result(command.get_result());
 	}
 
@@ -284,12 +284,12 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	AbstractDocumentQuery<T>::AbstractDocumentQuery(InMemoryDocumentSessionOperations& session, std::optional<std::string> index_name_param,
+	AbstractDocumentQuery<T>::AbstractDocumentQuery(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::optional<std::string> index_name_param,
 		std::optional<std::string> collection_name_param, bool is_group_by_param, std::optional<tokens::DeclareToken> declare_token_param,
 		/*std::vector<LoadToken>*/void* load_tokens_param, std::optional<std::string> from_alias_param)
 		: index_name(std::move(index_name_param))
 		, collection_name(std::move(collection_name_param))
-		, _conventions(session.get_conventions())
+		, _conventions(session->get_conventions())
 		, the_session(session)
 		, is_group_by(is_group_by_param)
 		, from_token(index_name, collection_name, from_alias_param)
@@ -351,9 +351,10 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::reference_wrapper<DocumentSessionImpl> AbstractDocumentQuery<T>::get_session() const
+	std::shared_ptr<DocumentSessionImpl> AbstractDocumentQuery<T>::get_session() const
 	{
-		return static_cast<DocumentSessionImpl&>(the_session.get());
+
+		return std::reinterpret_pointer_cast<DocumentSessionImpl>(the_session);
 	}
 
 	template <typename T>
@@ -393,7 +394,7 @@ namespace ravendb::client::documents::session
 		}
 
 		auto lazy_query_operation = std::make_shared<operations::lazy::LazyQueryOperation<T>>(
-			the_session.get().get_conventions(),
+			the_session->get_conventions(),
 			query_operation,
 			after_query_executed_callback);
 
@@ -403,7 +404,7 @@ namespace ravendb::client::documents::session
 			return lazy_query_op->get_result();
 		};
 
-		return get_session().get().add_lazy_operation<std::vector<std::shared_ptr<T>>>(lazy_query_operation,
+		return get_session()->add_lazy_operation<std::vector<std::shared_ptr<T>>>(lazy_query_operation,
 			get_operation_result, [=]()
 		{
 			if (on_eval)

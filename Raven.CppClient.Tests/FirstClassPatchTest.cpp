@@ -485,19 +485,19 @@ namespace ravendb::client::tests::client
 			auto session = store->open_session();
 			session.advanced().patch(user_id,
 				"Numbers[0]", 31);
-			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
+			ASSERT_EQ(1, session.get_session_implementation()->get_deferred_commands_count());
 
 			session.advanced().patch(user_id,
 				"LastLogin", time_point);
-			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
+			ASSERT_EQ(1, session.get_session_implementation()->get_deferred_commands_count());
 
 			session.advanced().patch(user2_id,
 				"Numbers[0]", 123);
-			ASSERT_EQ(2, session.get_session_implementation().get_deferred_commands_count());
+			ASSERT_EQ(2, session.get_session_implementation()->get_deferred_commands_count());
 
 			session.advanced().patch(user2_id,
 				"LastLogin", time_point);
-			ASSERT_EQ(2, session.get_session_implementation().get_deferred_commands_count());
+			ASSERT_EQ(2, session.get_session_implementation()->get_deferred_commands_count());
 
 			session.save_changes();
 		}
@@ -505,21 +505,21 @@ namespace ravendb::client::tests::client
 			auto session = store->open_session();
 			session.advanced().increment(user_id,
 				"Numbers[0]", 1);
-			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
+			ASSERT_EQ(1, session.get_session_implementation()->get_deferred_commands_count());
 
 			session.advanced().patch<int32_t>(user_id,
 				"Numbers", [](documents::session::JavaScriptArray<int32_t>& arr)->void
 			{
 				arr.add(77);
 			});
-			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
+			ASSERT_EQ(1, session.get_session_implementation()->get_deferred_commands_count());
 
 			session.advanced().patch<int32_t>(user_id,
 				"Numbers", [](documents::session::JavaScriptArray<int32_t>& arr)->void
 			{
 				arr.add(88);
 			});
-			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
+			ASSERT_EQ(1, session.get_session_implementation()->get_deferred_commands_count());
 
 			std::function<void(documents::session::JavaScriptArray<int32_t>&)> array_adder = []
 			(documents::session::JavaScriptArray<int32_t>& arr) -> void
@@ -529,7 +529,7 @@ namespace ravendb::client::tests::client
 
 			session.advanced().patch(user_id,
 				"Numbers", array_adder);
-			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
+			ASSERT_EQ(1, session.get_session_implementation()->get_deferred_commands_count());
 
 			session.save_changes();
 		}

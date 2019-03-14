@@ -12,7 +12,7 @@ namespace ravendb::client::documents::session
 	private:
 		std::weak_ptr<RawDocumentQuery> _weak_this{};
 
-		RawDocumentQuery(InMemoryDocumentSessionOperations& session, std::string raw_query)
+		RawDocumentQuery(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::string raw_query)
 			: AbstractDocumentQuery(session, {}, {}, false, {}, {}, {})
 		{
 			AbstractDocumentQuery<T>::query_raw = std::move(raw_query);
@@ -76,7 +76,7 @@ namespace ravendb::client::documents::session
 			return AbstractDocumentQuery<T>::lazily(on_eval);
 		}
 
-		static std::shared_ptr<RawDocumentQuery> create(InMemoryDocumentSessionOperations& session, std::string raw_query)
+		static std::shared_ptr<RawDocumentQuery> create(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::string raw_query)
 		{
 			auto new_object = std::shared_ptr<RawDocumentQuery>(new RawDocumentQuery(session, std::move(raw_query)));
 			new_object->_weak_this = new_object;

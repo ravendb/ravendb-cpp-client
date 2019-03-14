@@ -120,6 +120,8 @@ namespace ravendb::client::documents::session
 	protected:
 		std::shared_ptr<DocumentStoreBase> _document_store;
 
+		std::weak_ptr<InMemoryDocumentSessionOperations> _weak_this;
+
 	public:
 		const int64_t id;
 
@@ -135,7 +137,7 @@ namespace ravendb::client::documents::session
 	private:
 		static std::atomic_int32_t _client_session_id_counter;
 
-		std::shared_ptr<documents::operations::OperationExecutor> _operation_executor;
+		std::shared_ptr<documents::operations::OperationExecutor> _operation_executor{};
 
 		static std::atomic_int32_t _instances_counter;
 
@@ -145,7 +147,7 @@ namespace ravendb::client::documents::session
 
 		int32_t _number_of_requests{};
 
-		const EntityToJson _entity_to_json;
+		std::unique_ptr<EntityToJson> _entity_to_json{};
 
 		std::unique_ptr<identity::GenerateEntityIdOnTheClient> _generate_entity_id_on_the_client{};
 
@@ -316,6 +318,10 @@ namespace ravendb::client::documents::session
 	protected:
 		InMemoryDocumentSessionOperations(std::shared_ptr<DocumentStoreBase> document_store,/* UUID id,*/ SessionOptions options);
 
+		void initialize();
+
+		void set_weak_this(std::shared_ptr<InMemoryDocumentSessionOperations> ptr);
+
 		void increment_request_count();
 
 		virtual std::string generate_id(std::type_index type, std::shared_ptr<void> entity) const = 0;
@@ -323,7 +329,7 @@ namespace ravendb::client::documents::session
 		virtual void remember_entity_for_document_id_generator(std::type_index type, std::shared_ptr<void> entity);
 
 		void store_entity_in_unit_of_work(std::optional<std::string>& id, std::shared_ptr<void> entity,
-			std::optional<std::string>& change_vector, nlohmann::json metadata,
+			std::type_index type, std::optional<std::string>& change_vector, nlohmann::json metadata,
 			ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json,
 			const DocumentInfo::EntityUpdater& update_from_json);
 

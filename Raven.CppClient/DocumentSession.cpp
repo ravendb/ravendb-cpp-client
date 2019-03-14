@@ -4,9 +4,9 @@
 
 namespace ravendb::client::documents::session
 {
-	const DocumentSessionImpl& DocumentSession::get_session_implementation() const
+	std::shared_ptr<DocumentSessionImpl> DocumentSession::get_session_implementation() const
 	{
-		return *_session_impl;
+		return _session_impl;
 	}
 
 	DocumentSession::~DocumentSession() = default;
