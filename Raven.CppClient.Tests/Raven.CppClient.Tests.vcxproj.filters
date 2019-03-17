@@ -4,7 +4,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="re_definitions.cpp">
-      <Filter>ravendb.client.tests\definitions</Filter>
+      <Filter>ravendb.client.tests\definitions%28for old test%29</Filter>
     </ClCompile>
     <ClCompile Include="RequestExecutorAndDBsTests.cpp">
       <Filter>ravendb.client.tests\old C++ client tests\RequestExecutor</Filter>
@@ -13,7 +13,7 @@
       <Filter>ravendb.client.tests\old C++ client tests\RequestExecutor</Filter>
     </ClCompile>
     <ClCompile Include="ds_definitions.cpp">
-      <Filter>ravendb.client.tests\definitions</Filter>
+      <Filter>ravendb.client.tests\definitions%28for old test%29</Filter>
     </ClCompile>
     <ClCompile Include="AdvancedPatchingTests.cpp">
       <Filter>ravendb.client.tests\old C++ client tests</Filter>
@@ -87,14 +87,29 @@
     <ClCompile Include="ConnectionDetailsHolder.cpp">
       <Filter>ravendb.client.tests\infrastructure</Filter>
     </ClCompile>
+    <ClCompile Include="DeleteDocumentCommandTest.cpp">
+      <Filter>ravendb.client.tests\test\client\documents\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="GetNextOperationIdCommandTest.cpp">
+      <Filter>ravendb.client.tests\test\client\documents\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="GetStatisticsCommandTest.cpp">
+      <Filter>ravendb.client.tests\test\client\documents\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="PutDocumentCommandTest.cpp">
+      <Filter>ravendb.client.tests\test\client\documents\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientConfigurationTest.cpp">
+      <Filter>ravendb.client.tests\test\client\documents\operations\configuration</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="re_definitions.h">
-      <Filter>ravendb.client.tests\definitions</Filter>
+      <Filter>ravendb.client.tests\definitions%28for old test%29</Filter>
     </ClInclude>
     <ClInclude Include="ds_definitions.h">
-      <Filter>ravendb.client.tests\definitions</Filter>
+      <Filter>ravendb.client.tests\definitions%28for old test%29</Filter>
     </ClInclude>
     <ClInclude Include="User.h">
       <Filter>ravendb.client.tests\infrastructure\entities</Filter>
@@ -167,9 +182,6 @@
     <Filter Include="ravendb.client.tests">
       <UniqueIdentifier>{c51acc5f-7362-496b-ae4d-8a61ddf03933}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ravendb.client.tests\definitions">
-      <UniqueIdentifier>{21ed43ff-ed6d-4099-8d0c-6d9750d409f4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ravendb.client.tests\infrastructure">
       <UniqueIdentifier>{0d4619b8-6ef3-432f-bd23-9e3b1c2b9028}</UniqueIdentifier>
     </Filter>
@@ -199,6 +211,18 @@
     </Filter>
     <Filter Include="ravendb.client.tests\old C++ client tests\RequestExecutor">
       <UniqueIdentifier>{fed010f5-d988-46d5-a578-09fdda2ece62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\client\documents\commands">
+      <UniqueIdentifier>{0d4a2f21-e825-47c8-869b-30c01817d6c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\definitions%28for old test%29">
+      <UniqueIdentifier>{21ed43ff-ed6d-4099-8d0c-6d9750d409f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\client\documents\operations">
+      <UniqueIdentifier>{da73f6af-c44b-4def-9c31-9cd2d75f8403}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\client\documents\operations\configuration">
+      <UniqueIdentifier>{3b2eb90b-93fa-4f5a-ba15-d3fc28b2fa0c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -18,7 +18,10 @@ namespace ravendb::client::impl::utils
 
 	//TODO use it for validate string arguments
 	bool is_blank(const std::string& str);
-
 }
+
+bool operator==(const std::tm& lhs, const std::tm& rhs);
+
+bool operator!=(const std::tm& lhs, const std::tm& rhs);
 
 

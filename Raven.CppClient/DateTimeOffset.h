@@ -2,6 +2,7 @@
 #include <ctime>
 #include <ostream>
 #include "json.hpp"
+#include "utils.h"
 
 namespace ravendb::client::impl
 {
@@ -30,6 +31,18 @@ namespace ravendb::client::impl
 		std::string to_string(bool add_Z_if_zero_offset = false) const;
 
 		friend std::ostream& operator<<(std::ostream& os, const DateTimeOffset& dt);
+
+		friend bool operator==(const DateTimeOffset& lhs, const DateTimeOffset& rhs)
+		{
+			return lhs._date_time == rhs._date_time
+				&& lhs._nsec == rhs._nsec
+				&& lhs._offset == rhs._offset;
+		}
+
+		friend bool operator!=(const DateTimeOffset& lhs, const DateTimeOffset& rhs)
+		{
+			return !(lhs == rhs);
+		}
 	};
 
 	inline void DateTimeOffset::throw_invalid_format(const std::string & input_str)
@@ -45,4 +58,5 @@ namespace ravendb::client::impl
 	void from_json(const nlohmann::json& j, DateTimeOffset& dt);
 
 	void to_json(nlohmann::json& j, const DateTimeOffset& dt);
+
 }

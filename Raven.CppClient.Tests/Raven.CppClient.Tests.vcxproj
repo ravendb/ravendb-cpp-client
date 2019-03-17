@@ -66,9 +66,14 @@
     <ClCompile Include="AdvancedPatchingTests.cpp" />
     <ClCompile Include="BasicQueryTests.cpp" />
     <ClCompile Include="BasicDocumentsSessionTests.cpp" />
+    <ClCompile Include="ClientConfigurationTest.cpp" />
     <ClCompile Include="ConnectionDetailsHolder.cpp" />
     <ClCompile Include="CreateSampleDataOperation.cpp" />
     <ClCompile Include="CrudTest.cpp" />
+    <ClCompile Include="DeleteDocumentCommandTest.cpp" />
+    <ClCompile Include="GetNextOperationIdCommandTest.cpp" />
+    <ClCompile Include="GetStatisticsCommandTest.cpp" />
+    <ClCompile Include="PutDocumentCommandTest.cpp" />
     <ClCompile Include="raven_test_definitions.cpp" />
     <ClCompile Include="DeleteTest.cpp" />
     <ClCompile Include="DocumentIdPropertyTest.cpp" />

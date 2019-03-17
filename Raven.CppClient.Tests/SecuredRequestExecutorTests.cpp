@@ -5,7 +5,7 @@
 #include "PutDocumentCommand.h"
 #include "DeleteDocumentCommand.h"
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::old_tests
 {
 	class SecuredRequestExecutorTests : public ::testing::Test
 	{

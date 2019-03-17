@@ -7,7 +7,7 @@
 #include "DeleteDocumentCommand.h"
 #include "GetNextOperationIdCommand.h"
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::old_tests
 {
 	class BasicDocumentCommandsTests : public ::testing::Test
 	{

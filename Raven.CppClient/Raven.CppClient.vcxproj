@@ -170,6 +170,7 @@
     <ClInclude Include="DocumentQuery.h" />
     <ClInclude Include="FromToken.h" />
     <ClInclude Include="GenerateEntityIdOnTheClient.h" />
+    <ClInclude Include="GetClientConfigurationOperation.h" />
     <ClInclude Include="GetCppClassName.h" />
     <ClInclude Include="GetRequest.h" />
     <ClInclude Include="GetResponse.h" />
@@ -287,6 +288,7 @@
     <ClInclude Include="PatchRequest.h" />
     <ClInclude Include="PatchResult.h" />
     <ClInclude Include="PatchStatus.h" />
+    <ClInclude Include="PutClientConfigurationOperation.h" />
     <ClInclude Include="PutCommandData.h" />
     <ClInclude Include="PutIndexesOperation.h" />
     <ClInclude Include="PutIndexResult.h" />

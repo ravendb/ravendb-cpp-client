@@ -11,7 +11,7 @@
 #include "DocumentStore.h"
 #include "ds_definitions.h"
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::old_tests
 {
 	class BasicPatchTests : public ::testing::Test
 	{

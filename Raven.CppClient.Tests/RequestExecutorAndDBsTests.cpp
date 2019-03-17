@@ -7,7 +7,7 @@
 #include "DeleteDatabasesOperation.h"
 #include "DocumentConventions.h"
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::old_tests
 {
 	TEST(RequestExecutorTests, CanGetDatabaseRecord)
 	{

@@ -303,7 +303,10 @@ namespace ravendb::client::documents::conventions
 			{
 				_max_number_of_requests_per_session = _original_configuration->max_number_of_requests_per_session.value();
 			}
-			_read_balance_behaviour = _original_configuration->read_balance_behaviour;
+			if (_original_configuration->read_balance_behaviour)
+			{
+				_read_balance_behaviour = _original_configuration->read_balance_behaviour.value();
+			}
 
 			_original_configuration.reset();
 			return;
@@ -325,8 +328,14 @@ namespace ravendb::client::documents::conventions
 			_max_number_of_requests_per_session = _original_configuration->max_number_of_requests_per_session.value();
 		}
 
-		_read_balance_behaviour = configuration.read_balance_behaviour != http::ReadBalanceBehavior::NONE ? 
-			configuration.read_balance_behaviour : _original_configuration->read_balance_behaviour;
+		if(configuration.read_balance_behaviour)
+		{
+			_read_balance_behaviour = configuration.read_balance_behaviour.value();
+		}
+		else if(_original_configuration->read_balance_behaviour)
+		{
+			_read_balance_behaviour = _original_configuration->read_balance_behaviour.value();
+		}
 	}
 
 	std::string DocumentConventions::default_transform_collection_name_to_document_id_prefix(

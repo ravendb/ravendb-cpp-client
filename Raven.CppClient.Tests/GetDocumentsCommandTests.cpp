@@ -6,7 +6,7 @@
 
 using ravendb::client::documents::commands::GetDocumentsCommand;
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::old_tests
 {
 	class GetDocumentsCommandTests : public ::testing::Test
 	{

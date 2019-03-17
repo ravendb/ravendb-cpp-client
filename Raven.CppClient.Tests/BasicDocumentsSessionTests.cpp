@@ -5,7 +5,7 @@
 #include "SessionOptions.h"
 #include "User.h"
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::old_tests
 {
 	class BasicDocumentsSessionTests : public driver::RavenTestDriver
 	{

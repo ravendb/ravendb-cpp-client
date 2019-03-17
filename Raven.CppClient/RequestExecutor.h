@@ -124,7 +124,7 @@ namespace ravendb::client::http
 		case 200:
 		case 201:
 		{
-			auto result = nlohmann::json::parse(output_buffer);
+			auto result = output_buffer.empty() ? nlohmann::json() : nlohmann::json::parse(output_buffer);
 			cmd.set_response(curl, result, false);
 			break;
 		}

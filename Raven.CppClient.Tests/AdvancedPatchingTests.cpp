@@ -8,7 +8,7 @@
 #include "PatchOperation.h"
 #include "DocumentStore.h"
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::old_tests
 {
 	namespace adv_patching_tests
 	{

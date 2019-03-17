@@ -27,7 +27,7 @@
 #include "GetIndexErrorsOperation.h"
 
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::old_tests
 {
 	class IndexOperationsTest : public ::testing::Test
 	{

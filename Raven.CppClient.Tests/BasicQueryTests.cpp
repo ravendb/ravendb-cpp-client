@@ -7,7 +7,7 @@
 #include "DeleteByQueryOperation.h"
 #include "DocumentStore.h"
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::old_tests
 {
 	class BasicQueryTests : public ::testing::Test
 	{

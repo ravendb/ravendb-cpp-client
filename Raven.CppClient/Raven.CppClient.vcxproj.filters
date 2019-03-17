@@ -707,6 +707,12 @@
     <ClInclude Include="Size.h">
       <Filter>ravendb.client\impl</Filter>
     </ClInclude>
+    <ClInclude Include="GetClientConfigurationOperation.h">
+      <Filter>ravendb.client\documents\operations\configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="PutClientConfigurationOperation.h">
+      <Filter>ravendb.client\documents\operations\configuration</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
