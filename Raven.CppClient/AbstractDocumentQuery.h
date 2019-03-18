@@ -178,7 +178,7 @@ namespace ravendb::client::documents::session
 	{
 		auto command = query_operation->create_request();
 		the_session->get_request_executor()->execute(command/*, the_session->_session_info*/);
-		query_operation->set_result(command.get_result());
+		query_operation->set_result(*command.get_result());
 	}
 
 	template <typename T>

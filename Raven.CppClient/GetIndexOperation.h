@@ -65,7 +65,7 @@ namespace ravendb::client::documents::operations::indexes
 				}
 				else
 				{
-					_result = std::move(results[0]);
+					_result = std::make_shared<ResultType>(std::move(results[0]));
 				}
 			}
 

@@ -43,7 +43,7 @@ namespace ravendb::client::tests::old_tests
 			documents::commands::GetDocumentsCommand cmd(doc_id, {}, true);
 			auto&& res = test_suite_executor->get().execute(cmd);
 
-			return !res.results.empty() && !res.results[0].is_null();
+			return !res->results.empty() && !res->results[0].is_null();
 		}
 	};
 
@@ -57,7 +57,7 @@ namespace ravendb::client::tests::old_tests
 		documents::commands::GetDocumentsCommand cmd(example_user.id, {}, false);
 		auto&& res = test_suite_executor->get().execute(cmd);
 
-		infrastructure::entities::User check_user = res.results[0].get<infrastructure::entities::User>();
+		infrastructure::entities::User check_user = res->results[0].get<infrastructure::entities::User>();
 		ASSERT_EQ(example_user, check_user);
 	}
 
@@ -77,7 +77,7 @@ namespace ravendb::client::tests::old_tests
 
 		documents::commands::GetDocumentsCommand cmd1(example_user.id, {}, true);
 		auto&& res = test_suite_executor->get().execute(cmd1);
-		auto&& change_vector = res.results[0].at("@metadata").at("@change-vector").get<std::string>();
+		auto&& change_vector = res->results[0].at("@metadata").at("@change-vector").get<std::string>();
 
 		std::string wrong_change_vector(change_vector.crbegin(), change_vector.crend());
 		documents::commands::DeleteDocumentCommand cmd2(example_user.id, wrong_change_vector);
@@ -100,6 +100,6 @@ namespace ravendb::client::tests::old_tests
 		documents::commands::GetNextOperationIdCommand cmd{};
 		auto&& res = test_suite_executor->get().execute(cmd);
 
-		ASSERT_GE(res, 0);
+		ASSERT_GE(*res, 0);
 	}
 }

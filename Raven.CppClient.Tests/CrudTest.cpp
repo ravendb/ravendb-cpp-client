@@ -69,7 +69,7 @@ namespace ravendb::client::tests::client
 		store->get_request_executor()->execute(documents_command);
 		auto result = documents_command.get_result();
 
-		auto user_json = result.results.at(0);
+		auto user_json = result->results.at(0);
 		ASSERT_TRUE(user_json.find("LastName") != user_json.end());
 
 		{

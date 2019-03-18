@@ -80,9 +80,10 @@ namespace ravendb::client::documents::commands::multi_get
 			{
 				throw std::invalid_argument("wrong response");
 			}
+			_result = std::make_shared<ResultType>();
 			for(const auto& result : *it)
 			{
-				_result.push_back(result.get<GetResponse>());
+				_result->push_back(result.get<GetResponse>());
 			}
 		}
 	};

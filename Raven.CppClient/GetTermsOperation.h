@@ -116,8 +116,9 @@ namespace ravendb::client::documents::operations::indexes
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 			{
-				queries::TermsQueryResult res = response;
-				std::copy(res.terms.begin(), res.terms.end(), std::back_inserter(_result));
+				_result = std::make_shared<ResultType>();
+				auto res = response.get<queries::TermsQueryResult>();
+				std::copy(res.terms.begin(), res.terms.end(), std::back_inserter(*_result));
 			}
 
 			bool is_read_request() const noexcept override

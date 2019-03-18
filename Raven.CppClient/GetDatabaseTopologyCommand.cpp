@@ -20,7 +20,7 @@ namespace ravendb::client::serverwide::commands
 
 	void GetDatabaseTopologyCommand::set_response(CURL * curl, const nlohmann::json & response, bool from_cache)
 	{
-		_result = response.get<decltype(_result)>();
+		_result = std::make_shared<ResultType>(response.get<ResultType>());
 	}
 
 	bool GetDatabaseTopologyCommand::is_read_request() const noexcept

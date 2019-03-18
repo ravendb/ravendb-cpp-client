@@ -13,6 +13,7 @@ namespace ravendb::client::documents::conventions
 		static std::shared_mutex _ids_helpers_guard;
 		static std::unordered_map<std::type_index, EntityIdHelper> _id_helpers;
 
+		static std::shared_mutex _cached_default_type_collection_names_guard;
 		static std::unordered_map<std::type_index, std::string> _cached_default_type_collection_names;
 
 		//TODO

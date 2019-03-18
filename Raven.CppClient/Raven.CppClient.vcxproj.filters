@@ -152,6 +152,9 @@
     <ClCompile Include="MultiDatabaseHiLoIdGenerator.cpp">
       <Filter>ravendb.client\documents\identity</Filter>
     </ClCompile>
+    <ClCompile Include="MaintenanceOperationExecutor.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">

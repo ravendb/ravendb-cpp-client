@@ -540,7 +540,7 @@ namespace ravendb::client::documents::session
 		{
 			doc_info->id = *id;
 		}
-		doc_info->exact_type = type;
+		doc_info->stored_type = type;
 		doc_info->metadata = std::move(metadata);
 		if (change_vector)
 		{

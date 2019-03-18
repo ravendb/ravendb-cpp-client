@@ -10,6 +10,7 @@ namespace ravendb::client::documents::conventions
 	std::shared_mutex DocumentConventions::_ids_helpers_guard{};
 	std::unordered_map<std::type_index, EntityIdHelper> DocumentConventions::_id_helpers{};
 
+	std::shared_mutex DocumentConventions::_cached_default_type_collection_names_guard{};
 	std::unordered_map<std::type_index, std::string> DocumentConventions::_cached_default_type_collection_names{};
 
 	void DocumentConventions::assert_not_frozen() const
@@ -363,10 +364,13 @@ namespace ravendb::client::documents::conventions
 
 	std::string DocumentConventions::default_get_collection_name(std::type_index type)
 	{
-		if(auto it = _cached_default_type_collection_names.find(type);
-			it != _cached_default_type_collection_names.end())
 		{
-			return it->second;
+			auto guard = std::shared_lock(_cached_default_type_collection_names_guard);
+			if (auto it = _cached_default_type_collection_names.find(type);
+				it != _cached_default_type_collection_names.end())
+			{
+				return it->second;
+			}
 		}
 
 		auto&& full_class_name = impl::utils::GetCppClassName()(type);
@@ -382,7 +386,15 @@ namespace ravendb::client::documents::conventions
 		}
 		auto result = impl::Inflector::pluralize(simple_class_name);
 
-		_cached_default_type_collection_names.insert_or_assign(type, result);
+		{
+			auto guard = std::unique_lock(_cached_default_type_collection_names_guard);
+			if (auto it = _cached_default_type_collection_names.find(type);
+				it != _cached_default_type_collection_names.end())
+			{
+				return it->second;
+			}
+			_cached_default_type_collection_names.insert_or_assign(type, result);
+		}
 
 		return result;
 	}

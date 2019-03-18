@@ -22,6 +22,6 @@ namespace ravendb::client::tests::client::documents::commands
 		auto command = ravendb::client::documents::commands::GetNextOperationIdCommand();
 		store->get_request_executor()->execute(command);
 
-		ASSERT_GE(command.get_result(), 0);
+		ASSERT_GE(*command.get_result(), 0);
 	}
 }

@@ -20,7 +20,7 @@ namespace ravendb::client::documents::operations::configuration
 			: _configuration(std::move(configuration))
 		{}
 
-		std::unique_ptr<VoidRavenCommandBase> get_command(std::shared_ptr<DocumentConventions> conventions) const override
+		std::unique_ptr<http::VoidRavenCommandBase> get_command(std::shared_ptr<DocumentConventions> conventions) const override
 		{
 			return std::make_unique<PutClientConfigurationCommand>(_configuration);
 		}

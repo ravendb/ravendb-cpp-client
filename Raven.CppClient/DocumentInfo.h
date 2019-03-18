@@ -52,7 +52,7 @@ namespace ravendb::client::documents::session
 		bool new_document = false;
 		std::string collection{};
 
-		std::optional<std::type_index> exact_type;//to be filled by store()
+		std::optional<std::type_index> stored_type;//to be filled by store()
 
 		DocumentInfo() = default;
 

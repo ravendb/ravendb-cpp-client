@@ -378,6 +378,7 @@
     <ClCompile Include="LazyMultiLoaderWithInclude.cpp" />
     <ClCompile Include="LazySessionOperationsImpl.cpp" />
     <ClCompile Include="LeaderStamp.cpp" />
+    <ClCompile Include="MaintenanceOperationExecutor.cpp" />
     <ClCompile Include="MetadataAsDictionary.cpp" />
     <ClCompile Include="MillisToTimespanConverter.cpp" />
     <ClCompile Include="MultiDatabaseHiLoIdGenerator.cpp" />

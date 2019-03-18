@@ -169,7 +169,7 @@ namespace ravendb::client::tests::driver
 
 			std::vector<std::reference_wrapper<documents::operations::IndexInformation>> indexes{};
 
-			for(auto& index : database_statistics.indexes)
+			for(auto& index : database_statistics->indexes)
 			{
 				if(index.state != documents::indexes::IndexState::DISABLED)
 				{

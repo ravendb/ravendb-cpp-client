@@ -33,7 +33,7 @@ namespace ravendb::client::documents::commands
 
 	void NextHiLoCommand::set_response(CURL* curl, const nlohmann::json& response, bool from_cache)
 	{
-		_result = response.get<decltype(_result)>();
+		_result = std::make_shared<ResultType>(response.get<ResultType>());
 	}
 
 	bool NextHiLoCommand::is_read_request() const noexcept

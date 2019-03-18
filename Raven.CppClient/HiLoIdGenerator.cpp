@@ -15,11 +15,11 @@ namespace ravendb::client::documents::identity
 		auto re = _store->get_request_executor(_db_name);
 		re->execute(hilo_command);
 
-		prefix = hilo_command.get_result().prefix;
-		server_tag = hilo_command.get_result().server_tag;
-		_last_range_date = hilo_command.get_result().last_range_at;
-		_last_batch_size = hilo_command.get_result().last_size;
-		_range.reset(new RangeValue(hilo_command.get_result().low, hilo_command.get_result().high));
+		prefix = hilo_command.get_result()->prefix;
+		server_tag = hilo_command.get_result()->server_tag;
+		_last_range_date = hilo_command.get_result()->last_range_at;
+		_last_batch_size = hilo_command.get_result()->last_size;
+		_range.reset(new RangeValue(hilo_command.get_result()->low, hilo_command.get_result()->high));
 	}
 
 	std::string HiLoIdGenerator::get_document_id_from_id(int64_t next_id) const

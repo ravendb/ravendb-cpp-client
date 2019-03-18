@@ -198,9 +198,9 @@ namespace ravendb::client::documents::session::operations
 		apply_metadata_modifications(id, doc_info);
 		_session->_documents_by_id.insert_or_assign(doc_info->id, doc_info);
 
-		if (entity && doc_info->exact_type)
+		if (entity && doc_info->stored_type)
 		{
-			_session->get_generate_entity_id_on_the_client().try_set_identity(*doc_info->exact_type, entity, id);
+			_session->get_generate_entity_id_on_the_client().try_set_identity(*doc_info->stored_type, entity, id);
 		}
 
 		//TODO

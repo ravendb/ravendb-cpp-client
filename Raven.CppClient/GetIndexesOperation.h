@@ -59,7 +59,8 @@ namespace ravendb::client::documents::operations::indexes
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 			{
-				if (!impl::utils::json_utils::get_val_from_json(response, "Results", _result))
+				_result = std::make_shared<ResultType>();
+				if (!impl::utils::json_utils::get_val_from_json(response, "Results", *_result))
 				{
 					throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::INVALID_RESPONSE);
 				}

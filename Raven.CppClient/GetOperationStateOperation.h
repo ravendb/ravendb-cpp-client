@@ -53,7 +53,7 @@ namespace ravendb::client::documents::operations
 			{
 				if(!response.is_null())
 				{
-					_result = response;
+					_result = std::make_shared<ResultType>(response.get<ResultType>());
 				}
 			}
 

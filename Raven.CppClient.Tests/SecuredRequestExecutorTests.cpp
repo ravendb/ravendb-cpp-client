@@ -42,7 +42,7 @@ namespace ravendb::client::tests::old_tests
 			documents::commands::GetDocumentsCommand cmd(doc_id, {}, true);
 			auto&& res = test_suite_executor->get().execute(cmd);
 
-			return !res.results.empty() && !res.results[0].is_null();
+			return !res->results.empty() && !res->results[0].is_null();
 		}
 	};
 
@@ -56,7 +56,7 @@ namespace ravendb::client::tests::old_tests
 		documents::commands::GetDocumentsCommand cmd(example_user.id, {}, false);
 		auto&& res = test_suite_executor->get().execute(cmd);
 
-		infrastructure::entities::User check_user = res.results[0].get<infrastructure::entities::User>();
+		infrastructure::entities::User check_user = res->results[0].get<infrastructure::entities::User>();
 		ASSERT_EQ(example_user, check_user);
 	}
 

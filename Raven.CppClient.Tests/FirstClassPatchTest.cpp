@@ -279,7 +279,6 @@ namespace ravendb::client::tests::client
 		}
 	}
 
-	//TODO use id generator
 	TEST_F(FirstClassPatchTest, CanAddToArray)
 	{
 		auto store = get_document_store(TEST_NAME);

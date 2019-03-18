@@ -33,8 +33,8 @@ namespace ravendb::client::tests::client::documents::commands
 
 		auto res = command.get_result();
 
-		ASSERT_EQ("users/1", res.id);
-		ASSERT_FALSE(res.change_vector.empty());
+		ASSERT_EQ("users/1", res->id);
+		ASSERT_FALSE(res->change_vector.empty());
 
 		{
 			auto session = store->open_session();

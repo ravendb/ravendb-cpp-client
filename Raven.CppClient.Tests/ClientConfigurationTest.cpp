@@ -2,8 +2,8 @@
 #include "RavenTestDriver.h"
 #include "raven_test_definitions.h"
 #include "GetClientConfigurationOperation.h"
-#include "RequestExecutor.h"
 #include "Raven.CppClient/PutClientConfigurationOperation.h"
+#include "MaintenanceOperationExecutor.h"
 
 namespace ravendb::client::tests::client::documents
 {
@@ -21,12 +21,10 @@ namespace ravendb::client::tests::client::documents
 		auto store = get_document_store(TEST_NAME);
 
 		auto operation = ravendb::client::documents::operations::configuration::GetClientConfigurationOperation();
-		//TODO use store.maintenance().send(operation);
+		auto result = store->get_maintenance()->send(operation);
 
-		auto result = store->get_request_executor()->execute(operation.get_command(store->get_conventions()));
-
-		ASSERT_FALSE(result.configuration.has_value());
-		ASSERT_GE(result.etag, 0);
+		ASSERT_FALSE(result->configuration.has_value());
+		ASSERT_GE(result->etag, 0);
 	}
 
 	TEST_F(ClientConfigurationTest, CanSaveAndReadClientConfiguration)
@@ -41,15 +39,14 @@ namespace ravendb::client::tests::client::documents
 
 		auto save_operation = 
 			ravendb::client::documents::operations::configuration::PutClientConfigurationOperation(configuration_to_save);
-		//TODO use store.maintenance().send(operation);
-		store->get_request_executor()->execute(save_operation.get_command(store->get_conventions()));
-
+		store->get_maintenance()->send(save_operation);
+		
 		auto operation = ravendb::client::documents::operations::configuration::GetClientConfigurationOperation();
 		auto result = store->get_request_executor()->execute(operation.get_command(store->get_conventions()));
 
-		ASSERT_GE(result.etag, 0);
+		ASSERT_GE(result->etag, 0);
 
-		auto new_configuration = result.configuration;
+		auto new_configuration = result->configuration;
 
 		ASSERT_TRUE(new_configuration.has_value());
 		ASSERT_GT(new_configuration->etag, configuration_to_save.etag);

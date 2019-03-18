@@ -199,13 +199,13 @@ namespace ravendb::client::documents::session
 		auto multi_get_command = multi_get_operation.create_request(requests);
 		get_request_executor()->execute(multi_get_command);
 
-		auto& responses = multi_get_command.get_result();
+		auto&& responses = multi_get_command.get_result();
 
 		for(auto i = 0; i <_pending_lazy_operations.size(); ++i)
 		{
 			int64_t total_time{};
 
-			const commands::multi_get::GetResponse& response = responses[i];
+			const commands::multi_get::GetResponse& response = (*responses)[i];
 
 			if(auto temp_req_time_it = response.headers.find(constants::headers::REQUEST_TIME);
 				temp_req_time_it != response.headers.end())
@@ -333,8 +333,8 @@ namespace ravendb::client::documents::session
 				throw std::runtime_error("Cannot execute save_changes() when entity tracking is disabled in session.");
 			}
 			_request_executor->execute(*command);
-			update_session_after_changes(command->get_result());
-			save_changes_operation.set_result(command->get_result());
+			update_session_after_changes(*command->get_result());
+			save_changes_operation.set_result(*command->get_result());
 		}
 	}
 }

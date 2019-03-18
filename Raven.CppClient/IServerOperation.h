@@ -4,7 +4,7 @@ namespace ravendb::client
 {
 	namespace http
 	{
-		template<typename Result_t>
+		template<typename TResult>
 		class RavenCommand;
 	}
 	namespace documents::conventions

@@ -93,7 +93,7 @@ namespace ravendb::client::documents::operations
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 			{
-				_result = response;
+				_result = std::make_shared<ResultType>(response.get<ResultType>());
 			}
 
 			bool is_read_request() const noexcept override

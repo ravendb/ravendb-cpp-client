@@ -29,7 +29,7 @@ namespace ravendb::client::http
 
 		//TODO move the non-template part out 
 		template<typename TResult>
-		TResult execute_internal(ServerNode& node, RavenCommand<TResult>& cmd);
+		std::shared_ptr<TResult> execute_internal(ServerNode& node, RavenCommand<TResult>& cmd);
 
 		RequestExecutor(
 			std::string db_name,
@@ -49,11 +49,11 @@ namespace ravendb::client::http
 
 		std::shared_ptr<documents::conventions::DocumentConventions> get_conventions() const;
 
-		template<typename Result_t>
-		Result_t execute(RavenCommand<Result_t>& cmd);
+		template<typename TResult>
+		std::shared_ptr<TResult> execute(RavenCommand<TResult>& cmd);
 
 		template<typename TResult>
-		TResult execute(std::unique_ptr<RavenCommand<TResult>> cmd_ptr)
+		std::shared_ptr<TResult> execute(std::unique_ptr<RavenCommand<TResult>> cmd_ptr)
 		{
 			return execute(*cmd_ptr.get());
 		}
@@ -68,7 +68,7 @@ namespace ravendb::client::http
 	};
 
 	template<typename TResult>
-	TResult RequestExecutor::execute_internal(ServerNode & node, RavenCommand<TResult>& cmd)
+	std::shared_ptr<TResult> RequestExecutor::execute_internal(ServerNode & node, RavenCommand<TResult>& cmd)
 	{
 		char error_buffer[CURL_ERROR_SIZE] = { '\0' };
 		std::string output_buffer;
@@ -150,7 +150,7 @@ namespace ravendb::client::http
 		return cmd.get_result();
 	}
 	template<typename TResult>
-	TResult RequestExecutor::execute(RavenCommand<TResult>& cmd)
+	std::shared_ptr<TResult> RequestExecutor::execute(RavenCommand<TResult>& cmd)
 	{
 		std::optional<std::ostringstream> errors;
 

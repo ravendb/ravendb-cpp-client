@@ -13,7 +13,7 @@ namespace ravendb::client::tests::utils
 		auto  get_docs_cmd = documents::commands::GetDocumentsCommand({}, {}, {}, {}, 0, 10000, true);
 		auto re = store->get_request_executor();
 		auto results = re->execute(get_docs_cmd);
-		for (const auto& res : results.results)
+		for (const auto& res : results->results)
 		{
 			auto del_doc_cmd = documents::commands::DeleteDocumentCommand(res["@metadata"]["@id"].get<std::string>());
 			re->execute(del_doc_cmd);
@@ -25,7 +25,7 @@ namespace ravendb::client::tests::utils
 		auto op1 = documents::operations::indexes::GetIndexNamesOperation(0, 10000);
 		auto re = store->get_request_executor();
 		auto&& results = re->execute(op1.get_command({}));
-		for (auto& index_name : results)
+		for (auto& index_name : *results)
 		{
 			auto op = documents::operations::indexes::DeleteIndexOperation(index_name);
 			re->execute(op.get_command({}));

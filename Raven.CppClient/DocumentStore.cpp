@@ -36,7 +36,7 @@ namespace ravendb::client::documents
 
 	void DocumentStore::initiate_operation_executors()
 	{
-		_maintenance_operation_executor = std::make_shared<operations::MaintenanceOperationExecutor>(_weak_this.lock());
+		_maintenance_operation_executor = operations::MaintenanceOperationExecutor::create(_weak_this.lock());
 		_operation_executor = std::make_shared<operations::OperationExecutor>(_weak_this.lock());
 	}
 

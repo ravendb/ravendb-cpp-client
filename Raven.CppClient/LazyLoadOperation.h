@@ -23,7 +23,7 @@ namespace ravendb::client::documents::session::operations::lazy
 		QueryResult _query_result{};
 		boolean _requires_retry = false;
 
-		void handle_response(const std::optional<commands::GetDocumentsResult>& load_result);
+		void handle_response(std::shared_ptr<commands::GetDocumentsResult> load_result);
 
 	public:
 		~LazyLoadOperation() override = default;
@@ -49,11 +49,11 @@ namespace ravendb::client::documents::session::operations::lazy
 
 
 	template <typename T>
-	void LazyLoadOperation<T>::handle_response(const std::optional<commands::GetDocumentsResult>& load_result)
+	void LazyLoadOperation<T>::handle_response(std::shared_ptr<commands::GetDocumentsResult> load_result)
 	{
 		if (load_result)
 		{
-			_load_operation->set_result(*load_result);
+			_load_operation->set_result(load_result);
 		}
 
 		if (!_requires_retry)
@@ -162,10 +162,10 @@ namespace ravendb::client::documents::session::operations::lazy
 			return;
 		}
 
-		std::optional<commands::GetDocumentsResult> multi_load_result{};
+		auto multi_load_result = std::make_shared<commands::GetDocumentsResult>();
 		if (response.result)
 		{
-			multi_load_result = nlohmann::json::parse(*response.result).get<commands::GetDocumentsResult>();
+			*multi_load_result = nlohmann::json::parse(*response.result).get<commands::GetDocumentsResult>();
 		}
 		handle_response(multi_load_result);
 	}

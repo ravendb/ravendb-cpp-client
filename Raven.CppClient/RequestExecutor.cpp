@@ -18,7 +18,7 @@ namespace ravendb::client::http
 
 		for (const auto& url : _initial_urls)
 		{
-			Topology result;
+			std::shared_ptr<Topology> result;
 			try
 			{
 				auto server_node = ServerNode(url, _db_name, "?");
@@ -34,7 +34,7 @@ namespace ravendb::client::http
 				continue;
 			}
 			// success
-			std::atomic_store(&_topology, std::make_shared<Topology>(result));
+			std::atomic_store(&_topology, result);
 			return;
 		}
 

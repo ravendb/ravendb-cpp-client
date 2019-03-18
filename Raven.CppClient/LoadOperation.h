@@ -192,18 +192,23 @@ namespace ravendb::client::documents::session::operations
 			return results;
 		}
 
-		void set_result(const commands::GetDocumentsResult& result)
+		void set_result(std::shared_ptr<commands::GetDocumentsResult> result)
 		{
-			if(_session->no_tracking)
+			if(!result)
 			{
-				_current_load_results = result;
+				return;
 			}
 
-			_session->register_includes(result.includes);
+			if(_session->no_tracking)
+			{
+				_current_load_results = *result;
+			}
+
+			_session->register_includes(result->includes);
 
 			//TODO take care of counters
 
-			for(const auto& document : result.results)
+			for(const auto& document : result->results)
 			{
 				if(document.is_null())
 				{
@@ -214,7 +219,7 @@ namespace ravendb::client::documents::session::operations
 				_session->_documents_by_id.insert({new_doc_info->id,new_doc_info});
 			}
 
-			_session->register_missing_includes(result.results, result.includes, _includes);
+			_session->register_missing_includes(result->results, result->includes, _includes);
 		}
 	};
 }

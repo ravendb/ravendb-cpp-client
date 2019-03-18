@@ -45,7 +45,7 @@ namespace ravendb::client::serverwide::operations
 
 	void GetDatabaseRecordOperation::GetDatabaseRecordCommand::set_response(CURL * curl, const nlohmann::json & response, bool from_cache)
 	{
-		_result = response.get<decltype(_result)>();
+		_result = std::make_shared<ResultType>(response.get<ResultType>());
 	}
 
 	bool GetDatabaseRecordOperation::GetDatabaseRecordCommand::is_read_request() const noexcept

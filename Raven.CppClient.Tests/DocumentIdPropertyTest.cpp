@@ -28,6 +28,7 @@ namespace ravendb::client::tests::client::documents
 	TEST_F(DocumentIdPropertyTest, CanSetIdPropertyFromStore)
 	{
 		auto store = get_document_store(TEST_NAME);
+
 		{
 			auto session = store->open_session();
 
@@ -47,8 +48,10 @@ namespace ravendb::client::tests::client::documents
 
 	TEST_F(DocumentIdPropertyTest, CanSetIdPropertyFromHilo)
 	{
-		std::string user_id{};
 		auto store = get_document_store(TEST_NAME);
+
+		std::string user_id{};
+
 		{
 			auto session = store->open_session();
 
@@ -70,8 +73,10 @@ namespace ravendb::client::tests::client::documents
 
 	TEST_F(DocumentIdPropertyTest, CanGetIdFromProperty)
 	{
-		std::string user_id = "custom_user_id/1";
 		auto store = get_document_store(TEST_NAME);
+		
+		std::string user_id = "custom_user_id/1";
+		
 		{
 			auto session = store->open_session();
 
@@ -89,7 +94,7 @@ namespace ravendb::client::tests::client::documents
 			auto re = session.advanced().get_request_executor();
 			re->execute(get_doc_command);
 
-			ASSERT_EQ(user_id, get_doc_command.get_result().results[0].at("@metadata").at("@id"));
+			ASSERT_EQ(user_id, get_doc_command.get_result()->results[0].at("@metadata").at("@id"));
 		}
 	}
 }
