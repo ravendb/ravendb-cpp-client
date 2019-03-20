@@ -23,8 +23,6 @@ namespace ravendb::client::documents
 
 		std::string _identifier{};
 
-		std::weak_ptr<DocumentStore> _weak_this;
-
 		void initiate_operation_executors();
 
 		DocumentStore();

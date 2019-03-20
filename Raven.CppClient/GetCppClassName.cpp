@@ -53,6 +53,25 @@ namespace ravendb::client::impl::utils
 		return _get_class_name_impl(type);
 	}
 
+	std::string GetCppClassName::get_simple_class_name(std::type_index type)
+	{
+		auto&& full_class_name = get_class_name(type);
+
+		std::string simple_class_name;
+
+		if (auto pos = full_class_name.find_last_of("::");
+			pos != std::string::npos)
+		{
+			simple_class_name = full_class_name.substr(pos + 1);
+		}
+		else
+		{
+			simple_class_name = full_class_name;
+		}
+
+		return std::move(simple_class_name);
+	}
+
 	std::string GetCppClassName::operator()(std::type_index type) const
 	{
 		return get_class_name(type);

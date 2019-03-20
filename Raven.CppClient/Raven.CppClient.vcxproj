@@ -155,6 +155,10 @@
     <ClInclude Include="..\json.hpp" />
     <ClInclude Include="..\Raven.CppClient.Tests\EntityIdHelperUtil.h" />
     <ClInclude Include="AbstractDocumentQuery.h" />
+    <ClInclude Include="AbstractGenericIndexCreationTask.h" />
+    <ClInclude Include="AbstractIndexCreationTask.h" />
+    <ClInclude Include="AbstractIndexCreationTaskBase.h" />
+    <ClInclude Include="AbstractMultiMapIndexCreationTask.h" />
     <ClInclude Include="BatchCommand.h" />
     <ClInclude Include="BatchCommandResult.h" />
     <ClInclude Include="BatchOperation.h" />
@@ -172,6 +176,7 @@
     <ClInclude Include="GenerateEntityIdOnTheClient.h" />
     <ClInclude Include="GetClientConfigurationOperation.h" />
     <ClInclude Include="GetCppClassName.h" />
+    <ClInclude Include="GetIndexStatisticsOperation.h" />
     <ClInclude Include="GetRequest.h" />
     <ClInclude Include="GetResponse.h" />
     <ClInclude Include="GetStatisticsOperation.h" />
@@ -184,6 +189,8 @@
     <ClInclude Include="IDocumentQueryBase.h" />
     <ClInclude Include="IDocumentQueryBaseSingle.h" />
     <ClInclude Include="ILazyOperation.h" />
+    <ClInclude Include="IndexCreation.h" />
+    <ClInclude Include="IndexDefinitionBuilder.h" />
     <ClInclude Include="IndexInformation.h" />
     <ClInclude Include="IndexQueryContent.h" />
     <ClInclude Include="Inflector.h" />
@@ -326,6 +333,7 @@
     <ClInclude Include="Size.h" />
     <ClInclude Include="SpatialFieldType.h" />
     <ClInclude Include="SpatialOptions.h" />
+    <ClInclude Include="SpatialOptionsFactory.h" />
     <ClInclude Include="SpatialSearchStrategy.h" />
     <ClInclude Include="SpatialUnits.h" />
     <ClInclude Include="StartIndexingOperationh.h" />
@@ -341,6 +349,10 @@
     <ClInclude Include="VoidRavenCommand.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AbstractGenericIndexCreationTask.cpp" />
+    <ClCompile Include="AbstractIndexCreationTask.cpp" />
+    <ClCompile Include="AbstractIndexCreationTaskBase.cpp" />
+    <ClCompile Include="AbstractMultiMapIndexCreationTask.cpp" />
     <ClCompile Include="AdvancedSessionOperations.cpp" />
     <ClCompile Include="BatchCommandResult.cpp" />
     <ClCompile Include="BatchOperation.cpp" />
@@ -372,6 +384,8 @@
     <ClCompile Include="GetDatabaseTopologyCommand.cpp" />
     <ClCompile Include="HiLoIdGenerator.cpp" />
     <ClCompile Include="HiLoReturnCommand.cpp" />
+    <ClCompile Include="IndexCreation.cpp" />
+    <ClCompile Include="IndexDefinitionBuilder.cpp" />
     <ClCompile Include="InMemoryDocumentSessionOperations.cpp" />
     <ClCompile Include="JsonOperation.cpp" />
     <ClCompile Include="json_utils.cpp" />
@@ -391,6 +405,7 @@
     <ClCompile Include="ScriptResolver.cpp" />
     <ClCompile Include="ServerNode.cpp" />
     <ClCompile Include="SessionOperationExecutor.cpp" />
+    <ClCompile Include="SpatialOptionsFactory.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

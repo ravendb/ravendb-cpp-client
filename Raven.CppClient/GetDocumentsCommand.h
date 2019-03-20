@@ -34,7 +34,7 @@ namespace ravendb::client::documents::commands
 		//using xxhash_cpp from https://github.com/RedSpah/xxhash_cpp
 		//TODO consider the endian issue
 		template <typename ConstIterator>
-		static int64_t calculate_docs_ids_hash(ConstIterator begin, ConstIterator end)
+		static uint64_t calculate_docs_ids_hash(ConstIterator begin, ConstIterator end)
 		{
 			xxh::hash_state_t<64> hash_stream;
 			for(ConstIterator it = begin; it != end; ++it)

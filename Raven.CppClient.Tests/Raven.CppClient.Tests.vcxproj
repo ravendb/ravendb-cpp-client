@@ -73,6 +73,8 @@
     <ClCompile Include="DeleteDocumentCommandTest.cpp" />
     <ClCompile Include="GetNextOperationIdCommandTest.cpp" />
     <ClCompile Include="GetStatisticsCommandTest.cpp" />
+    <ClCompile Include="IndexesFromClientTest.cpp" />
+    <ClCompile Include="IndexOperationsTest.cpp" />
     <ClCompile Include="PutDocumentCommandTest.cpp" />
     <ClCompile Include="raven_test_definitions.cpp" />
     <ClCompile Include="DeleteTest.cpp" />
@@ -88,7 +90,7 @@
     <ClCompile Include="re_definitions.cpp" />
     <ClCompile Include="BasicDocumentCommandsTests.cpp" />
     <ClCompile Include="GetDocumentsCommandTests.cpp" />
-    <ClCompile Include="IndexOperationsTests.cpp" />
+    <ClCompile Include="IndexOperationsTestsOld.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="BasicPatchTests.cpp" />
     <ClCompile Include="pch.cpp">

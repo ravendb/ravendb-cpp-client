@@ -373,17 +373,7 @@ namespace ravendb::client::documents::conventions
 			}
 		}
 
-		auto&& full_class_name = impl::utils::GetCppClassName()(type);
-		std::string simple_class_name{};
-		if (auto pos = full_class_name.find_last_of("::");
-			pos != std::string::npos )
-		{
-			simple_class_name = full_class_name.substr(pos+1);
-		}
-		else
-		{
-			simple_class_name = full_class_name;
-		}
+		std::string simple_class_name = impl::utils::GetCppClassName::get_simple_class_name(type);
 		auto result = impl::Inflector::pluralize(simple_class_name);
 
 		{

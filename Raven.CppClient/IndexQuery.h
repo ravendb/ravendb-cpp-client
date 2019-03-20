@@ -1,7 +1,6 @@
 #pragma once
 #include "IndexQueryBase.h"
 #include "Parameters.h"
-//TODO put in final project
 #include "C:\work\xxhash_cpp\xxhash\xxhash.hpp"
 
 namespace ravendb::client::documents::queries

@@ -37,14 +37,14 @@ namespace ravendb::client::documents::operations
 		void send(IVoidMaintenanceOperation& operation);
 
 		template<typename TResult>
-		std::shared_ptr<TResult> send(IMaintenanceOperation<TResult>& operation);
+		std::shared_ptr<TResult> send(const IMaintenanceOperation<TResult>& operation);
 
-		//TODO imnplement
+		//TODO implement
 		//public Operation sendAsync(IMaintenanceOperation<OperationIdResult> operation)
 	};
 
 	template <typename TResult>
-	std::shared_ptr<TResult> MaintenanceOperationExecutor::send(IMaintenanceOperation<TResult>& operation)
+	std::shared_ptr<TResult> MaintenanceOperationExecutor::send(const IMaintenanceOperation<TResult>& operation)
 	{
 		assert_database_set();
 		auto command = operation.get_command(get_request_executor()->get_conventions());

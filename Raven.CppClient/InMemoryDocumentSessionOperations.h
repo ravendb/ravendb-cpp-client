@@ -47,11 +47,6 @@ namespace ravendb::client
 			{
 				class LoadOperation;
 				class BatchOperation;
-
-				namespace lazy
-				{
-					struct ILazyOperation;
-				}
 			}
 		}
 		namespace operations

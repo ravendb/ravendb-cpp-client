@@ -13,10 +13,10 @@ namespace ravendb::client::documents::operations
 		std::string name{};
 
 		bool is_stale{};
-		indexes::IndexState state{};
-		indexes::IndexLockMode lock_mode{};
-		indexes::IndexPriority priority{};
-		indexes::IndexType type{};
+		documents::indexes::IndexState state{};
+		documents::indexes::IndexLockMode lock_mode{};
+		documents::indexes::IndexPriority priority{};
+		documents::indexes::IndexType type{};
 		impl::DateTimeOffset last_indexing_time{};
 	};
 

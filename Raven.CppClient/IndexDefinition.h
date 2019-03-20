@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 #include "IndexPriority.h"
 #include "IndexLockMode.h"
 #include "IndexType.h"
@@ -13,15 +12,15 @@ namespace ravendb::client::documents::indexes
 	struct IndexDefinition
 	{
 		 std::string name{};
-		 IndexPriority priority = IndexPriority::UNSET;
-		 IndexLockMode lock_mode = IndexLockMode::UNSET;
+		 std::optional<IndexPriority> priority{};
+		 std::optional<IndexLockMode> lock_mode{};
 		 std::unordered_map<std::string, std::string> additional_sources{};
 		 std::unordered_set<std::string> maps{};
-		 std::string reduce{};
-		 std::unordered_map <std::string, IndexFieldOptions> fields{};
+		 std::optional<std::string> reduce{};
+		 std::unordered_map<std::string, IndexFieldOptions> fields{};
 		 IndexConfiguration configuration{};
-		 IndexType index_type = IndexType::UNSET;
-		 std::string output_reduce_to_collection{};
+		 std::optional<IndexType> index_type{};
+		 std::optional<std::string> output_reduce_to_collection{};
 
 
 		friend bool operator==(const IndexDefinition& lhs, const IndexDefinition& rhs)

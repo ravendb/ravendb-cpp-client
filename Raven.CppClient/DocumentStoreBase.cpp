@@ -1,10 +1,37 @@
 #include "stdafx.h"
 #include "DocumentStoreBase.h"
 #include "DocumentConventions.h"
+#include "AbstractIndexCreationTaskBase.h"
+#include "IndexCreation.h"
+#include "MaintenanceOperationExecutor.h"
+#include "PutIndexesOperation.h"
 
 namespace ravendb::client::documents
 {
 	DocumentStoreBase::~DocumentStoreBase() = default;
+
+	bool DocumentStoreBase::is_disposed() const
+	{
+		return disposed;
+	}
+
+	void DocumentStoreBase::execute_index(std::shared_ptr<indexes::AbstractIndexCreationTaskBase> task,
+		std::optional<std::string> database)
+	{
+		assert_initialized();
+		task->execute(_weak_this.lock(), _conventions, std::move(database));
+	}
+
+	void DocumentStoreBase::execute_indexes(
+		std::vector<std::shared_ptr<indexes::AbstractIndexCreationTaskBase>>& tasks,
+		std::optional<std::string> database)
+	{
+		assert_initialized();
+		auto&& indexes_to_add = indexes::IndexCreation::create_indexes_to_add(tasks, _conventions);
+
+		get_maintenance()->for_database(database ? *std::move(database) : get_database())
+			->send(operations::indexes::PutIndexesOperation(std::move(indexes_to_add)));
+	}
 
 	std::shared_ptr<conventions::DocumentConventions> DocumentStoreBase::get_conventions() const
 	{
@@ -43,6 +70,14 @@ namespace ravendb::client::documents
 			}
 		}
 		urls = std::move(urls_param);
+	}
+
+	void DocumentStoreBase::ensure_not_closed() const
+	{
+		if(disposed)
+		{
+			throw std::runtime_error("The document store has already been closed and cannot be used");
+		}
 	}
 
 	void DocumentStoreBase::assert_initialized() const

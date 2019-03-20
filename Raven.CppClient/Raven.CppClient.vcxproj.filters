@@ -155,6 +155,27 @@
     <ClCompile Include="MaintenanceOperationExecutor.cpp">
       <Filter>ravendb.client\documents\operations</Filter>
     </ClCompile>
+    <ClCompile Include="AbstractIndexCreationTaskBase.cpp">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractGenericIndexCreationTask.cpp">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="SpatialOptionsFactory.cpp">
+      <Filter>ravendb.client\documents\indexes\spacial</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractIndexCreationTask.cpp">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexDefinitionBuilder.cpp">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractMultiMapIndexCreationTask.cpp">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexCreation.cpp">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -715,6 +736,30 @@
     </ClInclude>
     <ClInclude Include="PutClientConfigurationOperation.h">
       <Filter>ravendb.client\documents\operations\configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractIndexCreationTaskBase.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractGenericIndexCreationTask.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialOptionsFactory.h">
+      <Filter>ravendb.client\documents\indexes\spacial</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractIndexCreationTask.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexDefinitionBuilder.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractMultiMapIndexCreationTask.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexCreation.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="GetIndexStatisticsOperation.h">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

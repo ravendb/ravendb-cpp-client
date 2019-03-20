@@ -29,7 +29,7 @@
 
 namespace ravendb::client::tests::old_tests
 {
-	class IndexOperationsTest : public ::testing::Test
+	class IndexOperationsTestOld : public ::testing::Test
 	{
 	protected:
 		inline static std::shared_ptr<definitions::RequestExecutorScope> test_suite_executor{};
@@ -112,10 +112,10 @@ namespace ravendb::client::tests::old_tests
 				})"};
 		}
 	};
-	const infrastructure::entities::User IndexOperationsTest::example_user{ "Users/1", "Alexander", "Timoshenko", "Israel", 0, 38 };
-	IndexDefinition IndexOperationsTest::example_index{};
+	const infrastructure::entities::User IndexOperationsTestOld::example_user{ "Users/1", "Alexander", "Timoshenko", "Israel", 0, 38 };
+	IndexDefinition IndexOperationsTestOld::example_index{};
 	
-	TEST_F(IndexOperationsTest, CanGetIndex)
+	TEST_F(IndexOperationsTestOld, CanGetIndex)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 
@@ -133,7 +133,7 @@ namespace ravendb::client::tests::old_tests
 		ASSERT_EQ(*res, check_index);
 	}
 
-	TEST_F(IndexOperationsTest, CanDeleteIndex)
+	TEST_F(IndexOperationsTestOld, CanDeleteIndex)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_names_op(example_index.name));
 
@@ -143,7 +143,7 @@ namespace ravendb::client::tests::old_tests
 		ASSERT_FALSE(does_index_exist_by_get_index_names_op(example_index.name));
 	}
 
-	TEST_F(IndexOperationsTest, CanDisableAndEnableIndex)
+	TEST_F(IndexOperationsTestOld, CanDisableAndEnableIndex)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 		{
@@ -172,7 +172,7 @@ namespace ravendb::client::tests::old_tests
 		}
 	}
 
-	TEST_F(IndexOperationsTest, CanGetIndexes)
+	TEST_F(IndexOperationsTestOld, CanGetIndexes)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 
@@ -183,7 +183,7 @@ namespace ravendb::client::tests::old_tests
 		ASSERT_EQ((*res)[0].name, example_index.name);
 	}
 
-	TEST_F(IndexOperationsTest, CanGetIndexesStats)
+	TEST_F(IndexOperationsTestOld, CanGetIndexesStats)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 
@@ -194,7 +194,7 @@ namespace ravendb::client::tests::old_tests
 		ASSERT_EQ((*res)[0].name, example_index.name);
 	}
 
-	TEST_F(IndexOperationsTest, CanGetTerms)
+	TEST_F(IndexOperationsTestOld, CanGetTerms)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 
@@ -208,7 +208,7 @@ namespace ravendb::client::tests::old_tests
 		ASSERT_EQ((*res)[0], expected_str);
 	}
 
-	TEST_F(IndexOperationsTest, HasIndexChanged)
+	TEST_F(IndexOperationsTestOld, HasIndexChanged)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 		{
@@ -232,7 +232,7 @@ namespace ravendb::client::tests::old_tests
 		}
 	}
 
-	TEST_F(IndexOperationsTest, CanStopStartIndexing)
+	TEST_F(IndexOperationsTestOld, CanStopStartIndexing)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 		{
@@ -261,7 +261,7 @@ namespace ravendb::client::tests::old_tests
 		}
 	}
 
-	TEST_F(IndexOperationsTest, CanStopStartIndex)
+	TEST_F(IndexOperationsTestOld, CanStopStartIndex)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 		{
@@ -293,7 +293,7 @@ namespace ravendb::client::tests::old_tests
 		}
 	}
 
-	TEST_F(IndexOperationsTest, CanSetIndexLockMode)
+	TEST_F(IndexOperationsTestOld, CanSetIndexLockMode)
 	{
 		//should NOT use IndexLockMode::UNSET for SetIndexesLockOperation
 		EXPECT_THROW(
@@ -317,7 +317,7 @@ namespace ravendb::client::tests::old_tests
 		}
 	}
 
-	TEST_F(IndexOperationsTest, CanSetIndexPriority)
+	TEST_F(IndexOperationsTestOld, CanSetIndexPriority)
 	{
 		//should NOT use IndexPriority::UNSET for SetIndexesPriorityOperation
 		EXPECT_THROW(
@@ -341,7 +341,7 @@ namespace ravendb::client::tests::old_tests
 		}
 	}
 
-	TEST_F(IndexOperationsTest, CanListErrors)
+	TEST_F(IndexOperationsTestOld, CanListErrors)
 	{
 		auto invalid_user = example_user;
 		invalid_user.age = 0;
@@ -387,7 +387,7 @@ namespace ravendb::client::tests::old_tests
 		ASSERT_ERROR_PER_INDEX(invalid_index.name, 1);
 	}
 
-	TEST_F(IndexOperationsTest, CanGetIndexStatistics)
+	TEST_F(IndexOperationsTestOld, CanGetIndexStatistics)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 		{

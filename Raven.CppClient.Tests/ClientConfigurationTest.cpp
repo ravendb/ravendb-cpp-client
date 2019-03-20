@@ -5,7 +5,7 @@
 #include "Raven.CppClient/PutClientConfigurationOperation.h"
 #include "MaintenanceOperationExecutor.h"
 
-namespace ravendb::client::tests::client::documents
+namespace ravendb::client::tests::client::documents::operations::configuration
 {
 	class ClientConfigurationTest : public driver::RavenTestDriver
 	{

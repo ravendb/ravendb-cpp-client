@@ -8,7 +8,19 @@
 
 namespace ravendb::client::documents
 {
-	DocumentStore::~DocumentStore() = default;
+	DocumentStore::~DocumentStore()
+	{
+		if(disposed)
+		{
+			return;
+		}
+		try
+		{
+			close();
+		}
+		catch (...)
+		{}
+	}
 
 	std::shared_ptr<DocumentStore> DocumentStore::create()
 	{
@@ -36,7 +48,8 @@ namespace ravendb::client::documents
 
 	void DocumentStore::initiate_operation_executors()
 	{
-		_maintenance_operation_executor = operations::MaintenanceOperationExecutor::create(_weak_this.lock());
+		_maintenance_operation_executor = operations::MaintenanceOperationExecutor::create(
+			std::static_pointer_cast<DocumentStore>(_weak_this.lock()));
 		_operation_executor = std::make_shared<operations::OperationExecutor>(_weak_this.lock());
 	}
 
@@ -76,12 +89,23 @@ namespace ravendb::client::documents
 
 	void DocumentStore::close()
 	{
+		if(disposed)
+		{
+			return;
+		}
+
 		//TODO implement the rest
 
-		if(_multi_db_hilo)
+		try
 		{
-			_multi_db_hilo->return_unused_range();
-		}
+			if (_multi_db_hilo)
+			{
+				_multi_db_hilo->return_unused_range();
+			}
+		}catch (...)
+		{}// ignore
+
+		disposed = true;
 	}
 
 	session::DocumentSession DocumentStore::open_session()
@@ -95,7 +119,7 @@ namespace ravendb::client::documents
 	session::DocumentSession DocumentStore::open_session(const session::SessionOptions& options)
 	{
 		assert_initialized();
-		//TODO ensure_not_closed();
+		ensure_not_closed();
 
 		auto session_impl = session::DocumentSessionImpl::create(_weak_this.lock(), options);
 		//TODO
@@ -142,31 +166,40 @@ namespace ravendb::client::documents
 
 	std::shared_ptr<IDocumentStore> DocumentStore::initialize()
 	{
-		if(is_initialized)
+		if (is_initialized)
 		{
 			return _weak_this.lock();
 		}
 		assert_valid_configuration();
 
-		if(!get_conventions()->get_document_id_generator())// don't overwrite what the user is doing
+		try
 		{
-			_multi_db_hilo = std::make_unique<identity::MultiDatabaseHiLoIdGenerator>(_weak_this.lock(), get_conventions());
-
-			get_conventions()->set_document_id_generator([this]
-				(const std::string& db_name , std::shared_ptr<void> entity, std::type_index type)->std::string
+			if (!get_conventions()->get_document_id_generator())// don't overwrite what the user is doing
 			{
-				auto&& res = _multi_db_hilo->generate_document_id(db_name, type, entity);
-				if(!res)
-				{
-					throw std::runtime_error("Could not generate id for the entity of type"
-						+ impl::utils::GetCppClassName()(type));
-				}
-				return *res;
-			});
-		}
+				_multi_db_hilo = std::make_unique<identity::MultiDatabaseHiLoIdGenerator>(
+					std::static_pointer_cast<DocumentStore>(_weak_this.lock()), get_conventions());
 
-		get_conventions()->freeze();
-		is_initialized = true;
+				get_conventions()->set_document_id_generator([this]
+				(const std::string& db_name, std::shared_ptr<void> entity, std::type_index type)->std::string
+				{
+					auto&& res = _multi_db_hilo->generate_document_id(db_name, type, entity);
+					if (!res)
+					{
+						throw std::runtime_error("Could not generate id for the entity of type"
+							+ impl::utils::GetCppClassName()(type));
+					}
+					return *res;
+				});
+			}
+
+			get_conventions()->freeze();
+			is_initialized = true;
+		}
+		catch (...)
+		{
+			close();
+			throw;
+		}
 
 		return _weak_this.lock();
 	}

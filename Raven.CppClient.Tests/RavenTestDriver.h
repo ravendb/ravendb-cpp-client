@@ -32,7 +32,8 @@ namespace ravendb::client::tests::driver
 		virtual void customise_db_record(serverwide::DatabaseRecord& db_record) const
 		{}
 
-		virtual void customise_store(std::shared_ptr<documents::DocumentStore> store);
+		virtual void customise_store(std::shared_ptr<documents::DocumentStore> store)
+		{}
 
 		virtual void set_up_database(std::shared_ptr<documents::IDocumentStore> store) const
 		{}
@@ -63,6 +64,5 @@ namespace ravendb::client::tests::driver
 			const std::optional<std::chrono::milliseconds>& timeout = {});
 
 		void close();
-
 	};
 }

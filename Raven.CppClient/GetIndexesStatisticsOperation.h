@@ -1,39 +1,33 @@
 #pragma once
-#include "stdafx.h"
 #include "IMaintenanceOperation.h"
 #include "RavenCommand.h"
 #include "ServerNode.h"
 #include "json_utils.h"
 #include "IndexStats.h"
 
-using
-	ravendb::client::http::RavenCommand,
-	ravendb::client::http::ServerNode,
-	ravendb::client::documents::indexes::IndexStats;
-
 namespace ravendb::client::documents::operations::indexes
 {
-	class GetIndexesStatisticsOperation : public operations::IMaintenanceOperation<std::vector<IndexStats>>
+	class GetIndexesStatisticsOperation : public operations::IMaintenanceOperation<std::vector<documents::indexes::IndexStats>>
 	{
 	public:
 		~GetIndexesStatisticsOperation() override = default;
 
 		GetIndexesStatisticsOperation() = default;
 
-		std::unique_ptr<RavenCommand<std::vector<IndexStats>>> get_command(std::shared_ptr<DocumentConventions> conventions) const override
+		std::unique_ptr<RavenCommand<std::vector<documents::indexes::IndexStats>>> get_command(std::shared_ptr<DocumentConventions> conventions) const override
 		{
 			return std::make_unique<GetIndexesStatisticsCommand>();
 		}
 
 	private:
-		class GetIndexesStatisticsCommand : public RavenCommand<std::vector<IndexStats>>
+		class GetIndexesStatisticsCommand : public RavenCommand<std::vector<documents::indexes::IndexStats>>
 		{
 		public:
 			~GetIndexesStatisticsCommand() override = default;
 
 			GetIndexesStatisticsCommand() = default;
 
-			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+			void create_request(CURL* curl, const http::ServerNode& node, std::string& url) override
 			{
 				std::ostringstream path_builder;
 				path_builder << node.url << "/databases/" << node.database

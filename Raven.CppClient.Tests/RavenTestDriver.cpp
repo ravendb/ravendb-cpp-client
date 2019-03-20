@@ -7,6 +7,7 @@
 #include "DeleteDatabasesOperation.h"
 #include "SimpleStopWatch.h"
 #include "GetStatisticsOperation.h"
+#include "MaintenanceOperationExecutor.h"
 
 namespace ravendb::client::tests::driver
 {
@@ -27,19 +28,15 @@ namespace ravendb::client::tests::driver
 
 	std::atomic_uint64_t RavenTestDriver::index = 1;
 
-
 	std::string RavenTestDriver::generate_database_name() const
 	{
-		return documents::conventions::DocumentConventions::default_get_collection_name(typeid(decltype(*this)));
+		return impl::utils::GetCppClassName::get_simple_class_name(typeid(decltype(*this)));
 	}
 
 	std::shared_ptr<documents::IDocumentStore> RavenTestDriver::get_global_server(bool secured) const
 	{
 		return secured ? global_secured_server : global_server;
 	}
-
-	void RavenTestDriver::customise_store(std::shared_ptr<documents::DocumentStore> store)
-	{}
 
 	void RavenTestDriver::TearDown()
 	{
@@ -158,7 +155,7 @@ namespace ravendb::client::tests::driver
 	void RavenTestDriver::wait_for_indexing(std::shared_ptr<documents::IDocumentStore> store,
 		const std::optional<std::string>& database, const std::optional<std::chrono::milliseconds>& timeout)
 	{
-		std::chrono::microseconds wait_timeout = timeout ? *timeout : std::chrono::minutes(1);
+		std::chrono::milliseconds wait_timeout = timeout ? *timeout : std::chrono::minutes(1);
 
 		impl::SimpleStopWatch sp{};
 

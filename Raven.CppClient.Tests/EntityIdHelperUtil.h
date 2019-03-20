@@ -12,7 +12,7 @@ namespace ravendb::client
 	template<class TEntity>
 	void register_entity_id_helper()
 	{
-		DocumentConventions::add_entity_id_helper(typeid(TEntity),
+		documents::conventions::DocumentConventions::add_entity_id_helper(typeid(TEntity),
 			EntityIdHelperGenerator<TEntity>()());
 	}
 }

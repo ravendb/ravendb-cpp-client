@@ -33,9 +33,6 @@
     <ClCompile Include="GetDocumentsCommandTests.cpp">
       <Filter>ravendb.client.tests\old C++ client tests</Filter>
     </ClCompile>
-    <ClCompile Include="IndexOperationsTests.cpp">
-      <Filter>ravendb.client.tests\old C++ client tests</Filter>
-    </ClCompile>
     <ClCompile Include="LoadTest.cpp">
       <Filter>ravendb.client.tests\test\client\documents</Filter>
     </ClCompile>
@@ -101,6 +98,15 @@
     </ClCompile>
     <ClCompile Include="ClientConfigurationTest.cpp">
       <Filter>ravendb.client.tests\test\client\documents\operations\configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexesFromClientTest.cpp">
+      <Filter>ravendb.client.tests\test\client\indexing</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexOperationsTest.cpp">
+      <Filter>ravendb.client.tests\test\client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexOperationsTestsOld.cpp">
+      <Filter>ravendb.client.tests\old C++ client tests</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -223,6 +229,12 @@
     </Filter>
     <Filter Include="ravendb.client.tests\test\client\documents\operations\configuration">
       <UniqueIdentifier>{3b2eb90b-93fa-4f5a-ba15-d3fc28b2fa0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\client\indexing">
+      <UniqueIdentifier>{ce53669c-39ab-4127-b136-093e31be57b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\client\documents\operations\indexes">
+      <UniqueIdentifier>{87664393-ade6-4d64-bccf-eb2d827cc53c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

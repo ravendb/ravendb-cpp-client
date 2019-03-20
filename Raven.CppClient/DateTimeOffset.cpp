@@ -135,6 +135,102 @@ namespace ravendb::client::impl
 		return result.str();
 	}
 
+	void DateTimeOffset::throw_invalid_format(const std::string & input_str)
+	{
+		throw std::invalid_argument("invalid time format : " + input_str);
+	}
+
+	bool operator<(const DateTimeOffset& lhs, const DateTimeOffset& rhs)
+	{
+		if(lhs._date_time.tm_year > rhs._date_time.tm_year)
+		{
+			return false;
+		}
+		if(lhs._date_time.tm_year < rhs._date_time.tm_year)
+		{
+			return true;
+		}
+		//same year
+		if (lhs._date_time.tm_mon > rhs._date_time.tm_mon)
+		{
+			return false;
+		}
+		if (lhs._date_time.tm_mon < rhs._date_time.tm_mon)
+		{
+			return true;
+		}
+		//same month
+		if (lhs._date_time.tm_mday > rhs._date_time.tm_mday)
+		{
+			return false;
+		}
+		if (lhs._date_time.tm_mday < rhs._date_time.tm_mday)
+		{
+			return true;
+		}
+		//same day
+		if (lhs._date_time.tm_hour > rhs._date_time.tm_hour)
+		{
+			return false;
+		}
+		if (lhs._date_time.tm_hour < rhs._date_time.tm_hour)
+		{
+			return true;
+		}
+		//same hour
+		if (lhs._date_time.tm_min > rhs._date_time.tm_min)
+		{
+			return false;
+		}
+		if (lhs._date_time.tm_min < rhs._date_time.tm_min)
+		{
+			return true;
+		}
+		//same minute
+		if (lhs._date_time.tm_sec > rhs._date_time.tm_sec)
+		{
+			return false;
+		}
+		if (lhs._date_time.tm_sec < rhs._date_time.tm_sec)
+		{
+			return true;
+		}
+		//same second
+		return lhs._nsec < rhs._nsec;
+	}
+
+	bool operator<=(const DateTimeOffset& lhs, const DateTimeOffset& rhs)
+	{
+		return !(rhs < lhs);
+	}
+
+	bool operator>(const DateTimeOffset& lhs, const DateTimeOffset& rhs)
+	{
+		return rhs < lhs;
+	}
+
+	bool operator>=(const DateTimeOffset& lhs, const DateTimeOffset& rhs)
+	{
+		return !(lhs < rhs);
+	}
+
+	std::ostream & operator<<(std::ostream & os, const DateTimeOffset & dt)
+	{
+		return os << dt.to_string();
+	}
+
+	bool operator==(const DateTimeOffset& lhs, const DateTimeOffset& rhs)
+	{
+		return lhs._date_time == rhs._date_time
+			&& lhs._nsec == rhs._nsec
+			&& lhs._offset == rhs._offset;
+	}
+
+	bool operator!=(const DateTimeOffset& lhs, const DateTimeOffset& rhs)
+	{
+		return !(lhs == rhs);
+	}
+
 	void from_json(const nlohmann::json & j, DateTimeOffset & dt)
 	{
 		dt = DateTimeOffset(j.get<std::string>());

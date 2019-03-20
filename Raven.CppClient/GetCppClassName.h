@@ -1,5 +1,6 @@
 #pragma once
 #include <typeindex>
+#include <unordered_map>
 
 namespace ravendb::client::impl::utils
 {
@@ -12,6 +13,8 @@ namespace ravendb::client::impl::utils
 
 	public:
 		static std::string get_class_name(std::type_index type);
+
+		static std::string get_simple_class_name(std::type_index type);
 
 		std::string operator()(std::type_index type) const;
 	};
