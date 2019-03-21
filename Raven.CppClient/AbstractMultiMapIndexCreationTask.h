@@ -12,7 +12,7 @@ namespace ravendb::client::documents::indexes
 		void add_map(std::string map);
 
 	public:
-		~AbstractMultiMapIndexCreationTask() override;
+		~AbstractMultiMapIndexCreationTask() override = 0;
 
 		IndexDefinition create_index_definition() override;
 	};

@@ -6,7 +6,7 @@ namespace ravendb::client::documents::indexes
 	class AbstractIndexCreationTask : public AbstractGenericIndexCreationTask
 	{
 	public:
-		~AbstractIndexCreationTask() override;
+		~AbstractIndexCreationTask() override = 0;
 
 		IndexDefinition create_index_definition() override;
 

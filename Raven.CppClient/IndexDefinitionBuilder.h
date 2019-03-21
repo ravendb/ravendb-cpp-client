@@ -33,7 +33,7 @@ namespace ravendb::client::documents::indexes
 		std::optional<IndexLockMode> lock_mode{};
 		std::optional<IndexPriority> priority{};
 		std::optional<std::string> output_reduce_to_collection{};
-		std::unordered_map<std::string, std::string> additional_sources{};
+		std::optional<std::unordered_map<std::string, std::string>> additional_sources{};
 
 		IndexDefinitionBuilder(std::optional<std::string> index_name = {});
 

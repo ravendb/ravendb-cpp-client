@@ -24,7 +24,7 @@ namespace ravendb::client::documents::indexes
 		std::string output_reduce_to_collections{};
 
 	public:
-		~AbstractGenericIndexCreationTask() override;
+		~AbstractGenericIndexCreationTask() override = 0;
 
 		bool is_map_reduce() const override;
 

@@ -40,9 +40,10 @@ namespace ravendb::client::tests::client::indexing
 		class Users_ByName : public documents::indexes::AbstractIndexCreationTask
 		{
 		public:
+			~Users_ByName() override = default;
 			Users_ByName()
 			{
-				set_my_type(typeid(decltype(*this)));
+				SET_DEFAULT_INDEX_NAME;
 
 				map = "from u in docs.Users select new { u.Name }";
 
@@ -57,9 +58,10 @@ namespace ravendb::client::tests::client::indexing
 		class UsersIndex : public documents::indexes::AbstractIndexCreationTask
 		{
 		public:
+			~UsersIndex() override = default;
 			UsersIndex()
 			{
-				set_my_type(typeid(decltype(*this)));
+				SET_DEFAULT_INDEX_NAME;
 
 				map = "from user in docs.users select new { user.Name }";
 			}

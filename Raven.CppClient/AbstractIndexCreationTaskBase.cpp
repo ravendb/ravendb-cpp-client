@@ -6,21 +6,52 @@
 
 namespace ravendb::client::documents::indexes
 {
-	void AbstractIndexCreationTaskBase::set_my_type(std::type_index type)
+	void AbstractIndexCreationTaskBase::throw_index_name_was_set() const
 	{
-		my_real_type = type;
+		throw std::runtime_error("The index name was already set");
+	}
+
+	void AbstractIndexCreationTaskBase::throw_index_name_was_not_set() const
+	{
+		throw std::runtime_error("Index name was not set."
+			"Did you forget to call set_index_name() or set_default_index_name() ?");
+	}
+
+	void AbstractIndexCreationTaskBase::set_index_name(std::string index_name)
+	{
+		if(_index_name)
+		{
+			throw_index_name_was_set();
+		}
+		_index_name = std::move(index_name);
+	}
+
+	void AbstractIndexCreationTaskBase::set_default_index_name(std::type_index type)
+	{
+		if (_index_name)
+		{
+			throw_index_name_was_set();
+		}
+
+		auto&& index_name = impl::utils::GetCppClassName::get_simple_class_name(type);
+		for(auto& c : index_name)
+		{
+			if(c == '_')
+				c = '/';
+		}
+		_index_name = std::move(index_name);
 	}
 
 	AbstractIndexCreationTaskBase::~AbstractIndexCreationTaskBase() = default;
 
-	const std::unordered_map<std::string, std::string>& 
+	const std::optional<std::unordered_map<std::string, std::string>>& 
 		AbstractIndexCreationTaskBase::get_additional_sources() const
 	{
 		return additional_sources;
 	}
 
 	void AbstractIndexCreationTaskBase::set_additional_sources(
-		std::unordered_map<std::string, std::string> additional_sources_param)
+		std::optional<std::unordered_map<std::string, std::string>> additional_sources_param)
 	{
 		additional_sources = std::move(additional_sources_param);
 	}
@@ -32,17 +63,11 @@ namespace ravendb::client::documents::indexes
 
 	std::string AbstractIndexCreationTaskBase::get_index_name() const
 	{
-		auto type = my_real_type ? *my_real_type : typeid(decltype(*this));
-
-		auto&& class_name = impl::utils::GetCppClassName::get_simple_class_name(type);
-
-		for(auto& c : class_name)
+		if(!_index_name)
 		{
-			if (c == '_')
-				c = '/';
+			
 		}
-
-		return std::move(class_name);
+		return *_index_name;
 	}
 
 	std::shared_ptr<conventions::DocumentConventions> AbstractIndexCreationTaskBase::get_conventions() const

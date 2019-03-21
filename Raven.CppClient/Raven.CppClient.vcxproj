@@ -158,6 +158,7 @@
     <ClInclude Include="AbstractGenericIndexCreationTask.h" />
     <ClInclude Include="AbstractIndexCreationTask.h" />
     <ClInclude Include="AbstractIndexCreationTaskBase.h" />
+    <ClInclude Include="AbstractJavaScriptIndexCreationTask.h" />
     <ClInclude Include="AbstractMultiMapIndexCreationTask.h" />
     <ClInclude Include="BatchCommand.h" />
     <ClInclude Include="BatchCommandResult.h" />
@@ -352,6 +353,7 @@
     <ClCompile Include="AbstractGenericIndexCreationTask.cpp" />
     <ClCompile Include="AbstractIndexCreationTask.cpp" />
     <ClCompile Include="AbstractIndexCreationTaskBase.cpp" />
+    <ClCompile Include="AbstractJavaScriptIndexCreationTask.cpp" />
     <ClCompile Include="AbstractMultiMapIndexCreationTask.cpp" />
     <ClCompile Include="AdvancedSessionOperations.cpp" />
     <ClCompile Include="BatchCommandResult.cpp" />

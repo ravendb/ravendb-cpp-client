@@ -47,9 +47,10 @@ namespace ravendb::client::tests::client::documents::operations::indexes
 		class Users_Index : public ravendb::client::documents::indexes::AbstractIndexCreationTask
 		{
 		public:
+			~Users_Index() override = default;
 			Users_Index()
 			{
-				set_my_type(typeid(decltype(*this)));
+				SET_DEFAULT_INDEX_NAME;
 				map = "from u in docs.Users select new { u.Name }";
 			}
 		};
@@ -57,9 +58,10 @@ namespace ravendb::client::tests::client::documents::operations::indexes
 		class UsersInvalidIndex : public ravendb::client::documents::indexes::AbstractIndexCreationTask
 		{
 		public:
+			~UsersInvalidIndex() override = default;
 			UsersInvalidIndex()
 			{
-				set_my_type(typeid(decltype(*this)));
+				SET_DEFAULT_INDEX_NAME;
 				map = "from u in docs.Users select new { a = 5 / u.Age }";
 			}
 		};

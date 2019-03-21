@@ -14,7 +14,7 @@ namespace ravendb::client::documents::indexes
 		 std::string name{};
 		 std::optional<IndexPriority> priority{};
 		 std::optional<IndexLockMode> lock_mode{};
-		 std::unordered_map<std::string, std::string> additional_sources{};
+		 std::optional<std::unordered_map<std::string, std::string>> additional_sources{};
 		 std::unordered_set<std::string> maps{};
 		 std::optional<std::string> reduce{};
 		 std::unordered_map<std::string, IndexFieldOptions> fields{};

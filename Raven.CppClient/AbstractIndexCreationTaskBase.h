@@ -2,29 +2,43 @@
 #include "IndexDefinition.h"
 #include "DocumentConventions.h"
 #include "IDocumentStore.h"
+#include "GetCppClassName.h"
+
+
+// Set the index name from the IndexCreationTask name
+// Call from the ctor;
+#define SET_DEFAULT_INDEX_NAME\
+	do\
+	{\
+		set_default_index_name(typeid(decltype(*this)));\
+	}while(false)
 
 namespace ravendb::client::documents::indexes
 {
 	class AbstractIndexCreationTaskBase
 	{
+	private:
+		std::optional<std::string> _index_name{};
+
+		void throw_index_name_was_set() const;
+		void throw_index_name_was_not_set() const;
+
 	protected:
 		std::shared_ptr<conventions::DocumentConventions> conventions{};
-		std::unordered_map<std::string, std::string> additional_sources{};
+		std::optional<std::unordered_map<std::string, std::string>> additional_sources{};
 		std::optional<IndexPriority> priority{};
 		std::optional<IndexLockMode> lock_mode{};
 
-		std::optional<std::type_index> my_real_type{};
+		void set_index_name(std::string index_name);
+		void set_default_index_name(std::type_index type);
 
-		//set the real type of IndexCreationTask to generate the proper index name(from the class name)
-		void set_my_type(std::type_index type);
-		
 	public:
 		virtual ~AbstractIndexCreationTaskBase() = 0;
 
 		virtual IndexDefinition create_index_definition() = 0;
 
-		const std::unordered_map<std::string, std::string>& get_additional_sources() const;
-		void set_additional_sources(std::unordered_map<std::string, std::string> additional_sources_param);
+		const std::optional<std::unordered_map<std::string, std::string>>& get_additional_sources() const;
+		void set_additional_sources(std::optional<std::unordered_map<std::string, std::string>> additional_sources_param);
 
 		virtual bool is_map_reduce() const;
 
