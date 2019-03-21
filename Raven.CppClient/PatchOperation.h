@@ -56,14 +56,14 @@ namespace ravendb::client::documents::operations
 		{}
 
 		std::unique_ptr<RavenCommand<PatchResult>> get_command
-			(const IDocumentStore& store, const DocumentConventions& conventions, HttpCache& cache) const override
+			(std::shared_ptr<IDocumentStore> store, std::shared_ptr<DocumentConventions> conventions, HttpCache& cache) const override
 		{
 			return std::make_unique<PatchCommand>(conventions, _id, _change_vector, _patch, _patch_if_missing,
 				_skip_patch_if_change_vector_mismatch, false, false);
 		}
 
 		std::unique_ptr<RavenCommand<PatchResult>> get_command
-			(const IDocumentStore& store, const DocumentConventions& conventions, HttpCache& cache,
+			(std::shared_ptr<IDocumentStore> store, std::shared_ptr<DocumentConventions> conventions, HttpCache& cache,
 			 bool return_debug_information, bool test) const
 		{
 			return std::make_unique<PatchCommand>(conventions, _id, _change_vector, _patch, _patch_if_missing,
@@ -73,7 +73,7 @@ namespace ravendb::client::documents::operations
 		class PatchCommand : public RavenCommand<PatchResult>
 		{
 		private:
-			const DocumentConventions _conventions;//TODO currently unused, check later
+			const std::shared_ptr<DocumentConventions> _conventions;//TODO currently unused, check later
 			const std::string _id;
 			const std::optional<std::string> _change_vector;
 			const std::string _patch_str;
@@ -84,7 +84,7 @@ namespace ravendb::client::documents::operations
 		public:
 			~PatchCommand() override = default;
 
-			PatchCommand(const DocumentConventions& conventions,
+			PatchCommand(std::shared_ptr<DocumentConventions> conventions,
 				std::string id, std::optional<std::string> change_vector, const PatchRequest& patch,
 				const std::optional<PatchRequest>& patch_if_missing, bool skip_patch_if_change_vector_mismatch,
 				bool return_debug_information, bool test)
@@ -152,7 +152,7 @@ namespace ravendb::client::documents::operations
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 			{
-				_result = response;
+				_result = std::make_shared<ResultType>(response.get<ResultType>());
 			}
 
 			bool is_read_request() const noexcept override

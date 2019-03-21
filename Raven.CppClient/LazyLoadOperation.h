@@ -14,7 +14,7 @@ namespace ravendb::client::documents::session::operations::lazy
 		using ResultType = DocumentsByIdsMap<T>;
 
 	private:
-		const std::reference_wrapper<InMemoryDocumentSessionOperations> _session;
+		const std::shared_ptr<InMemoryDocumentSessionOperations> _session;
 		std::unique_ptr<LoadOperation> _load_operation;
 		std::vector<std::string> _ids{};
 		std::vector<std::string> _includes{};
@@ -23,12 +23,12 @@ namespace ravendb::client::documents::session::operations::lazy
 		QueryResult _query_result{};
 		boolean _requires_retry = false;
 
-		void handle_response(const std::optional<commands::GetDocumentsResult>& load_result);
+		void handle_response(std::shared_ptr<commands::GetDocumentsResult> load_result);
 
 	public:
 		~LazyLoadOperation() override = default;
 
-		LazyLoadOperation(InMemoryDocumentSessionOperations& session, std::unique_ptr<LoadOperation> load_operation);
+		LazyLoadOperation(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::unique_ptr<LoadOperation> load_operation);
 
 		std::optional<commands::multi_get::GetRequest> create_request() override;
 
@@ -49,11 +49,11 @@ namespace ravendb::client::documents::session::operations::lazy
 
 
 	template <typename T>
-	void LazyLoadOperation<T>::handle_response(const std::optional<commands::GetDocumentsResult>& load_result)
+	void LazyLoadOperation<T>::handle_response(std::shared_ptr<commands::GetDocumentsResult> load_result)
 	{
 		if (load_result)
 		{
-			_load_operation->set_result(*load_result);
+			_load_operation->set_result(load_result);
 		}
 
 		if (!_requires_retry)
@@ -63,7 +63,7 @@ namespace ravendb::client::documents::session::operations::lazy
 	}
 
 	template <typename T>
-	LazyLoadOperation<T>::LazyLoadOperation(InMemoryDocumentSessionOperations& session, std::unique_ptr<LoadOperation> load_operation)
+	LazyLoadOperation<T>::LazyLoadOperation(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::unique_ptr<LoadOperation> load_operation)
 		: _session(session)
 		, _load_operation(std::move(load_operation))
 	{}
@@ -75,7 +75,7 @@ namespace ravendb::client::documents::session::operations::lazy
 		ids_to_check_on_server.reserve(_ids.size());
 		std::for_each(_ids.cbegin(), _ids.cend(), [&](const std::string& id)
 		{
-			if (!_session.get().is_loaded_or_deleted(id))
+			if (!_session->is_loaded_or_deleted(id))
 			{
 				ids_to_check_on_server.push_back(std::cref(id));
 			}
@@ -162,10 +162,10 @@ namespace ravendb::client::documents::session::operations::lazy
 			return;
 		}
 
-		std::optional<commands::GetDocumentsResult> multi_load_result{};
+		auto multi_load_result = std::make_shared<commands::GetDocumentsResult>();
 		if (response.result)
 		{
-			multi_load_result = nlohmann::json::parse(*response.result).get<commands::GetDocumentsResult>();
+			*multi_load_result = nlohmann::json::parse(*response.result).get<commands::GetDocumentsResult>();
 		}
 		handle_response(multi_load_result);
 	}

@@ -7,7 +7,7 @@
 
 namespace ravendb::client::documents::session
 {
-	EntityToJson::EntityToJson(InMemoryDocumentSessionOperations& session)
+	EntityToJson::EntityToJson(std::shared_ptr<InMemoryDocumentSessionOperations> session)
 		: _session(session)
 	{}
 

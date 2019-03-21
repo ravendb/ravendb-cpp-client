@@ -1,13 +1,9 @@
 #pragma once
-
-namespace ravendb::client::tests::definitions
-{
-	class DocumentStoreScope;
-}
+#include "DocumentStore.h"
 
 namespace ravendb::client::tests::utils
 {
-	void delete_all_documents(std::shared_ptr<definitions::DocumentStoreScope> test_suite_store);
+	void delete_all_documents(std::shared_ptr<documents::DocumentStore> store);
 
-	void delete_all_indexes(std::shared_ptr<definitions::DocumentStoreScope> test_suite_store);
+	void delete_all_indexes(std::shared_ptr<documents::DocumentStore> store);
 }

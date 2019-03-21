@@ -33,7 +33,6 @@ namespace ravendb::client::tests::infrastructure::entities
 		set_val_to_json(j, "AddressId", u.address_id);
 		set_val_to_json(j, "Count", u.count);
 		set_val_to_json(j, "Age", u.age);
-		j["@metadata"]["@collection"] = "Users";
 	}
 
 	inline void from_json(const nlohmann::json& j, User& u)

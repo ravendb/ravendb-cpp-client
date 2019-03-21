@@ -18,7 +18,7 @@ namespace ravendb::client::http
 
 		for (const auto& url : _initial_urls)
 		{
-			Topology result;
+			std::shared_ptr<Topology> result;
 			try
 			{
 				auto server_node = ServerNode(url, _db_name, "?");
@@ -34,7 +34,7 @@ namespace ravendb::client::http
 				continue;
 			}
 			// success
-			std::atomic_store(&_topology, std::make_shared<Topology>(result));
+			std::atomic_store(&_topology, result);
 			return;
 		}
 
@@ -45,6 +45,7 @@ namespace ravendb::client::http
 		std::string db_name,
 		std::vector<std::string> initial_urls,
 		std::optional<impl::CertificateDetails> certificate_details,
+		std::shared_ptr<documents::conventions::DocumentConventions> conventions,
 		ravendb::client::impl::CurlOptionsSetter set_before_perform,
 		ravendb::client::impl::CurlOptionsSetter set_after_perform)
 		: _db_name(std::move(db_name))
@@ -54,6 +55,7 @@ namespace ravendb::client::http
 		, _curl_holder()
 		, _set_before_perform(set_before_perform)
 		, _set_after_perform(set_after_perform)
+		, _conventions(std::make_shared<documents::conventions::DocumentConventions>(*conventions))
 	{
 		_topology->nodes.reserve(_initial_urls.size());
 
@@ -98,18 +100,25 @@ namespace ravendb::client::http
 		}
 	}
 
+	std::shared_ptr<documents::conventions::DocumentConventions> RequestExecutor::get_conventions() const
+	{
+		return _conventions;
+	}
+
 	std::unique_ptr<RequestExecutor> RequestExecutor::create(
 		std::vector<std::string> urls,
 		std::string db,
+		std::shared_ptr<documents::conventions::DocumentConventions> conventions,
 		std::optional<impl::CertificateDetails> certificate_details,
-		ravendb::client::impl::CurlOptionsSetter set_before_perform,
-		ravendb::client::impl::CurlOptionsSetter set_after_perform)
+		impl::CurlOptionsSetter set_before_perform,
+		impl::CurlOptionsSetter set_after_perform)
 	{
 		//using explicit call to PRIVATE ctor
 		auto rq = std::unique_ptr<RequestExecutor>(new RequestExecutor(
 			std::move(db),
 			std::move(urls),
 			std::move(certificate_details),
+			conventions,
 			set_before_perform,
 			set_after_perform));
 

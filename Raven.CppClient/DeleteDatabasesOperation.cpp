@@ -47,7 +47,7 @@ namespace ravendb::client::serverwide::operations
 	}
 
 	std::unique_ptr<http::RavenCommand<DeleteDatabaseResult>> DeleteDatabasesOperation::get_command(
-		const documents::conventions::DocumentConventions& conventions)
+		std::shared_ptr<documents::conventions::DocumentConventions> conventions)
 	{
 		return std::make_unique<DeleteDatabaseCommand>(conventions, _parameters);
 	}
@@ -56,7 +56,7 @@ namespace ravendb::client::serverwide::operations
 	DeleteDatabasesOperation::DeleteDatabaseCommand::~DeleteDatabaseCommand() = default;
 
 	DeleteDatabasesOperation::DeleteDatabaseCommand::DeleteDatabaseCommand(
-		const documents::conventions::DocumentConventions & conventions, const delete_db_op::Parameters & parameters)
+		std::shared_ptr<documents::conventions::DocumentConventions> conventions, const delete_db_op::Parameters & parameters)
 		:_parameters_str([&]
 	{
 		nlohmann::json j = parameters;
@@ -66,8 +66,8 @@ namespace ravendb::client::serverwide::operations
 
 	void DeleteDatabasesOperation::DeleteDatabaseCommand::create_request(CURL * curl, const http::ServerNode & node, std::string & url)
 	{
-		std::ostringstream pathBuilder;
-		pathBuilder << node.url << "/admin/databases";
+		std::ostringstream path_builder;
+		path_builder << node.url << "/admin/databases";
 
 		curl_easy_setopt(curl, CURLOPT_READFUNCTION, impl::utils::read_callback);
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
@@ -75,12 +75,12 @@ namespace ravendb::client::serverwide::operations
 		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_parameters_str.length());
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 
-		url = pathBuilder.str();
+		url = path_builder.str();
 	}
 
 	void DeleteDatabasesOperation::DeleteDatabaseCommand::set_response(CURL * curl, const nlohmann::json & response, bool from_cache)
 	{
-		_result = response.get<decltype(_result)>();
+		_result = std::make_shared<ResultType>(response.get<ResultType>());
 	}
 
 	bool DeleteDatabasesOperation::DeleteDatabaseCommand::is_read_request() const noexcept

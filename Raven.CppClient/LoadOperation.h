@@ -9,7 +9,7 @@ namespace ravendb::client::documents::session::operations
 	class LoadOperation
 	{
 	private:
-		const std::reference_wrapper<InMemoryDocumentSessionOperations> _session;
+		const std::shared_ptr<InMemoryDocumentSessionOperations> _session;
 
 		std::vector<std::string> _ids{};
 
@@ -20,8 +20,8 @@ namespace ravendb::client::documents::session::operations
 		std::optional<commands::GetDocumentsResult> _current_load_results{};
 
 	public:
-		LoadOperation(InMemoryDocumentSessionOperations& session)
-			: _session(std::ref(session))
+		LoadOperation(std::shared_ptr<InMemoryDocumentSessionOperations> session)
+			: _session(session)
 		{}
 
 		std::unique_ptr<RavenCommand<commands::GetDocumentsResult>> create_request() const
@@ -31,12 +31,12 @@ namespace ravendb::client::documents::session::operations
 				return {};
 			}
 
-			if(_session.get().check_if_already_included(_ids, _includes))
+			if(_session->check_if_already_included(_ids, _includes))
 			{
 				return nullptr;
 			}
 
-			_session.get().increment_request_count();
+			_session->increment_request_count();
 
 			//TODO take care of counters
 
@@ -56,7 +56,7 @@ namespace ravendb::client::documents::session::operations
 			{
 				_ids.push_back(id);
 			}
-			if(_session.get().is_loaded_or_deleted(id))
+			if(_session->is_loaded_or_deleted(id))
 			{
 				return *this;
 			}
@@ -96,7 +96,7 @@ namespace ravendb::client::documents::session::operations
 			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
 			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
-			if (_session.get().no_tracking)
+			if (_session->no_tracking)
 			{
 				if (!_current_load_results)
 				{
@@ -112,7 +112,7 @@ namespace ravendb::client::documents::session::operations
 						return  nullptr;
 					}
 					auto doc_info = DocumentInfo(document);
-					return _session.get().track_entity<T>(doc_info, from_json, to_json);
+					return _session->track_entity<T>(doc_info, from_json, to_json);
 				}else
 				{
 					return nullptr;
@@ -130,21 +130,21 @@ namespace ravendb::client::documents::session::operations
 			{
 				return {};
 			}
-			if(_session.get().is_deleted(id))
+			if(_session->is_deleted(id))
 			{
 				return {};
 			}
 
-			if (auto doc_info = _session.get()._documents_by_id.find(id);
-				doc_info != _session.get()._documents_by_id.end())
+			if (auto doc_info = _session->_documents_by_id.find(id);
+				doc_info != _session->_documents_by_id.end())
 			{
-				return _session.get().track_entity<T>(*doc_info->second, from_json, to_json);
+				return _session->track_entity<T>(*doc_info->second, from_json, to_json);
 			}
 			
-			if (auto doc_info = _session.get()._included_documents_by_id.find(id);
-				doc_info != _session.get()._included_documents_by_id.end())
+			if (auto doc_info = _session->_included_documents_by_id.find(id);
+				doc_info != _session->_included_documents_by_id.end())
 			{
-				return _session.get().track_entity<T>(*doc_info->second, from_json, to_json);
+				return _session->track_entity<T>(*doc_info->second, from_json, to_json);
 			}
 
 			return {};
@@ -157,7 +157,7 @@ namespace ravendb::client::documents::session::operations
 		{
 			DocumentsByIdsMap<T> results{};
 
-			if(_session.get().no_tracking)
+			if(_session->no_tracking)
 			{
 				if(!_current_load_results)
 				{
@@ -178,7 +178,7 @@ namespace ravendb::client::documents::session::operations
 						continue;
 					}
 					auto doc_info = DocumentInfo(doc);
-					results.insert_or_assign(doc_info.id, _session.get().track_entity<T>(doc_info, from_json, to_json));
+					results.insert_or_assign(doc_info.id, _session->track_entity<T>(doc_info, from_json, to_json));
 				}
 			}
 
@@ -192,18 +192,23 @@ namespace ravendb::client::documents::session::operations
 			return results;
 		}
 
-		void set_result(const commands::GetDocumentsResult& result)
+		void set_result(std::shared_ptr<commands::GetDocumentsResult> result)
 		{
-			if(_session.get().no_tracking)
+			if(!result)
 			{
-				_current_load_results = result;
+				return;
 			}
 
-			_session.get().register_includes(result.includes);
+			if(_session->no_tracking)
+			{
+				_current_load_results = *result;
+			}
+
+			_session->register_includes(result->includes);
 
 			//TODO take care of counters
 
-			for(const auto& document : result.results)
+			for(const auto& document : result->results)
 			{
 				if(document.is_null())
 				{
@@ -211,10 +216,10 @@ namespace ravendb::client::documents::session::operations
 				}
 
 				auto new_doc_info = std::make_shared<DocumentInfo>(document);
-				_session.get()._documents_by_id.insert({new_doc_info->id,new_doc_info});
+				_session->_documents_by_id.insert({new_doc_info->id,new_doc_info});
 			}
 
-			_session.get().register_missing_includes(result.results, result.includes, _includes);
+			_session->register_missing_includes(result->results, result->includes, _includes);
 		}
 	};
 }

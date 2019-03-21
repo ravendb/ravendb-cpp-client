@@ -30,7 +30,8 @@ namespace ravendb::client::documents::commands
 
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 		{
-			if(! impl::utils::json_utils::get_val_from_json(response, "Id", _result))
+			_result = std::make_shared<ResultType>();
+			if(! impl::utils::json_utils::get_val_from_json(response, "Id", *_result))
 			{
 				throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::INVALID_RESPONSE);
 			}

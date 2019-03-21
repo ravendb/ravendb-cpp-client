@@ -1,34 +1,41 @@
 #include "pch.h"
-#include "TestSuiteBase.h"
+#include "RavenTestDriver.h"
+#include "raven_test_definitions.h"
 #include "DocumentSession.h"
 #include "User.h"
+#include "EntityIdHelperUtil.h"
 
+CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::User, id);
 
 namespace ravendb::client::tests::client
 {
-	class HttpsTest : public infrastructure::TestSuiteBase
+	class HttpsTest : public driver::RavenTestDriver
 	{
-	protected:
+		protected:
 		static void SetUpTestCase()
 		{
-			test_suite_store = definitions::GET_SECURED_DOCUMENT_STORE();
+			register_entity_id_helper<infrastructure::entities::User>();
 		}
 	};
 
 	TEST_F(HttpsTest, CanConnectWithCertificate)
 	{
+		auto store = get_secured_document_store(TEST_NAME);
+
+		std::string user_id{};
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = store->open_session();
 
 			auto user = std::make_shared<infrastructure::entities::User>();
 			user->name = "Alexander";
-			session.store(user, "users/1");
+			session.store(user);
+			user_id = user->id;
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = store->open_session();
 
-			auto user = session.load<infrastructure::entities::User>("users/1");
+			auto user = session.load<infrastructure::entities::User>(user_id);
 			ASSERT_TRUE(user);
 		}
 

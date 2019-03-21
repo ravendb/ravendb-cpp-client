@@ -27,9 +27,9 @@
 #include "GetIndexErrorsOperation.h"
 
 
-namespace ravendb::client::tests
+namespace ravendb::client::tests::old_tests
 {
-	class IndexOperationsTest : public ::testing::Test
+	class IndexOperationsTestOld : public ::testing::Test
 	{
 	protected:
 		inline static std::shared_ptr<definitions::RequestExecutorScope> test_suite_executor{};
@@ -50,6 +50,7 @@ namespace ravendb::client::tests
 		void SetUp() override//create sample document and sample index
 		{
 			nlohmann::json j = example_user;
+			j["@metadata"]["@collection"] = "Users";
 			documents::commands::PutDocumentCommand cmd(example_user.id, {}, j);
 			test_suite_executor->get().execute(cmd);
 
@@ -64,7 +65,7 @@ namespace ravendb::client::tests
 		{
 			auto op1 = documents::operations::indexes::GetIndexNamesOperation(0, 100);
 			auto&& res2 = test_suite_executor->get().execute(op1.get_command({}));
-			for (auto& index_name : res2)
+			for (auto& index_name : *res2)
 			{
 				auto op = documents::operations::indexes::DeleteIndexOperation(index_name);
 				test_suite_executor->get().execute(op.get_command({}));
@@ -72,9 +73,9 @@ namespace ravendb::client::tests
 			
 			auto cmd = documents::commands::GetDocumentsCommand(0, 100);
 			auto&& res1 = test_suite_executor->get().execute(cmd);
-			for(auto& result : res1.results)
+			for(auto& result : res1->results)
 			{
-				infrastructure::entities::User u = result;
+				auto u = result.get<infrastructure::entities::User>();
 				documents::commands::DeleteDocumentCommand cmd2(u.id);
 				test_suite_executor->get().execute(cmd2);
 			}
@@ -97,7 +98,7 @@ namespace ravendb::client::tests
 		{
 			auto op = documents::operations::indexes::GetIndexNamesOperation(0, 10);
 			auto&& res = test_suite_executor->get().execute(op.get_command({}));
-			return std::find(res.cbegin(), res.cend(), index_name) != res.cend();
+			return std::find(res->cbegin(), res->cend(), index_name) != res->cend();
 		}
 
 		static void set_example_index()
@@ -111,10 +112,10 @@ namespace ravendb::client::tests
 				})"};
 		}
 	};
-	const infrastructure::entities::User IndexOperationsTest::example_user{ "Users/1", "Alexander", "Timoshenko", "Israel", 0, 38 };
-	IndexDefinition IndexOperationsTest::example_index{};
+	const infrastructure::entities::User IndexOperationsTestOld::example_user{ "Users/1", "Alexander", "Timoshenko", "Israel", 0, 38 };
+	IndexDefinition IndexOperationsTestOld::example_index{};
 	
-	TEST_F(IndexOperationsTest, CanGetIndex)
+	TEST_F(IndexOperationsTestOld, CanGetIndex)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 
@@ -129,10 +130,10 @@ namespace ravendb::client::tests
 			example_index.maps,{},{},{},
 			documents::indexes::IndexType::MAP,{}
 		};
-		ASSERT_EQ(res, check_index);
+		ASSERT_EQ(*res, check_index);
 	}
 
-	TEST_F(IndexOperationsTest, CanDeleteIndex)
+	TEST_F(IndexOperationsTestOld, CanDeleteIndex)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_names_op(example_index.name));
 
@@ -142,13 +143,13 @@ namespace ravendb::client::tests
 		ASSERT_FALSE(does_index_exist_by_get_index_names_op(example_index.name));
 	}
 
-	TEST_F(IndexOperationsTest, CanDisableAndEnableIndex)
+	TEST_F(IndexOperationsTestOld, CanDisableAndEnableIndex)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 		{
 			auto op = documents::operations::indexes::GetIndexingStatusOperation();
 			auto&& res = test_suite_executor->get().execute(op.get_command({}));
-			EXPECT_EQ(res.indexes[0].status, IndexRunningStatus::RUNNING);
+			EXPECT_EQ(res->indexes[0].status, IndexRunningStatus::RUNNING);
 		}
 		{
 			auto op = documents::operations::indexes::DisableIndexOperation(example_index.name);
@@ -157,7 +158,7 @@ namespace ravendb::client::tests
 		{
 			auto op = documents::operations::indexes::GetIndexingStatusOperation();
 			auto&& res = test_suite_executor->get().execute(op.get_command({}));
-			ASSERT_EQ(res.indexes[0].status, IndexRunningStatus::DISABLED);
+			ASSERT_EQ(res->indexes[0].status, IndexRunningStatus::DISABLED);
 		}
 
 		{
@@ -167,47 +168,47 @@ namespace ravendb::client::tests
 		{
 			auto op = documents::operations::indexes::GetIndexingStatusOperation();
 			auto&& res = test_suite_executor->get().execute(op.get_command({}));
-			ASSERT_EQ(res.indexes[0].status, IndexRunningStatus::RUNNING);
+			ASSERT_EQ(res->indexes[0].status, IndexRunningStatus::RUNNING);
 		}
 	}
 
-	TEST_F(IndexOperationsTest, CanGetIndexes)
+	TEST_F(IndexOperationsTestOld, CanGetIndexes)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 
 		auto op = documents::operations::indexes::GetIndexesOperation(0,10);
 		auto&& res = test_suite_executor->get().execute(op.get_command({}));
 
-		ASSERT_EQ(res.size(), 1);
-		ASSERT_EQ(res[0].name, example_index.name);
+		ASSERT_EQ(res->size(), 1);
+		ASSERT_EQ((*res)[0].name, example_index.name);
 	}
 
-	TEST_F(IndexOperationsTest, CanGetIndexesStats)
+	TEST_F(IndexOperationsTestOld, CanGetIndexesStats)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 
 		auto op = documents::operations::indexes::GetIndexesStatisticsOperation();
 		auto&& res = test_suite_executor->get().execute(op.get_command({}));
 
-		ASSERT_EQ(res.size(), 1);
-		ASSERT_EQ(res[0].name, example_index.name);
+		ASSERT_EQ(res->size(), 1);
+		ASSERT_EQ((*res)[0].name, example_index.name);
 	}
 
-	TEST_F(IndexOperationsTest, CanGetTerms)
+	TEST_F(IndexOperationsTestOld, CanGetTerms)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 
 		auto op = documents::operations::indexes::GetTermsOperation(example_index.name,"FullName");
 		auto&& res = test_suite_executor->get().execute(op.get_command({}));
 
-		ASSERT_EQ(res.size(), 1);
+		ASSERT_EQ(res->size(), 1);
 		std::string expected_str = example_user.name + ' ' + example_user.last_name;
 		std::transform(expected_str.cbegin(), expected_str.cend(), expected_str.begin(),
 			[](std::string::value_type c) {return std::tolower(c); });
-		ASSERT_EQ(res[0], expected_str);
+		ASSERT_EQ((*res)[0], expected_str);
 	}
 
-	TEST_F(IndexOperationsTest, HasIndexChanged)
+	TEST_F(IndexOperationsTestOld, HasIndexChanged)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 		{
@@ -231,13 +232,13 @@ namespace ravendb::client::tests
 		}
 	}
 
-	TEST_F(IndexOperationsTest, CanStopStartIndexing)
+	TEST_F(IndexOperationsTestOld, CanStopStartIndexing)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 		{
 			auto op = documents::operations::indexes::GetIndexingStatusOperation();
 			auto&& res = test_suite_executor->get().execute(op.get_command({}));
-			EXPECT_EQ(res.status, IndexRunningStatus::RUNNING);
+			EXPECT_EQ(res->status, IndexRunningStatus::RUNNING);
 		}
 		{
 			auto op = documents::operations::indexes::StopIndexingOperation();
@@ -246,7 +247,7 @@ namespace ravendb::client::tests
 		{
 			auto op = documents::operations::indexes::GetIndexingStatusOperation();
 			auto&& res = test_suite_executor->get().execute(op.get_command({}));
-			ASSERT_EQ(res.status, IndexRunningStatus::PAUSED);
+			ASSERT_EQ(res->status, IndexRunningStatus::PAUSED);
 		}
 
 		{
@@ -256,18 +257,18 @@ namespace ravendb::client::tests
 		{
 			auto op = documents::operations::indexes::GetIndexingStatusOperation();
 			auto&& res = test_suite_executor->get().execute(op.get_command({}));
-			ASSERT_EQ(res.status, IndexRunningStatus::RUNNING);
+			ASSERT_EQ(res->status, IndexRunningStatus::RUNNING);
 		}
 	}
 
-	TEST_F(IndexOperationsTest, CanStopStartIndex)
+	TEST_F(IndexOperationsTestOld, CanStopStartIndex)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 		{
 			auto op = documents::operations::indexes::GetIndexingStatusOperation();
 			auto&& res = test_suite_executor->get().execute(op.get_command({}));
-			EXPECT_EQ(res.status, IndexRunningStatus::RUNNING);
-			EXPECT_EQ(res.indexes[0].status, IndexRunningStatus::RUNNING);
+			EXPECT_EQ(res->status, IndexRunningStatus::RUNNING);
+			EXPECT_EQ(res->indexes[0].status, IndexRunningStatus::RUNNING);
 		}
 		{
 			auto op = documents::operations::indexes::StopIndexOperation(example_index.name);
@@ -276,8 +277,8 @@ namespace ravendb::client::tests
 		{
 			auto op = documents::operations::indexes::GetIndexingStatusOperation();
 			auto&& res = test_suite_executor->get().execute(op.get_command({}));
-			ASSERT_EQ(res.status, IndexRunningStatus::RUNNING);
-			ASSERT_EQ(res.indexes[0].status, IndexRunningStatus::PAUSED);
+			ASSERT_EQ(res->status, IndexRunningStatus::RUNNING);
+			ASSERT_EQ(res->indexes[0].status, IndexRunningStatus::PAUSED);
 		}
 
 		{
@@ -287,12 +288,12 @@ namespace ravendb::client::tests
 		{
 			auto op = documents::operations::indexes::GetIndexingStatusOperation();
 			auto&& res = test_suite_executor->get().execute(op.get_command({}));
-			ASSERT_EQ(res.status, IndexRunningStatus::RUNNING);
-			ASSERT_EQ(res.indexes[0].status, IndexRunningStatus::RUNNING);
+			ASSERT_EQ(res->status, IndexRunningStatus::RUNNING);
+			ASSERT_EQ(res->indexes[0].status, IndexRunningStatus::RUNNING);
 		}
 	}
 
-	TEST_F(IndexOperationsTest, CanSetIndexLockMode)
+	TEST_F(IndexOperationsTestOld, CanSetIndexLockMode)
 	{
 		//should NOT use IndexLockMode::UNSET for SetIndexesLockOperation
 		EXPECT_THROW(
@@ -303,7 +304,7 @@ namespace ravendb::client::tests
 		{
 			auto op = documents::operations::indexes::GetIndexOperation(example_index.name);
 			auto&& res = test_suite_executor->get().execute(op.get_command({}));
-			EXPECT_EQ(res.lock_mode, documents::indexes::IndexLockMode::UNLOCK);
+			EXPECT_EQ(res->lock_mode, documents::indexes::IndexLockMode::UNLOCK);
 		}
 		{
 			auto op = documents::operations::indexes::SetIndexesLockOperation(example_index.name, IndexLockMode::LOCKED_ERROR);
@@ -312,11 +313,11 @@ namespace ravendb::client::tests
 		{
 			auto op = documents::operations::indexes::GetIndexOperation(example_index.name);
 			auto&& res = test_suite_executor->get().execute(op.get_command({}));
-			ASSERT_EQ(res.lock_mode, documents::indexes::IndexLockMode::LOCKED_ERROR);
+			ASSERT_EQ(res->lock_mode, documents::indexes::IndexLockMode::LOCKED_ERROR);
 		}
 	}
 
-	TEST_F(IndexOperationsTest, CanSetIndexPriority)
+	TEST_F(IndexOperationsTestOld, CanSetIndexPriority)
 	{
 		//should NOT use IndexPriority::UNSET for SetIndexesPriorityOperation
 		EXPECT_THROW(
@@ -327,7 +328,7 @@ namespace ravendb::client::tests
 		{
 			auto op = documents::operations::indexes::GetIndexOperation(example_index.name);
 			auto&& res = test_suite_executor->get().execute(op.get_command({}));
-			EXPECT_EQ(res.priority, documents::indexes::IndexPriority::NORMAL);
+			EXPECT_EQ(res->priority, documents::indexes::IndexPriority::NORMAL);
 		}
 		{
 			auto op = documents::operations::indexes::SetIndexesPriorityOperation(example_index.name, IndexPriority::HIGH);
@@ -336,15 +337,17 @@ namespace ravendb::client::tests
 		{
 			auto op = documents::operations::indexes::GetIndexOperation(example_index.name);
 			auto&& res = test_suite_executor->get().execute(op.get_command({}));
-			ASSERT_EQ(res.priority, documents::indexes::IndexPriority::HIGH);
+			ASSERT_EQ(res->priority, documents::indexes::IndexPriority::HIGH);
 		}
 	}
 
-	TEST_F(IndexOperationsTest, CanListErrors)
+	TEST_F(IndexOperationsTestOld, CanListErrors)
 	{
 		auto invalid_user = example_user;
 		invalid_user.age = 0;
-		documents::commands::PutDocumentCommand cmd(invalid_user.id, {}, nlohmann::json(invalid_user));
+		nlohmann::json invalid_user_json = invalid_user;
+		invalid_user_json["@metadata"]["@collection"] = "Users";
+		documents::commands::PutDocumentCommand cmd(invalid_user.id, {}, invalid_user_json);
 		test_suite_executor->get().execute(cmd);
 
 		auto invalid_index = example_index;
@@ -370,8 +373,8 @@ namespace ravendb::client::tests
 		const auto ASSERT_ERROR_PER_INDEX = [&](const std::string& index_name, std::size_t expected_size)
 		{
 			ASSERT_EQ(expected_size, 
-				std::find_if(res.cbegin(), res.cend(),
-				[&](const IndexErrors& err)
+				std::find_if(res->cbegin(), res->cend(),
+				[&](const documents::indexes::IndexErrors& err)
 				{return err.name == index_name; })->errors.size());
 		};
 
@@ -380,34 +383,36 @@ namespace ravendb::client::tests
 
 		auto op2 = documents::operations::indexes::GetIndexErrorsOperation({invalid_index.name});
 		res = test_suite_executor->get().execute(op2.get_command({}));
-		ASSERT_EQ(res.size(), 1);
+		ASSERT_EQ(res->size(), 1);
 		ASSERT_ERROR_PER_INDEX(invalid_index.name, 1);
 	}
 
-	TEST_F(IndexOperationsTest, CanGetIndexStatistics)
+	TEST_F(IndexOperationsTestOld, CanGetIndexStatistics)
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 		{
 			auto op = documents::operations::indexes::GetIndexesStatisticsOperation();
 			auto&& res = test_suite_executor->get().execute(op.get_command({}));
 
-			ASSERT_EQ(res.size(), 1);
-			ASSERT_EQ(res[0].name, example_index.name);
-			ASSERT_EQ(res[0].entries_count, 1);
+			ASSERT_EQ(res->size(), 1);
+			ASSERT_EQ((*res)[0].name, example_index.name);
+			ASSERT_EQ((*res)[0].entries_count, 1);
 		}
 		{
 			infrastructure::entities::User user = { "Users/2","Johnnie","Walker","GB",0,150 };
-			documents::commands::PutDocumentCommand cmd(user.id, {}, nlohmann::json(user));
+			nlohmann::json user_json = user;
+			user_json["@metadata"]["@collection"] = "Users";
+			documents::commands::PutDocumentCommand cmd(user.id, {}, user_json);
 			test_suite_executor->get().execute(cmd);
 		}
 		{
 			auto op = documents::operations::indexes::GetIndexesStatisticsOperation();
 			auto&& res = test_suite_executor->get().execute(op.get_command({}));
 
-			ASSERT_EQ(res.size(), 1);
-			ASSERT_EQ(res[0].name, example_index.name);
-			ASSERT_EQ(res[0].entries_count, 1);
-			ASSERT_TRUE(res[0].is_stale);
+			ASSERT_EQ(res->size(), 1);
+			ASSERT_EQ((*res)[0].name, example_index.name);
+			ASSERT_EQ((*res)[0].entries_count, 1);
+			ASSERT_TRUE((*res)[0].is_stale);
 		}
 	}
 }

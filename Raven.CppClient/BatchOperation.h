@@ -28,7 +28,7 @@ namespace ravendb::client::documents::session::operations
 	class BatchOperation
 	{
 	private:
-		const std::reference_wrapper<InMemoryDocumentSessionOperations> _session;
+		const std::shared_ptr<InMemoryDocumentSessionOperations> _session;
 		std::vector<std::shared_ptr<void>> _entities{};
 		size_t _session_commands_count{};
 		size_t _all_commands_count{};
@@ -56,8 +56,8 @@ namespace ravendb::client::documents::session::operations
 		static void throw_on_empty_results();
 
 	public:
-		explicit BatchOperation(InMemoryDocumentSessionOperations& session)
-			: _session(std::ref(session))
+		explicit BatchOperation(std::shared_ptr<InMemoryDocumentSessionOperations> session)
+			: _session(session)
 		{}
 
 		std::optional<commands::batches::BatchCommand> create_request();

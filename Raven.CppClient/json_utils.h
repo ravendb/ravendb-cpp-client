@@ -2,6 +2,7 @@
 #include <optional>
 #include "MillisToTimeSpanConverter.h"
 #include "json.hpp"
+#include "Constants.h"
 
 namespace ravendb::client::impl::utils::json_utils
 {
@@ -49,8 +50,6 @@ namespace ravendb::client::impl::utils::json_utils
 		return false;
 	}
 
-	//TODO consider using universal references instead on const&
-
 	template<typename T>
 	bool get_val_from_json(const nlohmann::json& j, const std::string& key_name, std::vector<T>& array)
 	{
@@ -60,6 +59,8 @@ namespace ravendb::client::impl::utils::json_utils
 		}
 		return false;
 	}
+
+	//TODO consider using universal references instead of/in addition to const&
 
 	template<typename T>
 	bool set_val_to_json(nlohmann::json& j, const std::string& key_name, const T& field)
@@ -118,5 +119,19 @@ namespace ravendb::client::impl::utils::json_utils
 	template<>
 	bool set_val_to_json(nlohmann::json& j, const std::string& key_name, const std::chrono::milliseconds& field);
 
+
+	//Should be called at the end of the serialization.
+	//full_class_name should be of the form namespace1::namespace2::class_name or
+	// ::class_name.
+	//If collection_name is 'nullopt',
+	//the entity's collection name will be derived from the full_class_name.
+	//If id_field is not specified, 
+	//the entity's id will be taken from default id field, if present,
+	//or will be derived from the entity's collection name.
+	//void create_metadata(nlohmann::json& j,
+	//	const std::string& full_class_name,
+	//	const std::optional<std::string>& collection_name = {},
+	//	const std::optional<std::string>& id_field = {});
+	
 }
 

@@ -160,3 +160,18 @@ namespace ravendb::client::impl::utils
 			[](std::string::value_type c)->bool {return !std::isspace(c); });
 	}
 }
+
+bool operator==(const std::tm& lhs, const std::tm& rhs)
+{
+	return lhs.tm_sec == rhs.tm_sec &&
+		lhs.tm_min == rhs.tm_min &&
+		lhs.tm_hour == rhs.tm_hour &&
+		lhs.tm_mday == rhs.tm_mday &&
+		lhs.tm_mon == rhs.tm_mon &&
+		lhs.tm_year == rhs.tm_year;
+}
+
+bool operator!=(const std::tm& lhs, const std::tm& rhs)
+{
+	return !(lhs == rhs);
+}

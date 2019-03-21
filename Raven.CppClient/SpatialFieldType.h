@@ -9,7 +9,7 @@ namespace ravendb::client::documents::indexes::spacial
 		UNSET = -1
 	};
 
-	NLOHMANN_JSON_SERIALIZE_ENUM(FieldTermVector,
+	NLOHMANN_JSON_SERIALIZE_ENUM(SpatialFieldType,
 	{
 		{SpatialFieldType::UNSET, nullptr},
 		{SpatialFieldType::GEOGRAPHY, "Geography"},

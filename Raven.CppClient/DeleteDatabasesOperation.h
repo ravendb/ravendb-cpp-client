@@ -34,7 +34,7 @@ namespace ravendb::client::serverwide::operations
 		explicit DeleteDatabasesOperation(delete_db_op::Parameters parameters);
 
 		std::unique_ptr<http::RavenCommand<DeleteDatabaseResult>> get_command(
-			const documents::conventions::DocumentConventions& conventions) override;
+			std::shared_ptr<documents::conventions::DocumentConventions> conventions) override;
 
 	private:
 		class DeleteDatabaseCommand : public http::RavenCommand<DeleteDatabaseResult>
@@ -45,7 +45,7 @@ namespace ravendb::client::serverwide::operations
 		public:
 			~DeleteDatabaseCommand() override;
 
-			DeleteDatabaseCommand(const documents::conventions::DocumentConventions& conventions, const delete_db_op::Parameters& parameters);
+			DeleteDatabaseCommand(std::shared_ptr<documents::conventions::DocumentConventions> conventions, const delete_db_op::Parameters& parameters);
 
 			void create_request(CURL* curl, const http::ServerNode& node, std::string& url) override;
 

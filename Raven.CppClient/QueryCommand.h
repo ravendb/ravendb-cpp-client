@@ -16,7 +16,7 @@ namespace ravendb::client::documents::commands
 	class QueryCommand : public RavenCommand<QueryResult>
 	{
 	private:
-		DocumentConventions _conventions;
+		const std::shared_ptr<DocumentConventions> _conventions;
 		IndexQuery _index_query;
 		bool _metadata_only = false;
 		bool _index_entries_only = false;
@@ -24,8 +24,8 @@ namespace ravendb::client::documents::commands
 	public:
 		~QueryCommand() override = default;
 
-		QueryCommand(DocumentConventions conventions, IndexQuery index_query, bool metadata_only, bool index_entries_only)
-			: _conventions(std::move(conventions))
+		QueryCommand(std::shared_ptr<DocumentConventions> conventions, IndexQuery index_query, bool metadata_only, bool index_entries_only)
+			: _conventions(conventions)
 			, _index_query(std::move(index_query))
 			, _metadata_only(metadata_only)
 			, _index_entries_only(index_entries_only)
@@ -38,17 +38,17 @@ namespace ravendb::client::documents::commands
 			// we won't allow aggressive caching of queries with WaitForNonStaleResults
 			_can_cache_aggressively = _can_cache && !_index_query.wait_for_non_stale_results;
 
-			std::ostringstream pathBuilder;
-			pathBuilder << node.url << "/databases/" << node.database
+			std::ostringstream path_builder;
+			path_builder << node.url << "/databases/" << node.database
 				<< "/queries?";// TODO << "queryHash=" << _index_query.get_query_hash;
 		
 			if(_metadata_only)
 			{
-				pathBuilder << "&metadataOnly=true";
+				path_builder << "&metadataOnly=true";
 			}
 			if(_index_entries_only)
 			{
-				pathBuilder << "&debug=entries";
+				path_builder << "&debug=entries";
 			}
 
 			curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
@@ -57,12 +57,12 @@ namespace ravendb::client::documents::commands
 
 			curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, json_str.c_str());
 
-			url = pathBuilder.str();
+			url = path_builder.str();
 		}
 
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 		{
-			_result = response;
+			_result = std::make_shared<ResultType>(response.get<ResultType>());
 		}
 		
 		bool is_read_request() const noexcept override

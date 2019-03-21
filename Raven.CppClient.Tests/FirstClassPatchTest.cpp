@@ -1,14 +1,12 @@
 #include "pch.h"
-//#define __USE_FIDDLER__
-#include "TestSuiteBase.h"
+#include "RavenTestDriver.h"
+#include "raven_test_definitions.h"
 #include "DocumentSession.h"
 #include "AdvancedSessionOperations.h"
 #include "User.h"
 
 namespace first_class_patch_test
 {
-	static constexpr char DOC_ID[] = "users/1";
-
 	struct Pet
 	{
 		std::string name{};
@@ -101,7 +99,6 @@ namespace first_class_patch_test
 		set_val_to_json(j, "Stuff", u.stuff);
 		set_val_to_json(j, "LastLogin", u.last_login);
 		set_val_to_json(j, "Numbers", u.numbers);
-		j["@metadata"]["@collection"] = "Users";
 	}
 
 	void from_json(const nlohmann::json& j, User& u)
@@ -116,17 +113,20 @@ namespace first_class_patch_test
 
 namespace ravendb::client::tests::client
 {
-	class FirstClassPatchTest : public infrastructure::TestSuiteBase
+	class FirstClassPatchTest : public driver::RavenTestDriver
 	{
 	protected:
-		static void SetUpTestCase()
+		void customise_store(std::shared_ptr<documents::DocumentStore> store) override
 		{
-			test_suite_store = definitions::GET_DOCUMENT_STORE();
+			//store->set_before_perform(infrastructure::set_for_fiddler);
 		}
 	};
 
 	TEST_F(FirstClassPatchTest, CanPatch)
 	{
+		auto store = get_document_store(TEST_NAME);
+
+		std::string user_id{};
 		std::vector<first_class_patch_test::Stuff> stuff{3};
 		stuff[0].key = 6;
 
@@ -134,25 +134,26 @@ namespace ravendb::client::tests::client
 		user->numbers.push_back(66);
 		user->stuff = std::move(stuff);
 		{
-			auto session = test_suite_store->get().open_session();
-			session.store(user,first_class_patch_test::DOC_ID);
+			auto session = store->open_session();
+			session.store(user);
+			user_id = *session.advanced().get_document_id(user);
 			session.save_changes();
 		}
 
 		const auto time_point = DateTimeOffset("2019-02-12T08:47:17.5033415Z");
 
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = store->open_session();
 
-			session.advanced().patch(first_class_patch_test::DOC_ID,
+			session.advanced().patch(user_id,
 				"Numbers[0]", 31);
-			session.advanced().patch(first_class_patch_test::DOC_ID,
+			session.advanced().patch(user_id,
 				"LastLogin", time_point);
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
-			auto loaded = session.load<first_class_patch_test::User>(first_class_patch_test::DOC_ID);
+			auto session = store->open_session();
+			auto loaded = session.load<first_class_patch_test::User>(user_id);
 			ASSERT_EQ(31, loaded->numbers[0]);
 			ASSERT_EQ(time_point.to_string(), loaded->last_login.to_string());
 
@@ -160,24 +161,28 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
-			auto loaded = session.load<first_class_patch_test::User>(first_class_patch_test::DOC_ID);
+			auto session = store->open_session();
+			auto loaded = session.load<first_class_patch_test::User>(user_id);
 			ASSERT_EQ("123456", loaded->stuff[0].phone);
 		}
 	}
 
 	TEST_F(FirstClassPatchTest, ThrowOnPatchAndModify)
 	{
+		auto store = get_document_store(TEST_NAME);
+
+		std::string user_id{};
 		auto user = std::make_shared<first_class_patch_test::User>();
 		user->numbers.push_back(66);
 		{
-			auto session = test_suite_store->get().open_session();
-			session.store(user, first_class_patch_test::DOC_ID);
+			auto session = store->open_session();
+			session.store(user);
+			user_id = *session.advanced().get_document_id(user);
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
-			auto loaded = session.load<first_class_patch_test::User>(first_class_patch_test::DOC_ID);
+			auto session = store->open_session();
+			auto loaded = session.load<first_class_patch_test::User>(user_id);
 			loaded->numbers[0] = 1;
 			session.advanced().patch(loaded, "Numbers[0]", 2);
 			try
@@ -187,7 +192,7 @@ namespace ravendb::client::tests::client
 			catch (std::runtime_error& e)
 			{
 				std::ostringstream msg{};
-				msg << "Cannot perform save because document " << first_class_patch_test::DOC_ID <<
+				msg << "Cannot perform save because document " << user_id <<
 					" has been modified by the session" <<
 					" and is also taking part in deferred PATCH command";
 				ASSERT_EQ(msg.str(), std::string(e.what()));
@@ -201,6 +206,9 @@ namespace ravendb::client::tests::client
 
 	TEST_F(FirstClassPatchTest, CanPatchComplex)
 	{
+		auto store = get_document_store(TEST_NAME);
+
+		std::string user_id{};
 		std::vector<first_class_patch_test::Stuff> stuff{3};
 		stuff[0].key = 6;
 
@@ -208,22 +216,23 @@ namespace ravendb::client::tests::client
 		user->stuff = std::move(stuff);
 
 		{
-			auto session = test_suite_store->get().open_session();
-			session.store(user, first_class_patch_test::DOC_ID);
+			auto session = store->open_session();
+			session.store(user);
+			user_id = *session.advanced().get_document_id(user);
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = store->open_session();
 			auto new_stuff = first_class_patch_test::Stuff();
 			new_stuff.key = 4;
 			new_stuff.phone = "9255864406";
-			session.advanced().patch(first_class_patch_test::DOC_ID,
+			session.advanced().patch(user_id,
 				"Stuff[1]", new_stuff);
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
-			auto loaded = session.load<first_class_patch_test::User>(first_class_patch_test::DOC_ID);
+			auto session = store->open_session();
+			auto loaded = session.load<first_class_patch_test::User>(user_id);
 			ASSERT_EQ("9255864406", loaded->stuff[1].phone);
 			ASSERT_EQ(4, loaded->stuff[1].key);
 			ASSERT_TRUE(loaded->stuff[1].the_friend.name.empty());
@@ -259,8 +268,8 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
-			auto loaded = session.load<first_class_patch_test::User>(first_class_patch_test::DOC_ID);
+			auto session = store->open_session();
+			auto loaded = session.load<first_class_patch_test::User>(user_id);
 
 			ASSERT_EQ("Tuzik", loaded->stuff[2].pet.name);
 			ASSERT_EQ("Tomagochi", loaded->stuff[2].the_friend.name);
@@ -270,8 +279,144 @@ namespace ravendb::client::tests::client
 		}
 	}
 
+	TEST_F(FirstClassPatchTest, CanAddToArray)
+	{
+		auto store = get_document_store(TEST_NAME);
+
+		std::string user_id{};
+		std::vector<first_class_patch_test::Stuff> stuff(1);
+		stuff[0].key = 6;
+
+		auto user = std::make_shared<first_class_patch_test::User>();
+		user->stuff = stuff;
+		user->numbers = { 1,2 };
+
+		{
+			auto session = store->open_session();
+			session.store(user);
+			user_id = *session.advanced().get_document_id(user);
+			session.save_changes();
+		}
+		{
+			auto session = store->open_session();
+			session.advanced().patch(user_id, "Numbers",
+				std::function<void(documents::session::JavaScriptArray<int32_t>&)>(
+					[](documents::session::JavaScriptArray<int32_t>& arr)->void
+			{
+				arr.add(3);
+			}));
+			session.advanced().patch(user_id, "Stuff",
+				std::function<void(documents::session::JavaScriptArray<first_class_patch_test::Stuff>&)>(
+					[](documents::session::JavaScriptArray<first_class_patch_test::Stuff>& arr)->void
+			{
+				first_class_patch_test::Stuff stuff1{};
+				stuff1.key = 75;
+				arr.add(stuff1);
+			}));
+			session.save_changes();
+		}
+		{
+			auto session = store->open_session();
+			auto loaded = session.load<first_class_patch_test::User>(user_id);
+
+			ASSERT_EQ(3, loaded->numbers[2]);
+			ASSERT_EQ(75, loaded->stuff[1].key);
+
+			session.advanced().patch(loaded, "Numbers",
+				std::function<void(documents::session::JavaScriptArray<int32_t>&)>(
+					[](documents::session::JavaScriptArray<int32_t>& arr)->void
+			{
+				arr.add({ 101, 102, 103 });
+			}));
+			session.advanced().patch(user_id, "Stuff",
+				std::function<void(documents::session::JavaScriptArray<first_class_patch_test::Stuff>&)>(
+					[](documents::session::JavaScriptArray<first_class_patch_test::Stuff>& arr)->void
+			{
+				first_class_patch_test::Stuff s1{};
+				s1.key = 102;
+				first_class_patch_test::Stuff s2{};
+				s2.phone = "123456";
+
+				arr.add(s1).add(s2);
+			}));
+			session.save_changes();
+		}
+		{
+			auto session = store->open_session();
+			auto loaded = session.load<first_class_patch_test::User>(user_id);
+			ASSERT_EQ(6, loaded->numbers.size());
+			ASSERT_EQ(103, loaded->numbers[5]);
+
+			ASSERT_EQ(102, loaded->stuff[2].key);
+			ASSERT_EQ("123456", loaded->stuff[3].phone);
+
+			session.advanced().patch(loaded, "Numbers",
+				std::function<void(documents::session::JavaScriptArray<int32_t>&)>(
+					[](documents::session::JavaScriptArray<int32_t>& arr)->void
+			{
+				arr.add({ 201, 202, 203 });
+			}));
+			session.save_changes();
+		}
+		{
+			auto session = store->open_session();
+			auto loaded = session.load<first_class_patch_test::User>(user_id);
+			ASSERT_EQ(9, loaded->numbers.size());
+			ASSERT_EQ(202, loaded->numbers[7]);
+		}
+	}
+
+	TEST_F(FirstClassPatchTest, CanRemoveFromArray)
+	{
+		auto store = get_document_store(TEST_NAME);
+
+		std::string user_id{};
+		std::vector<first_class_patch_test::Stuff> stuff{ 2 };
+		stuff[0].key = 6;
+		stuff[1].phone = "123456";
+
+		auto user = std::make_shared<first_class_patch_test::User>();
+		user->stuff = stuff;
+		user->numbers = { 1, 2, 3 };
+
+		{
+			auto session = store->open_session();
+			session.store(user);
+			user_id = *session.advanced().get_document_id(user);
+			session.save_changes();
+		}
+		{
+			auto session = store->open_session();
+			session.advanced().patch(user_id, "Numbers",
+				std::function<void(documents::session::JavaScriptArray<int32_t>&)>(
+					[](documents::session::JavaScriptArray<int32_t>& arr)->void
+			{
+				arr.remove_at(1);
+			}));
+			session.advanced().patch(user_id, "Stuff",
+				std::function<void(documents::session::JavaScriptArray<first_class_patch_test::Stuff>&)>(
+					[](documents::session::JavaScriptArray<first_class_patch_test::Stuff>& arr)->void
+			{
+				arr.remove_at(0);
+			}));
+			session.save_changes();
+		}
+		{
+			auto session = store->open_session();
+			auto loaded = session.load<first_class_patch_test::User>(user_id);
+
+			ASSERT_EQ(2, loaded->numbers.size());
+			ASSERT_EQ(3, loaded->numbers[1]);
+			ASSERT_EQ(1, loaded->stuff.size());
+			ASSERT_EQ("123456", loaded->stuff[0].phone);
+		}
+	}
+
 	TEST_F(FirstClassPatchTest, CanIncrement)
 	{
+		auto store = get_document_store(TEST_NAME);
+
+		std::string user_id{};
 		auto stuff = std::vector<first_class_patch_test::Stuff>(3);
 		stuff[0].key = 6;
 
@@ -280,33 +425,37 @@ namespace ravendb::client::tests::client
 		user->numbers = { 66 };
 
 		{
-			auto session = test_suite_store->get().open_session();
-			session.store(user, first_class_patch_test::DOC_ID);
+			auto session = store->open_session();
+			session.store(user);
+			user_id = *session.advanced().get_document_id(user);
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
-			session.advanced().increment(first_class_patch_test::DOC_ID,
+			auto session = store->open_session();
+			session.advanced().increment(user_id,
 				"Numbers[0]", 1);
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
-			auto loaded = session.load<first_class_patch_test::User>(first_class_patch_test::DOC_ID);
+			auto session = store->open_session();
+			auto loaded = session.load<first_class_patch_test::User>(user_id);
 			ASSERT_EQ(67, loaded->numbers[0]);
 
 			session.advanced().increment(loaded, "Stuff[0].Key", -3);
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
-			auto loaded = session.load<first_class_patch_test::User>(first_class_patch_test::DOC_ID);
+			auto session = store->open_session();
+			auto loaded = session.load<first_class_patch_test::User>(user_id);
 			ASSERT_EQ(3, loaded->stuff[0].key);
 		}
 	}
 
 	TEST_F(FirstClassPatchTest, ShouldMergePatchCalls)
 	{
+		auto store = get_document_store(TEST_NAME);
+
+		std::string user_id{};
 		auto stuff = std::vector<first_class_patch_test::Stuff>(3);
 		stuff[0].key = 6;
 
@@ -318,56 +467,58 @@ namespace ravendb::client::tests::client
 		user2->numbers = { 1, 2,3 };
 		user2->stuff = stuff;
 
-		constexpr char DOC_ID2[] = "users/2";
+		std::string user2_id{};
 
 		{
-			auto session = test_suite_store->get().open_session();
-			session.store(user, first_class_patch_test::DOC_ID);
-			session.store(user2, DOC_ID2);
+			auto session = store->open_session();
+			session.store(user);
+			user_id = *session.advanced().get_document_id(user);
+			session.store(user2);
+			user2_id = *session.advanced().get_document_id(user2);
 			session.save_changes();
 		}
 
 		const auto time_point = DateTimeOffset("2019-02-12T12:15:25.1234000");
 
 		{
-			auto session = test_suite_store->get().open_session();
-			session.advanced().patch(first_class_patch_test::DOC_ID,
+			auto session = store->open_session();
+			session.advanced().patch(user_id,
 				"Numbers[0]", 31);
-			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
+			ASSERT_EQ(1, session.get_session_implementation()->get_deferred_commands_count());
 
-			session.advanced().patch(first_class_patch_test::DOC_ID,
+			session.advanced().patch(user_id,
 				"LastLogin", time_point);
-			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
+			ASSERT_EQ(1, session.get_session_implementation()->get_deferred_commands_count());
 
-			session.advanced().patch(DOC_ID2,
+			session.advanced().patch(user2_id,
 				"Numbers[0]", 123);
-			ASSERT_EQ(2, session.get_session_implementation().get_deferred_commands_count());
+			ASSERT_EQ(2, session.get_session_implementation()->get_deferred_commands_count());
 
-			session.advanced().patch(DOC_ID2,
+			session.advanced().patch(user2_id,
 				"LastLogin", time_point);
-			ASSERT_EQ(2, session.get_session_implementation().get_deferred_commands_count());
+			ASSERT_EQ(2, session.get_session_implementation()->get_deferred_commands_count());
 
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
-			session.advanced().increment(first_class_patch_test::DOC_ID,
+			auto session = store->open_session();
+			session.advanced().increment(user_id,
 				"Numbers[0]", 1);
-			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
+			ASSERT_EQ(1, session.get_session_implementation()->get_deferred_commands_count());
 
-			session.advanced().patch<int32_t>(first_class_patch_test::DOC_ID,
+			session.advanced().patch<int32_t>(user_id,
 				"Numbers", [](documents::session::JavaScriptArray<int32_t>& arr)->void
 			{
 				arr.add(77);
 			});
-			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
+			ASSERT_EQ(1, session.get_session_implementation()->get_deferred_commands_count());
 
-			session.advanced().patch<int32_t>(first_class_patch_test::DOC_ID,
+			session.advanced().patch<int32_t>(user_id,
 				"Numbers", [](documents::session::JavaScriptArray<int32_t>& arr)->void
 			{
 				arr.add(88);
 			});
-			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
+			ASSERT_EQ(1, session.get_session_implementation()->get_deferred_commands_count());
 
 			std::function<void(documents::session::JavaScriptArray<int32_t>&)> array_adder = []
 			(documents::session::JavaScriptArray<int32_t>& arr) -> void
@@ -375,9 +526,9 @@ namespace ravendb::client::tests::client
 				arr.remove_at(1);
 			};
 
-			session.advanced().patch(first_class_patch_test::DOC_ID,
+			session.advanced().patch(user_id,
 				"Numbers", array_adder);
-			ASSERT_EQ(1, session.get_session_implementation().get_deferred_commands_count());
+			ASSERT_EQ(1, session.get_session_implementation()->get_deferred_commands_count());
 
 			session.save_changes();
 		}
@@ -385,6 +536,9 @@ namespace ravendb::client::tests::client
 
 	TEST_F(FirstClassPatchTest, CanUpdateSessionByPatch)
 	{
+		auto store = get_document_store(TEST_NAME);
+
+		std::string user_id{};
 		std::vector<first_class_patch_test::Stuff> stuff{ 3 };
 		stuff[0].key = 6;
 
@@ -392,26 +546,27 @@ namespace ravendb::client::tests::client
 		user->stuff = std::move(stuff);
 
 		{
-			auto session = test_suite_store->get().open_session();
-			session.store(user, first_class_patch_test::DOC_ID);
+			auto session = store->open_session();
+			session.store(user);
+			user_id = *session.advanced().get_document_id(user);
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
-			auto loaded = session.load<first_class_patch_test::User>(first_class_patch_test::DOC_ID);
+			auto session = store->open_session();
+			auto loaded = session.load<first_class_patch_test::User>(user_id);
 
 			auto new_stuff = first_class_patch_test::Stuff();
 			new_stuff.key = 4;
 			new_stuff.phone = "9255864406";
-			session.advanced().patch(first_class_patch_test::DOC_ID,
+			session.advanced().patch(user_id,
 				"Stuff[1]", new_stuff);
 			session.save_changes();
 
 			ASSERT_EQ("9255864406", loaded->stuff[1].phone);
 		}
 		{
-			auto session = test_suite_store->get().open_session();
-			auto loaded = session.load<first_class_patch_test::User>(first_class_patch_test::DOC_ID);
+			auto session = store->open_session();
+			auto loaded = session.load<first_class_patch_test::User>(user_id);
 			ASSERT_EQ("9255864406", loaded->stuff[1].phone);
 			ASSERT_EQ(4, loaded->stuff[1].key);
 			ASSERT_TRUE(loaded->stuff[1].the_friend.name.empty());

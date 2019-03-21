@@ -14,7 +14,7 @@ namespace ravendb::client::serverwide::operations
 	{}
 
 	std::unique_ptr<http::RavenCommand<DatabasePutResult>> CreateDatabaseOperation::get_command(
-		const documents::conventions::DocumentConventions& conventions)
+		const std::shared_ptr<documents::conventions::DocumentConventions> conventions)
 	{
 		return std::make_unique<CreateDatabaseCommand>(conventions, _database_record, _replication_factor);
 	}
@@ -22,7 +22,7 @@ namespace ravendb::client::serverwide::operations
 	CreateDatabaseOperation::CreateDatabaseCommand::~CreateDatabaseCommand() = default;
 
 	CreateDatabaseOperation::CreateDatabaseCommand::CreateDatabaseCommand(
-		const documents::conventions::DocumentConventions& conventions, DatabaseRecord database_record, int32_t replication_factor)
+		std::shared_ptr<documents::conventions::DocumentConventions> conventions, DatabaseRecord database_record, int32_t replication_factor)
 		: _conventions(conventions)
 		, _database_record(std::move(database_record))
 		, _replication_factor(replication_factor)
@@ -42,8 +42,8 @@ namespace ravendb::client::serverwide::operations
 
 	void CreateDatabaseOperation::CreateDatabaseCommand::create_request(CURL* curl, const http::ServerNode& node, std::string& url)
 	{
-		std::ostringstream pathBuilder;
-		pathBuilder << node.url << "/admin/databases?name=" << _database_name
+		std::ostringstream path_builder;
+		path_builder << node.url << "/admin/databases?name=" << _database_name
 			<< "&replicationFactor=" << _replication_factor;
 
 		curl_easy_setopt(curl, CURLOPT_READFUNCTION, ravendb::client::impl::utils::read_callback);
@@ -52,12 +52,12 @@ namespace ravendb::client::serverwide::operations
 		curl_easy_setopt(curl, CURLOPT_READDATA, &_database_document);
 		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_database_document.length());
 
-		url = pathBuilder.str();
+		url = path_builder.str();
 	}
 
 	void CreateDatabaseOperation::CreateDatabaseCommand::set_response(CURL* curl, const nlohmann::json& response, bool from_cache)
 	{
-		_result = response.get<decltype(_result)>();
+		_result = std::make_shared<ResultType>(response.get<ResultType>());
 	}
 
 	bool CreateDatabaseOperation::CreateDatabaseCommand::is_read_request() const noexcept

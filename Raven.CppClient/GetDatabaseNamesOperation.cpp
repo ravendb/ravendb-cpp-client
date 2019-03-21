@@ -12,7 +12,7 @@ namespace ravendb::client::serverwide::operations
 	{}
 
 	std::unique_ptr<http::RavenCommand<std::vector<std::string>>> GetDatabaseNamesOperation::get_command(
-		const documents::conventions::DocumentConventions & conventions)
+		std::shared_ptr<documents::conventions::DocumentConventions> conventions)
 	{
 		return std::make_unique<GetDatabaseNamesCommand>(_start, _page_size);
 	}
@@ -26,18 +26,19 @@ namespace ravendb::client::serverwide::operations
 
 	void GetDatabaseNamesOperation::GetDatabaseNamesCommand::create_request(CURL * curl, const http::ServerNode & node, std::string & url)
 	{
-		std::ostringstream pathBuilder;
-		pathBuilder << node.url << "/databases?start=" << _start
+		std::ostringstream path_builder;
+		path_builder << node.url << "/databases?start=" << _start
 			<< "&pageSize=" << _page_size << "&namesOnly=true";
 
 		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 
-		url = pathBuilder.str();
+		url = path_builder.str();
 	}
 
 	void GetDatabaseNamesOperation::GetDatabaseNamesCommand::set_response(CURL * curl, const nlohmann::json & response, bool from_cache)
 	{
-		if (!impl::utils::json_utils::get_val_from_json(response, "Databases", _result))
+		_result = std::make_shared<ResultType>();
+		if (!impl::utils::json_utils::get_val_from_json(response, "Databases", *_result))
 		{
 			throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::INVALID_RESPONSE);
 		}

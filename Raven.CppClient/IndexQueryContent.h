@@ -8,14 +8,14 @@ namespace ravendb::client::documents::session::operations::lazy
 	class IndexQueryContent : public commands::multi_get::GetRequest::IContent
 	{
 	private:
-		const conventions::DocumentConventions _conventions;
+		const std::shared_ptr<conventions::DocumentConventions> _conventions;
 		const queries::IndexQuery _query;
 
 	public:
 		~IndexQueryContent() override = default;
 
-		IndexQueryContent(conventions::DocumentConventions conventions, queries::IndexQuery query)
-			: _conventions(std::move(conventions))
+		IndexQueryContent(std::shared_ptr<conventions::DocumentConventions> conventions, queries::IndexQuery query)
+			: _conventions(conventions)
 			, _query(std::move(query))
 		{}
 

@@ -9,7 +9,7 @@ namespace ravendb::client::documents::session::operations
 	class QueryOperation
 	{
 	private:
-		const std::reference_wrapper<InMemoryDocumentSessionOperations> _session;
+		const std::shared_ptr<InMemoryDocumentSessionOperations> _session;
 		const std::optional<std::string> _index_name;
 		const queries::IndexQuery _index_query;
 		const bool _metadata_only;
@@ -17,8 +17,7 @@ namespace ravendb::client::documents::session::operations
 		queries::QueryResult _current_query_result{};
 		const std::optional<tokens::FieldsToFetchToken> _fields_to_fetch;
 
-		//TODO use impl::SimpleStopWatch
-		std::chrono::time_point<std::chrono::steady_clock> _start_time_for_stopwatch;
+		impl::SimpleStopWatch _stop_watch{};
 
 	public:
 		const bool _no_tracking;
@@ -29,7 +28,7 @@ namespace ravendb::client::documents::session::operations
 		void start_timing();
 
 	public:
-		QueryOperation(InMemoryDocumentSessionOperations& session, std::optional<std::string> index_name,
+		QueryOperation(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::optional<std::string> index_name,
 			queries::IndexQuery index_query, std::optional<tokens::FieldsToFetchToken> fields_to_fetch,
 			bool disable_entities_tracking, bool metadata_only, bool index_entries_only);
 
@@ -45,19 +44,19 @@ namespace ravendb::client::documents::session::operations
 		template<typename T>
 		static std::shared_ptr<T> deserialize(const std::string& id, const nlohmann::json& document,
 			const nlohmann::json& metadata, const std::optional<tokens::FieldsToFetchToken>& fields_to_fetch,
-			bool disable_entities_tracking, InMemoryDocumentSessionOperations& session);
+			bool disable_entities_tracking, std::shared_ptr<InMemoryDocumentSessionOperations> session);
 
 		void ensure_is_acceptable_and_save_result(const QueryResult& result);
 
 		static void ensure_is_acceptable(const QueryResult& result, bool wait_for_non_stale_result,
-			const std::chrono::time_point<std::chrono::steady_clock>& start_time_for_stopwatch);
+			impl::SimpleStopWatch& stop_watch);
 
 		const IndexQuery& get_index_query() const;
 	};
 
 	inline void QueryOperation::start_timing()
 	{
-		_start_time_for_stopwatch = std::chrono::steady_clock::now();
+		_stop_watch.restart();
 	}
 
 	template <typename T>
@@ -67,7 +66,7 @@ namespace ravendb::client::documents::session::operations
 
 		if (!_no_tracking)
 		{
-			_session.get().register_includes(query_result.includes);
+			_session->register_includes(query_result.includes);
 		}
 
 		std::vector<std::shared_ptr<T>> list{};
@@ -85,7 +84,7 @@ namespace ravendb::client::documents::session::operations
 					id = id_json_it->get<std::string>();
 				}
 
-				list.push_back(deserialize<T>(id, document, metadata, _fields_to_fetch, _no_tracking, _session.get()));
+				list.push_back(deserialize<T>(id, document, metadata, _fields_to_fetch, _no_tracking, _session));
 			}
 		}
 		catch (std::exception& e)
@@ -94,7 +93,7 @@ namespace ravendb::client::documents::session::operations
 		}
 		if (_no_tracking)
 		{
-			_session.get().register_missing_includes(query_result.results, query_result.includes, query_result.included_paths);
+			_session->register_missing_includes(query_result.results, query_result.includes, query_result.included_paths);
 			//TODO take care of counters
 		}
 		return list;
@@ -103,18 +102,19 @@ namespace ravendb::client::documents::session::operations
 	template <typename T>
 	std::shared_ptr<T> QueryOperation::deserialize(const std::string& id, const nlohmann::json& document,
 		const nlohmann::json& metadata, const std::optional<tokens::FieldsToFetchToken>& fields_to_fetch,
-		bool disable_entities_tracking, InMemoryDocumentSessionOperations& session)
+		bool disable_entities_tracking, std::shared_ptr<InMemoryDocumentSessionOperations> session)
 	{
 		nlohmann::json the_document = document;
 
 		if (auto projection_it = metadata.find("@projection");
 			projection_it == metadata.end() || !projection_it->get<bool>())
 		{
-			return std::static_pointer_cast<T>(session.track_entity(id, document, metadata, disable_entities_tracking,
+			return std::static_pointer_cast<T>(session->track_entity(id, document, metadata, disable_entities_tracking,
 				DocumentInfo::default_from_json<T>, DocumentInfo::default_to_json<T>, DocumentInfo::default_entity_update<T>));
 		}
 
-		if (fields_to_fetch && fields_to_fetch->_projections && fields_to_fetch->_projections->size() == 1)// we only select a single field
+		// we only select a single field
+		if (fields_to_fetch && fields_to_fetch->_projections && fields_to_fetch->_projections->size() == 1)
 		{
 			auto projection_field = std::string_view((*fields_to_fetch->_projections)[0].data(), (*fields_to_fetch->_projections)[0].size());
 
@@ -161,15 +161,11 @@ namespace ravendb::client::documents::session::operations
 		{
 			// we need to make an additional check, since it is possible that a value was explicitly stated
 			// for the identity property, in which case we don't want to override it.
-			//TODO make it
-			//Field identityProperty = session.getConventions().getIdentityProperty(clazz);
-			//if (identityProperty != null) {
-			//	JsonNode value = document.get(identityProperty.getName());
 
-			//	if (value == null) {
-			//		session.getGenerateEntityIdOnTheClient().trySetIdentity(result, id);
-			//	}
-			//}
+			if (! session->get_generate_entity_id_on_the_client().try_get_id_from_instance(typeid(T), result))
+			{
+				session->get_generate_entity_id_on_the_client().try_set_identity(typeid(T), result, id);
+			}
 		}
 
 		return result;

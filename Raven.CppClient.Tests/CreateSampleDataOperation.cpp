@@ -3,7 +3,7 @@
 
 namespace ravendb::client::tests::infrastructure
 {
-	std::unique_ptr<VoidRavenCommandBase> CreateSampleDataOperation::get_command(const DocumentConventions& conventions) const
+	std::unique_ptr<http::VoidRavenCommandBase> CreateSampleDataOperation::get_command(std::shared_ptr<DocumentConventions> conventions) const
 	{
 		return std::make_unique<CreateSampleDataCommand>();
 	}

@@ -26,7 +26,7 @@ namespace ravendb::client::documents::operations::indexes
 			: _index_name(std::move(index_name))
 		{}
 
-		std::unique_ptr<RavenCommand<IndexDefinition>> get_command(const DocumentConventions& conventions) const override
+		std::unique_ptr<RavenCommand<IndexDefinition>> get_command(std::shared_ptr<DocumentConventions> conventions) const override
 		{
 			return std::make_unique<GetIndexCommand>(_index_name);
 		}
@@ -46,13 +46,13 @@ namespace ravendb::client::documents::operations::indexes
 
 			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 			{
-				std::ostringstream pathBuilder;
-				pathBuilder << node.url << "/databases/" << node.database
+				std::ostringstream path_builder;
+				path_builder << node.url << "/databases/" << node.database
 					<< "/indexes?name=" << ravendb::client::impl::utils::url_escape(curl, _index_name);
 
 				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 
-				url = pathBuilder.str();
+				url = path_builder.str();
 			}
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
@@ -65,7 +65,7 @@ namespace ravendb::client::documents::operations::indexes
 				}
 				else
 				{
-					_result = std::move(results[0]);
+					_result = std::make_shared<ResultType>(std::move(results[0]));
 				}
 			}
 

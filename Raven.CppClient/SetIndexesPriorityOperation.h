@@ -62,7 +62,7 @@ namespace ravendb::client::documents::operations::indexes
 		}())
 		{}
 
-		std::unique_ptr<VoidRavenCommandBase> get_command(const DocumentConventions& conventions) const override
+		std::unique_ptr<http::VoidRavenCommandBase> get_command(std::shared_ptr<DocumentConventions> conventions) const override
 		{
 			return std::make_unique<SetIndexPriorityCommand>(_parameters);
 		}
@@ -82,14 +82,14 @@ namespace ravendb::client::documents::operations::indexes
 
 			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 			{
-				std::ostringstream pathBuilder;
-				pathBuilder << node.url << "/databases/" << node.database
+				std::ostringstream path_builder;
+				path_builder << node.url << "/databases/" << node.database
 					<< "/indexes/set-priority";
 
 				curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
 				curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, _parameters_json.dump().c_str());
 
-				url = pathBuilder.str();
+				url = path_builder.str();
 			}
 		};
 	};

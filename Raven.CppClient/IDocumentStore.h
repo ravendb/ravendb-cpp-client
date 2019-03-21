@@ -1,4 +1,5 @@
 #pragma once
+#include <optional>
 
 namespace ravendb::client
 {
@@ -13,6 +14,11 @@ namespace ravendb::client
 		{
 			struct SessionOptions;
 			class DocumentSession;
+		}
+
+		namespace indexes
+		{
+			class AbstractIndexCreationTaskBase;
 		}
 
 		namespace operations
@@ -39,12 +45,17 @@ namespace  ravendb::client::documents
 
 		virtual void set_identifier(std::string identifier) = 0;
 
-		//TODO consider returning std::reference_wrapper<IDocumentStore> 
-		virtual std::reference_wrapper<IDocumentStore> initialize() = 0;
+		virtual std::shared_ptr<IDocumentStore> initialize() = 0;
 
 		virtual session::DocumentSession open_session() = 0;
 		virtual session::DocumentSession open_session(const std::string& database) = 0;
 		virtual session::DocumentSession open_session(const session::SessionOptions& options) = 0;
+
+		virtual void execute_index(std::shared_ptr<indexes::AbstractIndexCreationTaskBase> task,
+			std::optional<std::string> database = {}) = 0;
+		virtual void execute_indexes(std::vector<std::shared_ptr<indexes::AbstractIndexCreationTaskBase>>& tasks,
+			std::optional<std::string> database = {}) = 0;
+
 
 		virtual std::shared_ptr<conventions::DocumentConventions> get_conventions() const = 0;
 

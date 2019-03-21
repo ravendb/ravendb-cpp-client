@@ -24,7 +24,6 @@ namespace ravendb::client::tests::infrastructure::entities
 		set_val_to_json(j, "Comments", p.comments);
 		set_val_to_json(j, "Attachments", p.attachments);
 		set_val_to_json(j, "CreatedAt", p.created_at);
-		j["@metadata"]["@collection"] = "Posts";
 	}
 
 	inline void from_json(const nlohmann::json& j, Post& p)

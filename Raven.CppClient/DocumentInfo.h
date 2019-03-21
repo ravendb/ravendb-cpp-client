@@ -1,4 +1,5 @@
 #pragma once
+#include <typeindex>
 #include "ConcurrencyCheckMode.h"
 #include "Constants.h"
 #include "IMetadataDictionary.h"
@@ -51,8 +52,7 @@ namespace ravendb::client::documents::session
 		bool new_document = false;
 		std::string collection{};
 
-		//TODO std::string entity_type{};
-		//std::optional<std::type_info> exact_type;//to be filled by store()
+		std::optional<std::type_index> stored_type;//to be filled by store()
 
 		DocumentInfo() = default;
 

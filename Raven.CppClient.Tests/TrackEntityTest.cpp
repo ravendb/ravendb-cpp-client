@@ -1,24 +1,25 @@
 #include "pch.h"
-//#define __USE_FIDDLER__
-#include "TestSuiteBase.h"
+#include "RavenTestDriver.h"
+#include "raven_test_definitions.h"
 #include "DocumentSession.h"
 #include "User.h"
 
 namespace ravendb::client::tests::client
 {
-	class TrackEntityTest : public infrastructure::TestSuiteBase
+	class TrackEntityTest : public driver::RavenTestDriver
 	{
 	protected:
-		static void SetUpTestCase()
+		void customise_store(std::shared_ptr<documents::DocumentStore> store) override
 		{
-			test_suite_store = definitions::GET_DOCUMENT_STORE();
+			//store->set_before_perform(infrastructure::set_for_fiddler);
 		}
 	};
 
 	TEST_F(TrackEntityTest, DeletingEntityThatIsNotTrackedShouldThrow)
 	{
+		auto store = get_document_store(TEST_NAME);
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = store->open_session();
 			try
 			{
 				session.delete_document(std::make_shared<infrastructure::entities::User>());
@@ -34,8 +35,9 @@ namespace ravendb::client::tests::client
 
 	TEST_F(TrackEntityTest, LoadingDeletedDocumentShouldReturnNull)
 	{
+		auto store = get_document_store(TEST_NAME);
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = store->open_session();
 
 			auto user1 = std::make_shared<infrastructure::entities::User>();
 			user1->name = "Svyatoslav";
@@ -45,18 +47,18 @@ namespace ravendb::client::tests::client
 			user2->name = "Izyaslav";
 			user2->id = "users/2";
 
-			session.store(user1, user1->id);
-			session.store(user1, user2->id);
+			session.store(user1);
+			session.store(user2);
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = store->open_session();
 			session.delete_document("users/1");
 			session.delete_document("users/2");
 			session.save_changes();
 		}
 		{
-			auto session = test_suite_store->get().open_session();
+			auto session = store->open_session();
 
 			ASSERT_FALSE(session.load<infrastructure::entities::User>("users/1"));
 			ASSERT_FALSE(session.load<infrastructure::entities::User>("users/2"));
@@ -65,13 +67,15 @@ namespace ravendb::client::tests::client
 
 	TEST_F(TrackEntityTest, StoringDocumentWithTheSameIdInTheSameSessionShouldThrow)
 	{
-		auto session = test_suite_store->get().open_session();
+		auto store = get_document_store(TEST_NAME);
+
+		auto session = store->open_session();
 
 		auto user = std::make_shared<infrastructure::entities::User>();
 		user->id = "users/1";
 		user->name = "User1";
 
-		session.store(user, user->id);
+		session.store(user);
 		session.save_changes();
 
 		auto new_user = std::make_shared<infrastructure::entities::User>();
@@ -80,7 +84,7 @@ namespace ravendb::client::tests::client
 
 		try
 		{
-			session.store(new_user, new_user->id);
+			session.store(new_user);
 		}
 		catch (std::runtime_error& e)
 		{

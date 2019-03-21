@@ -19,7 +19,7 @@ namespace ravendb::client::documents::operations::indexes
 
 		GetIndexingStatusOperation() = default;
 
-		std::unique_ptr<RavenCommand<IndexingStatus>> get_command(const DocumentConventions& conventions) const override
+		std::unique_ptr<RavenCommand<IndexingStatus>> get_command(std::shared_ptr<DocumentConventions> conventions) const override
 		{
 			return std::make_unique<GetIndexingStatusCommand>();
 		}
@@ -34,18 +34,18 @@ namespace ravendb::client::documents::operations::indexes
 
 			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 			{
-				std::ostringstream pathBuilder;
-				pathBuilder << node.url << "/databases/" << node.database
+				std::ostringstream path_builder;
+				path_builder << node.url << "/databases/" << node.database
 					<< "/indexes/status";
 
 				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 
-				url = pathBuilder.str();
+				url = path_builder.str();
 			}
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 			{
-				_result = response;
+				_result = std::make_shared<ResultType>(response.get<ResultType>());
 			}
 
 			bool is_read_request() const noexcept override

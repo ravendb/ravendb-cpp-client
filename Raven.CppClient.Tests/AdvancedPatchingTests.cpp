@@ -8,13 +8,7 @@
 #include "PatchOperation.h"
 #include "DocumentStore.h"
 
-namespace
-{
-	class FakeStore : public ravendb::client::documents::DocumentStore
-	{};
-}
-
-namespace ravendb::client::tests
+namespace ravendb::client::tests::old_tests
 {
 	namespace adv_patching_tests
 	{
@@ -35,7 +29,7 @@ namespace ravendb::client::tests
 			set_val_to_json(j, "Owner", ct.owner);
 			set_val_to_json(j, "Comments", ct.comments);
 			set_val_to_json(j, "Date", ct.date);
-			j["@metadata"]["@collection"] = "CustomTypes";
+			//j["@metadata"]["@collection"] = "CustomTypes";
 		}
 
 		inline void from_json(const nlohmann::json& j, CustomType& ct)
@@ -67,7 +61,7 @@ namespace ravendb::client::tests
 		{
 			auto  get_docs_cmd = documents::commands::GetDocumentsCommand({}, {}, {}, {}, 0, 100, true);
 			auto results = test_suite_executor->get().execute(get_docs_cmd);
-			for (const auto& res : results.results)
+			for (const auto& res : results->results)
 			{
 				auto del_doc_cmd = documents::commands::DeleteDocumentCommand(res["@metadata"]["@id"].get<std::string>());
 				test_suite_executor->get().execute(del_doc_cmd);
@@ -81,21 +75,21 @@ namespace ravendb::client::tests
 		auto custom_type = CustomType{ "CustomTypes/1","me" };
 		auto put_doc_cmd = documents::commands::PutDocumentCommand(custom_type.id, {}, custom_type);
 		auto&& res1 = test_suite_executor->get().execute(put_doc_cmd);
-		ASSERT_EQ(res1.id, custom_type.id);
+		ASSERT_EQ(res1->id, custom_type.id);
 
 		auto patch = documents::operations::PatchRequest("this.Owner = args.v1");
 		patch.values = { {"v1","someone else"} };
 		auto op = documents::operations::PatchOperation(custom_type.id, {}, patch);
 
 		HttpCache cache;
-		auto&& res2 = test_suite_executor->get().execute(op.get_command(FakeStore(), {}, cache));
+		auto&& res2 = test_suite_executor->get().execute(op.get_command(documents::DocumentStore::create(), {}, cache));
 
-		ASSERT_EQ(res2.status, documents::operations::PatchStatus::PATCHED);
+		ASSERT_EQ(res2->status, documents::operations::PatchStatus::PATCHED);
 
 		auto get_doc_cmd = documents::commands::GetDocumentsCommand(custom_type.id, {}, false);
 		auto&& res3 = test_suite_executor->get().execute(get_doc_cmd);
 
-		CustomType ret_custom_type = res3.results[0].get<CustomType>();
+		CustomType ret_custom_type = res3->results[0].get<CustomType>();
 		ASSERT_EQ(ret_custom_type.owner, "someone else");
 	}
 

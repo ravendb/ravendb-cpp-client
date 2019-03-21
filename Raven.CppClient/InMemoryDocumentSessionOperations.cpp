@@ -20,7 +20,7 @@ namespace ravendb::client::documents::session
 	std::atomic_int32_t InMemoryDocumentSessionOperations::_client_session_id_counter{};
 	std::atomic_int32_t InMemoryDocumentSessionOperations::_instances_counter{};
 
-	std::reference_wrapper<IDocumentStore> InMemoryDocumentSessionOperations::get_document_store() const
+	std::shared_ptr<IDocumentStore> InMemoryDocumentSessionOperations::get_document_store() const
 	{
 		return _document_store;
 	}
@@ -48,17 +48,13 @@ namespace ravendb::client::documents::session
 	std::string InMemoryDocumentSessionOperations::store_identifier() const
 	{
 		std::ostringstream res;
-		res << _document_store.get().get_identifier() << ";" << database_name;
+		res << _document_store->get_identifier() << ";" << database_name;
 		return res.str();
 	}
 
-	const conventions::DocumentConventions& InMemoryDocumentSessionOperations::get_conventions() const
+	std::shared_ptr<conventions::DocumentConventions> InMemoryDocumentSessionOperations::get_conventions() const
 	{
-		//TODO implement
-		//return _request_executor.get_conventions();
-		//throw std::runtime_error("Not implemented");
-		static conventions::DocumentConventions conv{};
-		return conv;
+		return _request_executor->get_conventions();
 	}
 
 	size_t InMemoryDocumentSessionOperations::get_deferred_commands_count() const
@@ -66,9 +62,15 @@ namespace ravendb::client::documents::session
 		return _deferred_commands.size();
 	}
 
+	const identity::GenerateEntityIdOnTheClient& InMemoryDocumentSessionOperations::
+		get_generate_entity_id_on_the_client() const
+	{
+		return *_generate_entity_id_on_the_client;
+	}
+
 	const EntityToJson& InMemoryDocumentSessionOperations::get_entity_to_json() const
 	{
-		return _entity_to_json;
+		return *_entity_to_json;
 	}
 
 	TransactionMode InMemoryDocumentSessionOperations::get_transaction_mode() const
@@ -85,34 +87,47 @@ namespace ravendb::client::documents::session
 		_transaction_mode = mode;
 	}
 
-	InMemoryDocumentSessionOperations::InMemoryDocumentSessionOperations(DocumentStoreBase& document_store, SessionOptions options)
-		: id(0)//TODO set id	
+	InMemoryDocumentSessionOperations::InMemoryDocumentSessionOperations(std::shared_ptr<DocumentStoreBase> document_store,
+		SessionOptions options)
+		: _document_store(document_store)
+		, id(0)//TODO set id	
 		, database_name([&]
 	{
 		if (!impl::utils::is_blank(options.database))
 		{
 			return std::move(options.database);
 		}
-		if (!impl::utils::is_blank(document_store.get_database()))
+		if (!impl::utils::is_blank(document_store->get_database()))
 		{
-			return document_store.get_database();
+			return document_store->get_database();
 		}
 		throw_no_database();
 		return std::string{};//not suppose to happen - just shut the warning
 	}())
 		, no_tracking(options.no_tracking)
-		, _operation_executor(std::make_shared<documents::operations::SessionOperationExecutor>(*this))
 		, _transaction_mode(options.transaction_mode)
-		, _entity_to_json(*this)
-		, _client_session_id(++_client_session_id_counter)
+		, _client_session_id(_client_session_id_counter.fetch_add(1) + 1)
 		, _request_executor(options.request_executor ? options.request_executor : 
-			document_store.get_request_executor(database_name))
-		, _session_info(_client_session_id, /*document_store.get_last_transaction_index(database_name)*/{}, options.no_caching)
-		, _document_store(document_store)
+			document_store->get_request_executor(database_name))
+		, _session_info(_client_session_id, /*document_store->get_last_transaction_index(database_name)*/{}, options.no_caching)
+	{
+		_generate_entity_id_on_the_client = std::make_unique<identity::GenerateEntityIdOnTheClient>(
+			_request_executor->get_conventions(), [this](std::type_index type, std::shared_ptr<void> entity)
+		{
+			return this->generate_id(type, entity);
+		});
+	}
 
+	void InMemoryDocumentSessionOperations::initialize()
+	{
+		_entity_to_json = std::make_unique<EntityToJson>(_weak_this.lock());
+		_operation_executor = std::make_shared<documents::operations::SessionOperationExecutor>(_weak_this.lock());
+	}
 
-
-	{}
+	void InMemoryDocumentSessionOperations::set_weak_this(std::shared_ptr<InMemoryDocumentSessionOperations> ptr)
+	{
+		_weak_this = ptr;
+	}
 
 	std::shared_ptr<IMetadataDictionary> InMemoryDocumentSessionOperations::get_metadata_for_internal(std::shared_ptr<void> entity) const
 	{
@@ -404,7 +419,7 @@ namespace ravendb::client::documents::session
 		ConcurrencyCheckMode force_concurrency_check,
 		const DocumentInfo::ToJsonConverter& to_json,
 		const DocumentInfo::EntityUpdater& update_from_json,
-		const type_info& type)
+		std::type_index type)
 	{
 		if (no_tracking)
 		{
@@ -430,8 +445,10 @@ namespace ravendb::client::documents::session
 			if (change_vector)
 			{
 				doc_info->change_vector = std::move(change_vector).value();
-				doc_info->concurrency_check_mode = force_concurrency_check;
 			}
+
+			doc_info->concurrency_check_mode = force_concurrency_check;
+
 			if (!doc_info->to_json_converter)
 			{
 				doc_info->to_json_converter = to_json;
@@ -441,8 +458,18 @@ namespace ravendb::client::documents::session
 
 		if (!id)
 		{
-			//TODO generate id or
-			throw std::runtime_error("Not implemented");
+			if(_generate_document_keys_on_store)
+			{
+				id = _generate_entity_id_on_the_client->generate_document_key_for_storage(type, entity);
+			}
+			else
+			{
+				remember_entity_for_document_id_generator(type, entity);
+			}
+		}
+		else
+		{
+			_generate_entity_id_on_the_client->try_set_identity(type, entity, *id);
 		}
 
 		if (auto it = _deferred_commands_map.find(
@@ -463,39 +490,33 @@ namespace ravendb::client::documents::session
 		// to detect if they generate duplicates.
 		assert_is_unique_instance(entity, id ? *id : std::string());
 
-		nlohmann::json metadata = nlohmann::json::object();
-		
-		//TODO generate and set collection name
+		auto collection_name = get_request_executor()->get_conventions()->get_collection_name(type);
+
+		auto metadata = nlohmann::json::object();
+
+		impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::COLLECTION, collection_name);
+
+		auto cpp_type = get_request_executor()->get_conventions()->get_cpp_class_name(type);
+
+		impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::RAVEN_CPP_TYPE, cpp_type);
 
 		if (id)
 		{
 			_known_missing_ids.erase(*id);
 		}
 
-		//this part is unique to C++ : metadata check from the entity serialized
-		//TODO probably would be transferred to DocumentConventions 
-		auto temp_doc_info = std::make_shared<DocumentInfo>();
-		temp_doc_info->to_json_converter = to_json;
-		auto document = EntityToJson::convert_entity_to_json(entity, temp_doc_info);
+		store_entity_in_unit_of_work(id, entity, type, change_vector, std::move(metadata), force_concurrency_check, to_json, update_from_json);
+	}
 
-		metadata = document[constants::documents::metadata::KEY];
-		if(metadata.find(constants::documents::metadata::COLLECTION) == metadata.end())
-		{
-			std::ostringstream collection{};
-			std::string_view type_name = type.name();
-			collection << type_name.substr(type_name.find_last_of(':') + 1);
-			impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::COLLECTION, collection.str());			
-		}
-		if (id)
-		{
-			impl::utils::json_utils::set_val_to_json(metadata, constants::documents::metadata::ID, *id);
-		}
-
-		store_entity_in_unit_of_work(id, entity, change_vector, std::move(metadata), force_concurrency_check, to_json, update_from_json);
+	void InMemoryDocumentSessionOperations::remember_entity_for_document_id_generator(std::type_index type,
+		std::shared_ptr<void> entity)
+	{
+		throw std::runtime_error("You cannot set _generate_document_keys_on_store to false"
+			" without implementing remember_entity_for_document_id_generator");
 	}
 
 	void InMemoryDocumentSessionOperations::store_entity_in_unit_of_work(std::optional<std::string>& id,
-		std::shared_ptr<void> entity, std::optional<std::string>& change_vector, nlohmann::json metadata,
+		std::shared_ptr<void> entity, std::type_index type, std::optional<std::string>& change_vector, nlohmann::json metadata,
 		ConcurrencyCheckMode force_concurrency_check, const DocumentInfo::ToJsonConverter& to_json,
 		const DocumentInfo::EntityUpdater& update_from_json)
 	{
@@ -519,6 +540,7 @@ namespace ravendb::client::documents::session
 		{
 			doc_info->id = *id;
 		}
+		doc_info->stored_type = type;
 		doc_info->metadata = std::move(metadata);
 		if (change_vector)
 		{
@@ -577,7 +599,7 @@ namespace ravendb::client::documents::session
 
 		for (auto& deferred_command : result.deferred_commands)
 		{
-			deferred_command->on_before_save_changes(*this);
+			deferred_command->on_before_save_changes(_weak_this.lock());
 		}
 		return result;
 	}
@@ -1064,7 +1086,7 @@ namespace ravendb::client::documents::session
 	void InMemoryDocumentSessionOperations::update_session_after_changes(const json::BatchCommandResult& result)
 	{
 		auto&& returned_transaction_index = result.transaction_index;
-		_document_store.get().set_last_transaction_index(database_name, returned_transaction_index);
+		_document_store->set_last_transaction_index(database_name, returned_transaction_index);
 		_session_info.last_cluster_transaction_index = returned_transaction_index;
 	}
 

@@ -32,7 +32,7 @@ namespace ravendb::client::documents::operations::indexes
 		}())
 		{}
 
-		std::unique_ptr<VoidRavenCommandBase> get_command(const DocumentConventions& conventions) const override
+		std::unique_ptr<http::VoidRavenCommandBase> get_command(std::shared_ptr<DocumentConventions> conventions) const override
 		{
 			return std::make_unique<ResetIndexCommand>(_index_name);
 		}
@@ -62,13 +62,13 @@ namespace ravendb::client::documents::operations::indexes
 
 			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 			{
-				std::ostringstream pathBuilder;
-				pathBuilder << node.url << "/databases/" << node.database
+				std::ostringstream path_builder;
+				path_builder << node.url << "/databases/" << node.database
 					<< "/indexes?name=" << impl::utils::url_escape(curl, _index_name);
 
 				curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "RESET");
 
-				url = pathBuilder.str();
+				url = path_builder.str();
 			}
 		};
 	};

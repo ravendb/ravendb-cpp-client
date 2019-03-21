@@ -20,7 +20,7 @@ namespace ravendb::client::documents::session
 		return operations::lazy::EagerSessionOperations(_session_impl);
 	}
 
-	std::reference_wrapper<IDocumentStore> AdvancedSessionOperations::get_document_store() const
+	std::shared_ptr<IDocumentStore> AdvancedSessionOperations::get_document_store() const
 	{
 		return _session_impl->get_document_store();
 	}

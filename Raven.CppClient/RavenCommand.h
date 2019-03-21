@@ -17,11 +17,14 @@ namespace ravendb::client::http
 	template<typename TResult>
 	class RavenCommand //abstract
 	{
+	public:
+		using ResultType = TResult;
+
 	private:
 		std::map<ServerNode, std::exception> _failed_nodes;
 
 	protected:
-		TResult _result{};
+		std::shared_ptr<ResultType> _result{};
 		RavenCommandResponseType _response_type = RavenCommandResponseType::OBJECT;
 		bool _can_cache = true;
 		bool _can_cache_aggressively = true;
@@ -40,7 +43,7 @@ namespace ravendb::client::http
 
 		RavenCommandResponseType get_response_type() const noexcept;
 
-		const TResult& get_result() const noexcept;
+		std::shared_ptr<ResultType> get_result() const noexcept;
 
 		bool can_cache() const noexcept;
 
@@ -60,8 +63,8 @@ namespace ravendb::client::http
 	template <typename TResult>
 	RavenCommand<TResult>::~RavenCommand() = default;
 
-	template<typename Result_t>
-	void RavenCommand<Result_t>::add_change_vector_if_not_null(CURL * curl, const std::optional<std::string>& change_vector)
+	template<typename TResult>
+	void RavenCommand<TResult>::add_change_vector_if_not_null(CURL * curl, const std::optional<std::string>& change_vector)
 	{
 		if (change_vector)
 		{
@@ -79,7 +82,7 @@ namespace ravendb::client::http
 	}
 
 	template<typename TResult>
-	const TResult & RavenCommand<TResult>::get_result() const noexcept
+	std::shared_ptr<TResult> RavenCommand<TResult>::get_result() const noexcept
 	{
 		return _result;
 	}
@@ -113,7 +116,6 @@ namespace ravendb::client::http
 	{
 		return _failed_nodes.find(node) != _failed_nodes.end();
 	}
-
 }
 
 

@@ -3,7 +3,7 @@
 
 namespace ravendb::client::http
 {
-	using VoidRavenCommandBase = RavenCommand<void*>;
+	using VoidRavenCommandBase = RavenCommand<void>;
 
 	class VoidRavenCommand : public VoidRavenCommandBase
 	{
@@ -32,7 +32,7 @@ namespace ravendb::client::http
 
 	inline void VoidRavenCommand::set_response(CURL * curl, const nlohmann::json & response, bool from_cache)
 	{
-		_result = nullptr;
+		_result.reset();
 	}
 }
 

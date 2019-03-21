@@ -26,7 +26,7 @@ namespace ravendb::client::documents::operations::indexes
 			, _page_size(page_size)
 		{}
 
-		std::unique_ptr<RavenCommand<std::vector<IndexDefinition>>> get_command(const DocumentConventions& conventions) const override
+		std::unique_ptr<RavenCommand<std::vector<IndexDefinition>>> get_command(std::shared_ptr<DocumentConventions> conventions) const override
 		{
 			return std::make_unique<GetIndexesCommand>(_start, _page_size);
 		}
@@ -48,18 +48,19 @@ namespace ravendb::client::documents::operations::indexes
 
 			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 			{
-				std::ostringstream pathBuilder;
-				pathBuilder << node.url << "/databases/" << node.database
+				std::ostringstream path_builder;
+				path_builder << node.url << "/databases/" << node.database
 					<< "/indexes?start=" << _start << "&pageSize=" << _page_size;
 
 				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 
-				url = pathBuilder.str();
+				url = path_builder.str();
 			}
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 			{
-				if (!impl::utils::json_utils::get_val_from_json(response, "Results", _result))
+				_result = std::make_shared<ResultType>();
+				if (!impl::utils::json_utils::get_val_from_json(response, "Results", *_result))
 				{
 					throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::INVALID_RESPONSE);
 				}

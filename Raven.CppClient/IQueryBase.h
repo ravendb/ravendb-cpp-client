@@ -22,6 +22,11 @@ namespace ravendb::client::documents::session
 		IQueryBase() = default;
 
 	public:
+		std::shared_ptr<DocumentConventions> get_conventions() const
+		{
+			return cast_down()->get_conventions();
+		}
+
 		std::shared_ptr<TThis> skip(int32_t count)
 		{
 			return cast_down()->skip(count);

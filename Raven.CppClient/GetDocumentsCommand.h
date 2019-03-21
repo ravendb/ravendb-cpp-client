@@ -34,7 +34,7 @@ namespace ravendb::client::documents::commands
 		//using xxhash_cpp from https://github.com/RedSpah/xxhash_cpp
 		//TODO consider the endian issue
 		template <typename ConstIterator>
-		static int64_t calculate_docs_ids_hash(ConstIterator begin, ConstIterator end)
+		static uint64_t calculate_docs_ids_hash(ConstIterator begin, ConstIterator end)
 		{
 			xxh::hash_state_t<64> hash_stream;
 			for(ConstIterator it = begin; it != end; ++it)
@@ -183,7 +183,7 @@ namespace ravendb::client::documents::commands
 
 		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 		{
-				_result = response.get<decltype(_result)>();
+				_result = std::make_shared<ResultType>(response.get<ResultType>());
 		}
 
 		bool is_read_request() const noexcept override

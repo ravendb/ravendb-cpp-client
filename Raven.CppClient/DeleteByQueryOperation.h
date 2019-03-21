@@ -29,7 +29,7 @@ namespace ravendb::client::documents::operations
 		{}
 
 		std::unique_ptr<RavenCommand<OperationIdResult>> get_command
-		(const IDocumentStore& store, const DocumentConventions& conventions, HttpCache& cache) const override
+		(std::shared_ptr<IDocumentStore> store, std::shared_ptr<DocumentConventions> conventions, HttpCache& cache) const override
 		{
 			return std::make_unique<DeleteByQueryCommand>(conventions, _query_to_delete, _options);
 		}
@@ -38,14 +38,14 @@ namespace ravendb::client::documents::operations
 		class DeleteByQueryCommand : public RavenCommand<OperationIdResult>
 		{
 		private:
-			const DocumentConventions _conventions;//TODO currently unused, check later
+			const std::shared_ptr<DocumentConventions> _conventions;//TODO currently unused, check later
 			const std::string _query_to_delete_str;
 			const std::optional<queries::QueryOperationOptions> _options;
 
 		public:
 			~DeleteByQueryCommand() override = default;
 
-			DeleteByQueryCommand(const DocumentConventions& conventions,
+			DeleteByQueryCommand(std::shared_ptr<DocumentConventions> conventions,
 				const queries::IndexQuery& query_to_delete, std::optional<queries::QueryOperationOptions> options)
 				: _conventions(conventions)
 				, _query_to_delete_str(nlohmann::json(query_to_delete).dump())
@@ -91,7 +91,7 @@ namespace ravendb::client::documents::operations
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 			{
-				_result = response;
+				_result = std::make_shared<ResultType>(response.get<ResultType>());
 			}
 
 			bool is_read_request() const noexcept override

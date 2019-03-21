@@ -25,7 +25,7 @@ namespace ravendb::client::documents::operations::indexes
 			: _index_definition(std::move(definition))
 		{}
 
-		std::unique_ptr<RavenCommand<bool>> get_command(const DocumentConventions& conventions) const override
+		std::unique_ptr<RavenCommand<bool>> get_command(std::shared_ptr<DocumentConventions> conventions) const override
 		{
 			return std::make_unique<IndexHasChangedCommand>(conventions, _index_definition);
 		}
@@ -39,14 +39,14 @@ namespace ravendb::client::documents::operations::indexes
 		public:
 			~IndexHasChangedCommand() override = default;
 
-			IndexHasChangedCommand(const DocumentConventions& conventions, const IndexDefinition& definition)
+			IndexHasChangedCommand(std::shared_ptr<DocumentConventions> conventions, const IndexDefinition& definition)
 				: _definition(definition)
 			{}
 
 			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 			{
-				std::ostringstream pathBuilder;
-				pathBuilder << node.url << "/databases/" << node.database
+				std::ostringstream path_builder;
+				path_builder << node.url << "/databases/" << node.database
 					<< "/indexes/has-changed";
 
 				curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
@@ -55,12 +55,13 @@ namespace ravendb::client::documents::operations::indexes
 
 				curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, json_str.c_str());
 
-				url = pathBuilder.str();
+				url = path_builder.str();
 			}
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 			{
-				if(! impl::utils::json_utils::get_val_from_json(response, "Changed", _result))
+				_result = std::make_shared<ResultType>();
+				if(! impl::utils::json_utils::get_val_from_json(response, "Changed", *_result))
 				{
 					throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::INVALID_RESPONSE);
 				}

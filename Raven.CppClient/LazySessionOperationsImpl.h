@@ -14,21 +14,21 @@ namespace ravendb::client::documents::session::operations::lazy
 	class LazySessionOperationsImpl
 	{
 	private:
-		std::reference_wrapper<DocumentSessionImpl> _session;
+		std::shared_ptr<DocumentSessionImpl> _session;
 		std::weak_ptr<LazySessionOperationsImpl> _weak_this{};
 
-		explicit LazySessionOperationsImpl(DocumentSessionImpl& session)
+		explicit LazySessionOperationsImpl(std::shared_ptr<DocumentSessionImpl> session)
 			: _session(session)
 		{}
 
 	public:
 		~LazySessionOperationsImpl() = default;
 
-		static LazySessionOperations create(DocumentSessionImpl& session);
+		static LazySessionOperations create(std::shared_ptr<DocumentSessionImpl> session);
 
 		loaders::LazyLoaderWithInclude include(std::string path)
 		{
-			auto lazy_loader_with_include = loaders::LazyMultiLoaderWithInclude::create(_session.get());
+			auto lazy_loader_with_include = loaders::LazyMultiLoaderWithInclude::create(_session);
 			return lazy_loader_with_include.include(path);
 		}
 
@@ -39,17 +39,17 @@ namespace ravendb::client::documents::session::operations::lazy
 			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
 			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
-			if(_session.get().is_loaded(id))
+			if(_session->is_loaded(id))
 			{
 				return Lazy<std::shared_ptr<TResult>>([=, *this]()
 				{
-					return _session.get().load<TResult>(id, from_json, to_json);
+					return _session->load<TResult>(id, from_json, to_json);
 				});
 			}
 
-			auto load_operation = std::make_unique<LoadOperation>(_session.get());
+			auto load_operation = std::make_unique<LoadOperation>(_session);
 			load_operation->by_id(id);
-			auto lazy_load_operation = std::make_shared<LazyLoadOperation<TResult>>(_session.get(), std::move(load_operation));
+			auto lazy_load_operation = std::make_shared<LazyLoadOperation<TResult>>(_session, std::move(load_operation));
 			lazy_load_operation->by_id(id);
 
 			auto get_operation_result = [=](std::shared_ptr<operations::lazy::ILazyOperation> operation)->std::shared_ptr<TResult>
@@ -67,7 +67,7 @@ namespace ravendb::client::documents::session::operations::lazy
 				}
 			};
 
-			return _session.get().add_lazy_operation<std::shared_ptr<TResult>>(lazy_load_operation,
+			return _session->add_lazy_operation<std::shared_ptr<TResult>>(lazy_load_operation,
 				get_operation_result, [=]()
 			{
 				if (on_eval)
@@ -90,7 +90,7 @@ namespace ravendb::client::documents::session::operations::lazy
 			{
 				return std::cref(id);
 			});
-			return _session.get().lazy_load_internal<T>(ids, {}, on_eval, from_json, to_json);
+			return _session->lazy_load_internal<T>(ids, {}, on_eval, from_json, to_json);
 		}
 	};
 }

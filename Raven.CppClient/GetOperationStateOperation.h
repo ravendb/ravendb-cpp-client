@@ -4,11 +4,6 @@
 #include "RavenCommand.h"
 #include "ServerNode.h"
 
-using
-ravendb::client::http::RavenCommand,
-ravendb::client::http::ServerNode;
-
-
 namespace ravendb::client::documents::operations
 {
 	class GetOperationStateOperation : public operations::IMaintenanceOperation<nlohmann::json>
@@ -19,11 +14,11 @@ namespace ravendb::client::documents::operations
 	public:
 		~GetOperationStateOperation() override = default;
 
-		GetOperationStateOperation(int64_t id)
+		explicit GetOperationStateOperation(int64_t id)
 			: _id(id)
 		{}
 
-		std::unique_ptr<RavenCommand<nlohmann::json>> get_command(const DocumentConventions& conventions) const override
+		std::unique_ptr<RavenCommand<nlohmann::json>> get_command(std::shared_ptr<DocumentConventions> conventions) const override
 		{
 			return std::make_unique<GetOperationStateCommand>(DocumentConventions::default_conventions(), _id);
 		}
@@ -32,33 +27,33 @@ namespace ravendb::client::documents::operations
 		class GetOperationStateCommand : public RavenCommand<nlohmann::json>
 		{
 		private:
-			const DocumentConventions _conventions;
+			const std::shared_ptr<DocumentConventions> _conventions;
 			const int64_t _id;
 
 		public:
 			~GetOperationStateCommand() override = default;
 
-			GetOperationStateCommand(DocumentConventions conventions, int64_t id)
-				: _conventions(std::move(conventions))
+			GetOperationStateCommand(std::shared_ptr<DocumentConventions> conventions, int64_t id)
+				: _conventions(conventions)
 				, _id(id)
 			{}
 
 			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
 			{
-				std::ostringstream pathBuilder;
-				pathBuilder << node.url << "/databases/" << node.database
+				std::ostringstream path_builder;
+				path_builder << node.url << "/databases/" << node.database
 					<< "/operations/state?id=" << _id;
 
 				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 
-				url = pathBuilder.str();
+				url = path_builder.str();
 			}
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
 			{
 				if(!response.is_null())
 				{
-					_result = response;
+					_result = std::make_shared<ResultType>(response.get<ResultType>());
 				}
 			}
 

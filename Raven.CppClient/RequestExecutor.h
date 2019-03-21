@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "CertificateDetails.h"
 #include "RavenErrors.h"
+#include "DocumentConventions.h"
 
 namespace ravendb::client::http
 {
@@ -20,20 +21,23 @@ namespace ravendb::client::http
 		impl::CurlOptionsSetter _set_before_perform = {};
 		impl::CurlOptionsSetter _set_after_perform = {};
 
+		std::shared_ptr<documents::conventions::DocumentConventions> _conventions{};
+
 		void validate_urls();
 
 		void first_topology_update();
 
 		//TODO move the non-template part out 
 		template<typename TResult>
-		TResult execute_internal(ServerNode& node, RavenCommand<TResult>& cmd);
+		std::shared_ptr<TResult> execute_internal(ServerNode& node, RavenCommand<TResult>& cmd);
 
 		RequestExecutor(
 			std::string db_name,
 			std::vector<std::string> initial_urls,
 			std::optional<impl::CertificateDetails> certificate_details,
-			ravendb::client::impl::CurlOptionsSetter set_before_perform,
-			ravendb::client::impl::CurlOptionsSetter set_after_perform);
+			std::shared_ptr<documents::conventions::DocumentConventions> conventions,
+			impl::CurlOptionsSetter set_before_perform,
+			impl::CurlOptionsSetter set_after_perform);
 
 	public:
 		~RequestExecutor();
@@ -43,11 +47,13 @@ namespace ravendb::client::http
 		RequestExecutor& operator=(const RequestExecutor& other) = delete;
 		RequestExecutor& operator=(RequestExecutor&& other) = delete;
 
-		template<typename Result_t>
-		Result_t execute(RavenCommand<Result_t>& cmd);
+		std::shared_ptr<documents::conventions::DocumentConventions> get_conventions() const;
 
 		template<typename TResult>
-		TResult execute(std::unique_ptr<RavenCommand<TResult>> cmd_ptr)
+		std::shared_ptr<TResult> execute(RavenCommand<TResult>& cmd);
+
+		template<typename TResult>
+		std::shared_ptr<TResult> execute(std::unique_ptr<RavenCommand<TResult>> cmd_ptr)
 		{
 			return execute(*cmd_ptr.get());
 		}
@@ -55,13 +61,14 @@ namespace ravendb::client::http
 		static std::unique_ptr<RequestExecutor> create(
 			std::vector<std::string> urls,
 			std::string db,
+			std::shared_ptr<documents::conventions::DocumentConventions> conventions,
 			std::optional<impl::CertificateDetails> certificate_details = {},
-			ravendb::client::impl::CurlOptionsSetter set_before_perform = {},
-			ravendb::client::impl::CurlOptionsSetter set_after_perform = {});
+			impl::CurlOptionsSetter set_before_perform = {},
+			impl::CurlOptionsSetter set_after_perform = {});
 	};
 
 	template<typename TResult>
-	TResult RequestExecutor::execute_internal(ServerNode & node, RavenCommand<TResult>& cmd)
+	std::shared_ptr<TResult> RequestExecutor::execute_internal(ServerNode & node, RavenCommand<TResult>& cmd)
 	{
 		char error_buffer[CURL_ERROR_SIZE] = { '\0' };
 		std::string output_buffer;
@@ -117,7 +124,7 @@ namespace ravendb::client::http
 		case 200:
 		case 201:
 		{
-			auto result = nlohmann::json::parse(output_buffer);
+			auto result = output_buffer.empty() ? nlohmann::json() : nlohmann::json::parse(output_buffer);
 			cmd.set_response(curl, result, false);
 			break;
 		}
@@ -143,7 +150,7 @@ namespace ravendb::client::http
 		return cmd.get_result();
 	}
 	template<typename TResult>
-	TResult RequestExecutor::execute(RavenCommand<TResult>& cmd)
+	std::shared_ptr<TResult> RequestExecutor::execute(RavenCommand<TResult>& cmd)
 	{
 		std::optional<std::ostringstream> errors;
 

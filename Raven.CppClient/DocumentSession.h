@@ -16,7 +16,7 @@ namespace ravendb::client::documents::session
 
 	public:
 		//WARNING for unit test ONLY
-		const DocumentSessionImpl& get_session_implementation() const;
+		std::shared_ptr<DocumentSessionImpl> get_session_implementation() const;
 
 		~DocumentSession();
 
