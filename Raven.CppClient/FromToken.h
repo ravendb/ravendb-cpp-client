@@ -13,6 +13,10 @@ namespace ravendb::client::documents::session::tokens
 
 		void throw_invalid_collection_name() const;
 
+		FromToken(std::optional<std::string> index_name,
+			std::optional<std::string> collection_name,
+			std::optional<std::string> alias);
+
 	public:
 		~FromToken() override = default;
 
@@ -24,7 +28,7 @@ namespace ravendb::client::documents::session::tokens
 
 		const std::optional<std::string>& get_alias() const;
 
-		FromToken(std::optional<std::string> index_name,
+		static std::shared_ptr<FromToken> create(std::optional<std::string> index_name,
 			std::optional<std::string> collection_name,
 			std::optional<std::string> alias = {});
 

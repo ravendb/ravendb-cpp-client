@@ -14,17 +14,21 @@ namespace ravendb::client::documents::session::tokens
 			"include"
 	};
 
-	void QueryToken::write_field(std::ostringstream& oss, const std::string& field)
+	void QueryToken::write_field(std::ostringstream& writer, const std::optional<std::string>& field)
 	{
-		const bool is_keyword = RQL_KEYWORDS.find(field) != RQL_KEYWORDS.end();
-		if (is_keyword)
+		if(!field)
 		{
-			oss << "'";
+			return;
 		}
-		oss << field;
+		const bool is_keyword = RQL_KEYWORDS.find(*field) != RQL_KEYWORDS.end();
 		if (is_keyword)
 		{
-			oss << "'";
+			writer << "'";
+		}
+		writer << *field;
+		if (is_keyword)
+		{
+			writer << "'";
 		}
 	}
 

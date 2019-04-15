@@ -3,6 +3,7 @@
 #include "NextHiLoCommand.h"
 #include "RequestExecutor.h"
 #include "HiLoReturnCommand.h"
+#include "DocumentStore.h"
 
 
 namespace ravendb::client::documents::identity
@@ -12,7 +13,7 @@ namespace ravendb::client::documents::identity
 		auto hilo_command = commands::NextHiLoCommand(_tag, _last_batch_size, _last_range_date,
 			_identity_parts_separator, _range->maximum);
 
-		auto re = _store->get_request_executor(_db_name);
+		auto re = _store.lock()->get_request_executor(_db_name);
 		re->execute(hilo_command);
 
 		prefix = hilo_command.get_result()->prefix;
@@ -79,11 +80,11 @@ namespace ravendb::client::documents::identity
 		}
 	}
 
-	void HiLoIdGenerator::return_unused_range() const
+	void HiLoIdGenerator::return_unused_range(const DocumentStore& store) const
 	{
 		auto return_command = commands::HiLoReturnCommand(_tag, _range->current, _range->maximum);
 
-		auto re = _store->get_request_executor(_db_name);
+		auto re = store.get_request_executor(_db_name);
 		re->execute(return_command);
 	}
 }

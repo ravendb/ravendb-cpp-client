@@ -2,11 +2,17 @@
 #include "DocumentSessionImpl.h"
 #include "LoaderWithInclude.h"
 
-namespace ravendb::client::documents::session
+namespace ravendb::client::documents
 {
-	class AdvancedSessionOperations;
+	namespace session
+	{
+		class AdvancedSessionOperations;
+	}
+	namespace queries
+	{
+		class Query;
+	}
 }
-
 namespace ravendb::client::documents::session
 {
 	class DocumentSession
@@ -76,6 +82,9 @@ namespace ravendb::client::documents::session
 
 		template<typename T>
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> query();
+
+		template<typename T>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> query(const queries::Query& collection_or_index_name);
 	};
 
 	template <typename T>
@@ -146,5 +155,11 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentSession::query()
 	{
 		return _session_impl->query<T>();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentSession::query(const queries::Query& collection_or_index_name)
+	{
+		return _session_impl->query<T>(std::move(collection_or_index_name));
 	}
 }

@@ -9,9 +9,17 @@ namespace ravendb::client::impl::utils
 	std::string GetCppClassName::_get_class_name_impl(std::type_index type)
 	{
 		std::string_view win_class_name = type.name();
-		auto first_space_pos = win_class_name.find_first_of(' ');
 
-		std::string res = first_space_pos != std::string_view::npos ? win_class_name.data() + first_space_pos + 1 : win_class_name.data();
+		if(win_class_name.find("class ") == 0)
+		{
+			win_class_name.remove_prefix(6);
+		}
+		else if (win_class_name.find("struct ") == 0)
+		{
+			win_class_name.remove_prefix(7);
+		}
+
+		std::string res = win_class_name.data();
 		_classes_names.insert_or_assign(type, res);
 
 		return std::move(res);

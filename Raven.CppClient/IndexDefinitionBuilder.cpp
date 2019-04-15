@@ -63,7 +63,7 @@ namespace ravendb::client::documents::indexes
 			{
 				options.term_vector = value;
 			});
-			apply_values<spacial::SpatialOptions>(index_definition, spatial_indexes_strings,
+			apply_values<spatial::SpatialOptions>(index_definition, spatial_indexes_strings,
 				[](auto& options, const auto& value)
 			{
 				options.spatial = value;

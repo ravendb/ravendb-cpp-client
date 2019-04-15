@@ -9,7 +9,7 @@ namespace ravendb::client::documents::identity
 {
 	std::unique_ptr<HiLoIdGenerator> MultiTypeHiLoIdGenerator::create_generator_for(std::string tag) const
 	{
-		return std::make_unique<HiLoIdGenerator>(tag, store, db_name, conventions->get_identity_part_separator());
+		return std::make_unique<HiLoIdGenerator>(tag, store.lock(), db_name, conventions->get_identity_part_separator());
 	}
 
 	MultiTypeHiLoIdGenerator::MultiTypeHiLoIdGenerator(std::shared_ptr<DocumentStore> store_param,
@@ -56,11 +56,11 @@ namespace ravendb::client::documents::identity
 		}
 	}
 
-	void MultiTypeHiLoIdGenerator::return_unused_range() const
+	void MultiTypeHiLoIdGenerator::return_unused_range(const DocumentStore& store) const
 	{
 		for(const auto& [tag, generator] : _id_generator_by_tag)
 		{
-			generator->return_unused_range();
+			generator->return_unused_range(store);
 		}
 	}
 }

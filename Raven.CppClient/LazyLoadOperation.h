@@ -14,7 +14,7 @@ namespace ravendb::client::documents::session::operations::lazy
 		using ResultType = DocumentsByIdsMap<T>;
 
 	private:
-		const std::shared_ptr<InMemoryDocumentSessionOperations> _session;
+		const std::weak_ptr<InMemoryDocumentSessionOperations> _session;
 		std::unique_ptr<LoadOperation> _load_operation;
 		std::vector<std::string> _ids{};
 		std::vector<std::string> _includes{};
@@ -75,7 +75,7 @@ namespace ravendb::client::documents::session::operations::lazy
 		ids_to_check_on_server.reserve(_ids.size());
 		std::for_each(_ids.cbegin(), _ids.cend(), [&](const std::string& id)
 		{
-			if (!_session->is_loaded_or_deleted(id))
+			if (!_session.lock()->is_loaded_or_deleted(id))
 			{
 				ids_to_check_on_server.push_back(std::cref(id));
 			}

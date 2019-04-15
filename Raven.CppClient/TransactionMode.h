@@ -14,5 +14,5 @@ namespace ravendb::client::documents::session
 			{TransactionMode::UNSET, nullptr},
 			{TransactionMode::SINGLE_NODE, "SingleNode"},
 			{TransactionMode::CLUSTER_WIDE, "ClusterWide"}
-		});
+		})
 }

@@ -15,7 +15,7 @@ namespace ravendb::client::documents::indexes
 	{
 		if (!conventions)
 		{
-			conventions = std::make_shared<conventions::DocumentConventions>();
+			conventions = conventions::DocumentConventions::create();
 		}
 
 		auto index_definition_builder = IndexDefinitionBuilder(get_index_name());

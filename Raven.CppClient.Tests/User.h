@@ -5,10 +5,10 @@ namespace ravendb::client::tests::infrastructure::entities
 {
 	struct User
 	{
-		std::string id;
-		std::string name;
-		std::string last_name;
-		std::string address_id;
+		std::string id{};
+		std::string name{};
+		std::string last_name{};
+		std::string address_id{};
 		int32_t count{};
 		int32_t age{};
 
@@ -27,11 +27,11 @@ namespace ravendb::client::tests::infrastructure::entities
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		set_val_to_json(j, "Id", u.id);
+		set_val_to_json(j, "id", u.id);
 		set_val_to_json(j, "Name", u.name);
 		set_val_to_json(j, "LastName", u.last_name);
 		set_val_to_json(j, "AddressId", u.address_id);
-		set_val_to_json(j, "Count", u.count);
+		set_val_to_json(j, "count", u.count);
 		set_val_to_json(j, "Age", u.age);
 	}
 
@@ -39,11 +39,11 @@ namespace ravendb::client::tests::infrastructure::entities
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		get_val_from_json(j, "Id", u.id);
+		get_val_from_json(j, "id", u.id);
 		get_val_from_json(j, "Name", u.name);
 		get_val_from_json(j, "LastName", u.last_name);
 		get_val_from_json(j, "AddressId", u.address_id);
-		get_val_from_json(j, "Count", u.count);
+		get_val_from_json(j, "count", u.count);
 		get_val_from_json(j, "Age", u.age);
 	}
 }

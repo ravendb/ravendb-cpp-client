@@ -28,7 +28,7 @@ namespace ravendb::client::documents::session::operations
 	class BatchOperation
 	{
 	private:
-		const std::shared_ptr<InMemoryDocumentSessionOperations> _session;
+		const std::weak_ptr<InMemoryDocumentSessionOperations> _session;
 		std::vector<std::shared_ptr<void>> _entities{};
 		size_t _session_commands_count{};
 		size_t _all_commands_count{};

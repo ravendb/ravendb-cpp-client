@@ -1,6 +1,7 @@
 #pragma once
 #include <curl/curl.h>
 #include <optional>
+#include <sstream>
 #include "json.hpp"
 #include "ServerNode.h"
 #include "CurlSListHolder.h"
@@ -32,6 +33,8 @@ namespace ravendb::client::http
 
 		RavenCommand() = default;
 
+		static void throw_invalid_response();
+
 	public:
 		int32_t status_code = -1;
 
@@ -59,6 +62,12 @@ namespace ravendb::client::http
 
 		bool is_failed_with_node(const ServerNode& node) const noexcept;
 	};
+
+	template <typename TResult>
+	void RavenCommand<TResult>::throw_invalid_response()
+	{
+		throw std::runtime_error("Response is invalid");
+	}
 
 	template <typename TResult>
 	RavenCommand<TResult>::~RavenCommand() = default;

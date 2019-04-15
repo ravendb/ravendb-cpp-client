@@ -12,6 +12,7 @@ namespace ravendb::client::documents::queries
 		int32_t total_results;
 		int32_t skipped_results;
 		std::optional<std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::string>>>> highlightings;
+		std::optional<std::unordered_map<std::string, std::vector<std::string>>> explanations;
 		int64_t duration_in_ms;
 		std::optional<std::unordered_map<std::string, std::string>> score_explanations;
 	};
@@ -29,6 +30,7 @@ namespace ravendb::client::documents::queries
 		get_val_from_json(j, "TotalResults", gqr.total_results);
 		get_val_from_json(j, "SkippedResults", gqr.skipped_results);
 		get_val_from_json(j, "Highlightings", gqr.highlightings);
+		get_val_from_json(j, "Explanations", gqr.explanations);
 		get_val_from_json(j, "DurationInMs", gqr.duration_in_ms);
 		get_val_from_json(j, "ScoreExplanations", gqr.score_explanations);
 	}

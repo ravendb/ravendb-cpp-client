@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 
 namespace ravendb::client::documents::commands::batches
 {

@@ -9,7 +9,7 @@ namespace ravendb::client::documents::session::operations
 	class LoadOperation
 	{
 	private:
-		const std::shared_ptr<InMemoryDocumentSessionOperations> _session;
+		const std::weak_ptr<InMemoryDocumentSessionOperations> _session;
 
 		std::vector<std::string> _ids{};
 
@@ -31,12 +31,12 @@ namespace ravendb::client::documents::session::operations
 				return {};
 			}
 
-			if(_session->check_if_already_included(_ids, _includes))
+			if(_session.lock()->check_if_already_included(_ids, _includes))
 			{
 				return nullptr;
 			}
 
-			_session->increment_request_count();
+			_session.lock()->increment_request_count();
 
 			//TODO take care of counters
 
@@ -56,7 +56,7 @@ namespace ravendb::client::documents::session::operations
 			{
 				_ids.push_back(id);
 			}
-			if(_session->is_loaded_or_deleted(id))
+			if(_session.lock()->is_loaded_or_deleted(id))
 			{
 				return *this;
 			}
@@ -96,7 +96,7 @@ namespace ravendb::client::documents::session::operations
 			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
 			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
 		{
-			if (_session->no_tracking)
+			if (_session.lock()->no_tracking)
 			{
 				if (!_current_load_results)
 				{
@@ -112,7 +112,7 @@ namespace ravendb::client::documents::session::operations
 						return  nullptr;
 					}
 					auto doc_info = DocumentInfo(document);
-					return _session->track_entity<T>(doc_info, from_json, to_json);
+					return _session.lock()->track_entity<T>(doc_info, from_json, to_json);
 				}else
 				{
 					return nullptr;
@@ -130,21 +130,21 @@ namespace ravendb::client::documents::session::operations
 			{
 				return {};
 			}
-			if(_session->is_deleted(id))
+			if(_session.lock()->is_deleted(id))
 			{
 				return {};
 			}
 
-			if (auto doc_info = _session->_documents_by_id.find(id);
-				doc_info != _session->_documents_by_id.end())
+			if (auto doc_info = _session.lock()->_documents_by_id.find(id);
+				doc_info != _session.lock()->_documents_by_id.end())
 			{
-				return _session->track_entity<T>(*doc_info->second, from_json, to_json);
+				return _session.lock()->track_entity<T>(*doc_info->second, from_json, to_json);
 			}
 			
-			if (auto doc_info = _session->_included_documents_by_id.find(id);
-				doc_info != _session->_included_documents_by_id.end())
+			if (auto doc_info = _session.lock()->_included_documents_by_id.find(id);
+				doc_info != _session.lock()->_included_documents_by_id.end())
 			{
-				return _session->track_entity<T>(*doc_info->second, from_json, to_json);
+				return _session.lock()->track_entity<T>(*doc_info->second, from_json, to_json);
 			}
 
 			return {};
@@ -157,7 +157,7 @@ namespace ravendb::client::documents::session::operations
 		{
 			DocumentsByIdsMap<T> results{};
 
-			if(_session->no_tracking)
+			if(_session.lock()->no_tracking)
 			{
 				if(!_current_load_results)
 				{
@@ -178,7 +178,7 @@ namespace ravendb::client::documents::session::operations
 						continue;
 					}
 					auto doc_info = DocumentInfo(doc);
-					results.insert_or_assign(doc_info.id, _session->track_entity<T>(doc_info, from_json, to_json));
+					results.insert_or_assign(doc_info.id, _session.lock()->track_entity<T>(doc_info, from_json, to_json));
 				}
 			}
 
@@ -199,12 +199,12 @@ namespace ravendb::client::documents::session::operations
 				return;
 			}
 
-			if(_session->no_tracking)
+			if(_session.lock()->no_tracking)
 			{
 				_current_load_results = *result;
 			}
 
-			_session->register_includes(result->includes);
+			_session.lock()->register_includes(result->includes);
 
 			//TODO take care of counters
 
@@ -216,10 +216,10 @@ namespace ravendb::client::documents::session::operations
 				}
 
 				auto new_doc_info = std::make_shared<DocumentInfo>(document);
-				_session->_documents_by_id.insert({new_doc_info->id,new_doc_info});
+				_session.lock()->_documents_by_id.insert({new_doc_info->id,new_doc_info});
 			}
 
-			_session->register_missing_includes(result->results, result->includes, _includes);
+			_session.lock()->register_missing_includes(result->results, result->includes, _includes);
 		}
 	};
 }

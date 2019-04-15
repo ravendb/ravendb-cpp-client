@@ -8,8 +8,6 @@
 #include "EntityIdHelperUtil.h"
 #include "DeleteDocumentCommand.h"
 
-CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::User, id);
-
 namespace ravendb::client::tests::client::documents::commands
 {
 	class DeleteDocumentCommandTest : public driver::RavenTestDriver
@@ -22,7 +20,7 @@ namespace ravendb::client::tests::client::documents::commands
 
 		static void SetUpTestCase()
 		{
-			register_entity_id_helper<infrastructure::entities::User>();
+			REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
 		}
 	};
 

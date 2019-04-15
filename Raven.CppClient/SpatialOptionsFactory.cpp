@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SpatialOptionsFactory.h"
 
-namespace ravendb::client::documents::indexes::spacial
+namespace ravendb::client::documents::indexes::spatial
 {
 	SpatialOptionsFactory::GeographySpatialOptionsFactory SpatialOptionsFactory::geography()
 	{

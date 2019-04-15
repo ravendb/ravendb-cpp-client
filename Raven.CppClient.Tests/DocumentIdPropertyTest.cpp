@@ -7,8 +7,6 @@
 #include "AdvancedSessionOperations.h"
 #include "GetDocumentsCommand.h"
 
-CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::User, id);
-
 namespace ravendb::client::tests::client::documents
 {
 	class DocumentIdPropertyTest : public driver::RavenTestDriver
@@ -21,7 +19,7 @@ namespace ravendb::client::tests::client::documents
 
 		static void SetUpTestCase()
 		{
-			register_entity_id_helper<infrastructure::entities::User>();
+			REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
 		}
 	};
 

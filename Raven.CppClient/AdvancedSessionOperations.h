@@ -84,7 +84,7 @@ namespace ravendb::client::documents::session
 		const EntityToJson& get_entity_to_json() const;
 
 		template<typename T>
-		std::shared_ptr<RawDocumentQuery<T>> raw_query(const std::string& query);
+		auto raw_query(std::string query);
 
 		template<typename T, typename U>
 		void patch(std::shared_ptr<T> entity, const std::string& path_to_array,
@@ -173,9 +173,9 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::shared_ptr<RawDocumentQuery<T>> AdvancedSessionOperations::raw_query(const std::string& query)
+	auto AdvancedSessionOperations::raw_query(std::string query)
 	{
-		return _session_impl->raw_query<T>(query);
+		return _session_impl->raw_query<T>(std::move(query));
 	}
 
 	template <typename T, typename V>

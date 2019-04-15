@@ -3,19 +3,20 @@
 #include "FieldsToFetchToken.h"
 #include "InMemoryDocumentSessionOperations.h"
 #include "SimpleStopWatch.h"
+#include "utils.h"
 
 namespace ravendb::client::documents::session::operations
 {
 	class QueryOperation
 	{
 	private:
-		const std::shared_ptr<InMemoryDocumentSessionOperations> _session;
+		const std::weak_ptr<InMemoryDocumentSessionOperations> _session;
 		const std::optional<std::string> _index_name;
 		const queries::IndexQuery _index_query;
 		const bool _metadata_only;
 		const bool _index_entries_only;
 		queries::QueryResult _current_query_result{};
-		const std::optional<tokens::FieldsToFetchToken> _fields_to_fetch;
+		const std::shared_ptr<tokens::FieldsToFetchToken> _fields_to_fetch;
 
 		impl::SimpleStopWatch _stop_watch{};
 
@@ -29,7 +30,7 @@ namespace ravendb::client::documents::session::operations
 
 	public:
 		QueryOperation(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::optional<std::string> index_name,
-			queries::IndexQuery index_query, std::optional<tokens::FieldsToFetchToken> fields_to_fetch,
+			queries::IndexQuery index_query, std::shared_ptr<tokens::FieldsToFetchToken> fields_to_fetch,
 			bool disable_entities_tracking, bool metadata_only, bool index_entries_only);
 
 		commands::QueryCommand create_request() const;
@@ -43,7 +44,7 @@ namespace ravendb::client::documents::session::operations
 
 		template<typename T>
 		static std::shared_ptr<T> deserialize(const std::string& id, const nlohmann::json& document,
-			const nlohmann::json& metadata, const std::optional<tokens::FieldsToFetchToken>& fields_to_fetch,
+			const nlohmann::json& metadata, std::shared_ptr<tokens::FieldsToFetchToken> fields_to_fetch,
 			bool disable_entities_tracking, std::shared_ptr<InMemoryDocumentSessionOperations> session);
 
 		void ensure_is_acceptable_and_save_result(const QueryResult& result);
@@ -66,7 +67,7 @@ namespace ravendb::client::documents::session::operations
 
 		if (!_no_tracking)
 		{
-			_session->register_includes(query_result.includes);
+			_session.lock()->register_includes(query_result.includes);
 		}
 
 		std::vector<std::shared_ptr<T>> list{};
@@ -84,7 +85,7 @@ namespace ravendb::client::documents::session::operations
 					id = id_json_it->get<std::string>();
 				}
 
-				list.push_back(deserialize<T>(id, document, metadata, _fields_to_fetch, _no_tracking, _session));
+				list.push_back(deserialize<T>(id, document, metadata, _fields_to_fetch, _no_tracking, _session.lock()));
 			}
 		}
 		catch (std::exception& e)
@@ -93,7 +94,7 @@ namespace ravendb::client::documents::session::operations
 		}
 		if (_no_tracking)
 		{
-			_session->register_missing_includes(query_result.results, query_result.includes, query_result.included_paths);
+			_session.lock()->register_missing_includes(query_result.results, query_result.includes, query_result.included_paths);
 			//TODO take care of counters
 		}
 		return list;
@@ -101,7 +102,7 @@ namespace ravendb::client::documents::session::operations
 
 	template <typename T>
 	std::shared_ptr<T> QueryOperation::deserialize(const std::string& id, const nlohmann::json& document,
-		const nlohmann::json& metadata, const std::optional<tokens::FieldsToFetchToken>& fields_to_fetch,
+		const nlohmann::json& metadata, std::shared_ptr<tokens::FieldsToFetchToken> fields_to_fetch,
 		bool disable_entities_tracking, std::shared_ptr<InMemoryDocumentSessionOperations> session)
 	{
 		nlohmann::json the_document = document;
@@ -109,6 +110,11 @@ namespace ravendb::client::documents::session::operations
 		if (auto projection_it = metadata.find("@projection");
 			projection_it == metadata.end() || !projection_it->get<bool>())
 		{
+			if(impl::utils::is_blank(id))
+			{
+				return session->deserialize_from_transformer<T>({}, document);
+			}
+
 			return std::static_pointer_cast<T>(session->track_entity(id, document, metadata, disable_entities_tracking,
 				DocumentInfo::default_from_json<T>, DocumentInfo::default_to_json<T>, DocumentInfo::default_entity_update<T>));
 		}
@@ -145,8 +151,7 @@ namespace ravendb::client::documents::session::operations
 				{
 					return std::make_shared<T>();
 				}
-				if (fields_to_fetch->_fields_to_fetch[0] &&
-					fields_to_fetch->_fields_to_fetch[0] == (*fields_to_fetch->_projections)[0] &&
+				if (fields_to_fetch->_fields_to_fetch[0] == (*fields_to_fetch->_projections)[0] &&
 					json_it->is_object())
 				{
 					the_document = *json_it;

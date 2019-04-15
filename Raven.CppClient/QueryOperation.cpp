@@ -5,7 +5,7 @@ namespace ravendb::client::documents::session::operations
 {
 	void QueryOperation::assert_page_size_set() const
 	{
-		if(!_session->get_conventions()->is_throw_if_query_page_size_is_not_set())
+		if(!_session.lock()->get_conventions()->is_throw_if_query_page_size_is_not_set())
 		{
 			return;
 		}
@@ -20,14 +20,14 @@ namespace ravendb::client::documents::session::operations
 	}
 
 	QueryOperation::QueryOperation(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::optional<std::string> index_name,
-		queries::IndexQuery index_query, std::optional<tokens::FieldsToFetchToken> fields_to_fetch,
+		queries::IndexQuery index_query, std::shared_ptr<tokens::FieldsToFetchToken> fields_to_fetch,
 		bool disable_entities_tracking, bool metadata_only, bool index_entries_only)
 		: _session(session)
 		, _index_name(std::move(index_name))
 		, _index_query(std::move(index_query))
 		, _metadata_only(metadata_only)
 		, _index_entries_only(index_entries_only)
-		, _fields_to_fetch(std::move(fields_to_fetch))
+		, _fields_to_fetch(fields_to_fetch)
 		, _no_tracking(disable_entities_tracking)
 	{
 		assert_page_size_set();
@@ -35,7 +35,7 @@ namespace ravendb::client::documents::session::operations
 
 	commands::QueryCommand QueryOperation::create_request() const
 	{
-		return commands::QueryCommand(_session->get_conventions(), _index_query, _metadata_only, _index_entries_only);
+		return commands::QueryCommand(_session.lock()->get_conventions(), _index_query, _metadata_only, _index_entries_only);
 	}
 
 	const QueryResult& QueryOperation::get_current_query_results() const

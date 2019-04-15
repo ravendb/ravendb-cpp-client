@@ -1,70 +1,358 @@
 #pragma once
 #include "IDocumentQuery.h"
+#include "SpatialCriteriaFactory.h"
+#include "MoreLikeThisUsingDocument.h"
+#include "GroupByDocumentQuery.h"
 
 namespace ravendb::client::documents::session
 {
 	template<typename T>
 	class DocumentQuery : public AbstractDocumentQuery<T>, public IDocumentQuery<T, DocumentQuery<T>>
 	{
+	public:
+		template<typename U>
+		friend class DocumentQuery;
+
 	private:
 		std::weak_ptr<DocumentQuery> _weak_this{};
 
 		DocumentQuery(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::optional<std::string> index_name,
-			std::optional<std::string> collection_name, bool is_group_by, std::optional<tokens::DeclareToken> declare_token,
-			/*std::vector<DeclareToken>*/void* load_tokens, std::optional<std::string> from_alias);
+			std::optional<std::string> collection_name, bool is_group_by, std::shared_ptr<tokens::DeclareToken> declare_token,
+			std::vector<std::shared_ptr<tokens::LoadToken>> load_tokens, std::optional<std::string> from_alias);
+
+		template<typename TResult>
+		std::shared_ptr<DocumentQuery<TResult>> create_document_query_internal(const std::optional<queries::QueryData>& query_data = {});
 
 	public:
 		static std::shared_ptr<DocumentQuery> create(std::shared_ptr<InMemoryDocumentSessionOperations> session,
 			std::optional<std::string> index_name,
-			std::optional<std::string> collection_name, bool is_group_by, std::optional<tokens::DeclareToken> declare_token,
-			/*std::vector<DeclareToken>*/void* load_tokens, std::optional<std::string> from_alias);
+			std::optional<std::string> collection_name, bool is_group_by, std::shared_ptr<tokens::DeclareToken> declare_token,
+			std::vector<std::shared_ptr<tokens::LoadToken>> load_tokens, std::optional<std::string> from_alias);
 
 		static std::shared_ptr<DocumentQuery> create(std::shared_ptr<InMemoryDocumentSessionOperations> session,
 			std::optional<std::string> index_name,
 			std::optional<std::string> collection_name, bool is_group_by);
 
-		std::shared_ptr<DocumentConventions> get_conventions() const
-		{
-			return AbstractDocumentQuery<T>::get_conventions();
-		}
+		std::shared_ptr<DocumentConventions> get_conventions() const;
 
-		std::vector<std::shared_ptr<T>> to_list()
-		{
-			return 	AbstractDocumentQuery<T>::to_list();
-		}
+		std::vector<std::shared_ptr<T>> to_list();
 
 		Lazy<std::vector<std::shared_ptr<T>>> lazily(
-			const std::optional<std::function<void(const std::vector<std::shared_ptr<T>>&)>>& on_eval)
-		{
-			return AbstractDocumentQuery<T>::lazily(on_eval);
-		}
+			const std::optional<std::function<void(const std::vector<std::shared_ptr<T>>&)>>& on_eval);
 
-		std::shared_ptr<DocumentQuery> skip(int32_t count)
-		{
-			AbstractDocumentQuery<T>::_skip(count);
-			return _weak_this.lock();
-		}
+		template<typename TProjection>
+		std::shared_ptr<IDocumentQuery<TProjection, DocumentQuery<TProjection>>> select_fields();
 
-		std::shared_ptr<DocumentQuery> take(int32_t count)
-		{
-			AbstractDocumentQuery<T>::_take(count);
-			return _weak_this.lock();
-		}
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> distinct();
 
-		std::shared_ptr<DocumentQuery> order_by(const std::string& field);
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> order_by_score();
 
-		std::shared_ptr<DocumentQuery> order_by(const std::string& field, OrderingType ordering);
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> order_by_score_descending();
 
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> include_explanation(
+			std::optional<queries::explanation::Explanations>& explanations_reference);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> include_explanations(
+			const std::optional<queries::explanation::ExplanationOptions>& options,
+			std::optional<queries::explanation::Explanations>& explanations_reference);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> timings(std::optional<queries::timings::QueryTimings>& timings);
+
+		template<typename TProjection>
+		std::shared_ptr<IDocumentQuery<TProjection, DocumentQuery<TProjection>>> select_fields(const std::vector<std::string>& fields);
+
+		template<typename TProjection>
+		std::shared_ptr<IDocumentQuery<TProjection, DocumentQuery<TProjection>>> select_fields(const queries::QueryData& query_data);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> wait_for_non_stale_results(const std::optional<std::chrono::milliseconds>& wait_timeout = {});
+
+		IndexQuery get_index_query() const;
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_parameter(std::string name, nlohmann::json object);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_order(const std::string& field_name,
+			bool descending, OrderingType ordering = OrderingType::STRING);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_after_query_executed_listener(std::function<void(const QueryResult&)> action);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> remove_after_query_executed_listener(std::function<void(const QueryResult&)> action);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_after_stream_executed_listener(std::function<void(const nlohmann::json&)> action);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> remove_after_stream_executed_listener(std::function<void(const nlohmann::json&)> action);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> open_subclause();
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> close_subclause();
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> search(const std::string& field_name, std::string search_terms,
+			queries::SearchOperator search_operator = queries::SearchOperator::OR);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> intersect();
+
+		template<typename TValue>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> contains_any(const std::string& field_name, const std::vector<TValue>& values);
+
+		template<typename TValue>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> contains_all(const std::string& field_name, const std::vector<TValue>& values);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> statistics(std::optional<QueryStatistics>& stats) const;
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> using_default_operator(queries::QueryOperator query_operator);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> no_tracking();
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> no_caching();
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> include(std::string path);
+
+		//TODO
+		//public IDocumentQuery<T> include(Consumer<IQueryIncludeBuilder> includes)
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> not_next();
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> take(int32_t count);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> skip(int32_t count);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_Lucene(const std::string& field_name, const std::string& where_clause, bool exact = false);
+
+		template<typename TValue>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_equals(std::string field_name, const TValue& value, bool exact = false);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_equals(std::string field_name, const MethodCall& method, bool exact = false);
+
+		template<typename TValue>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_equals(WhereParams<TValue> where_params);
+
+		template<typename TValue>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_not_equals(std::string field_name, const TValue& value, bool exact = false);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_not_equals(std::string field_name, const MethodCall& method, bool exact = false);
+
+		template<typename TValue>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_not_equals(WhereParams<TValue> where_params);
+
+		template<typename TValue>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_in(const std::string& field_name, const std::vector<TValue>& values, bool exact = false);
+
+		template<typename TValue>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_starts_with(std::string field_name, const TValue& value);
+
+		template<typename TValue>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_ends_with(std::string field_name, const TValue& value);
+
+		template<typename TValue>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_between(const std::string& field_name, const TValue& start, const TValue& end,
+			bool exact = false);
+
+		template<typename TValue>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_greater_than(const std::string& field_name, const TValue& value, bool exact = false);
+
+		template<typename TValue>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_greater_than_or_equal(const std::string& field_name, const TValue& value, bool exact = false);
+
+		template<typename TValue>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_less_than(const std::string& field_name, const TValue& value, bool exact = false);
+
+		template<typename TValue>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_less_than_or_equal(const std::string& field_name, const TValue& value, bool exact = false);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_exists(const std::string& field_name);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_regex(const std::string& field_name, std::string pattern);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> and_also();
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> or_else();
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> boost(double boost);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> fuzzy(double fuzzy);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> proximity(int32_t proximity);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> random_ordering();
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> random_ordering(const std::string& seed);
+
+		template<typename TResult>
+		std::shared_ptr<DocumentQuery<TResult>> of_type();
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> order_by(const std::string& field,
+			OrderingType ordering = OrderingType::STRING);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> order_by_descending(const std::string& field,
+			OrderingType ordering = OrderingType::STRING);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_before_query_executed_listener(
+			std::function<void(const IndexQuery&)> action);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> remove_before_query_executed_listener(
+			std::function<void(const IndexQuery&)> action);
+
+		Lazy<int32_t> count_lazily();
+
+		std::shared_ptr<T> first();
+
+		std::shared_ptr<T> first_or_default();
+
+		std::shared_ptr<T> single();
+
+		bool any();
+
+		int32_t count();
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> negate_next();
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> within_radius_of(
+			const std::string& field_name, double radius, double latitude, double longitude,
+			const std::optional<indexes::spatial::SpatialUnits>& radius_units = {},
+			double dist_error_percent = constants::documents::indexing::spacial::DEFAULT_DISTANCE_ERROR_PCT);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> relates_to_shape(const std::string& field_name, const std::string& shape_wkt,
+			indexes::spatial::SpatialRelation relation,
+			const std::optional<indexes::spatial::SpatialUnits>& units = {},
+			double dist_error_percent = constants::documents::indexing::spacial::DEFAULT_DISTANCE_ERROR_PCT);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> spatial(const std::string& field_name,
+			std::function<std::unique_ptr<queries::spatial::SpatialCriteria>(const queries::spatial::SpatialCriteriaFactory&)> clause);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> spatial(const queries::spatial::DynamicSpatialField& field_name,
+			std::function<std::unique_ptr<queries::spatial::SpatialCriteria>(const queries::spatial::SpatialCriteriaFactory&)> clause);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> more_like_this(const queries::more_like_this::MoreLikeThisBase& more_like_this);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> highlight(std::string field_name, int32_t fragment_length, int32_t fragment_count,
+			std::optional<queries::highlighting::Highlightings>& highlightings_reference);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> highlight(std::string field_name, int32_t fragment_length, int32_t fragment_count,
+			const std::optional<queries::highlighting::HighlightingOptions>& options,
+			std::optional<queries::highlighting::Highlightings>& highlightings_reference);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> order_by_distance(const queries::spatial::DynamicSpatialField& field,
+			double latitude, double longitude);
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> order_by_distance(const std::string& field_name,
+			double latitude, double longitude);
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> order_by_distance(const queries::spatial::DynamicSpatialField& field,
+			const std::string& shape_wkt);
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> order_by_distance(const std::string& field_name,
+			const std::string& shape_wkt);
+
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> order_by_distance_descending(const queries::spatial::DynamicSpatialField& field,
+			double latitude, double longitude);
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> order_by_distance_descending(const std::string& field_name,
+			double latitude, double longitude);
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> order_by_distance_descending(const queries::spatial::DynamicSpatialField& field,
+			const std::string& shape_wkt);
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> order_by_distance_descending(const std::string& field_name,
+			const std::string& shape_wkt);
+
+		const std::optional<std::string>& get_index_name() const;
+
+		bool is_distinct() const;
+
+		QueryResult get_query_result();
+
+		std::shared_ptr<IGroupByDocumentQuery<T, GroupByDocumentQuery<T>>> group_by(const std::vector<std::string>& field_names);
+
+		std::shared_ptr<IGroupByDocumentQuery<T, GroupByDocumentQuery<T>>> group_by(const std::vector<queries::GroupBy>& fields);
 	};
-
 
 	template <typename T>
 	DocumentQuery<T>::DocumentQuery(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::optional<std::string> index_name,
-		std::optional<std::string> collection_name, bool is_group_by, std::optional<tokens::DeclareToken> declare_token,
-		void* load_tokens, std::optional<std::string> from_alias)
+		std::optional<std::string> collection_name, bool is_group_by, std::shared_ptr<tokens::DeclareToken> declare_token,
+		std::vector<std::shared_ptr<tokens::LoadToken>>  load_tokens, std::optional<std::string> from_alias)
 		: AbstractDocumentQuery<T>(session, std::move(index_name), std::move(collection_name), is_group_by,
-			std::move(declare_token), load_tokens, std::move(from_alias))
+			declare_token, std::move(load_tokens), std::move(from_alias))
 	{}
+
+	template <typename T>
+	template <typename TResult>
+	std::shared_ptr<DocumentQuery<TResult>> DocumentQuery<T>::create_document_query_internal(
+		const std::optional<queries::QueryData>& query_data)
+	{
+		std::shared_ptr<tokens::FieldsToFetchToken> new_fields_to_fetch{};
+
+		if(query_data && !query_data->fields.empty())
+		{
+			auto fields = query_data->fields;
+
+			if(!AbstractDocumentQuery<T>::is_group_by)
+			{
+				if(auto id_helper = get_conventions()->get_entity_id_helper(typeid(TResult));
+					id_helper.has_value())
+				{
+					auto&& identity_field = id_helper->get_id_field_name();
+					if(auto it = std::find(fields.begin(), fields.end(), identity_field);
+						it != fields.end())
+					{
+						*it = constants::documents::indexing::fields::DOCUMENT_ID_FIELD_NAME;
+					}
+				}
+			}
+
+			std::optional<std::string> source_alias_reference{};
+			AbstractDocumentQuery<T>::template get_source_alias_if_exists<TResult>(*query_data, fields, source_alias_reference);
+			new_fields_to_fetch = tokens::FieldsToFetchToken::create(std::move(fields), query_data->projections,
+				query_data->is_custom_function, std::move(source_alias_reference));
+		}
+
+		if(new_fields_to_fetch)
+		{
+			AbstractDocumentQuery<T>::update_fields_to_fetch_token(new_fields_to_fetch);
+		}
+
+		std::shared_ptr<DocumentQuery<TResult>> query{};
+		if(!query_data)
+		{
+			query = DocumentQuery<TResult>::create(AbstractDocumentQuery<T>::the_session.lock(),
+				AbstractDocumentQuery<T>::get_index_name(),
+				AbstractDocumentQuery<T>::get_collection_name(),
+				AbstractDocumentQuery<T>::is_group_by);
+		}
+		else
+		{
+			query = DocumentQuery<TResult>::create(AbstractDocumentQuery<T>::the_session.lock(),
+				AbstractDocumentQuery<T>::get_index_name(),
+				AbstractDocumentQuery<T>::get_collection_name(),
+				AbstractDocumentQuery<T>::is_group_by,
+				query_data->declare_token,
+				query_data->load_tokens,
+				query_data->from_alias);
+		}
+
+		query->query_raw = AbstractDocumentQuery<T>::query_raw;
+		query->page_size = AbstractDocumentQuery<T>::page_size;
+		query->select_tokens = AbstractDocumentQuery<T>::select_tokens;
+		query->fields_to_fetch_token = AbstractDocumentQuery<T>::fields_to_fetch_token;
+		query->where_tokens = AbstractDocumentQuery<T>::where_tokens;
+		query->order_by_tokens = AbstractDocumentQuery<T>::order_by_tokens;
+		query->group_by_tokens = AbstractDocumentQuery<T>::group_by_tokens;
+		query->query_parameters = AbstractDocumentQuery<T>::query_parameters;
+		query->start = AbstractDocumentQuery<T>::start;
+		query->timeout = AbstractDocumentQuery<T>::timeout;
+		query->query_stats = AbstractDocumentQuery<T>::query_stats;
+		query->the_wait_for_non_stale_results = AbstractDocumentQuery<T>::the_wait_for_non_stale_results;
+		query->negate = AbstractDocumentQuery<T>::negate;
+		query->document_includes = AbstractDocumentQuery<T>::document_includes;
+		//TODO query->counter_includes_token = AbstractDocumentQuery<T>::counter_includes_token;
+		query->root_types = { std::type_index(typeid(T)) };
+		query->before_query_executed_callback = AbstractDocumentQuery<T>::before_query_executed_callback;
+		query->after_query_executed_callback = AbstractDocumentQuery<T>::after_query_executed_callback;
+		query->after_stream_executed_callback = AbstractDocumentQuery<T>::after_stream_executed_callback;
+		query->highlighting_tokens = AbstractDocumentQuery<T>::highlighting_tokens;
+		query->query_highlightings = AbstractDocumentQuery<T>::query_highlightings;
+		query->disable_entities_tracking = AbstractDocumentQuery<T>::disable_entities_tracking;
+		query->disable_caching = AbstractDocumentQuery<T>::disable_caching;
+		query->query_timings = AbstractDocumentQuery<T>::query_timings;
+		query->explanations = AbstractDocumentQuery<T>::explanations;
+		query->explanation_token = AbstractDocumentQuery<T>::explanation_token;
+		query->is_intersect = AbstractDocumentQuery<T>::is_intersect;
+		query->default_operator = AbstractDocumentQuery<T>::default_operator;
+
+		return query;
+	}
 
 	template <typename T>
 	std::shared_ptr<DocumentQuery<T>> DocumentQuery<T>::create(std::shared_ptr<InMemoryDocumentSessionOperations> session,
@@ -75,30 +363,728 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::shared_ptr<DocumentQuery<T>> DocumentQuery<T>::order_by(const std::string& field)
+	std::shared_ptr<DocumentQuery<T>> DocumentQuery<T>::create(std::shared_ptr<InMemoryDocumentSessionOperations> session,
+		std::optional<std::string> index_name, std::optional<std::string> collection_name, bool is_group_by,
+		std::shared_ptr<tokens::DeclareToken> declare_token, std::vector<std::shared_ptr<tokens::LoadToken>>  load_tokens,
+		std::optional<std::string> from_alias)
 	{
-		return order_by(field, OrderingType::STRING);
+		auto new_object = std::shared_ptr<DocumentQuery<T>>(new DocumentQuery<T>(
+			session, std::move(index_name), std::move(collection_name), is_group_by,
+			declare_token, std::move(load_tokens), std::move(from_alias)));
+		new_object->_weak_this = new_object;
+
+		return new_object;
 	}
 
 	template <typename T>
-	std::shared_ptr<DocumentQuery<T>> DocumentQuery<T>::order_by(const std::string& field, OrderingType ordering)
+	std::shared_ptr<DocumentConventions> DocumentQuery<T>::get_conventions() const
+	{
+		return AbstractDocumentQuery<T>::get_conventions();
+	}
+
+	template <typename T>
+	std::vector<std::shared_ptr<T>> DocumentQuery<T>::to_list()
+	{
+		return AbstractDocumentQuery<T>::to_list();
+	}
+
+	template <typename T>
+	Lazy<std::vector<std::shared_ptr<T>>> DocumentQuery<T>::lazily(
+		const std::optional<std::function<void(const std::vector<std::shared_ptr<T>>&)>>& on_eval)
+	{
+		return AbstractDocumentQuery<T>::lazily(on_eval);
+	}
+
+	template <typename T>
+	template <typename TProjection>
+	std::shared_ptr<IDocumentQuery<TProjection, DocumentQuery<TProjection>>> DocumentQuery<T>::select_fields()
+	{
+		nlohmann::json sample = TProjection();
+
+		std::vector<std::string> fields{};
+		if(sample.is_object())
+		{
+			fields.reserve(sample.size());		
+			for(const auto& item : sample.items())
+			{
+				fields.push_back(item.key());
+			}
+		}
+
+		return select_fields<TProjection>(queries::QueryData(fields, fields));
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::distinct()
+	{
+		AbstractDocumentQuery<T>::_distinct();
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_score()
+	{
+		AbstractDocumentQuery<T>::_order_by_score();
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_score_descending()
+	{
+		AbstractDocumentQuery<T>::_order_by_descending();
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::include_explanation(
+		std::optional<queries::explanation::Explanations>& explanations_reference)
+	{
+		AbstractDocumentQuery<T>::_include_explanations({}, explanations_reference);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::include_explanations(
+		const std::optional<queries::explanation::ExplanationOptions>& options,
+		std::optional<queries::explanation::Explanations>& explanations_reference)
+	{
+		AbstractDocumentQuery<T>::_include_explanations(options, explanations_reference);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::timings(std::optional<queries::timings::QueryTimings>& timings)
+	{
+		AbstractDocumentQuery<T>::_include_timings(timings);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	template <typename TProjection>
+	std::shared_ptr<IDocumentQuery<TProjection, DocumentQuery<TProjection>>> DocumentQuery<T>::select_fields(const std::vector<std::string>& fields)
+	{
+		auto query_data = queries::QueryData(fields, fields);
+		return select_fields<TProjection>(query_data);
+	}
+
+	template <typename T>
+	template <typename TProjection>
+	std::shared_ptr<IDocumentQuery<TProjection, DocumentQuery<TProjection>>> DocumentQuery<T>::select_fields(const queries::QueryData& query_data)
+	{
+		return create_document_query_internal<TProjection>(query_data);
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::wait_for_non_stale_results(
+		const std::optional<std::chrono::milliseconds>& wait_timeout)
+	{
+		AbstractDocumentQuery<T>::_wait_for_non_stale_results(std::move(wait_timeout));
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	IndexQuery DocumentQuery<T>::get_index_query() const
+	{
+		return AbstractDocumentQuery<T>::get_index_query();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::add_parameter(std::string name, nlohmann::json object)
+	{
+		AbstractDocumentQuery<T>::_add_parameter(std::move(name), std::move(object));
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::add_order(const std::string& field_name, bool descending,
+		OrderingType ordering)
+	{
+		if(descending)
+		{
+			order_by_descending(field_name, ordering);
+		}
+		else
+		{
+			order_by(field_name, ordering);
+		}
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::add_after_query_executed_listener(
+		std::function<void(const QueryResult&)> action)
+	{
+		AbstractDocumentQuery<T>::_add_after_query_executed_listener(action);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::remove_after_query_executed_listener(
+		std::function<void(const QueryResult&)> action)
+	{
+		AbstractDocumentQuery<T>::_remove_after_query_executed_listener(action);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::add_after_stream_executed_listener(
+		std::function<void(const nlohmann::json&)> action)
+	{
+		AbstractDocumentQuery<T>::_add_after_stream_executed_listener(action);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::remove_after_stream_executed_listener(
+		std::function<void(const nlohmann::json&)> action)
+	{
+		AbstractDocumentQuery<T>::_remove_after_stream_executed_listener(action);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::open_subclause()
+	{
+		AbstractDocumentQuery<T>::_open_subclause();
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::close_subclause()
+	{
+		AbstractDocumentQuery<T>::_close_subclause();
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::search(const std::string& field_name, std::string search_terms,
+		queries::SearchOperator search_operator)
+	{
+		AbstractDocumentQuery<T>::_search(field_name, std::move(search_terms), search_operator);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::intersect()
+	{
+		AbstractDocumentQuery<T>::_intersect();
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	template <typename TValue>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::contains_any(const std::string& field_name,
+		const std::vector<TValue>& values)
+	{
+		AbstractDocumentQuery<T>::template _contains_any<TValue>(field_name, values);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	template <typename TValue>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::contains_all(const std::string& field_name,
+		const std::vector<TValue>& values)
+	{
+		AbstractDocumentQuery<T>::template _contains_all<TValue>(field_name, values);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::statistics(std::optional<QueryStatistics>& stats) const
+	{
+		AbstractDocumentQuery<T>::_statistics(stats);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::using_default_operator(queries::QueryOperator query_operator)
+	{
+		AbstractDocumentQuery<T>::_using_default_operator(query_operator);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::no_tracking()
+	{
+		AbstractDocumentQuery<T>::_no_tracking();
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::no_caching()
+	{
+		AbstractDocumentQuery<T>::_no_caching();
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::include(std::string path)
+	{
+		AbstractDocumentQuery<T>::_include(std::move(path));
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::not_next()
+	{
+		AbstractDocumentQuery<T>::negate_next();
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::take(int32_t count)
+	{
+		AbstractDocumentQuery<T>::_take(count);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::skip(int32_t count)
+	{
+		AbstractDocumentQuery<T>::_skip(count);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_Lucene(const std::string& field_name,
+		const std::string& where_clause, bool exact)
+	{
+		AbstractDocumentQuery<T>::_where_Lucene(field_name, where_clause, exact);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	template <typename TValue>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_equals(std::string field_name, const TValue& value,
+		bool exact)
+	{
+		AbstractDocumentQuery<T>::template _where_equals<TValue>(std::move(field_name), &value, exact);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_equals(std::string field_name, const MethodCall& method,
+		bool exact)
+	{
+		AbstractDocumentQuery<T>::template _where_equals(std::move(field_name), &method, exact);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	template <typename TValue>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_equals(WhereParams<TValue> where_params)
+	{
+		AbstractDocumentQuery<T>::template _where_equals<TValue>(std::move(where_params));
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	template <typename TValue>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_not_equals(std::string field_name, const TValue& value,
+		bool exact)
+	{
+		AbstractDocumentQuery<T>::template _where_not_equals<TValue>(field_name, &value, exact);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_not_equals(std::string field_name,
+		const MethodCall& method, bool exact)
+	{
+		AbstractDocumentQuery<T>::_where_not_equals(field_name, &method, exact);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	template <typename TValue>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_not_equals(WhereParams<TValue> where_params)
+	{
+		AbstractDocumentQuery<T>::template _where_not_equals<TValue>(std::move(where_params));
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	template <typename TValue>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_in(const std::string& field_name,
+		const std::vector<TValue>& values, bool exact)
+	{
+		AbstractDocumentQuery<T>::template _where_in<TValue>(field_name, values, exact);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	template <typename TValue>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_starts_with(std::string field_name, const TValue& value)
+	{
+		AbstractDocumentQuery<T>::template _where_starts_with<TValue>(field_name, &value);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	template <typename TValue>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_ends_with(std::string field_name, const TValue& value)
+	{
+		AbstractDocumentQuery<T>::template _where_ends_with<TValue>(field_name, &value);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	template <typename TValue>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_between(const std::string& field_name,
+		const TValue& start, const TValue& end, bool exact)
+	{
+		AbstractDocumentQuery<T>::template _where_between<TValue>(field_name, &start, &end, exact);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	template <typename TValue>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_greater_than(const std::string& field_name,
+		const TValue& value, bool exact)
+	{
+		AbstractDocumentQuery<T>::template _where_greater_than<TValue>(field_name, &value, exact);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	template <typename TValue>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_greater_than_or_equal(const std::string& field_name,
+		const TValue& value, bool exact)
+	{
+		AbstractDocumentQuery<T>::template _where_greater_than_or_equal<TValue>(field_name, &value, exact);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	template <typename TValue>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_less_than(const std::string& field_name,
+		const TValue& value, bool exact)
+	{
+		AbstractDocumentQuery<T>::template _where_less_than<TValue>(field_name, &value, exact);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	template <typename TValue>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_less_than_or_equal(const std::string& field_name,
+		const TValue& value, bool exact)
+	{
+		AbstractDocumentQuery<T>::template _where_less_than_or_equal<TValue>(field_name, &value, exact);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_exists(const std::string& field_name)
+	{
+		AbstractDocumentQuery<T>::_where_exists(field_name);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_regex(const std::string& field_name, std::string pattern)
+	{
+		AbstractDocumentQuery<T>::_where_regex(field_name, std::move(pattern));
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::and_also()
+	{
+		AbstractDocumentQuery<T>::_and_also();
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::or_else()
+	{
+		AbstractDocumentQuery<T>::_or_else();
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::boost(double boost)
+	{
+		AbstractDocumentQuery<T>::_boost(boost);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::fuzzy(double fuzzy)
+	{
+		AbstractDocumentQuery<T>::_fuzzy(fuzzy);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::proximity(int32_t proximity)
+	{
+		AbstractDocumentQuery<T>::_proximity(proximity);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::random_ordering()
+	{
+		AbstractDocumentQuery<T>::_random_ordering();
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::random_ordering(const std::string& seed)
+	{
+		AbstractDocumentQuery<T>::_random_ordering(seed);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	template <typename TResult>
+	std::shared_ptr<DocumentQuery<TResult>> DocumentQuery<T>::of_type()
+	{
+		return create_document_query_internal<TResult>();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by(const std::string& field, OrderingType ordering)
 	{
 		AbstractDocumentQuery<T>::_order_by(field, ordering);
 		return _weak_this.lock();
 	}
 
 	template <typename T>
-	std::shared_ptr<DocumentQuery<T>> DocumentQuery<T>::create(std::shared_ptr<InMemoryDocumentSessionOperations> session,
-		std::optional<std::string> index_name, std::optional<std::string> collection_name, bool is_group_by,
-		std::optional<tokens::DeclareToken> declare_token, void* load_tokens, std::optional<std::string> from_alias)
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_descending(const std::string& field,
+		OrderingType ordering)
 	{
-		auto new_object = std::shared_ptr<DocumentQuery<T>>(new DocumentQuery<T>(
-			session, std::move(index_name), std::move(collection_name), is_group_by,
-			std::move(declare_token), load_tokens, std::move(from_alias)));
-		new_object->_weak_this = new_object;
-
-		return new_object;
+		AbstractDocumentQuery<T>::_order_by_descending(field, ordering);
+		return _weak_this.lock();
 	}
 
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::add_before_query_executed_listener(
+		std::function<void(const IndexQuery&)> action)
+	{
+		AbstractDocumentQuery<T>::_add_before_query_executed_listener(action);
+		return _weak_this.lock();
+	}
 
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::remove_before_query_executed_listener(
+		std::function<void(const IndexQuery&)> action)
+	{
+		AbstractDocumentQuery<T>::_remove_before_query_executed_listener(action);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	Lazy<int32_t> DocumentQuery<T>::count_lazily()
+	{
+		return AbstractDocumentQuery<T>::count_lazily();
+	}
+
+	template <typename T>
+	std::shared_ptr<T> DocumentQuery<T>::first()
+	{
+		return AbstractDocumentQuery<T>::first();
+	}
+
+	template <typename T>
+	std::shared_ptr<T> DocumentQuery<T>::first_or_default()
+	{
+		return AbstractDocumentQuery<T>::first_or_default();
+	}
+
+	template <typename T>
+	std::shared_ptr<T> DocumentQuery<T>::single()
+	{
+		return AbstractDocumentQuery<T>::single();
+	}
+
+	template <typename T>
+	bool DocumentQuery<T>::any()
+	{
+		return AbstractDocumentQuery<T>::any();
+	}
+
+	template <typename T>
+	int32_t DocumentQuery<T>::count()
+	{
+		return AbstractDocumentQuery<T>::count();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::negate_next()
+	{
+		AbstractDocumentQuery<T>::negate_next();
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::within_radius_of(
+		const std::string& field_name, double radius, double latitude, double longitude,
+		const std::optional<indexes::spatial::SpatialUnits>& radius_units, double dist_error_percent)
+	{
+		AbstractDocumentQuery<T>::_within_radius_of(field_name, radius, latitude, longitude, radius_units, dist_error_percent);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::relates_to_shape(
+		const std::string& field_name, const std::string& shape_wkt, indexes::spatial::SpatialRelation relation,
+		const std::optional<indexes::spatial::SpatialUnits>& units, double dist_error_percent)
+	{
+		AbstractDocumentQuery<T>::_spatial(field_name, shape_wkt, relation, units, dist_error_percent);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::spatial(const std::string& field_name,
+		std::function<std::unique_ptr<queries::spatial::SpatialCriteria>(const queries::spatial::SpatialCriteriaFactory&)
+		> clause)
+	{
+		auto criteria = clause(queries::spatial::SpatialCriteriaFactory::INSTANCE);
+		AbstractDocumentQuery<T>::_spatial(field_name, std::move(criteria));
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::spatial(
+		const queries::spatial::DynamicSpatialField& field_name,
+		std::function<std::unique_ptr<queries::spatial::SpatialCriteria>(const queries::spatial::SpatialCriteriaFactory&
+		)> clause)
+	{
+		auto criteria = clause(queries::spatial::SpatialCriteriaFactory::INSTANCE);
+		AbstractDocumentQuery<T>::_spatial(field_name, std::move(criteria));
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::more_like_this(
+		const queries::more_like_this::MoreLikeThisBase& more_like_this)
+	{
+		auto mlt = AbstractDocumentQuery<T>::_more_like_this();
+		mlt.with_options(more_like_this.options);
+
+		if(auto mlt_ud = dynamic_cast<const queries::more_like_this::MoreLikeThisUsingDocument*>(&more_like_this))
+		{
+			mlt.with_document(mlt_ud->document_json);
+		}
+
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::highlight(std::string field_name,
+		int32_t fragment_length, int32_t fragment_count,
+		std::optional<queries::highlighting::Highlightings>& highlightings_reference)
+	{
+		AbstractDocumentQuery<T>::_highlight(std::move(field_name), fragment_length, fragment_count, {}, highlightings_reference);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::highlight(std::string field_name,
+		int32_t fragment_length, int32_t fragment_count,
+		const std::optional<queries::highlighting::HighlightingOptions>& options,
+		std::optional<queries::highlighting::Highlightings>& highlightings_reference)
+	{
+		AbstractDocumentQuery<T>::_highlight(std::move(field_name), fragment_length, fragment_count, options, highlightings_reference);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_distance(
+		const queries::spatial::DynamicSpatialField& field, double latitude, double longitude)
+	{
+		AbstractDocumentQuery<T>::_order_by_distance(field, latitude, longitude);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_distance(
+		const std::string& field_name, double latitude, double longitude)
+	{
+		AbstractDocumentQuery<T>::_order_by_distance(field_name, latitude, longitude);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_distance(
+		const queries::spatial::DynamicSpatialField& field, const std::string& shape_wkt)
+	{
+		AbstractDocumentQuery<T>::_order_by_distance(field, shape_wkt);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_distance(
+		const std::string& field_name, const std::string& shape_wkt)
+	{
+		AbstractDocumentQuery<T>::_order_by_distance(field_name, shape_wkt);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_distance_descending(
+		const queries::spatial::DynamicSpatialField& field, double latitude, double longitude)
+	{
+		AbstractDocumentQuery<T>::_order_by_descending(field, latitude, longitude);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_distance_descending(
+		const std::string& field_name, double latitude, double longitude)
+	{
+		AbstractDocumentQuery<T>::_order_by_descending(field_name, latitude, longitude);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_distance_descending(
+		const queries::spatial::DynamicSpatialField& field, const std::string& shape_wkt)
+	{
+		AbstractDocumentQuery<T>::_order_by_descending(field, shape_wkt);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_distance_descending(
+		const std::string& field_name, const std::string& shape_wkt)
+	{
+		AbstractDocumentQuery<T>::_order_by_descending(field_name, shape_wkt);
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	const std::optional<std::string>& DocumentQuery<T>::get_index_name() const
+	{
+		return AbstractDocumentQuery<T>::get_index_name();
+	}
+
+	template <typename T>
+	bool DocumentQuery<T>::is_distinct() const
+	{
+		return AbstractDocumentQuery<T>::is_distinct();
+	}
+
+	template <typename T>
+	QueryResult DocumentQuery<T>::get_query_result()
+	{
+		return AbstractDocumentQuery<T>::get_query_result();
+	}
+
+	template <typename T>
+	std::shared_ptr<IGroupByDocumentQuery<T, GroupByDocumentQuery<T>>> DocumentQuery<T>::group_by(
+		const std::vector<std::string>& field_names)
+	{
+		AbstractDocumentQuery<T>::_group_by(field_names);
+		return GroupByDocumentQuery<T>::create(_weak_this.lock());
+	}
+
+	template <typename T>
+	std::shared_ptr<IGroupByDocumentQuery<T, GroupByDocumentQuery<T>>> DocumentQuery<T>::group_by(
+		const std::vector<queries::GroupBy>& fields)
+	{
+		AbstractDocumentQuery<T>::_group_by(fields);
+		return GroupByDocumentQuery<T>::create(_weak_this.lock());
+	}
 }

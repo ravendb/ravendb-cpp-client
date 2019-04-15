@@ -32,6 +32,9 @@
     <ClCompile Include="..\Raven.CppClient\tryouts1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tryouts2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Tryouts.rc">

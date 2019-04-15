@@ -8,23 +8,11 @@
 
 namespace ravendb::client::documents
 {
-	DocumentStore::~DocumentStore()
-	{
-		if(disposed)
-		{
-			return;
-		}
-		try
-		{
-			close();
-		}
-		catch (...)
-		{}
-	}
+	DocumentStore::~DocumentStore() = default;
 
 	std::shared_ptr<DocumentStore> DocumentStore::create()
 	{
-		auto object = std::shared_ptr<DocumentStore>(new DocumentStore());
+		auto object = std::shared_ptr<DocumentStore>(new DocumentStore(), Deleter());
 		object->_weak_this = object;
 		object->initiate_operation_executors();
 		return object;
@@ -32,7 +20,7 @@ namespace ravendb::client::documents
 
 	std::shared_ptr<DocumentStore> DocumentStore::create(std::string url, std::string database)
 	{
-		auto object = std::shared_ptr<DocumentStore>(new DocumentStore(std::move(url), std::move(database)));
+		auto object = std::shared_ptr<DocumentStore>(new DocumentStore(std::move(url), std::move(database)), Deleter());
 		object->_weak_this = object;
 		object->initiate_operation_executors();
 		return object;
@@ -40,17 +28,29 @@ namespace ravendb::client::documents
 
 	std::shared_ptr<DocumentStore> DocumentStore::create(std::vector<std::string> urls, std::string database)
 	{
-		auto object = std::shared_ptr<DocumentStore>(new DocumentStore(std::move(urls), std::move(database)));
+		auto object = std::shared_ptr<DocumentStore>(new DocumentStore(std::move(urls), std::move(database)), Deleter());
 		object->_weak_this = object;
 		object->initiate_operation_executors();
 		return object;
+	}
+
+	void DocumentStore::Deleter::operator()(DocumentStore* ptr) const
+	{
+		try
+		{
+			ptr->close();
+		}
+		catch (...)
+		{}
+
+		delete ptr;
 	}
 
 	void DocumentStore::initiate_operation_executors()
 	{
 		_maintenance_operation_executor = operations::MaintenanceOperationExecutor::create(
 			std::static_pointer_cast<DocumentStore>(_weak_this.lock()));
-		_operation_executor = std::make_shared<operations::OperationExecutor>(_weak_this.lock());
+		_operation_executor = operations::OperationExecutor::create(_weak_this.lock());
 	}
 
 	DocumentStore::DocumentStore() = default;
@@ -100,7 +100,7 @@ namespace ravendb::client::documents
 		{
 			if (_multi_db_hilo)
 			{
-				_multi_db_hilo->return_unused_range();
+				_multi_db_hilo->return_unused_range(*this);
 			}
 		}catch (...)
 		{}// ignore
@@ -204,7 +204,7 @@ namespace ravendb::client::documents
 		return _weak_this.lock();
 	}
 
-	std::shared_ptr<operations::MaintenanceOperationExecutor> DocumentStore::get_maintenance() const
+	std::shared_ptr<operations::MaintenanceOperationExecutor> DocumentStore::maintenance() const
 	{
 		return _maintenance_operation_executor;
 	}

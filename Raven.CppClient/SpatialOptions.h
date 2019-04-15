@@ -4,7 +4,7 @@
 #include "SpatialUnits.h"
 #include "json_utils.h"
 
-namespace ravendb::client::documents::indexes::spacial
+namespace ravendb::client::documents::indexes::spatial
 {
 	struct SpatialOptions
 	{

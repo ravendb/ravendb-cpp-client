@@ -2,6 +2,11 @@
 #include "IDocumentStore.h"
 #include "DateTimeOffset.h"
 
+namespace ravendb::client::documents
+{
+	class DocumentStore;
+}
+
 namespace ravendb::client::documents::identity
 {
 	// Generate hilo numbers against a RavenDB document
@@ -25,7 +30,7 @@ namespace ravendb::client::documents::identity
 	private:
 		std::mutex _generator_lock{};
 
-		const std::shared_ptr<IDocumentStore> _store;
+		const std::weak_ptr<IDocumentStore> _store;
 		const std::string _tag;
 		int64_t _last_batch_size{};
 		impl::DateTimeOffset _last_range_date{};
@@ -59,6 +64,6 @@ namespace ravendb::client::documents::identity
 
 		int64_t next_id();
 
-		void return_unused_range() const;
+		void return_unused_range(const DocumentStore& store) const;
 	};
 }

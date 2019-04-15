@@ -2,10 +2,6 @@
 #include "RavenCommand.h"
 #include "DocumentConventions.h"
 
-using
-	ravendb::client::http::RavenCommand,
-	ravendb::client::documents::conventions::DocumentConventions;
-
 namespace ravendb::client::documents::operations
 {
 	template<typename TResult>
@@ -14,7 +10,8 @@ namespace ravendb::client::documents::operations
 		virtual ~IMaintenanceOperation() = 0;
 
 		//using std::unique_ptr for polymorphism
-		virtual std::unique_ptr<RavenCommand<TResult>> get_command(std::shared_ptr<DocumentConventions> conventions) const = 0;
+		virtual std::unique_ptr<http::RavenCommand<TResult>> get_command(
+			std::shared_ptr<conventions::DocumentConventions> conventions) const = 0;
 	};
 
 	template <typename TResult>

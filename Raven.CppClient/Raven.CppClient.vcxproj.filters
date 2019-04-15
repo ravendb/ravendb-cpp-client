@@ -162,7 +162,7 @@
       <Filter>ravendb.client\documents\indexes</Filter>
     </ClCompile>
     <ClCompile Include="SpatialOptionsFactory.cpp">
-      <Filter>ravendb.client\documents\indexes\spacial</Filter>
+      <Filter>ravendb.client\documents\indexes\spatial</Filter>
     </ClCompile>
     <ClCompile Include="AbstractIndexCreationTask.cpp">
       <Filter>ravendb.client\documents\indexes</Filter>
@@ -175,6 +175,149 @@
     </ClCompile>
     <ClCompile Include="IndexCreation.cpp">
       <Filter>ravendb.client\documents\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexTypeExtensions.cpp">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="GetCollectionStatisticsOperation.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="Query.cpp">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClCompile>
+    <ClCompile Include="CloseSubclauseToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenSubclauseToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="CounterIncludesToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="DistinctToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="ExplanationToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="FacetToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="GroupByToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="GroupByCountToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="GroupByKeyToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="GroupBySumToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="HighlightingToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="IntersectMarkerToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="DocumentQueryHelper.cpp">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreLikeThisToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="WhereToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractJavaScriptIndexCreationTask.cpp">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="ShapeToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="TrueToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="TimingsToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="NegateToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryOperatorToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="SuggestToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="OrderByToken.cpp">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClCompile>
+    <ClCompile Include="GroupBy.cpp" />
+    <ClCompile Include="QueryStatistics.cpp" />
+    <ClCompile Include="MoreLikeThisScope.cpp">
+      <Filter>ravendb.client\documents\queries\more_like_this</Filter>
+    </ClCompile>
+    <ClCompile Include="MoreLikeThisOptions.cpp">
+      <Filter>ravendb.client\documents\queries\more_like_this</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryFieldUtil.cpp">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryTimings.cpp">
+      <Filter>ravendb.client\documents\queries\timings</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryHighlightings.cpp">
+      <Filter>ravendb.client\documents\queries\highlighting</Filter>
+    </ClCompile>
+    <ClCompile Include="Highlightings.cpp">
+      <Filter>ravendb.client\documents\queries\highlighting</Filter>
+    </ClCompile>
+    <ClCompile Include="Explanations.cpp">
+      <Filter>ravendb.client\documents\queries\explanation</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryData.cpp">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClCompile>
+    <ClCompile Include="HighlightingOptions.cpp">
+      <Filter>ravendb.client\documents\queries\highlighting</Filter>
+    </ClCompile>
+    <ClCompile Include="SuggestionOptions.cpp">
+      <Filter>ravendb.client\documents\queries\suggestions</Filter>
+    </ClCompile>
+    <ClCompile Include="SuggestionBase.cpp">
+      <Filter>ravendb.client\documents\queries\suggestions</Filter>
+    </ClCompile>
+    <ClCompile Include="SuggestionWithTerm.cpp">
+      <Filter>ravendb.client\documents\queries\suggestions</Filter>
+    </ClCompile>
+    <ClCompile Include="SuggestionWithTerms.cpp">
+      <Filter>ravendb.client\documents\queries\suggestions</Filter>
+    </ClCompile>
+    <ClCompile Include="ExplanationOptions.cpp">
+      <Filter>ravendb.client\documents\queries\explanation</Filter>
+    </ClCompile>
+    <ClCompile Include="SpatialCriteria.cpp">
+      <Filter>ravendb.client\documents\queries\spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="CircleCriteria.cpp">
+      <Filter>ravendb.client\documents\queries\spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="PointField.cpp">
+      <Filter>ravendb.client\documents\queries\spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="SpatialCriteriaFactory.cpp">
+      <Filter>ravendb.client\documents\queries\spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="WktCriteria.cpp">
+      <Filter>ravendb.client\documents\queries\spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="WktField.cpp">
+      <Filter>ravendb.client\documents\queries\spatial</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -314,16 +457,16 @@
       <Filter>ravendb.client\documents\queries</Filter>
     </ClInclude>
     <ClInclude Include="SpatialFieldType.h">
-      <Filter>ravendb.client\documents\indexes\spacial</Filter>
+      <Filter>ravendb.client\documents\indexes\spatial</Filter>
     </ClInclude>
     <ClInclude Include="SpatialOptions.h">
-      <Filter>ravendb.client\documents\indexes\spacial</Filter>
+      <Filter>ravendb.client\documents\indexes\spatial</Filter>
     </ClInclude>
     <ClInclude Include="SpatialSearchStrategy.h">
-      <Filter>ravendb.client\documents\indexes\spacial</Filter>
+      <Filter>ravendb.client\documents\indexes\spatial</Filter>
     </ClInclude>
     <ClInclude Include="SpatialUnits.h">
-      <Filter>ravendb.client\documents\indexes\spacial</Filter>
+      <Filter>ravendb.client\documents\indexes\spatial</Filter>
     </ClInclude>
     <ClInclude Include="IndexHasChangedOperation.h">
       <Filter>ravendb.client\documents\operations\indexes</Filter>
@@ -716,9 +859,6 @@
     <ClInclude Include="MultiDatabaseHiLoIdGenerator.h">
       <Filter>ravendb.client\documents\identity</Filter>
     </ClInclude>
-    <ClInclude Include="..\Raven.CppClient.Tests\EntityIdHelperUtil.h">
-      <Filter>ravendb.client</Filter>
-    </ClInclude>
     <ClInclude Include="DatabaseStatistics.h">
       <Filter>ravendb.client\documents\operations</Filter>
     </ClInclude>
@@ -744,7 +884,7 @@
       <Filter>ravendb.client\documents\indexes</Filter>
     </ClInclude>
     <ClInclude Include="SpatialOptionsFactory.h">
-      <Filter>ravendb.client\documents\indexes\spacial</Filter>
+      <Filter>ravendb.client\documents\indexes\spatial</Filter>
     </ClInclude>
     <ClInclude Include="AbstractIndexCreationTask.h">
       <Filter>ravendb.client\documents\indexes</Filter>
@@ -760,6 +900,218 @@
     </ClInclude>
     <ClInclude Include="GetIndexStatisticsOperation.h">
       <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialRelation.h">
+      <Filter>ravendb.client\documents\indexes\spatial</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexTypeExtensions.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="CollectionStatistics.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="GetCollectionStatisticsOperation.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="Query.h">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClInclude>
+    <ClInclude Include="IFilterDocumentQueryBase.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchOperator.h">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClInclude>
+    <ClInclude Include="CloseSubclauseToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenSubclauseToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="CounterIncludesToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="DistinctToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="ExplanationToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="FacetToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="GroupByToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="GroupByMethod.h">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClInclude>
+    <ClInclude Include="GroupByCountToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="GroupByKeyToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="GroupBySumToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="HighlightingToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="IntersectMarkerToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="DocumentQueryHelper.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreLikeThisToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="WhereToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractJavaScriptIndexCreationTask.h">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="ShapeToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="WhereOperator.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="TrueToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="TimingsToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="NegateToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryOperatorToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="SuggestToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="OrderByToken.h">
+      <Filter>ravendb.client\documents\session\tokens</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityIdHelperUtil.h">
+      <Filter>ravendb.client</Filter>
+    </ClInclude>
+    <ClInclude Include="GroupBy.h" />
+    <ClInclude Include="QueryStatistics.h" />
+    <ClInclude Include="MoreLikeThisScope.h">
+      <Filter>ravendb.client\documents\queries\more_like_this</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreLikeThisOptions.h">
+      <Filter>ravendb.client\documents\queries\more_like_this</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryFieldUtil.h">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClInclude>
+    <ClInclude Include="WhereParams.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="MethodCall.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="CmpXchg.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryTimings.h">
+      <Filter>ravendb.client\documents\queries\timings</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryHighlightings.h">
+      <Filter>ravendb.client\documents\queries\highlighting</Filter>
+    </ClInclude>
+    <ClInclude Include="Highlightings.h">
+      <Filter>ravendb.client\documents\queries\highlighting</Filter>
+    </ClInclude>
+    <ClInclude Include="Explanations.h">
+      <Filter>ravendb.client\documents\queries\explanation</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryData.h">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClInclude>
+    <ClInclude Include="HighlightingOptions.h">
+      <Filter>ravendb.client\documents\queries\highlighting</Filter>
+    </ClInclude>
+    <ClInclude Include="SuggestionBase.h">
+      <Filter>ravendb.client\documents\queries\suggestions</Filter>
+    </ClInclude>
+    <ClInclude Include="SuggestionOptions.h">
+      <Filter>ravendb.client\documents\queries\suggestions</Filter>
+    </ClInclude>
+    <ClInclude Include="StringDistanceTypes.h">
+      <Filter>ravendb.client\documents\queries\suggestions</Filter>
+    </ClInclude>
+    <ClInclude Include="SuggestionSortMode.h">
+      <Filter>ravendb.client\documents\queries\suggestions</Filter>
+    </ClInclude>
+    <ClInclude Include="SuggestionWithTerm.h">
+      <Filter>ravendb.client\documents\queries\suggestions</Filter>
+    </ClInclude>
+    <ClInclude Include="SuggestionWithTerms.h">
+      <Filter>ravendb.client\documents\queries\suggestions</Filter>
+    </ClInclude>
+    <ClInclude Include="ExplanationOptions.h">
+      <Filter>ravendb.client\documents\queries\explanation</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialCriteria.h">
+      <Filter>ravendb.client\documents\queries\spatial</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoSpatialMethodType.h">
+      <Filter>ravendb.client\documents\indexes\spatial</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoSpatialOptions.h">
+      <Filter>ravendb.client\documents\indexes\spatial</Filter>
+    </ClInclude>
+    <ClInclude Include="CircleCriteria.h">
+      <Filter>ravendb.client\documents\queries\spatial</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicSpatialField.h">
+      <Filter>ravendb.client\documents\queries\spatial</Filter>
+    </ClInclude>
+    <ClInclude Include="PointField.h">
+      <Filter>ravendb.client\documents\queries\spatial</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialCriteriaFactory.h">
+      <Filter>ravendb.client\documents\queries\spatial</Filter>
+    </ClInclude>
+    <ClInclude Include="WktCriteria.h">
+      <Filter>ravendb.client\documents\queries\spatial</Filter>
+    </ClInclude>
+    <ClInclude Include="WktField.h">
+      <Filter>ravendb.client\documents\queries\spatial</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreLikeThisBase.h">
+      <Filter>ravendb.client\documents\queries\more_like_this</Filter>
+    </ClInclude>
+    <ClInclude Include="IEnumerableQuery.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreLikeThisUsingDocument.h">
+      <Filter>ravendb.client\documents\queries\more_like_this</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreLikeThisUsingAnyDocument.h">
+      <Filter>ravendb.client\documents\queries\more_like_this</Filter>
+    </ClInclude>
+    <ClInclude Include="MoreLikeThisUsingDocumentForDocumentQuery.h">
+      <Filter>ravendb.client\documents\queries\more_like_this</Filter>
+    </ClInclude>
+    <ClInclude Include="IGroupByDocumentQuery.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="GroupByDocumentQuery.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="GroupByField.h">
+      <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -805,9 +1157,6 @@
     <Filter Include="ravendb.client\documents\queries">
       <UniqueIdentifier>{b7013a9f-b50d-47d9-a2cd-aa57a5f1de90}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ravendb.client\documents\indexes\spacial">
-      <UniqueIdentifier>{5eaed6e9-3163-4e30-ba67-6c03511ef765}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ravendb.client\documents\session">
       <UniqueIdentifier>{2b6b9f90-4eb2-4bdd-aa0a-ccf888f0e506}</UniqueIdentifier>
     </Filter>
@@ -834,6 +1183,27 @@
     </Filter>
     <Filter Include="ravendb.client\documents\identity">
       <UniqueIdentifier>{18798fdf-15e7-4c7a-ac4d-6c63a22299e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\queries\more_like_this">
+      <UniqueIdentifier>{03429e34-9f3f-4913-99f5-bfea02028009}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\queries\timings">
+      <UniqueIdentifier>{6aabff22-0a71-4340-af41-f5f06f823940}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\queries\highlighting">
+      <UniqueIdentifier>{0afda915-635f-40ac-a012-e2c1ffd09925}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\queries\explanation">
+      <UniqueIdentifier>{5a4ed64d-0750-4963-801e-761efaea8233}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\queries\suggestions">
+      <UniqueIdentifier>{97e45c52-8273-464b-aeb2-322805d3fa1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\queries\spatial">
+      <UniqueIdentifier>{af1233a9-d041-454e-b29f-5bee1a9c1445}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\indexes\spatial">
+      <UniqueIdentifier>{5eaed6e9-3163-4e30-ba67-6c03511ef765}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

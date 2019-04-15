@@ -37,7 +37,8 @@ namespace ravendb::client::documents::operations::indexes
 			}())
 		{}
 		
-		std::unique_ptr<RavenCommand<std::vector<PutIndexResult>>> get_command(std::shared_ptr<DocumentConventions> conventions) const override
+		std::unique_ptr<RavenCommand<std::vector<PutIndexResult>>> get_command(
+			std::shared_ptr<conventions::DocumentConventions> conventions) const override
 		{
 			return std::make_unique<PutIndexesCommand>(_index_to_add);
 		}

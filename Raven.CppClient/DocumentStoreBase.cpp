@@ -29,13 +29,13 @@ namespace ravendb::client::documents
 		assert_initialized();
 		auto&& indexes_to_add = indexes::IndexCreation::create_indexes_to_add(tasks, _conventions);
 
-		get_maintenance()->for_database(database ? *std::move(database) : get_database())
+		maintenance()->for_database(database ? *std::move(database) : get_database())
 			->send(operations::indexes::PutIndexesOperation(std::move(indexes_to_add)));
 	}
 
 	std::shared_ptr<conventions::DocumentConventions> DocumentStoreBase::get_conventions() const
 	{
-		return _conventions ? _conventions : _conventions = std::make_shared<conventions::DocumentConventions>();
+		return _conventions ? _conventions : _conventions = conventions::DocumentConventions::create();
 	}
 
 	void DocumentStoreBase::set_conventions(std::shared_ptr<conventions::DocumentConventions> conventions)

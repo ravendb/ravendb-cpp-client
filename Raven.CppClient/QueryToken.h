@@ -10,9 +10,9 @@ namespace ravendb::client::documents::session::tokens
 	public:
 		virtual ~QueryToken() = 0;
 
-		virtual void write_to(std::ostringstream& oss) const = 0;
+		virtual void write_to(std::ostringstream& writer) const = 0;
 
 	protected:
-		static void write_field(std::ostringstream& oss, const std::string& field);
+		static void write_field(std::ostringstream& writer, const std::optional<std::string>& field);
 	};
 }

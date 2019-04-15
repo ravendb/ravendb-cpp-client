@@ -39,7 +39,7 @@ namespace ravendb::client::documents::indexes
 				return std::static_pointer_cast<AbstractIndexCreationTaskBase>(task);
 			});
 			auto&& indexes_to_add = create_indexes_to_add(tasks, conventions);
-			store->get_maintenance()->send(operations::indexes::PutIndexesOperation(std::move(indexes_to_add)));
+			store->maintenance()->send(operations::indexes::PutIndexesOperation(std::move(indexes_to_add)));
 		}
 		catch (std::exception& e)
 		{

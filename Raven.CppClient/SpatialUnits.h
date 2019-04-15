@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ravendb::client::documents::indexes::spacial
+namespace ravendb::client::documents::indexes::spatial
 {
 	enum class SpatialUnits
 	{

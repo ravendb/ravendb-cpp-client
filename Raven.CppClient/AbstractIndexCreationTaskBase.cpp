@@ -65,7 +65,7 @@ namespace ravendb::client::documents::indexes
 	{
 		if(!_index_name)
 		{
-			
+			throw_index_name_was_not_set();
 		}
 		return *_index_name;
 	}
@@ -132,7 +132,7 @@ namespace ravendb::client::documents::indexes
 				index_definition.priority = *priority;
 			}
 
-			store->get_maintenance()
+			store->maintenance()
 				->for_database(database ? *database : store->get_database())
 				->send(operations::indexes::PutIndexesOperation({ index_definition }));
 		}

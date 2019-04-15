@@ -84,6 +84,7 @@ namespace ravendb::client::tests::client
 	//IRRELEVANT : Json properties' naming are custom ANYWAY.
 	TEST_F(CrudTest, CanCustomizePropertyNamingStrategy)
 	{
+		auto store = get_document_store(TEST_NAME);
 		SUCCEED();
 	}
 	

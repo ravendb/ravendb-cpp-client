@@ -21,7 +21,7 @@ namespace ravendb::client::tests::client::documents::operations::configuration
 		auto store = get_document_store(TEST_NAME);
 
 		auto operation = ravendb::client::documents::operations::configuration::GetClientConfigurationOperation();
-		auto result = store->get_maintenance()->send(operation);
+		auto result = store->maintenance()->send(operation);
 
 		ASSERT_FALSE(result->configuration.has_value());
 		ASSERT_GE(result->etag, 0);
@@ -39,7 +39,7 @@ namespace ravendb::client::tests::client::documents::operations::configuration
 
 		auto save_operation = 
 			ravendb::client::documents::operations::configuration::PutClientConfigurationOperation(configuration_to_save);
-		store->get_maintenance()->send(save_operation);
+		store->maintenance()->send(save_operation);
 		
 		auto operation = ravendb::client::documents::operations::configuration::GetClientConfigurationOperation();
 		auto result = store->get_request_executor()->execute(operation.get_command(store->get_conventions()));

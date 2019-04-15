@@ -9,7 +9,7 @@ namespace ravendb::client::documents::session
 	class EntityToJson
 	{
 	private:
-		std::shared_ptr<InMemoryDocumentSessionOperations> _session;
+		std::weak_ptr<InMemoryDocumentSessionOperations> _session;
 
 		static void write_metadata(nlohmann::json& json, std::shared_ptr<DocumentInfo> doc_info);
 		

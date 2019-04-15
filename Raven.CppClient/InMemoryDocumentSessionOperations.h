@@ -1,5 +1,6 @@
 #pragma once
 #include <any>
+#include <set>
 #include <unordered_set>
 #include <typeinfo>
 #include <atomic>
@@ -105,15 +106,15 @@ namespace ravendb::client::documents::session
 			std::vector<std::shared_ptr<void>> entities{};
 			std::optional<commands::batches::BatchOptions> options{};
 
-			explicit SaveChangesData(const InMemoryDocumentSessionOperations& session)
-				: deferred_commands(session._deferred_commands)
-				, deferred_commands_map(session._deferred_commands_map)
-				, options(session._save_changes_options)
+			explicit SaveChangesData(std::shared_ptr<InMemoryDocumentSessionOperations> session)
+				: deferred_commands(session->_deferred_commands)
+				, deferred_commands_map(session->_deferred_commands_map)
+				, options(session->_save_changes_options)
 			{}
 		};
 
 	protected:
-		std::shared_ptr<DocumentStoreBase> _document_store;
+		std::weak_ptr<DocumentStoreBase> _document_store;
 
 		std::weak_ptr<InMemoryDocumentSessionOperations> _weak_this;
 
@@ -299,14 +300,17 @@ namespace ravendb::client::documents::session
 		void register_includes(const nlohmann::json& includes);
 
 		//TODO register_missing_includes is NOT fully implemented since it DOESN'T parse the include path
-		//TODO but uses them as is (only works with simple path)
-		//TODO this behaviour is NOT implemented in Java client nether.
+		//     but uses them as is (only works with simple path)
+		//     this behaviour is NOT implemented in Java client nether.
 		void register_missing_includes(const nlohmann::json& results, const nlohmann::json& includes,
 			const std::vector<std::string>& include_paths);
 
 		//TODO implement "includes" methods
 
 		//TODO implement "counters" methods
+
+		template <typename T>
+		std::shared_ptr<T> deserialize_from_transformer(const std::optional<std::string>& id, const nlohmann::json& document) const;
 
 		bool check_if_already_included(const std::vector<std::string>& ids, const std::vector<std::string>& includes);
 
@@ -506,6 +510,19 @@ namespace ravendb::client::documents::session
 	void InMemoryDocumentSessionOperations::evict(std::shared_ptr<T> entity)
 	{
 		evict_internal(std::static_pointer_cast<void>(entity));
+	}
+
+	template <typename T>
+	std::shared_ptr<T> InMemoryDocumentSessionOperations::deserialize_from_transformer(
+		const std::optional<std::string>& id, const nlohmann::json& document) const
+	{
+		auto entity = DocumentInfo::default_from_json<T>(document);
+		if(id)
+		{
+			get_generate_entity_id_on_the_client().try_set_identity(typeid(T), entity, *id);
+		}
+
+		return std::static_pointer_cast<T>(entity);
 	}
 
 	template<typename T>

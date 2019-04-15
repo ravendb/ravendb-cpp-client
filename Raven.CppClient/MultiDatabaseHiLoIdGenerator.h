@@ -25,7 +25,7 @@ namespace ravendb::client::documents::identity
 		std::unordered_map<std::string, std::unique_ptr<MultiTypeHiLoIdGenerator>> _generators;
 
 	protected:
-		const std::shared_ptr<DocumentStore> store;
+		const std::weak_ptr<DocumentStore> store;
 		const std::shared_ptr<conventions::DocumentConventions> conventions;
 
 	public:
@@ -35,6 +35,6 @@ namespace ravendb::client::documents::identity
 		std::optional<std::string> generate_document_id(const std::optional<std::string>& db_name,
 			std::type_index type, std::shared_ptr<void> entity);
 
-		void return_unused_range() const;
+		void return_unused_range(const DocumentStore& store) const;
 	};
 }

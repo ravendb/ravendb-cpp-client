@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ravendb::client::documents::indexes::spacial
+namespace ravendb::client::documents::indexes::spatial
 {
 	enum class SpatialFieldType
 	{
@@ -14,5 +14,5 @@ namespace ravendb::client::documents::indexes::spacial
 		{SpatialFieldType::UNSET, nullptr},
 		{SpatialFieldType::GEOGRAPHY, "Geography"},
 		{SpatialFieldType::CARTESIAN, "Cartasian"}
-	});
+	})
 }
