@@ -50,17 +50,20 @@ namespace ravendb::client::documents::session::tokens
 
 	std::shared_ptr<OrderByToken> OrderByToken::create_random(const std::string& seed)
 	{
-		std::ostringstream field{};
-		field << "random('";
+		std::ostringstream str{};
+		str << "random('";
 
-		std::transform(seed.cbegin(), seed.cend(), std::ostream_iterator<const char*>(field),
-			[](auto c)->const char*
+		std::transform(seed.cbegin(), seed.cend(), std::ostream_iterator<const char*>(str),
+			[](char c)->const char*
 		{
-			char char_as_str[2] = { c, '\0' };
+			static char char_as_str[2] = {" "};
+			char_as_str[0] = c;
 			return c == '\'' ? "''" : char_as_str;
 		});
 
-		return std::shared_ptr<OrderByToken>(new OrderByToken(std::move(field).str(), false, OrderingType::STRING));
+		str << "')";
+
+		return std::shared_ptr<OrderByToken>(new OrderByToken(std::move(str).str(), false, OrderingType::STRING));
 	}
 
 	std::shared_ptr<OrderByToken> OrderByToken::create_ascending(std::string field_name, OrderingType ordering)

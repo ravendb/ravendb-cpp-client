@@ -518,7 +518,7 @@ namespace ravendb::client::documents::session
 		auto&& results = execute_query_operation(1);
 		if(results.size() != 1)
 		{
-			throw std::runtime_error("Expected single result, got: " + results.size());
+			throw std::runtime_error("Expected single result, got: " + std::to_string(results.size()));
 		}
 
 		return results[0];

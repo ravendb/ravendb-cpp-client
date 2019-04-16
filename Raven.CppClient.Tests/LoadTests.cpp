@@ -12,6 +12,11 @@ namespace ravendb::client::tests::client
 	class LoadTests : public driver::RavenTestDriver
 	{
 	protected:
+		void customise_store(std::shared_ptr<documents::DocumentStore> store) override
+		{
+			//store->set_before_perform(infrastructure::set_for_fiddler);
+		}
+
 		static void SetUpTestCase()
 		{
 			REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);

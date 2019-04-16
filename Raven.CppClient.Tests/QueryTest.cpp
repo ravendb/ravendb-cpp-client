@@ -113,6 +113,157 @@ namespace query_test
 		set_val_to_json(j, "id", up.id);
 		set_val_to_json(j, "Name", up.name);
 	}
+
+	struct Dog
+	{
+		std::string id{};
+		std::string name{};
+		std::string breed{};
+		std::string color{};
+		int32_t age{};
+		bool is_vaccinated{};
+	};
+
+	void from_json(const nlohmann::json& j, Dog& d)
+	{
+		using ravendb::client::impl::utils::json_utils::get_val_from_json;
+
+		get_val_from_json(j, "Name", d.name);
+		get_val_from_json(j, "Breed", d.breed);
+		get_val_from_json(j, "Color", d.color);
+		get_val_from_json(j, "Age", d.age);
+		get_val_from_json(j, "Vaccinated", d.is_vaccinated);
+	}
+
+	void to_json(nlohmann::json& j, const Dog& d)
+	{
+		using ravendb::client::impl::utils::json_utils::set_val_to_json;
+
+		set_val_to_json(j, "Name", d.name);
+		set_val_to_json(j, "Breed", d.breed);
+		set_val_to_json(j, "Color", d.color);
+		set_val_to_json(j, "Age", d.age);
+		set_val_to_json(j, "Vaccinated", d.is_vaccinated);
+	}
+
+	class DogsIndex : public ravendb::client::documents::indexes::AbstractIndexCreationTask
+	{
+	public:
+		~DogsIndex() override = default;
+		DogsIndex()
+		{
+			SET_DEFAULT_INDEX_NAME;
+
+			map = R"(
+			from dog in docs.dogs
+			select new 
+			{
+				dog.Name,
+				dog.Age,
+				dog.Vaccinated
+			})";
+		}
+	};
+
+	struct DogsIndexResult
+	{
+		std::string name{};
+		int32_t age{};
+		bool is_vaccinated{};
+	};
+
+	void from_json(const nlohmann::json& j, DogsIndexResult& dir)
+	{
+		using ravendb::client::impl::utils::json_utils::get_val_from_json;
+
+		get_val_from_json(j, "Name", dir.name);
+		get_val_from_json(j, "Age", dir.age);
+		get_val_from_json(j, "Vaccinated", dir.is_vaccinated);
+	}
+
+	void to_json(nlohmann::json& j, const DogsIndexResult& dir)
+	{
+		using ravendb::client::impl::utils::json_utils::set_val_to_json;
+
+		set_val_to_json(j, "Name", dir.name);
+		set_val_to_json(j, "Age", dir.age);
+		set_val_to_json(j, "Vaccinated", dir.is_vaccinated);
+	}
+
+	void create_dogs(ravendb::client::documents::session::DocumentSession& session) 
+	{
+		auto dog1 = std::make_shared<Dog>();
+		dog1->name = "Snoopy";
+		dog1->breed = "Beagle";
+		dog1->color = "White";
+		dog1->age = 6;
+		dog1->is_vaccinated = true;
+
+		session.store(dog1, "dogs/1");
+
+		auto dog2 = std::make_shared<Dog>();
+		dog2->name = "Brian";
+		dog2->breed = "Labrador";
+		dog2->color = "White";
+		dog2->age = 12;
+		dog2->is_vaccinated = false;
+
+		session.store(dog2, "dogs/2");
+
+		auto dog3 = std::make_shared<Dog>();
+		dog3->name = "Django";
+		dog3->breed = "Jack Russel";
+		dog3->color = "Black";
+		dog3->age = 3;
+		dog3->is_vaccinated = true;
+
+		session.store(dog3, "dogs/3");
+
+		auto dog4 = std::make_shared<Dog>();
+		dog4->name = "Beethoven";
+		dog4->breed = "St. Bernard";
+		dog4->color = "Brown";
+		dog4->age = 1;
+		dog4->is_vaccinated = false;
+
+		session.store(dog4, "dogs/4");
+
+		auto dog5 = std::make_shared<Dog>();
+		dog5->name = "Scooby Doo";
+		dog5->breed = "Great Dane";
+		dog5->color = "Brown";
+		dog5->age = 0;
+		dog5->is_vaccinated = false;
+
+		session.store(dog5, "dogs/5");
+
+		auto dog6 = std::make_shared<Dog>();
+		dog6->name = "Old Yeller";
+		dog6->breed = "Black Mouth Cur";
+		dog6->color = "White";
+		dog6->age = 2;
+		dog6->is_vaccinated = true;
+
+		session.store(dog6, "dogs/6");
+
+		auto dog7 = std::make_shared<Dog>();
+		dog7->name = "Benji";
+		dog7->breed = "Mixed";
+		dog7->color = "White";
+		dog7->age = 0;
+		dog7->is_vaccinated = false;
+
+		session.store(dog7, "dogs/7");
+
+		auto dog8 = std::make_shared<Dog>();
+		dog8->name = "Lassie";
+		dog8->breed = "Collie";
+		dog8->color = "Brown";
+		dog8->age = 6;
+		dog8->is_vaccinated = true;
+
+		session.store(dog8, "dogs/8");
+	}
 }
 
 namespace ravendb::client::tests::client
@@ -122,13 +273,14 @@ namespace ravendb::client::tests::client
 	protected:
 		void customise_store(std::shared_ptr<documents::DocumentStore> store) override
 		{
-			store->set_before_perform(infrastructure::set_for_fiddler);
+			//store->set_before_perform(infrastructure::set_for_fiddler);
 		}
 
 		static void SetUpTestCase()
 		{
 			REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
 			REGISTER_ID_PROPERTY_FOR(query_test::UserProjection, id);
+			REGISTER_ID_PROPERTY_FOR(query_test::Dog, id);
 		}
 	};
 
@@ -607,22 +759,279 @@ namespace ravendb::client::tests::client
 		ASSERT_EQ("Tarzan", users[0]->name);
 	}
 
+	TEST_F(QueryTest, QueryWhereExact)
+	{
+		auto store = get_document_store(TEST_NAME);
+		query_test::add_users(store);
+		auto session = store->open_session();
 
+		auto users = session.query<infrastructure::entities::User>()
+			->where_equals("Name", "tarzan")
+			->to_list();
 
+		ASSERT_EQ(1, users.size());
 
+		users = session.query<infrastructure::entities::User>()
+			->where_equals("Name", "tarzan", true)
+			->to_list();
 
+		ASSERT_EQ(0, users.size());// we queried for tarzan with exact
+
+		users = session.query<infrastructure::entities::User>()
+			->where_equals("Name", "Tarzan", true)
+			->to_list();
+
+		ASSERT_EQ(1, users.size());// we queried for Tarzan with exact
+	}
+
+	TEST_F(QueryTest, QueryWhereNot)
+	{
+		auto store = get_document_store(TEST_NAME);
+		query_test::add_users(store);
+		auto session = store->open_session();
+
+		auto users = session.query<infrastructure::entities::User>()
+			->not_next()
+			->where_equals("Name", "tarzan")
+			->to_list();
+
+		ASSERT_EQ(2, users.size());
+
+		users = session.query<infrastructure::entities::User>()
+			->where_not_equals("Name", "tarzan")
+			->to_list();
+
+		ASSERT_EQ(2, users.size());
+
+		users = session.query<infrastructure::entities::User>()
+			->where_not_equals("Name", "Tarzan", true)
+			->to_list();
+
+		ASSERT_EQ(2, users.size());
+	}
+
+	//TODO
+	//public void queryWithDuration() throws Exception {
+
+	TEST_F(QueryTest, QueryFirst)
+	{
+		auto store = get_document_store(TEST_NAME);
+		query_test::add_users(store);
+		auto session = store->open_session();
+
+		auto first = session.query<infrastructure::entities::User>()
+			->first();
+
+		ASSERT_TRUE(first);
+
+		auto single = session.query<infrastructure::entities::User>()
+			->where_equals("Name", "Tarzan")
+			->single();
+
+		ASSERT_TRUE(single);
+
+		ASSERT_TRUE(first);
+
+		try
+		{
+			session.query<infrastructure::entities::User>()
+				->single();
+		}
+		catch (std::runtime_error& e)
+		{
+			SUCCEED();
+			return;
+		}
+		FAIL();
+	}
 
 	TEST_F(QueryTest, QueryParameters)
 	{
 		auto store = get_document_store(TEST_NAME);
-
 		query_test::add_users(store);
-
 		auto session = store->open_session();
 
 		ASSERT_EQ(1,
 			session.advanced().raw_query<infrastructure::entities::User>("from Users where Name = $name")
 			->add_parameter("name", "Tarzan")
 			->count());
+	}
+
+	TEST_F(QueryTest, QueryRandomOrder)
+	{
+		auto store = get_document_store(TEST_NAME);
+		query_test::add_users(store);
+		auto session = store->open_session();
+
+		auto users = session.query<infrastructure::entities::User>()
+			->random_ordering()
+			->to_list();
+
+		ASSERT_EQ(3, users.size());
+
+		users = session.query<infrastructure::entities::User>()
+			->random_ordering("123")
+			->to_list();
+
+		ASSERT_EQ(3, users.size());
+	}
+
+	TEST_F(QueryTest, QueryWhereExists)
+	{
+		auto store = get_document_store(TEST_NAME);
+		query_test::add_users(store);
+		auto session = store->open_session();
+
+		auto users = session.query<infrastructure::entities::User>()
+			->where_exists("Name")
+			->to_list();
+
+		ASSERT_EQ(3, users.size());
+
+		users = session.query<infrastructure::entities::User>()
+			->where_exists("Name")
+			->and_also()
+			->not_next()
+			->where_exists("no_such_field")
+			->to_list();
+
+		ASSERT_EQ(3, users.size());
+	}
+
+	TEST_F(QueryTest, QueryWithBoost)
+	{
+		auto store = get_document_store(TEST_NAME);
+		query_test::add_users(store);
+		auto session = store->open_session();
+
+		auto users = session.query<infrastructure::entities::User>()
+			->where_equals("Name", "Tarzan")
+			->boost(5)
+			->or_else()
+			->where_equals("Name", "John")
+			->boost(2)
+			->order_by_score()
+			->to_list();
+
+		ASSERT_EQ(3, users.size());
+		ASSERT_EQ("Tarzan", users[0]->name);
+		ASSERT_EQ("John", users[1]->name);
+		ASSERT_EQ("John", users[2]->name);
+
+		users = session.query<infrastructure::entities::User>()
+			->where_equals("Name", "Tarzan")
+			->boost(2)
+			->or_else()
+			->where_equals("Name", "John")
+			->boost(5)
+			->order_by_score()
+			->to_list();
+
+		ASSERT_EQ(3, users.size());
+		ASSERT_EQ("John", users[0]->name);
+		ASSERT_EQ("John", users[1]->name);
+		ASSERT_EQ("Tarzan", users[2]->name);
+	}
+
+	TEST_F(QueryTest, QueryWithCustomize)
+	{
+		auto store = get_document_store(TEST_NAME);
+
+		query_test::DogsIndex().execute(store);
+
+		{
+			auto session = store->open_session();
+			query_test::create_dogs(session);
+			session.save_changes();
+		}
+		{
+			auto session = store->open_session();
+			auto query_result = session.advanced()
+				.document_query<query_test::DogsIndexResult>(query_test::DogsIndex().get_index_name(), {}, false)
+				->wait_for_non_stale_results()
+				->order_by("Name", documents::session::OrderingType::ALPHA_NUMERIC)
+				->where_greater_than("Age", 2)
+				->to_list();
+
+			ASSERT_EQ(4, query_result.size());
+
+			ASSERT_EQ("Brian", query_result[0]->name);
+			ASSERT_EQ("Django", query_result[1]->name);
+			ASSERT_EQ("Lassie", query_result[2]->name);
+			ASSERT_EQ("Snoopy", query_result[3]->name);
+		}
+	}
+
+	TEST_F(QueryTest, QueryLongRequest)
+	{
+		auto store = get_document_store(TEST_NAME);
+		auto session = store->open_session();
+
+		auto long_name = std::string(2048, 'x');
+		auto user = std::make_shared<infrastructure::entities::User>();
+		user->name = long_name;
+		session.store(user, "users/1");
+
+		session.save_changes();
+
+		auto query_result = session.advanced()
+			.document_query<infrastructure::entities::User>({}, "Users", false)
+			->where_equals("Name", long_name)
+			->to_list();
+
+		ASSERT_EQ(1, query_result.size());
+	}
+
+	TEST_F(QueryTest, QueryByIndex)
+	{
+		auto store = get_document_store(TEST_NAME);
+		
+		query_test::DogsIndex().execute(store);
+
+		{
+			auto session = store->open_session();
+			query_test::create_dogs(session);
+			session.save_changes();
+
+			wait_for_indexing(store, store->get_database());
+		}
+		{
+			auto session = store->open_session();
+
+			auto query_result = session.advanced()
+				.document_query<query_test::DogsIndexResult>(query_test::DogsIndex().get_index_name(), {}, false)
+				->where_greater_than("Age", 2)
+				->and_also()
+				->where_equals("Vaccinated", false)
+				->to_list();
+
+			ASSERT_EQ(1, query_result.size());
+			ASSERT_EQ("Brian", query_result[0]->name);
+
+			query_result = session.advanced()
+				.document_query<query_test::DogsIndexResult>(query_test::DogsIndex().get_index_name(), {}, false)
+				->where_less_than_or_equal("Age", 2)
+				->and_also()
+				->where_equals("Vaccinated", false)
+				->to_list();
+
+			ASSERT_EQ(3, query_result.size());
+
+			std::set<std::string> names_from_query;
+			std::transform(query_result.begin(), query_result.end(), std::inserter(names_from_query, names_from_query.end()),
+				[](const auto& res)
+			{
+				return res->name;
+			});
+
+			const auto names_from_query_contains = [&](const std::string& name)
+			{
+				return names_from_query.find(name) != names_from_query.end();
+			};
+
+			ASSERT_TRUE(names_from_query_contains("Beethoven"));
+			ASSERT_TRUE(names_from_query_contains("Scooby Doo"));
+			ASSERT_TRUE(names_from_query_contains("Benji"));
+		}
 	}
 }
