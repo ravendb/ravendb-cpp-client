@@ -221,7 +221,9 @@ namespace ravendb::client::documents::session
 		}
 	}
 
-	std::shared_ptr<void> InMemoryDocumentSessionOperations::track_entity(const std::string& id, const nlohmann::json& document,
+	std::shared_ptr<void> InMemoryDocumentSessionOperations::track_entity(
+		std::type_index type,
+		const std::string& id, const nlohmann::json& document,
 		const nlohmann::json& metadata, bool no_tracking_,
 		const DocumentInfo::FromJsonConverter& from_json_converter,
 		const DocumentInfo::ToJsonConverter& to_json_converter,
@@ -243,11 +245,10 @@ namespace ravendb::client::documents::session
 		// if noTracking is session-wide then we want to override the passed argument
 		no_tracking_ = this->no_tracking || no_tracking_;
 
-		if (id.empty())
+		if (impl::utils::is_blank(id))
 		{
-			throw std::runtime_error("Not implemented");
+			return deserialize_from_transformer(type, {}, document, from_json_converter);
 		}
-
 
 		if (auto doc_info_it = _documents_by_id.find(id);
 			doc_info_it != _documents_by_id.end())
@@ -256,6 +257,7 @@ namespace ravendb::client::documents::session
 			if (!doc_info_it->second->entity)
 			{
 				doc_info_it->second->entity = from_json_converter(document);
+				get_generate_entity_id_on_the_client().try_set_identity(type, doc_info_it->second->entity, id);
 			}
 			if (!no_tracking_)
 			{
@@ -275,6 +277,7 @@ namespace ravendb::client::documents::session
 			if (!doc_info->entity)
 			{
 				doc_info->entity = from_json_converter(document);
+				get_generate_entity_id_on_the_client().try_set_identity(type, doc_info->entity, id);
 			}
 			if (!no_tracking_)
 			{
@@ -289,6 +292,7 @@ namespace ravendb::client::documents::session
 		}
 
 		auto entity = from_json_converter(document);
+		get_generate_entity_id_on_the_client().try_set_identity(type, entity, id);
 
 		std::string change_vector{};
 		if (!impl::utils::json_utils::get_val_from_json(metadata, constants::documents::metadata::CHANGE_VECTOR, change_vector))
@@ -1038,6 +1042,20 @@ namespace ravendb::client::documents::session
 				}
 			}
 		}
+	}
+
+	std::shared_ptr<void> InMemoryDocumentSessionOperations::deserialize_from_transformer(
+		std::type_index type,
+		const std::optional<std::string>& id,
+		const nlohmann::json& document,
+		const DocumentInfo::FromJsonConverter& from_json_converter) const
+	{
+		auto entity = from_json_converter(document);
+		if(id)
+		{
+			get_generate_entity_id_on_the_client().try_set_identity(type, entity, *id);
+		}
+		return entity;
 	}
 
 	bool InMemoryDocumentSessionOperations::check_if_already_included(const std::vector<std::string>& ids,

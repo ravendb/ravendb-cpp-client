@@ -17,12 +17,12 @@ namespace ravendb::client::documents::session
 		IEnumerableQuery() = default;
 
 	public:
-		std::vector<std::shared_ptr<T>> to_list();
+		std::vector<std::shared_ptr<T>> to_list(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
 	};
 
 	template <typename T, class TThis>
-	std::vector<std::shared_ptr<T>> IEnumerableQuery<T, TThis>::to_list()
+	std::vector<std::shared_ptr<T>> IEnumerableQuery<T, TThis>::to_list(const std::optional<DocumentInfo::FromJsonConverter>& from_json)
 	{
-		return cast_down()->to_list();
+		return cast_down()->to_list(from_json);
 	}
 }

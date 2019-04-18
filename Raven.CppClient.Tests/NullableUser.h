@@ -27,7 +27,6 @@ namespace ravendb::client::tests::infrastructure::entities
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		set_val_to_json(j, "Id", u.id);
 		set_val_to_json(j, "FirstName", u.first_name);
 		set_val_to_json(j, "LastName", u.last_name);
 		set_val_to_json(j, "Address", u.address);
@@ -39,7 +38,6 @@ namespace ravendb::client::tests::infrastructure::entities
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		get_val_from_json(j, "Id", u.id);
 		get_val_from_json(j, "FirstName", u.first_name);
 		get_val_from_json(j, "LastName", u.last_name);
 		get_val_from_json(j, "Address", u.address);

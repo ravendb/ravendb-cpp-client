@@ -85,6 +85,9 @@ namespace ravendb::client::documents::session
 
 		template<typename T>
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> query(const queries::Query& collection_or_index_name);
+
+		template<typename T, typename TIndex>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> query();
 	};
 
 	template <typename T>
@@ -161,5 +164,11 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentSession::query(const queries::Query& collection_or_index_name)
 	{
 		return _session_impl->query<T>(std::move(collection_or_index_name));
+	}
+
+	template <typename T, typename TIndex>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentSession::query()
+	{
+		return _session_impl->query<T, TIndex>();
 	}
 }

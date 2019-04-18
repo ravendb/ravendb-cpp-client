@@ -183,6 +183,7 @@
     <ClInclude Include="EntityIdHelper.h" />
     <ClInclude Include="DocumentQuery.h" />
     <ClInclude Include="EntityIdHelperUtil.h" />
+    <ClInclude Include="EventHelper.h" />
     <ClInclude Include="ExplanationOptions.h" />
     <ClInclude Include="Explanations.h" />
     <ClInclude Include="ExplanationToken.h" />

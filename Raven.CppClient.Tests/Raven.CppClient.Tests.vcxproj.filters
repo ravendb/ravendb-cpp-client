@@ -108,6 +108,12 @@
     <ClCompile Include="IndexOperationsTestsOld.cpp">
       <Filter>ravendb.client.tests\old C++ client tests</Filter>
     </ClCompile>
+    <ClCompile Include="SimpleMultiMapTest.cpp">
+      <Filter>ravendb.client.tests\test\bugs</Filter>
+    </ClCompile>
+    <ClCompile Include="JavaScriptIndexTest.cpp">
+      <Filter>ravendb.client.tests\test\client\indexing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -235,6 +241,9 @@
     </Filter>
     <Filter Include="ravendb.client.tests\test\client\documents\operations\indexes">
       <UniqueIdentifier>{87664393-ade6-4d64-bccf-eb2d827cc53c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\bugs">
+      <UniqueIdentifier>{a1c05843-32b1-49d0-8c8f-a705c88f8e6a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

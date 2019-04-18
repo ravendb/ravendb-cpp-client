@@ -235,7 +235,9 @@ namespace ravendb::client::documents::session
 			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
 			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {});
 
-		std::shared_ptr<void> track_entity(const std::string& id,
+		std::shared_ptr<void> track_entity(
+			std::type_index type,
+			const std::string& id,
 			const nlohmann::json& document,
 			const nlohmann::json& metadata,
 			bool no_tracking_,
@@ -309,8 +311,11 @@ namespace ravendb::client::documents::session
 
 		//TODO implement "counters" methods
 
-		template <typename T>
-		std::shared_ptr<T> deserialize_from_transformer(const std::optional<std::string>& id, const nlohmann::json& document) const;
+		std::shared_ptr<void> deserialize_from_transformer(
+			std::type_index type,
+			const std::optional<std::string>& id,
+			const nlohmann::json& document,
+			const DocumentInfo::FromJsonConverter& from_json_converter) const;
 
 		bool check_if_already_included(const std::vector<std::string>& ids, const std::vector<std::string>& includes);
 
@@ -441,7 +446,7 @@ namespace ravendb::client::documents::session
 			to_json_converter = *to_json;
 		DocumentInfo::EntityUpdater update_from_json = DocumentInfo::default_entity_update<T>;
 
-		return std::static_pointer_cast<T>(track_entity(
+		return std::static_pointer_cast<T>(track_entity(typeid(T),
 			document_found.id, document_found.document, document_found.metadata, no_tracking,
 			from_json_converter, to_json_converter, update_from_json));
 	}
@@ -510,19 +515,6 @@ namespace ravendb::client::documents::session
 	void InMemoryDocumentSessionOperations::evict(std::shared_ptr<T> entity)
 	{
 		evict_internal(std::static_pointer_cast<void>(entity));
-	}
-
-	template <typename T>
-	std::shared_ptr<T> InMemoryDocumentSessionOperations::deserialize_from_transformer(
-		const std::optional<std::string>& id, const nlohmann::json& document) const
-	{
-		auto entity = DocumentInfo::default_from_json<T>(document);
-		if(id)
-		{
-			get_generate_entity_id_on_the_client().try_set_identity(typeid(T), entity, *id);
-		}
-
-		return std::static_pointer_cast<T>(entity);
 	}
 
 	template<typename T>

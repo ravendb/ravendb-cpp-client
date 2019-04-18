@@ -40,11 +40,11 @@ namespace ravendb::client::documents::session
 
 		auto no_tracking();
 
-		auto timings(std::optional<queries::timings::QueryTimings>& timings_reference);
+		auto timings(std::shared_ptr<queries::timings::QueryTimings>& timings_reference);
 
 		auto skip(int32_t count);
 
-		auto statistics(std::optional<QueryStatistics>& stats_reference) const;
+		auto statistics(std::shared_ptr<QueryStatistics>& stats_reference);
 
 		auto take(int32_t count);
 
@@ -130,7 +130,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T, class TThis>
-	auto IQueryBase<T, TThis>::timings(std::optional<queries::timings::QueryTimings>& timings_reference)
+	auto IQueryBase<T, TThis>::timings(std::shared_ptr<queries::timings::QueryTimings>& timings_reference)
 	{
 		return cast_down()->timings(timings_reference);
 	}
@@ -142,7 +142,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T, class TThis>
-	auto IQueryBase<T, TThis>::statistics(std::optional<QueryStatistics>& stats_reference) const
+	auto IQueryBase<T, TThis>::statistics(std::shared_ptr<QueryStatistics>& stats_reference)
 	{
 		return cast_down()->statistics(stats_reference);
 	}

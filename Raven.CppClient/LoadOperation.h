@@ -102,23 +102,17 @@ namespace ravendb::client::documents::session::operations
 				{
 					throw std::runtime_error("Cannot execute 'get_documents' before operation execution.");
 				}
-				if(_current_load_results)
+
+				auto document = _current_load_results.value().results.size() > 0 ?
+					_current_load_results.value().results.at(0) : nlohmann::json(nullptr);
+				if(document.is_null())
 				{
-					
-					auto document = _current_load_results.value().results.size() > 0 ?
-						_current_load_results.value().results.at(0) : nlohmann::json(nullptr);
-					if(document.is_null())
-					{
-						return  nullptr;
-					}
-					auto doc_info = DocumentInfo(document);
-					return _session.lock()->track_entity<T>(doc_info, from_json, to_json);
-				}else
-				{
-					return nullptr;
+					return  nullptr;
 				}
+				auto doc_info = DocumentInfo(document);
+				return _session.lock()->track_entity<T>(doc_info, from_json, to_json);
 			}
-			return get_document<T>(_ids[0], from_json, to_json);//TODO check if _ids[0] is OK
+			return get_document<T>(_ids[0], from_json, to_json);
 		}
 		template<typename T>
 		std::shared_ptr<T> get_document(

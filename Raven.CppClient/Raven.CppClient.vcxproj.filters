@@ -1113,6 +1113,9 @@
     <ClInclude Include="GroupByField.h">
       <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
+    <ClInclude Include="EventHelper.h">
+      <Filter>ravendb.client\primitives</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
@@ -1204,6 +1207,9 @@
     </Filter>
     <Filter Include="ravendb.client\documents\indexes\spatial">
       <UniqueIdentifier>{5eaed6e9-3163-4e30-ba67-6c03511ef765}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\primitives">
+      <UniqueIdentifier>{3010f232-dc37-453f-b74c-233ab5cafde7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

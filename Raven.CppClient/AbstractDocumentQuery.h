@@ -50,6 +50,7 @@
 #include "SuggestionWithTerms.h"
 #include "GetCppClassName.h"
 #include "ExplanationOptions.h"
+#include "EventHelper.h"
 
 namespace ravendb::client::documents::session
 {
@@ -124,7 +125,7 @@ namespace ravendb::client::documents::session
 		std::unordered_set<std::string> document_includes{};
 
 		//Holds the query stats
-		QueryStatistics query_stats{};
+		std::shared_ptr<QueryStatistics> query_stats = std::make_shared<QueryStatistics>();
 		
 		bool disable_entities_tracking{};
 
@@ -138,7 +139,7 @@ namespace ravendb::client::documents::session
 
 		std::shared_ptr<operations::QueryOperation> query_operation{};
 
-		std::optional<queries::timings::QueryTimings> query_timings{};
+		std::shared_ptr<queries::timings::QueryTimings> query_timings{};
 
 		std::vector<std::shared_ptr<tokens::HighlightingToken>> highlighting_tokens{};
 
@@ -200,7 +201,8 @@ namespace ravendb::client::documents::session
 
 		void execute_actual_query();
 
-		std::vector<std::shared_ptr<T>> execute_query_operation(std::optional<int32_t> take);
+		std::vector<std::shared_ptr<T>> execute_query_operation(std::optional<int32_t> take,
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json);
 
 		void assert_can_suggest() const;
 
@@ -213,9 +215,9 @@ namespace ravendb::client::documents::session
 			std::vector<std::shared_ptr<tokens::LoadToken>> load_tokens_param,
 			std::optional<std::string> from_alias = {});
 
-		std::shared_ptr<operations::QueryOperation> initialize_query_operation() const;
+		std::shared_ptr<operations::QueryOperation> initialize_query_operation();
 
-		IndexQuery get_index_query() const;
+		IndexQuery get_index_query();
 
 		void add_group_by_alias(std::string field_name, std::string projected_name);
 
@@ -227,7 +229,7 @@ namespace ravendb::client::documents::session
 		static void get_source_alias_if_exists(const queries::QueryData& query_data,
 			const std::vector<std::string>& fields, std::optional<std::string>& source_alias_reference);
 
-		 void _include_timings(std::optional<queries::timings::QueryTimings>& timings);
+		 void _include_timings(std::shared_ptr<queries::timings::QueryTimings>& timings);
 
 		void _within_radius_of(const std::string& field_name, double radius, double latitude, double longitude,
 			const std::optional<indexes::spatial::SpatialUnits>& radius_units, double dist_error_percent);
@@ -358,12 +360,13 @@ namespace ravendb::client::documents::session
 
 		void _order_by_score_descending();
 
-		void _statistics(std::optional<QueryStatistics>& stats) const;
+		void _statistics(std::shared_ptr<QueryStatistics>& stats) const;
 
-		//TODO implement
-		//public void invokeAfterQueryExecuted(QueryResult result)
-		//public void invokeBeforeQueryExecuted(IndexQuery query)
-		//public void invokeAfterStreamExecuted(ObjectNode result) 
+		void invoke_after_query_executed(const QueryResult& result);
+
+		void invoke_before_query_executed(const IndexQuery& query);
+
+		void invoke_after_stream_executed(const nlohmann::json& result);
 
 		void _search(const std::string& field_name, std::string search_terms,
 			queries::SearchOperator search_operator = queries::SearchOperator::OR);
@@ -423,15 +426,15 @@ namespace ravendb::client::documents::session
 		void _order_by_distance_descending(const queries::spatial::DynamicSpatialField& field, const std::string& shape_wkt);
 		void _order_by_distance_descending(const std::string& field_name, const std::string& shape_wkt);
 
-		std::vector<std::shared_ptr<T>> to_list();
+		std::vector<std::shared_ptr<T>> to_list(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
 
 		QueryResult get_query_result();
 
-		std::shared_ptr<T> first();
-		std::shared_ptr<T> first_or_default();
+		std::shared_ptr<T> first(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
+		std::shared_ptr<T> first_or_default(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
 
-		std::shared_ptr<T> single();
-		std::shared_ptr<T> single_or_default();
+		std::shared_ptr<T> single(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
+		std::shared_ptr<T> single_or_default(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
 
 		int32_t count();
 
@@ -487,14 +490,13 @@ namespace ravendb::client::documents::session
 			query_operation->set_result(*command.get_result());
 		}
 
-		//TODO
-		//invoke_after_query_executed(query_operation->get_current_query_results());
+		invoke_after_query_executed(query_operation->get_current_query_results());
 	}
 
 	template <typename T>
-	std::shared_ptr<T> AbstractDocumentQuery<T>::first()
+	std::shared_ptr<T> AbstractDocumentQuery<T>::first(const std::optional<DocumentInfo::FromJsonConverter>& from_json)
 	{
-		auto&& results = execute_query_operation(1);
+		auto&& results = execute_query_operation(1, from_json);
 		if(results.empty())
 		{
 			throw std::runtime_error("Expected at least one result");
@@ -504,18 +506,31 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::shared_ptr<T> AbstractDocumentQuery<T>::first_or_default()
+	std::shared_ptr<T> AbstractDocumentQuery<T>::first_or_default(const std::optional<DocumentInfo::FromJsonConverter>& from_json)
 	{
-		auto&& results = execute_query_operation(1);
+		auto&& results = execute_query_operation(1, from_json);
 		
-		return results.empty() || !results[0] ? std::make_shared<T>() : results[0];
-
+		if (results.empty() || !results[0])
+		{
+			if constexpr (std::is_default_constructible_v<T>)
+			{
+				return std::make_shared<T>();
+			}
+			else
+			{
+				return std::shared_ptr<T>();
+			}
+		}
+		else
+		{
+			return results[0];
+		}
 	}
 
 	template <typename T>
-	std::shared_ptr<T> AbstractDocumentQuery<T>::single()
+	std::shared_ptr<T> AbstractDocumentQuery<T>::single(const std::optional<DocumentInfo::FromJsonConverter>& from_json)
 	{
-		auto&& results = execute_query_operation(1);
+		auto&& results = execute_query_operation(2, from_json);
 		if(results.size() != 1)
 		{
 			throw std::runtime_error("Expected single result, got: " + std::to_string(results.size()));
@@ -525,9 +540,9 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::shared_ptr<T> AbstractDocumentQuery<T>::single_or_default()
+	std::shared_ptr<T> AbstractDocumentQuery<T>::single_or_default(const std::optional<DocumentInfo::FromJsonConverter>& from_json)
 	{
-		auto&& results = execute_query_operation(1);
+		auto&& results = execute_query_operation(2, from_json);
 		if (results.size() > 1)
 		{
 			throw std::runtime_error("Expected single result, got: " + results.size());
@@ -538,7 +553,8 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::vector<std::shared_ptr<T>> AbstractDocumentQuery<T>::execute_query_operation(std::optional<int32_t> take)
+	std::vector<std::shared_ptr<T>> AbstractDocumentQuery<T>::execute_query_operation(std::optional<int32_t> take,
+		const std::optional<DocumentInfo::FromJsonConverter>& from_json)
 	{
 		if (take && (page_size || *page_size > *take))
 		{
@@ -546,7 +562,7 @@ namespace ravendb::client::documents::session
 		}
 		init_sync();
 
-		return query_operation->complete<T>();
+		return query_operation->complete<T>(from_json);
 	}
 
 	template <typename T>
@@ -860,11 +876,11 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	IndexQuery AbstractDocumentQuery<T>::get_index_query() const
+	IndexQuery AbstractDocumentQuery<T>::get_index_query()
 	{
 		auto index_query = this->generate_index_query(*this);
-		//TODO
-		//invoke_before_query_executed(indexQuery);
+
+		invoke_before_query_executed(index_query);
 		return index_query;
 	}
 
@@ -1548,9 +1564,27 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	void AbstractDocumentQuery<T>::_statistics(std::optional<QueryStatistics>& stats) const
+	void AbstractDocumentQuery<T>::_statistics(std::shared_ptr<QueryStatistics>& stats) const
 	{
-		stats.emplace(query_stats);
+		stats = query_stats;
+	}
+
+	template <typename T>
+	void AbstractDocumentQuery<T>::invoke_after_query_executed(const QueryResult& result)
+	{
+		primitives::EventHelper::invoke(after_query_executed_callback, result);
+	}
+
+	template <typename T>
+	void AbstractDocumentQuery<T>::invoke_before_query_executed(const IndexQuery& query)
+	{
+		primitives::EventHelper::invoke(before_query_executed_callback, query);
+	}
+
+	template <typename T>
+	void AbstractDocumentQuery<T>::invoke_after_stream_executed(const nlohmann::json& result)
+	{
+		primitives::EventHelper::invoke(after_stream_executed_callback, result);
 	}
 
 	template <typename T>
@@ -1593,7 +1627,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::shared_ptr<operations::QueryOperation> AbstractDocumentQuery<T>::initialize_query_operation() const
+	std::shared_ptr<operations::QueryOperation> AbstractDocumentQuery<T>::initialize_query_operation()
 	{
 		auto&& index_query = get_index_query();
 
@@ -1688,14 +1722,14 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	void AbstractDocumentQuery<T>::_include_timings(std::optional<queries::timings::QueryTimings>& timings)
+	void AbstractDocumentQuery<T>::_include_timings(std::shared_ptr<queries::timings::QueryTimings>& timings)
 	{
 		if(!query_timings)
 		{
-			query_timings.emplace();
+			query_timings = std::make_shared<queries::timings::QueryTimings>();
 		}
 
-		timings.emplace(*query_timings);
+		timings = query_timings;
 	}
 
 	template <typename T>
@@ -2038,7 +2072,7 @@ namespace ravendb::client::documents::session
 	template <typename T>
 	void AbstractDocumentQuery<T>::update_stats_highlightings_and_explanations(const QueryResult& query_result)
 	{
-		query_stats.update_query_stats(query_result);
+		query_stats->update_query_stats(query_result);
 		query_highlightings.update(query_result);
 		if(explanations)
 		{
@@ -2190,9 +2224,9 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::vector<std::shared_ptr<T>> AbstractDocumentQuery<T>::to_list()
+	std::vector<std::shared_ptr<T>> AbstractDocumentQuery<T>::to_list(const std::optional<DocumentInfo::FromJsonConverter>& from_json)
 	{
-		return execute_query_operation({});
+		return execute_query_operation({}, from_json);
 	}
 
 	template <typename T>

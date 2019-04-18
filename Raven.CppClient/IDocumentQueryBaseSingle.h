@@ -25,11 +25,13 @@ namespace ravendb::client::documents::session
 	public:
 		Lazy<int32_t> count_lazily();
 
-		std::shared_ptr<T> first();
+		std::shared_ptr<T> first(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
 
-		std::shared_ptr<T> first_or_default();
+		std::shared_ptr<T> first_or_default(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
 
-		std::shared_ptr<T> single();
+		std::shared_ptr<T> single(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
+
+		std::shared_ptr<T> single_or_default(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
 
 		bool any();
 
@@ -46,21 +48,29 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T, class TThis>
-	std::shared_ptr<T> IDocumentQueryBaseSingle<T, TThis>::first()
+	std::shared_ptr<T> IDocumentQueryBaseSingle<T, TThis>::first(const std::optional<DocumentInfo::FromJsonConverter>& from_json)
 	{
-		return cast_down()->first();
+		return cast_down()->first(from_json);
 	}
 
 	template <typename T, class TThis>
-	std::shared_ptr<T> IDocumentQueryBaseSingle<T, TThis>::first_or_default()
+	std::shared_ptr<T> IDocumentQueryBaseSingle<T, TThis>::first_or_default(
+		const std::optional<DocumentInfo::FromJsonConverter>& from_json)
 	{
 		return cast_down()->first_or_default();
 	}
 
 	template <typename T, class TThis>
-	std::shared_ptr<T> IDocumentQueryBaseSingle<T, TThis>::single()
+	std::shared_ptr<T> IDocumentQueryBaseSingle<T, TThis>::single(const std::optional<DocumentInfo::FromJsonConverter>& from_json)
 	{
-		return cast_down()->single();
+		return cast_down()->single(from_json);
+	}
+
+	template <typename T, class TThis>
+	std::shared_ptr<T> IDocumentQueryBaseSingle<T, TThis>::single_or_default(
+		const std::optional<DocumentInfo::FromJsonConverter>& from_json)
+	{
+		return cast_down()->single_or_default(from_json);
 	}
 
 	template <typename T, class TThis>

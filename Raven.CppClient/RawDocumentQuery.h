@@ -38,7 +38,7 @@ namespace ravendb::client::documents::session
 		std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery>> using_default_operator(
 			queries::QueryOperator query_operator);
 
-		std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery>> statistics(std::optional<QueryStatistics>& stats) const;
+		std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery>> statistics(std::shared_ptr<QueryStatistics>& stats) const;
 
 		std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery>> wait_for_non_stale_results(
 			const std::chrono::milliseconds& timeout = {});
@@ -67,11 +67,13 @@ namespace ravendb::client::documents::session
 
 		Lazy<int32_t> count_lazily();
 
-		std::shared_ptr<T> first();
+		std::shared_ptr<T> first(const std::optional<DocumentInfo::FromJsonConverter>& from_json);
 
-		std::shared_ptr<T> first_or_default();
+		std::shared_ptr<T> first_or_default(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
 
-		std::shared_ptr<T> single();
+		std::shared_ptr<T> single(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
+
+		std::shared_ptr<T> single_or_default(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
 
 		bool any();
 
@@ -80,7 +82,7 @@ namespace ravendb::client::documents::session
 		Lazy<std::vector<std::shared_ptr<T>>> lazily(
 			const std::optional<std::function<void(const std::vector<std::shared_ptr<T>>&)>>& on_eval = {});
 
-		std::vector<std::shared_ptr<T>> to_list();
+		std::vector<std::shared_ptr<T>> to_list(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
 	};
 
 	template <typename T>
@@ -161,7 +163,7 @@ namespace ravendb::client::documents::session
 
 	template <typename T>
 	std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery<T>>> RawDocumentQuery<T>::statistics(
-		std::optional<QueryStatistics>& stats) const
+		std::shared_ptr<QueryStatistics>& stats) const
 	{
 		AbstractDocumentQuery<T>::_statistics(stats);
 		return _weak_this.lock();
@@ -244,21 +246,28 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::shared_ptr<T> RawDocumentQuery<T>::first()
+	std::shared_ptr<T> RawDocumentQuery<T>::first(const std::optional<DocumentInfo::FromJsonConverter>& from_json)
 	{
-		return AbstractDocumentQuery<T>::first();
+		return AbstractDocumentQuery<T>::first(from_json);
 	}
 
 	template <typename T>
-	std::shared_ptr<T> RawDocumentQuery<T>::first_or_default()
+	std::shared_ptr<T> RawDocumentQuery<T>::first_or_default(const std::optional<DocumentInfo::FromJsonConverter>& from_json)
 	{
-		return AbstractDocumentQuery<T>::first_or_default();
+		return AbstractDocumentQuery<T>::first_or_default(from_json);
 	}
 
 	template <typename T>
-	std::shared_ptr<T> RawDocumentQuery<T>::single()
+	std::shared_ptr<T> RawDocumentQuery<T>::single(const std::optional<DocumentInfo::FromJsonConverter>& from_json)
 	{
-		return AbstractDocumentQuery<T>::single();
+		return AbstractDocumentQuery<T>::single(from_json);
+	}
+
+	template <typename T>
+	std::shared_ptr<T> RawDocumentQuery<T>::single_or_default(
+		const std::optional<DocumentInfo::FromJsonConverter>& from_json)
+	{
+		return AbstractDocumentQuery<T>::single_or_default(from_json);
 	}
 
 	template <typename T>
@@ -281,8 +290,8 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::vector<std::shared_ptr<T>> RawDocumentQuery<T>::to_list()
+	std::vector<std::shared_ptr<T>> RawDocumentQuery<T>::to_list(const std::optional<DocumentInfo::FromJsonConverter>& from_json)
 	{
-		return AbstractDocumentQuery<T>::to_list();
+		return AbstractDocumentQuery<T>::to_list(from_json);
 	}
 }
