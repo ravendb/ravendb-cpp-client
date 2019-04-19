@@ -10,11 +10,6 @@
 #include "Order.h"
 #include "EntityIdHelperUtil.h"
 
-CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::User, id);
-CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::Company, id);
-CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::Employee, id);
-CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::Order, id);
-
 namespace ravendb::client::tests::client::lazy
 {
 	class LazyTest : public driver::RavenTestDriver
@@ -27,10 +22,10 @@ namespace ravendb::client::tests::client::lazy
 
 		static void SetUpTestCase()
 		{
-			register_entity_id_helper<infrastructure::entities::User>();
-			register_entity_id_helper<infrastructure::entities::Company>();
-			register_entity_id_helper<infrastructure::entities::Employee>();
-			register_entity_id_helper<infrastructure::entities::Order>();
+			REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
+			REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::Company, id);
+			REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::Employee, id);
+			REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::Order, id);
 		}
 	};
 

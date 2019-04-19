@@ -13,7 +13,7 @@ namespace ravendb::client::documents::session::operations
 {
 	std::optional<commands::batches::BatchCommand> BatchOperation::create_request()
 	{
-		auto result = _session->prepare_for_save_changes();
+		auto result = _session.lock()->prepare_for_save_changes();
 		_session_commands_count = result.session_commands.size();
 		result.session_commands.insert(result.session_commands.end(),
 			result.deferred_commands.cbegin(), result.deferred_commands.cend());
@@ -25,11 +25,11 @@ namespace ravendb::client::documents::session::operations
 			return {};
 		}
 
-		_session->increment_request_count();
+		_session.lock()->increment_request_count();
 		_entities = result.entities;
 
-		return std::optional<commands::batches::BatchCommand>(std::in_place, _session->get_conventions(),
-			result.session_commands, result.options, _session->get_transaction_mode());
+		return std::optional<commands::batches::BatchCommand>(std::in_place, _session.lock()->get_conventions(),
+			result.session_commands, result.options, _session.lock()->get_transaction_mode());
 	}
 
 	void BatchOperation::set_result(const json::BatchCommandResult& result)
@@ -49,7 +49,7 @@ namespace ravendb::client::documents::session::operations
 			throw_on_empty_results();
 		}
 
-		if (_session->get_transaction_mode() == TransactionMode::CLUSTER_WIDE &&
+		if (_session.lock()->get_transaction_mode() == TransactionMode::CLUSTER_WIDE &&
 			result.transaction_index && result.transaction_index.value() <= 0)
 		{
 			//TODO change to ClientVersionMismatchException
@@ -154,8 +154,8 @@ namespace ravendb::client::documents::session::operations
 		if (!is_deferred)
 		{
 			entity = _entities.at(index);
-			if (const auto doc_info_it = _session->_documents_by_entity.find(entity);
-				doc_info_it == _session->_documents_by_entity.end())
+			if (const auto doc_info_it = _session.lock()->_documents_by_entity.find(entity);
+				doc_info_it == _session.lock()->_documents_by_entity.end())
 			{
 				return;
 			}
@@ -172,8 +172,8 @@ namespace ravendb::client::documents::session::operations
 
 		if (is_deferred)
 		{
-			const auto session_document_info_it = _session->_documents_by_id.find(id);
-			if (session_document_info_it == _session->_documents_by_id.end())
+			const auto session_document_info_it = _session.lock()->_documents_by_id.find(id);
+			if (session_document_info_it == _session.lock()->_documents_by_id.end())
 			{
 				return;
 			}
@@ -196,11 +196,11 @@ namespace ravendb::client::documents::session::operations
 		doc_info->change_vector = change_vector;
 
 		apply_metadata_modifications(id, doc_info);
-		_session->_documents_by_id.insert_or_assign(doc_info->id, doc_info);
+		_session.lock()->_documents_by_id.insert_or_assign(doc_info->id, doc_info);
 
 		if (entity && doc_info->stored_type)
 		{
-			_session->get_generate_entity_id_on_the_client().try_set_identity(*doc_info->stored_type, entity, id);
+			_session.lock()->get_generate_entity_id_on_the_client().try_set_identity(*doc_info->stored_type, entity, id);
 		}
 
 		//TODO
@@ -238,8 +238,8 @@ namespace ravendb::client::documents::session::operations
 			auto id = get_string_field(batch_result, commands::batches::CommandType::PUT, "Id");
 			std::shared_ptr<DocumentInfo> document_info{};
 
-			if (auto session_document_info_it = _session->_documents_by_id.find(id);
-				session_document_info_it == _session->_documents_by_id.end())
+			if (auto session_document_info_it = _session.lock()->_documents_by_id.find(id);
+				session_document_info_it == _session.lock()->_documents_by_id.end())
 			{
 				return;
 			}
@@ -262,7 +262,7 @@ namespace ravendb::client::documents::session::operations
 
 			if (document_info->entity)
 			{
-				_session->get_entity_to_json().populate_entity(document_info->entity, id, document_info->document,
+				_session.lock()->get_entity_to_json().populate_entity(document_info->entity, id, document_info->document,
 					document_info->update_from_json);
 			}
 		}
@@ -282,18 +282,18 @@ namespace ravendb::client::documents::session::operations
 	void BatchOperation::handle_delete_internal(const nlohmann::json& batch_result, commands::batches::CommandType type)
 	{
 		auto&& id = get_string_field(batch_result, type, "Id");
-		const auto doc_info_it = _session->_documents_by_id.find(id);
-		if (doc_info_it == _session->_documents_by_id.end())
+		const auto doc_info_it = _session.lock()->_documents_by_id.find(id);
+		if (doc_info_it == _session.lock()->_documents_by_id.end())
 		{
 			return;
 		}
 
 		const auto entity = doc_info_it->second->entity;
-		_session->_documents_by_id.erase(id);
+		_session.lock()->_documents_by_id.erase(id);
 		if (entity)
 		{
-			_session->_deleted_entities.erase(entity);
-			_session->_deleted_entities.erase(entity);
+			_session.lock()->_deleted_entities.erase(entity);
+			_session.lock()->_deleted_entities.erase(entity);
 		}
 	}
 

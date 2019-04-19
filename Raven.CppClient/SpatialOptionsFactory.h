@@ -1,7 +1,7 @@
 #pragma once
 #include "SpatialOptions.h"
 
-namespace ravendb::client::documents::indexes::spacial
+namespace ravendb::client::documents::indexes::spatial
 {
 	class SpatialOptionsFactory
 	{

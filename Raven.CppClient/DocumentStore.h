@@ -1,5 +1,6 @@
 #pragma once
 #include <shared_mutex>
+#include <map>
 #include "DocumentStoreBase.h"
 #include "CompareStringsIgnoreCase.h"
 
@@ -12,6 +13,12 @@ namespace ravendb::client::documents
 {
 	class DocumentStore : public DocumentStoreBase
 	{
+	private:
+		struct Deleter
+		{
+			void operator()(DocumentStore* ptr) const;
+		};
+
 	private:
 		mutable std::map<std::string, std::shared_ptr<http::RequestExecutor>, impl::utils::CompareStringsIgnoreCase> _request_executors{};
 		mutable std::shared_mutex _request_executors_mutex{};
@@ -58,7 +65,7 @@ namespace ravendb::client::documents
 
 		std::shared_ptr<IDocumentStore> initialize() override;
 
-		std::shared_ptr<operations::MaintenanceOperationExecutor> get_maintenance() const override;
+		std::shared_ptr<operations::MaintenanceOperationExecutor> maintenance() const override;
 
 		std::shared_ptr<operations::OperationExecutor> get_operations() const override;
 	};

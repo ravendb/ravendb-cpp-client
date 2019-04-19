@@ -256,6 +256,18 @@ namespace ravendb::client::documents::session
 		return loaders::MultiLoaderWithInclude::create(std::static_pointer_cast<DocumentSessionImpl>(_weak_this.lock())).include(path);
 	}
 
+	Lazy<int32_t> DocumentSessionImpl::add_lazy_count_operation(
+		std::shared_ptr<operations::lazy::ILazyOperation> operation)
+	{
+		_pending_lazy_operations.push_back(operation);
+
+		return Lazy<int32_t>([this, operation]()
+		{
+			execute_all_pending_lazy_operations();
+			return operation->get_query_result().total_results;
+		});
+	}
+
 	ResponseTimeInformation DocumentSessionImpl::execute_all_pending_lazy_operations()
 	{
 		std::vector<commands::multi_get::GetRequest> requests{};

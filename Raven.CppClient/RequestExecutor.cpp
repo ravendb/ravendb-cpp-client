@@ -55,7 +55,7 @@ namespace ravendb::client::http
 		, _curl_holder()
 		, _set_before_perform(set_before_perform)
 		, _set_after_perform(set_after_perform)
-		, _conventions(std::make_shared<documents::conventions::DocumentConventions>(*conventions))
+		, _conventions(documents::conventions::DocumentConventions::clone(conventions))
 	{
 		_topology->nodes.reserve(_initial_urls.size());
 

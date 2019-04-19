@@ -3,7 +3,7 @@
 
 namespace ravendb::client::documents::indexes
 {
-	namespace spacial
+	namespace spatial
 	{
 		class SpatialOptionsFactory;
 	}
@@ -19,7 +19,7 @@ namespace ravendb::client::documents::indexes
 		std::unordered_map<std::string, std::string> analyzers_strings{};
 		std::unordered_set<std::string> index_suggestions{};
 		std::unordered_map<std::string, FieldTermVector> term_vectors_strings{};
-		std::unordered_map<std::string, spacial::SpatialOptions> spacial_options_strings{};
+		std::unordered_map<std::string, spatial::SpatialOptions> spacial_options_strings{};
 
 		std::string output_reduce_to_collections{};
 
@@ -31,7 +31,7 @@ namespace ravendb::client::documents::indexes
 	protected:
 		void index(std::string field, FieldIndexing indexing);
 
-		void spacial(std::string field, std::function<spacial::SpatialOptions(const spacial::SpatialOptionsFactory&)> indexing);
+		void spacial(std::string field, std::function<spatial::SpatialOptions(const spatial::SpatialOptionsFactory&)> indexing);
 
 		void store_all_fields(FieldStorage storage);
 

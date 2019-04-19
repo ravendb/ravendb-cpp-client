@@ -7,16 +7,19 @@
 #include "AdvancedSessionOperations.h"
 #include "EntityIdHelperUtil.h"
 
-CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::User, id);
-
 namespace ravendb::client::tests::client
 {
 	class LoadTests : public driver::RavenTestDriver
 	{
 	protected:
+		void customise_store(std::shared_ptr<documents::DocumentStore> store) override
+		{
+			//store->set_before_perform(infrastructure::set_for_fiddler);
+		}
+
 		static void SetUpTestCase()
 		{
-			register_entity_id_helper<infrastructure::entities::User>();
+			REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
 		}
 	};
 

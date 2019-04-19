@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "MaintenanceOperationExecutor.h"
 #include "DocumentStore.h"
-#include "../Raven.CppClient.Tests/test_utils.h"
 
 namespace ravendb::client::documents::operations
 {
@@ -14,7 +13,7 @@ namespace ravendb::client::documents::operations
 
 		if(_database_name)
 		{
-			_request_executor = _store->get_request_executor(*_database_name);
+			_request_executor = _store.lock()->get_request_executor(*_database_name);
 		}
 
 		return _request_executor;
@@ -34,13 +33,13 @@ namespace ravendb::client::documents::operations
 		: _store(store)
 		, _database_name(std::move(database_name))
 	{
-		if(!_store)
+		if(!store)
 		{
 			throw std::invalid_argument("'store' should be non-empty");
 		}
 		if(!_database_name)
 		{
-			_database_name = _store->get_database();
+			_database_name = store->get_database();
 		}
 	}
 
@@ -61,7 +60,7 @@ namespace ravendb::client::documents::operations
 			return _weak_this.lock();
 		}
 
-		return create(_store, std::move(database_name));
+		return create(_store.lock(), std::move(database_name));
 	}
 
 	void MaintenanceOperationExecutor::send(IVoidMaintenanceOperation& operation)

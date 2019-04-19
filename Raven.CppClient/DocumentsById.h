@@ -1,4 +1,5 @@
 #pragma once
+#include <map>
 
 namespace ravendb::client::impl::utils
 {

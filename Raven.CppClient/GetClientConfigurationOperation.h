@@ -31,14 +31,14 @@ namespace ravendb::client::documents::operations::configuration
 
 		GetClientConfigurationOperation() = default;
 
-		std::unique_ptr<RavenCommand<get_client_configuration_operation::Result>> 
-			get_command(std::shared_ptr<DocumentConventions> conventions) const override
+		std::unique_ptr<http::RavenCommand<get_client_configuration_operation::Result>> 
+			get_command(std::shared_ptr<conventions::DocumentConventions> conventions) const override
 		{
 			return std::make_unique<GetClientConfigurationCommand>();
 		}
 
 	private:
-		class GetClientConfigurationCommand : public RavenCommand<get_client_configuration_operation::Result>
+		class GetClientConfigurationCommand : public http::RavenCommand<get_client_configuration_operation::Result>
 		{
 		public:
 			~GetClientConfigurationCommand() override = default;

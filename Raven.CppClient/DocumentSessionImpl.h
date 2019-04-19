@@ -8,6 +8,7 @@
 #include "Lazy.h"
 #include "LazyLoadOperation.h"
 #include "DocumentQuery.h"
+#include "Query.h"
 
 namespace ravendb::client::documents
 {
@@ -81,9 +82,10 @@ namespace ravendb::client::documents::session
 			std::function<T(std::shared_ptr<operations::lazy::ILazyOperation>)> get_operation_result,
 			std::function<void()> on_eval);
 
+		Lazy<int32_t> add_lazy_count_operation(std::shared_ptr<operations::lazy::ILazyOperation> operation);
+
 		ResponseTimeInformation execute_all_pending_lazy_operations();
 
-		//TODO use custom FromJsonConverter/ToJsonConverter
 		template<typename T>
 		Lazy<DocumentsByIdsMap<T>> lazy_load_internal(
 			const std::vector<std::reference_wrapper<const std::string>>& ref_ids,
@@ -114,9 +116,15 @@ namespace ravendb::client::documents::session
 		void save_changes();
 
 		template<typename T>
-		std::shared_ptr<RawDocumentQuery<T>> raw_query(const std::string& query);
+		std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery<T>>> raw_query(std::string query);
 
 		template<typename T>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> query();
+
+		template<typename T>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> query(const queries::Query& collection_or_index_name);
+
+		template<typename T, typename TIndex>
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> query();
 
 		template <typename T>
@@ -124,6 +132,12 @@ namespace ravendb::client::documents::session
 			std::optional<std::string> index_name,
 			std::optional<std::string> collection_name,
 			bool is_map_reduced);
+
+		template <typename T>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> document_query();
+
+		template<typename T, typename TIndex>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> document_query();
 
 		template<typename T>
 		void patch(const std::string& id, const std::string& path_to_array,
@@ -238,15 +252,58 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::shared_ptr<RawDocumentQuery<T>> DocumentSessionImpl::raw_query(const std::string& query)
+	std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery<T>>> DocumentSessionImpl::raw_query(std::string query)
 	{
-		return RawDocumentQuery<T>::create(_weak_this.lock(), query);
+		return RawDocumentQuery<T>::create(_weak_this.lock(), std::move(query));
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentSessionImpl::query()
 	{
 		return document_query<T>({}, {}, false);
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentSessionImpl::query(
+		const queries::Query& collection_or_index_name)
+	{
+		if(collection_or_index_name.get_collection() && !collection_or_index_name.get_collection()->empty())
+		{
+			return document_query<T>({}, collection_or_index_name.get_collection(), false);
+		}
+
+		return document_query<T>(collection_or_index_name.get_index_name(), {}, false);
+	}
+
+	template <typename T, typename TIndex>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentSessionImpl::query()
+	{
+		return document_query<T, TIndex>();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentSessionImpl::document_query()
+	{
+		return document_query<T>({}, {}, false);
+	}
+
+	template <typename T, typename TIndex>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentSessionImpl::document_query()
+	{
+		static_assert(std::is_base_of_v<indexes::AbstractIndexCreationTask, TIndex>, "'TIndex' must be derived from AbstractIndexCreationTask");
+
+		try
+		{
+			auto index = TIndex();
+			return document_query<T>(index.get_index_name(), {}, index.is_map_reduce());
+		}
+		catch (std::exception& e)
+		{
+			std::ostringstream msg{};
+			msg << "Unable to query index : " << impl::utils::GetCppClassName::get_simple_class_name(typeid(TIndex))
+				<< " " << e.what();
+			throw std::runtime_error(msg.str());
+		}
 	}
 
 	template <typename T>

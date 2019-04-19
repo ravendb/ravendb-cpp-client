@@ -15,7 +15,7 @@ namespace ravendb::client::documents::identity
 	std::optional<std::string> MultiDatabaseHiLoIdGenerator::generate_document_id(
 		const std::optional<std::string>& db_name, std::type_index type, std::shared_ptr<void> entity)
 	{
-		auto&& db = db_name ? *db_name : store->get_database();
+		auto&& db = db_name ? *db_name : store.lock()->get_database();
 
 		{
 			std::shared_lock<std::shared_mutex> lock(_generators_lock);
@@ -36,17 +36,17 @@ namespace ravendb::client::documents::identity
 			}
 			else
 			{
-				_generators.insert_or_assign(db, std::make_unique<MultiTypeHiLoIdGenerator>(store, db, conventions));
+				_generators.insert_or_assign(db, std::make_unique<MultiTypeHiLoIdGenerator>(store.lock(), db, conventions));
 			}
 		}
 		return _generators.at(db)->generate_document_id(type, entity);
 	}
 
-	void MultiDatabaseHiLoIdGenerator::return_unused_range() const
+	void MultiDatabaseHiLoIdGenerator::return_unused_range(const DocumentStore& store) const
 	{
 		for(const auto& [db, generator] : _generators)
 		{
-			generator->return_unused_range();
+			generator->return_unused_range(store);
 		}
 	}
 }

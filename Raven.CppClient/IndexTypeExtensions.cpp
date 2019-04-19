@@ -26,7 +26,7 @@ namespace ravendb::client::documents::indexes
 			type == IndexType::AUTO_MAP_REDUCE;
 	}
 
-	bool IndexTypeExtensions::is_state(IndexType type)
+	bool IndexTypeExtensions::is_static(IndexType type)
 	{
 		return
 			type == IndexType::MAP ||

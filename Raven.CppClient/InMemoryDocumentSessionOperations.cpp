@@ -22,7 +22,7 @@ namespace ravendb::client::documents::session
 
 	std::shared_ptr<IDocumentStore> InMemoryDocumentSessionOperations::get_document_store() const
 	{
-		return _document_store;
+		return _document_store.lock();
 	}
 
 	std::shared_ptr<http::RequestExecutor> InMemoryDocumentSessionOperations::get_request_executor() const
@@ -48,7 +48,7 @@ namespace ravendb::client::documents::session
 	std::string InMemoryDocumentSessionOperations::store_identifier() const
 	{
 		std::ostringstream res;
-		res << _document_store->get_identifier() << ";" << database_name;
+		res << _document_store.lock()->get_identifier() << ";" << database_name;
 		return res.str();
 	}
 
@@ -121,7 +121,7 @@ namespace ravendb::client::documents::session
 	void InMemoryDocumentSessionOperations::initialize()
 	{
 		_entity_to_json = std::make_unique<EntityToJson>(_weak_this.lock());
-		_operation_executor = std::make_shared<documents::operations::SessionOperationExecutor>(_weak_this.lock());
+		_operation_executor = documents::operations::SessionOperationExecutor::create(_weak_this.lock());
 	}
 
 	void InMemoryDocumentSessionOperations::set_weak_this(std::shared_ptr<InMemoryDocumentSessionOperations> ptr)
@@ -221,7 +221,9 @@ namespace ravendb::client::documents::session
 		}
 	}
 
-	std::shared_ptr<void> InMemoryDocumentSessionOperations::track_entity(const std::string& id, const nlohmann::json& document,
+	std::shared_ptr<void> InMemoryDocumentSessionOperations::track_entity(
+		std::type_index type,
+		const std::string& id, const nlohmann::json& document,
 		const nlohmann::json& metadata, bool no_tracking_,
 		const DocumentInfo::FromJsonConverter& from_json_converter,
 		const DocumentInfo::ToJsonConverter& to_json_converter,
@@ -243,12 +245,10 @@ namespace ravendb::client::documents::session
 		// if noTracking is session-wide then we want to override the passed argument
 		no_tracking_ = this->no_tracking || no_tracking_;
 
-		if (id.empty())
+		if (impl::utils::is_blank(id))
 		{
-			//TODO something
-			throw std::runtime_error("Not implemented");
+			return deserialize_from_transformer(type, {}, document, from_json_converter);
 		}
-
 
 		if (auto doc_info_it = _documents_by_id.find(id);
 			doc_info_it != _documents_by_id.end())
@@ -257,6 +257,7 @@ namespace ravendb::client::documents::session
 			if (!doc_info_it->second->entity)
 			{
 				doc_info_it->second->entity = from_json_converter(document);
+				get_generate_entity_id_on_the_client().try_set_identity(type, doc_info_it->second->entity, id);
 			}
 			if (!no_tracking_)
 			{
@@ -276,6 +277,7 @@ namespace ravendb::client::documents::session
 			if (!doc_info->entity)
 			{
 				doc_info->entity = from_json_converter(document);
+				get_generate_entity_id_on_the_client().try_set_identity(type, doc_info->entity, id);
 			}
 			if (!no_tracking_)
 			{
@@ -290,6 +292,7 @@ namespace ravendb::client::documents::session
 		}
 
 		auto entity = from_json_converter(document);
+		get_generate_entity_id_on_the_client().try_set_identity(type, entity, id);
 
 		std::string change_vector{};
 		if (!impl::utils::json_utils::get_val_from_json(metadata, constants::documents::metadata::CHANGE_VECTOR, change_vector))
@@ -297,7 +300,7 @@ namespace ravendb::client::documents::session
 			throw std::invalid_argument("Document " + id + "must have Change Vector");
 		}
 
-		if (!no_tracking)
+		if (!no_tracking_)
 		{
 			auto doc_info = std::make_shared<DocumentInfo>();
 			doc_info->id = id;
@@ -575,7 +578,7 @@ namespace ravendb::client::documents::session
 
 	InMemoryDocumentSessionOperations::SaveChangesData InMemoryDocumentSessionOperations::prepare_for_save_changes()
 	{
-		auto result = SaveChangesData{ *this };
+		auto result = SaveChangesData(_weak_this.lock());
 
 		_deferred_commands.clear();
 		_deferred_commands_map.clear();
@@ -829,7 +832,7 @@ namespace ravendb::client::documents::session
 		std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>> changes_collection{};
 		changes_collection.emplace();
 
-		auto unused = SaveChangesData(*this);
+		auto unused = SaveChangesData(_weak_this.lock());
 		prepare_for_entities_deletion(unused, changes_collection);
 		get_all_entities_changes(changes_collection);
 
@@ -1041,6 +1044,20 @@ namespace ravendb::client::documents::session
 		}
 	}
 
+	std::shared_ptr<void> InMemoryDocumentSessionOperations::deserialize_from_transformer(
+		std::type_index type,
+		const std::optional<std::string>& id,
+		const nlohmann::json& document,
+		const DocumentInfo::FromJsonConverter& from_json_converter) const
+	{
+		auto entity = from_json_converter(document);
+		if(id)
+		{
+			get_generate_entity_id_on_the_client().try_set_identity(type, entity, *id);
+		}
+		return entity;
+	}
+
 	bool InMemoryDocumentSessionOperations::check_if_already_included(const std::vector<std::string>& ids,
 		const std::vector<std::string>& includes)
 	{
@@ -1086,7 +1103,7 @@ namespace ravendb::client::documents::session
 	void InMemoryDocumentSessionOperations::update_session_after_changes(const json::BatchCommandResult& result)
 	{
 		auto&& returned_transaction_index = result.transaction_index;
-		_document_store->set_last_transaction_index(database_name, returned_transaction_index);
+		_document_store.lock()->set_last_transaction_index(database_name, returned_transaction_index);
 		_session_info.last_cluster_transaction_index = returned_transaction_index;
 	}
 

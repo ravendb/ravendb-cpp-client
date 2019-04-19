@@ -260,8 +260,23 @@ namespace ravendb::client::documents::conventions
 
 	std::shared_ptr<DocumentConventions> DocumentConventions::default_conventions()
 	{
-		auto conventions = std::make_shared<DocumentConventions>();
+		auto conventions =std::shared_ptr<DocumentConventions>(new DocumentConventions());
+		conventions->_weak_this = conventions;
 		conventions->freeze();
+		return conventions;
+	}
+
+	std::shared_ptr<DocumentConventions> DocumentConventions::create()
+	{
+		auto conventions = std::shared_ptr<DocumentConventions>(new DocumentConventions());
+		conventions->_weak_this = conventions;
+		return conventions;
+	}
+
+	std::shared_ptr<DocumentConventions> DocumentConventions::clone(std::shared_ptr<DocumentConventions> other)
+	{
+		auto conventions = std::shared_ptr<DocumentConventions>(new DocumentConventions(*other));
+		conventions->_weak_this = conventions;
 		return conventions;
 	}
 
@@ -275,6 +290,13 @@ namespace ravendb::client::documents::conventions
 		}
 
 		return _document_id_generator(database_name, entity, type);
+	}
+
+	std::shared_ptr<DocumentConventions> DocumentConventions::register_id_convention(std::type_index type,
+		std::function<std::string(std::string, std::shared_ptr<void>)> function)
+	{
+		_list_of_registered_id_conventions.insert_or_assign(type, function);
+		return _weak_this.lock();
 	}
 
 	std::optional<std::string> DocumentConventions::get_cpp_class(const std::string& id, const nlohmann::json& document)

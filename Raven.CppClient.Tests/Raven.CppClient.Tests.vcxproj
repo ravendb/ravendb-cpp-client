@@ -75,6 +75,7 @@
     <ClCompile Include="GetStatisticsCommandTest.cpp" />
     <ClCompile Include="IndexesFromClientTest.cpp" />
     <ClCompile Include="IndexOperationsTest.cpp" />
+    <ClCompile Include="JavaScriptIndexTest.cpp" />
     <ClCompile Include="PutDocumentCommandTest.cpp" />
     <ClCompile Include="raven_test_definitions.cpp" />
     <ClCompile Include="DeleteTest.cpp" />
@@ -102,6 +103,7 @@
     <ClCompile Include="RequestExecutorAndDBsTests.cpp" />
     <ClCompile Include="SecuredRequestExecutorTests.cpp" />
     <ClCompile Include="RavenTestDriver.cpp" />
+    <ClCompile Include="SimpleMultiMapTest.cpp" />
     <ClCompile Include="test_utils.cpp" />
     <ClCompile Include="TrackEntityTest.cpp" />
     <ClCompile Include="WhatChangedTest.cpp" />

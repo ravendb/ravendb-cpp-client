@@ -19,8 +19,7 @@
 #include "GetIndexStatisticsOperation.h"
 #include "SetIndexesLockOperation.h"
 #include "SetIndexesPriorityOperation.h"
-
-CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::User, id);
+#include "GetTermsOperation.h"
 
 namespace ravendb::client::tests::client::indexing
 {
@@ -29,12 +28,12 @@ namespace ravendb::client::tests::client::indexing
 	protected:
 		void customise_store(std::shared_ptr<ravendb::client::documents::DocumentStore> store) override
 		{
-			//store->set_before_perform(infrastructure::set_for_fiddler);
+			store->set_before_perform(infrastructure::set_for_fiddler);
 		}
 
 		static void SetUpTestCase()
 		{
-			register_entity_id_helper<infrastructure::entities::User>();
+			REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
 		}
 
 		class Users_ByName : public documents::indexes::AbstractIndexCreationTask
@@ -49,7 +48,7 @@ namespace ravendb::client::tests::client::indexing
 
 				index("Name", documents::indexes::FieldIndexing::SEARCH);
 
-				index_suggestions.insert("name");
+				index_suggestions.insert("Name");
 
 				store("Name", documents::indexes::FieldStorage::YES);
 			}
@@ -88,9 +87,9 @@ namespace ravendb::client::tests::client::indexing
 
 		{
 			auto session = store->open_session();
-			//TODO
-			//auto users = session.query<infrastructure::entities::User, Users_ByName>();
-			//ASSERT_EQ(1, users.size());
+			auto users = session.query<infrastructure::entities::User, Users_ByName>()
+				->to_list();
+			ASSERT_EQ(1, users.size());
 		}
 	}
 
@@ -122,7 +121,7 @@ namespace ravendb::client::tests::client::indexing
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(2));// avoid the same millisecond
 
-		store->get_maintenance()->send(documents::operations::indexes::ResetIndexOperation(index_name));
+		store->maintenance()->send(documents::operations::indexes::ResetIndexOperation(index_name));
 		wait_for_indexing(store);
 
 		command = documents::operations::GetStatisticsOperation().get_command(store->get_conventions());
@@ -145,7 +144,7 @@ namespace ravendb::client::tests::client::indexing
 		wait_for_indexing(store);
 
 		auto index_names_operation = documents::operations::indexes::GetIndexNamesOperation(0, 100);
-		auto indexes_names = store->get_maintenance()->send(index_names_operation);
+		auto indexes_names = store->maintenance()->send(index_names_operation);
 
 		ASSERT_EQ(2, indexes_names->size());
 	}
@@ -159,7 +158,7 @@ namespace ravendb::client::tests::client::indexing
 		store->execute_index(new_index);
 		wait_for_indexing(store);
 
-		store->get_maintenance()->send(documents::operations::indexes::DeleteIndexOperation(new_index->get_index_name()));
+		store->maintenance()->send(documents::operations::indexes::DeleteIndexOperation(new_index->get_index_name()));
 
 		auto command = documents::operations::GetStatisticsOperation().get_command(store->get_conventions());
 		store->get_request_executor()->execute(*command);
@@ -174,30 +173,30 @@ namespace ravendb::client::tests::client::indexing
 
 		Users_ByName().execute(store);
 
-		auto status = store->get_maintenance()->send(documents::operations::indexes::GetIndexingStatusOperation());
+		auto status = store->maintenance()->send(documents::operations::indexes::GetIndexingStatusOperation());
 
 		ASSERT_EQ(IndexRunningStatus::RUNNING, status->status);
 		ASSERT_EQ(1, status->indexes.size());
 		ASSERT_EQ(IndexRunningStatus::RUNNING, status->indexes[0].status);
 
-		store->get_maintenance()->send(documents::operations::indexes::StopIndexingOperation());
+		store->maintenance()->send(documents::operations::indexes::StopIndexingOperation());
 
-		status = store->get_maintenance()->send(documents::operations::indexes::GetIndexingStatusOperation());
+		status = store->maintenance()->send(documents::operations::indexes::GetIndexingStatusOperation());
 
 		ASSERT_EQ(IndexRunningStatus::PAUSED, status->status);
 		ASSERT_EQ(IndexRunningStatus::PAUSED, status->indexes[0].status);
 
-		store->get_maintenance()->send(documents::operations::indexes::StartIndexingOperation());
+		store->maintenance()->send(documents::operations::indexes::StartIndexingOperation());
 
-		status = store->get_maintenance()->send(documents::operations::indexes::GetIndexingStatusOperation());
+		status = store->maintenance()->send(documents::operations::indexes::GetIndexingStatusOperation());
 
 		ASSERT_EQ(IndexRunningStatus::RUNNING, status->status);
 		ASSERT_EQ(1, status->indexes.size());
 		ASSERT_EQ(IndexRunningStatus::RUNNING, status->indexes[0].status);
 
-		store->get_maintenance()->send(documents::operations::indexes::StopIndexOperation(status->indexes[0].name));
+		store->maintenance()->send(documents::operations::indexes::StopIndexOperation(status->indexes[0].name));
 
-		status = store->get_maintenance()->send(documents::operations::indexes::GetIndexingStatusOperation());
+		status = store->maintenance()->send(documents::operations::indexes::GetIndexingStatusOperation());
 
 		ASSERT_EQ(IndexRunningStatus::RUNNING, status->status);
 		ASSERT_EQ(1, status->indexes.size());
@@ -222,62 +221,122 @@ namespace ravendb::client::tests::client::indexing
 
 			session.save_changes();
 		}
+		{
+			auto session = store->open_session();
 
-		//TODO
-		//try (IDocumentSession session = store.openSession()) {
-		//	List<User> users = session
-		//		.query(User.class, Users_ByName.class)
-		//		.waitForNonStaleResults()
-		//		.whereEquals("name", "Arek")
-		//		.toList();
+			auto users = session.query<infrastructure::entities::User, Users_ByName>()
+				->wait_for_non_stale_results()
+				->where_equals("Name", "Alexey")
+				->to_list();
 
+			ASSERT_EQ(1, users.size());
+		}
 
-		//	assertThat(users)
-		//		.hasSize(1);
-		//}
-		wait_for_indexing(store);
-
-		auto indexes = store->get_maintenance()->send(documents::operations::indexes::GetIndexesOperation(0, 100));
+		auto indexes = store->maintenance()->send(documents::operations::indexes::GetIndexesOperation(0, 100));
 		ASSERT_EQ(1, indexes->size());
 
 		auto&& index = (*indexes)[0];
-		auto stats = store->get_maintenance()->send(documents::operations::indexes::GetIndexStatisticsOperation(index.name));
+		auto stats = store->maintenance()->send(documents::operations::indexes::GetIndexStatisticsOperation(index.name));
 
 		ASSERT_EQ(documents::indexes::IndexLockMode::UNLOCK, stats->lock_mode);
 		ASSERT_EQ(documents::indexes::IndexPriority::NORMAL, stats->priority);
 
-		store->get_maintenance()->send(documents::operations::indexes::SetIndexesLockOperation(index.name,
+		store->maintenance()->send(documents::operations::indexes::SetIndexesLockOperation(index.name,
 			IndexLockMode::LOCKED_IGNORE));
-		store->get_maintenance()->send(documents::operations::indexes::SetIndexesPriorityOperation(index.name,
+		store->maintenance()->send(documents::operations::indexes::SetIndexesPriorityOperation(index.name,
 			IndexPriority::LOW));
 
-		stats = store->get_maintenance()->send(documents::operations::indexes::GetIndexStatisticsOperation(index.name));
+		stats = store->maintenance()->send(documents::operations::indexes::GetIndexStatisticsOperation(index.name));
 
 		ASSERT_EQ(documents::indexes::IndexLockMode::LOCKED_IGNORE, stats->lock_mode);
 		ASSERT_EQ(documents::indexes::IndexPriority::LOW, stats->priority);
 	}
 
-	//TODO implement | waiting for queries
 	TEST_F(IndexesFromClientTest, GetTerms)
 	{
 		auto store = get_document_store(TEST_NAME);
+		{
+			auto session = store->open_session();
+			auto user1 = std::make_shared<infrastructure::entities::User>();
+			user1->name = "Alexander";
+			session.store(user1);
+
+			auto user2 = std::make_shared<infrastructure::entities::User>();
+			user2->name = "Alexey";
+			session.store(user2);
+
+			session.save_changes();
+		}
+
+		std::string index_name{};
+
+		{
+			auto session = store->open_session();
+			std::shared_ptr<documents::session::QueryStatistics> stats_ref{};
+			auto users = session.query<infrastructure::entities::User>()
+				->wait_for_non_stale_results()
+				->statistics(stats_ref)
+				->where_equals("Name", "Alexey")
+				->to_list();
+
+			index_name = stats_ref->index_name;
+		}
+
+		auto terms = store->maintenance()->send(documents::operations::indexes::GetTermsOperation(
+			index_name, "Name", {}, 128));
+
+		ASSERT_EQ(2, terms->size());
+
+		ASSERT_TRUE(std::find(terms->begin(), terms->end(), "alexander") != terms->end());
+		ASSERT_TRUE(std::find(terms->begin(), terms->end(), "alexey") != terms->end());
 	}
 
-	//TODO implement | waiting for queries
 	TEST_F(IndexesFromClientTest, GetIndexNames)
 	{
 		auto store = get_document_store(TEST_NAME);
+		{
+			auto session = store->open_session();
+			auto user1 = std::make_shared<infrastructure::entities::User>();
+			user1->name = "Alexander";
+			session.store(user1);
+
+			auto user2 = std::make_shared<infrastructure::entities::User>();
+			user2->name = "Alexey";
+			session.store(user2);
+
+			session.save_changes();
+		}
+
+		std::string index_name{};
+
+		{
+			auto session = store->open_session();
+			std::shared_ptr<documents::session::QueryStatistics> stats_ref{};
+			auto users = session.query<infrastructure::entities::User>()
+				->wait_for_non_stale_results()
+				->statistics(stats_ref)
+				->where_equals("Name", "Alexey")
+				->to_list();
+
+			index_name = stats_ref->index_name;
+		}
+
+		auto index_names = store->maintenance()->send(documents::operations::indexes::GetIndexNamesOperation(0, 128));
+
+		ASSERT_EQ(1, index_names->size());
+
+		ASSERT_TRUE(std::find(index_names->begin(), index_names->end(), index_name) != index_names->end());
 	}
 
-	//TODO implement | waiting for queries
-	TEST_F(IndexesFromClientTest, CanExplain)
-	{
-		auto store = get_document_store(TEST_NAME);
-	}
+	//TODO implement | waiting for queries/CanExplain
+	//TEST_F(IndexesFromClientTest, CanExplain)
+	//{
+	//	auto store = get_document_store(TEST_NAME);
+	//}
 
 	//TODO implement | waiting for query/moreLikeThis
-	TEST_F(IndexesFromClientTest, MoreLikeThis)
-	{
-		auto store = get_document_store(TEST_NAME);
-	}
+	//TEST_F(IndexesFromClientTest, MoreLikeThis)
+	//{
+	//	auto store = get_document_store(TEST_NAME);
+	//}
 }

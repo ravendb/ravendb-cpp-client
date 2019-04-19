@@ -29,7 +29,7 @@ namespace ravendb::client::documents::indexes
 		std::unordered_map<std::string, std::string> analyzers_strings{};
 		std::unordered_set<std::string> suggestion_options{};
 		std::unordered_map<std::string, FieldTermVector> term_vector_strings{};
-		std::unordered_map<std::string, spacial::SpatialOptions> spatial_indexes_strings{};
+		std::unordered_map<std::string, spatial::SpatialOptions> spatial_indexes_strings{};
 		std::optional<IndexLockMode> lock_mode{};
 		std::optional<IndexPriority> priority{};
 		std::optional<std::string> output_reduce_to_collection{};

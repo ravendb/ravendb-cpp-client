@@ -156,8 +156,8 @@ namespace ravendb::client::impl::utils
 
 	bool is_blank(const std::string& str)
 	{
-		return str.empty() || str.end() == std::find_if(str.begin(), str.end(),
-			[](std::string::value_type c)->bool {return !std::isspace(c); });
+		return std::all_of(str.begin(), str.end(),
+			[](unsigned char c)->bool {return std::isspace(c); });
 	}
 }
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <curl/curl.h>
 
 namespace ravendb::client::impl::utils
 {
@@ -16,7 +17,7 @@ namespace ravendb::client::impl::utils
 
 	std::string url_escape(CURL* curl, const std::string& val);
 
-	//TODO use it for validate string arguments
+	//Useful for validating string arguments
 	bool is_blank(const std::string& str);
 }
 

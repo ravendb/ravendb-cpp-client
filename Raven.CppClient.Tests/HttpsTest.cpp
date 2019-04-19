@@ -5,8 +5,6 @@
 #include "User.h"
 #include "EntityIdHelperUtil.h"
 
-CREATE_ENTITY_ID_HELPER_FOR(ravendb::client::tests::infrastructure::entities::User, id);
-
 namespace ravendb::client::tests::client
 {
 	class HttpsTest : public driver::RavenTestDriver
@@ -14,7 +12,7 @@ namespace ravendb::client::tests::client
 		protected:
 		static void SetUpTestCase()
 		{
-			register_entity_id_helper<infrastructure::entities::User>();
+			REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
 		}
 	};
 

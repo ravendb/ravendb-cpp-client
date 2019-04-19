@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 #include "IMaintenanceOperation.h"
 #include "RavenCommand.h"
 #include "ServerNode.h"
@@ -19,13 +18,14 @@ namespace ravendb::client::documents::operations
 			: _debug_tag(std::move(debug_tag))
 		{}
 
-		std::unique_ptr<RavenCommand<DatabaseStatistics>> get_command(std::shared_ptr<DocumentConventions> conventions) const override
+		std::unique_ptr<http::RavenCommand<DatabaseStatistics>> get_command(
+			std::shared_ptr<conventions::DocumentConventions> conventions) const override
 		{
 			return std::make_unique<GetStatisticsCommand>(_debug_tag);
 		}
 
 	private:
-		class GetStatisticsCommand : public RavenCommand<DatabaseStatistics>
+		class GetStatisticsCommand : public http::RavenCommand<DatabaseStatistics>
 		{
 		private:
 			const std::optional<std::string> _debug_tag{};

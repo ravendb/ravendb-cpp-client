@@ -14,7 +14,7 @@ namespace ravendb::client::impl::utils
 	{
 		std::string temp{};
 		std::transform(str.cbegin(), str.cend(), std::back_insert_iterator<std::string>(temp),
-			[](std::string::value_type c) {return std::tolower(c); });
+			[](unsigned char c)->char {return std::tolower(c); });
 		return temp;
 	}
 

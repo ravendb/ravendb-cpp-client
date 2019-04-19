@@ -8,6 +8,31 @@ namespace ravendb::client::documents::session
 {
 	struct DocumentInfo
 	{
+	private:
+		template<typename T>
+		static std::shared_ptr<void> inner_default_from_json(const nlohmann::json& json)
+		{
+			if constexpr (std::is_constructible_v<T>)
+			{
+				auto temp = std::make_shared<T>(json.get<T>());//conversion(deserialization)
+				return std::static_pointer_cast<void>(temp);
+			}else
+			{
+				return {};
+			}
+		}
+
+		template<typename T>
+		static void inner_default_entity_update(std::shared_ptr<void> entity, const nlohmann::json& new_json)
+		{
+			if constexpr (std::is_default_constructible_v<T>)
+			{
+				auto document = std::static_pointer_cast<T>(entity);
+				*document = new_json.get<T>(); //change the old document with the new one obtained from 'new_json'
+			}
+		}
+
+	public:
 		using FromJsonConverter = std::function<std::shared_ptr<void>(const nlohmann::json&)>;
 		using ToJsonConverter = std::function<nlohmann::json(std::shared_ptr<void>)>;
 		using EntityUpdater = std::function<void(std::shared_ptr<void>, const nlohmann::json&)>;
@@ -18,19 +43,43 @@ namespace ravendb::client::documents::session
 			return nlohmann::json(*std::static_pointer_cast<T>(entity));
 		};
 
+		//TODO waiting for MSVC bug fix
+		//template<typename T>
+		//inline static const FromJsonConverter default_from_json = [](const nlohmann::json& json) -> std::shared_ptr<void>
+		//{
+		//	if constexpr (std::is_constructible_v<T>)
+		//	{
+		//		auto temp = std::make_shared<T>(json.get<T>());//conversion(deserialization)
+		//		return std::static_pointer_cast<void>(temp);
+		//	}else
+		//	{
+		//		return {};
+		//	}
+		//};
+
 		template<typename T>
 		inline static const FromJsonConverter default_from_json = [](const nlohmann::json& json) -> std::shared_ptr<void>
 		{
-			auto temp = std::make_shared<T>(json.get<T>());//conversion(deserialization)
-			return std::static_pointer_cast<void>(temp);
+			return inner_default_from_json<T>(json);
 		};
+
+		//TODO waiting for MSVC bug fix
+		//template<typename T>
+		//inline static const EntityUpdater default_entity_update = 
+		//	[](std::shared_ptr<void> entity, const nlohmann::json& new_json) -> void
+		//{
+		//	if constexpr (std::is_default_constructible_v<T>)
+		//	{
+		//		auto document = std::static_pointer_cast<T>(entity);
+		//		*document = new_json.get<T>(); //change the old document with the new one obtained from 'new_json'
+		//	}
+		//};
 
 		template<typename T>
 		inline static const EntityUpdater default_entity_update = 
 			[](std::shared_ptr<void> entity, const nlohmann::json& new_json) -> void
 		{
-			auto document = std::static_pointer_cast<T>(entity);
-			*document = new_json.get<T>(); //change the old document with the new one obtained from 'new_json'
+			inner_default_entity_update<T>(entity, new_json);
 		};
 
 		nlohmann::json document{};

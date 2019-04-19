@@ -28,12 +28,19 @@ namespace ravendb::client::documents::session::tokens
 		return _alias;
 	}
 
+	std::shared_ptr<FromToken> FromToken::create(std::optional<std::string> index_name,
+		std::optional<std::string> collection_name, std::optional<std::string> alias)
+	{
+		return std::shared_ptr<FromToken>(new FromToken(std::move(index_name),
+			std::move(collection_name), std::move(alias)));
+	}
+
 	FromToken::FromToken(std::optional<std::string> index_name, std::optional<std::string> collection_name,
 		std::optional<std::string> alias)
 		: _index_name(std::move(index_name))
 		, _collection_name(std::move(collection_name))
 		, _alias(std::move(alias))
-		, _dynamic(_collection_name)//using operator bool()
+		, _dynamic(_collection_name.has_value())
 	{}
 
 	void FromToken::write_to(std::ostringstream& writer) const
@@ -62,7 +69,7 @@ namespace ravendb::client::documents::session::tokens
 				writer << '"' << *_collection_name << '"';
 			}else
 			{
-				write_field(writer, *_collection_name);
+				write_field(writer, _collection_name);
 			}
 		}else
 		{

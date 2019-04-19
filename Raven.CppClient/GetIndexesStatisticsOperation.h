@@ -14,7 +14,8 @@ namespace ravendb::client::documents::operations::indexes
 
 		GetIndexesStatisticsOperation() = default;
 
-		std::unique_ptr<RavenCommand<std::vector<documents::indexes::IndexStats>>> get_command(std::shared_ptr<DocumentConventions> conventions) const override
+		std::unique_ptr<RavenCommand<std::vector<documents::indexes::IndexStats>>> get_command(
+			std::shared_ptr<conventions::DocumentConventions> conventions) const override
 		{
 			return std::make_unique<GetIndexesStatisticsCommand>();
 		}

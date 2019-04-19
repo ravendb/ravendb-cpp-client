@@ -65,7 +65,7 @@ namespace  ravendb::client::documents
 
 		virtual std::shared_ptr<http::RequestExecutor> get_request_executor(const std::string& database = {}) const = 0;
 
-		virtual std::shared_ptr<operations::MaintenanceOperationExecutor> get_maintenance() const = 0;
+		virtual std::shared_ptr<operations::MaintenanceOperationExecutor> maintenance() const = 0;
 
 		virtual std::shared_ptr<operations::OperationExecutor> get_operations() const = 0;			
 	};

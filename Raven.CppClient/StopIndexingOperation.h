@@ -16,7 +16,8 @@ namespace ravendb::client::documents::operations::indexes
 
 		StopIndexingOperation() = default;
 
-		std::unique_ptr<http::VoidRavenCommandBase> get_command(std::shared_ptr<DocumentConventions> conventions) const override
+		std::unique_ptr<http::VoidRavenCommandBase> get_command(
+			std::shared_ptr<conventions::DocumentConventions> conventions) const override
 		{
 			return std::make_unique<StopIndexingCommand>();
 		}

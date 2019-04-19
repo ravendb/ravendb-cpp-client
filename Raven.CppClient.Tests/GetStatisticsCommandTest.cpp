@@ -21,7 +21,7 @@ namespace ravendb::client::tests::client::documents::commands
 		auto store = get_document_store(TEST_NAME);
 
 		auto sample_data_operation = infrastructure::CreateSampleDataOperation();
-		store->get_maintenance()->send(sample_data_operation);
+		store->maintenance()->send(sample_data_operation);
 
 		wait_for_indexing(store, store->get_database());
 

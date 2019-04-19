@@ -14,7 +14,7 @@ namespace ravendb::client::documents::operations
 	private:
 		std::weak_ptr<MaintenanceOperationExecutor> _weak_this{};
 
-		const std::shared_ptr<DocumentStore> _store;
+		const std::weak_ptr<DocumentStore> _store;
 		std::optional<std::string> _database_name;
 		std::shared_ptr<http::RequestExecutor> _request_executor{};
 		//TODO implement

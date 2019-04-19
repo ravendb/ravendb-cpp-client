@@ -42,5 +42,5 @@ namespace ravendb::client::documents::commands::batches
 			{CommandType::BATCH_PATCH, "BatchPATCH"},
 			{CommandType::CLIENT_ANY_COMMAND, "ClientAnyCommand"},
 			{CommandType::CLIENT_MODIFY_DOCUMENT_COMMAND, "ClientModifyDocumentCommand"}
-		});
+		})
 }
