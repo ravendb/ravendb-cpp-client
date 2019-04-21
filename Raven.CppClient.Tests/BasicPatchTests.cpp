@@ -57,7 +57,7 @@ namespace ravendb::client::tests::old_tests
 			documents::DocumentStore::create(), {}, cache));
 
 		auto check_user = user;
-		check_user.last_name = "The Great";
+		check_user.lastName = "The Great";
 		auto modified_user = nlohmann::json(res2->modified_document).get<infrastructure::entities::User>();
 
 		ASSERT_EQ(res2->status, documents::operations::PatchStatus::PATCHED);
@@ -78,7 +78,7 @@ namespace ravendb::client::tests::old_tests
 		for (size_t i = 0; i < users.size(); ++i)
 		{
 			users[i].name = "Alexander";
-			users[i].last_name = std::to_string(i+1);
+			users[i].lastName = std::to_string(i+1);
 			users[i].id = "users/" + std::to_string(i + 1);
 
 			nlohmann::json user_json = users[i];
@@ -114,7 +114,7 @@ namespace ravendb::client::tests::old_tests
 		for (size_t i = 0; i < users.size(); ++i)
 		{
 			auto u = res->results[users.size() - i - 1].get<infrastructure::entities::User>();
-			ASSERT_EQ(u.last_name, std::to_string(i + 1) + " Great");
+			ASSERT_EQ(u.lastName, std::to_string(i + 1) + " Great");
 		}	
 	}
 

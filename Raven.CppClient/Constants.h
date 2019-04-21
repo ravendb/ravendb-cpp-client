@@ -35,7 +35,7 @@ namespace ravendb::client::constants
 				constexpr char ALL_FIELDS[] = "__all_fields";
 				constexpr char SPATIAL_SHAPE_FIELD_NAME[] = "spatial(shape)";
 			}
-			namespace spacial
+			namespace spatial
 			{
 				constexpr double DEFAULT_DISTANCE_ERROR_PCT = 0.025;
 			}

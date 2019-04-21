@@ -60,7 +60,7 @@ namespace ravendb::client::tests::client
 		{
 			auto session = store->open_session();
 			auto user1 = std::make_shared<infrastructure::entities::User>();
-			user1->last_name = "user1";
+			user1->lastName = "user1";
 			session.store(user1, "users/1");
 			session.save_changes();
 		}
@@ -94,7 +94,7 @@ namespace ravendb::client::tests::client
 
 		auto session = store->open_session();
 		auto user1 = std::make_shared<infrastructure::entities::User>();
-		user1->last_name = "user1";
+		user1->lastName = "user1";
 		session.store(user1, "users/1");
 		
 		auto user2 = std::make_shared<infrastructure::entities::User>();
@@ -141,7 +141,7 @@ namespace ravendb::client::tests::client
 
 		auto session = store->open_session();
 		auto user1 = std::make_shared<infrastructure::entities::User>();
-		user1->last_name = "user1";
+		user1->lastName = "user1";
 		session.store(user1, "users/1");
 
 		auto user2 = std::make_shared<infrastructure::entities::User>();

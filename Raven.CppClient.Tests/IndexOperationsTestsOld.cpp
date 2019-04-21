@@ -202,7 +202,7 @@ namespace ravendb::client::tests::old_tests
 		auto&& res = test_suite_executor->get().execute(op.get_command({}));
 
 		ASSERT_EQ(res->size(), 1);
-		std::string expected_str = example_user.name + ' ' + example_user.last_name;
+		std::string expected_str = example_user.name + ' ' + example_user.lastName;
 		std::transform(expected_str.cbegin(), expected_str.cend(), expected_str.begin(),
 			[](std::string::value_type c) {return std::tolower(c); });
 		ASSERT_EQ((*res)[0], expected_str);

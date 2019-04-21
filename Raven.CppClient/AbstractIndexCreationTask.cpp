@@ -21,7 +21,7 @@ namespace ravendb::client::documents::indexes
 		index_definition_builder.stores_strings = stores_strings;
 		index_definition_builder.suggestion_options = index_suggestions;
 		index_definition_builder.term_vector_strings = term_vectors_strings;
-		index_definition_builder.spatial_indexes_strings = spacial_options_strings;
+		index_definition_builder.spatial_indexes_strings = spatial_options_strings;
 		index_definition_builder.output_reduce_to_collection = output_reduce_to_collections;
 		index_definition_builder.additional_sources = additional_sources;
 

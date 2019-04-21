@@ -14,18 +14,16 @@ namespace ravendb::client::tests::infrastructure::entities
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		set_val_to_json(j, "Id", p.id);
-		set_val_to_json(j, "Name", p.name);
-		set_val_to_json(j, "AddressId", p.address_id);
+		set_val_to_json(j, "name", p.name);
+		set_val_to_json(j, "addressId", p.address_id);
 	}
 
 	inline void from_json(const nlohmann::json& j, Person& p)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		get_val_from_json(j, "Id", p.id);
-		get_val_from_json(j, "Name", p.name);
-		get_val_from_json(j, "AddressId", p.address_id);
+		get_val_from_json(j, "name", p.name);
+		get_val_from_json(j, "addressId", p.address_id);
 	}
 }
 

@@ -46,7 +46,7 @@ namespace ravendb::client::tests::old_tests
 			auto user = session.load<infrastructure::entities::User>(example_user.id);
 			ASSERT_TRUE(user);
 			ASSERT_EQ(user->name, example_user.name);
-			ASSERT_EQ(user->last_name, example_user.last_name);
+			ASSERT_EQ(user->lastName, example_user.lastName);
 		}
 		{
 			auto session = store->open_session(session_options);

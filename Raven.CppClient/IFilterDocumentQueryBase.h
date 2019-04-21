@@ -44,7 +44,7 @@ namespace ravendb::client::documents::session
 		auto search(const std::string& field_name, std::string search_terms,
 		                              queries::SearchOperator search_operator = queries::SearchOperator::OR);
 
-		auto where_Lucene(const std::string& field_name, const std::string& where_clause,
+		auto where_lucene(const std::string& field_name, const std::string& where_clause,
 		                                    bool exact = false);
 
 		template<typename TValue>
@@ -93,12 +93,12 @@ namespace ravendb::client::documents::session
 
 		auto within_radius_of(const std::string& field_name, double radius, double latitude, double longitude,
 			const std::optional<indexes::spatial::SpatialUnits>& radius_units = {},
-			double dist_error_percent = constants::documents::indexing::spacial::DEFAULT_DISTANCE_ERROR_PCT);
+			double dist_error_percent = constants::documents::indexing::spatial::DEFAULT_DISTANCE_ERROR_PCT);
 
 		auto relates_to_shape(const std::string& field_name, const std::string& shape_wkt,
 			indexes::spatial::SpatialRelation relation,
 			const std::optional<indexes::spatial::SpatialUnits>& units = {},
-			double dist_error_percent = constants::documents::indexing::spacial::DEFAULT_DISTANCE_ERROR_PCT);
+			double dist_error_percent = constants::documents::indexing::spatial::DEFAULT_DISTANCE_ERROR_PCT);
 
 		auto spatial(const std::string& field_name,
 			std::function<std::unique_ptr<queries::spatial::SpatialCriteria>(const queries::spatial::SpatialCriteriaFactory&)> clause);
@@ -169,10 +169,10 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T, class TThis>
-	auto IFilterDocumentQueryBase<T, TThis>::where_Lucene(const std::string& field_name,
+	auto IFilterDocumentQueryBase<T, TThis>::where_lucene(const std::string& field_name,
 		const std::string& where_clause, bool exact)
 	{
-		return cast_down()->where_Lucene(field_name, where_clause, exact);
+		return cast_down()->where_lucene(field_name, where_clause, exact);
 	}
 
 	template <typename T, class TThis>

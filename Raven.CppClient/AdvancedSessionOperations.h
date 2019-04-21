@@ -124,9 +124,9 @@ namespace ravendb::client::documents::session
 
 		template<typename T>
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> document_query(
-			std::optional<std::string> index_name,
-			std::optional<std::string> collection_name,
-			bool is_map_reduced);
+			std::optional<std::string> index_name = {},
+			std::optional<std::string> collection_name = {},
+			bool is_map_reduced = false);
 	};
 
 	template <typename T>

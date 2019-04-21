@@ -7,7 +7,7 @@
 
 // Set the index name from the IndexCreationTask name
 // Call from the ctor;
-#define SET_DEFAULT_INDEX_NAME\
+#define SET_DEFAULT_INDEX_NAME()\
 	do\
 	{\
 		set_default_index_name(typeid(decltype(*this)));\

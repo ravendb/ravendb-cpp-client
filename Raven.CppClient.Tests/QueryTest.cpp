@@ -17,23 +17,23 @@ namespace query_test
 		~UsersByName() override = default;
 		UsersByName()
 		{
-			SET_DEFAULT_INDEX_NAME;
+			SET_DEFAULT_INDEX_NAME();
 
 			map = R"(
 			from c in docs.Users
 			select new
 			{
-				c.Name,
+				c.name,
 				count = 1
 			})";
 
 			reduce = R"(
 			from result in results
-			group result by result.Name
+			group result by result.name
 				into g
 			select new
 			{
-				Name = g.Key,
+				name = g.Key,
 				count = g.Sum(x => x.count)
 			})";
 		}
@@ -79,8 +79,8 @@ namespace query_test
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
 		get_val_from_json(j, "count", rr.count);
-		get_val_from_json(j, "Name", rr.name);
-		get_val_from_json(j, "Age", rr.age);
+		get_val_from_json(j, "name", rr.name);
+		get_val_from_json(j, "age", rr.age);
 	}
 
 	void to_json(nlohmann::json& j, const ReduceResult& rr)
@@ -88,8 +88,8 @@ namespace query_test
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
 		set_val_to_json(j, "count", rr.count);
-		set_val_to_json(j, "Name", rr.name);
-		set_val_to_json(j, "Age", rr.age);
+		set_val_to_json(j, "name", rr.name);
+		set_val_to_json(j, "age", rr.age);
 	}
 
 	struct UserProjection
@@ -103,7 +103,7 @@ namespace query_test
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
 		get_val_from_json(j, "id", up.id);
-		get_val_from_json(j, "Name", up.name);
+		get_val_from_json(j, "name", up.name);
 	}
 
 	void to_json(nlohmann::json& j, const UserProjection& up)
@@ -111,7 +111,7 @@ namespace query_test
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
 		set_val_to_json(j, "id", up.id);
-		set_val_to_json(j, "Name", up.name);
+		set_val_to_json(j, "name", up.name);
 	}
 
 	struct Dog
@@ -128,22 +128,22 @@ namespace query_test
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		get_val_from_json(j, "Name", d.name);
-		get_val_from_json(j, "Breed", d.breed);
-		get_val_from_json(j, "Color", d.color);
-		get_val_from_json(j, "Age", d.age);
-		get_val_from_json(j, "Vaccinated", d.is_vaccinated);
+		get_val_from_json(j, "name", d.name);
+		get_val_from_json(j, "breed", d.breed);
+		get_val_from_json(j, "color", d.color);
+		get_val_from_json(j, "age", d.age);
+		get_val_from_json(j, "vaccinated", d.is_vaccinated);
 	}
 
 	void to_json(nlohmann::json& j, const Dog& d)
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		set_val_to_json(j, "Name", d.name);
-		set_val_to_json(j, "Breed", d.breed);
-		set_val_to_json(j, "Color", d.color);
-		set_val_to_json(j, "Age", d.age);
-		set_val_to_json(j, "Vaccinated", d.is_vaccinated);
+		set_val_to_json(j, "name", d.name);
+		set_val_to_json(j, "breed", d.breed);
+		set_val_to_json(j, "color", d.color);
+		set_val_to_json(j, "age", d.age);
+		set_val_to_json(j, "vaccinated", d.is_vaccinated);
 	}
 
 	class DogsIndex : public ravendb::client::documents::indexes::AbstractIndexCreationTask
@@ -152,15 +152,15 @@ namespace query_test
 		~DogsIndex() override = default;
 		DogsIndex()
 		{
-			SET_DEFAULT_INDEX_NAME;
+			SET_DEFAULT_INDEX_NAME();
 
 			map = R"(
 			from dog in docs.dogs
 			select new 
 			{
-				dog.Name,
-				dog.Age,
-				dog.Vaccinated
+				dog.name,
+				dog.age,
+				dog.vaccinated
 			})";
 		}
 	};
@@ -176,18 +176,18 @@ namespace query_test
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		get_val_from_json(j, "Name", dir.name);
-		get_val_from_json(j, "Age", dir.age);
-		get_val_from_json(j, "Vaccinated", dir.is_vaccinated);
+		get_val_from_json(j, "name", dir.name);
+		get_val_from_json(j, "age", dir.age);
+		get_val_from_json(j, "vaccinated", dir.is_vaccinated);
 	}
 
 	void to_json(nlohmann::json& j, const DogsIndexResult& dir)
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		set_val_to_json(j, "Name", dir.name);
-		set_val_to_json(j, "Age", dir.age);
-		set_val_to_json(j, "Vaccinated", dir.is_vaccinated);
+		set_val_to_json(j, "name", dir.name);
+		set_val_to_json(j, "age", dir.age);
+		set_val_to_json(j, "vaccinated", dir.is_vaccinated);
 	}
 
 	void create_dogs(ravendb::client::documents::session::DocumentSession& session) 
@@ -401,15 +401,15 @@ namespace ravendb::client::tests::client
 		session.save_changes();
 
 		auto query_result = session.query<infrastructure::entities::User>(documents::queries::Query::collection("users"))
-			->where_starts_with("Name", std::string("J"))
+			->where_starts_with("name", std::string("J"))
 			->to_list();
 
 		auto query_result2 = session.query<infrastructure::entities::User>(documents::queries::Query::collection("users"))
-			->where_equals("Name", "Tarzan")
+			->where_equals("name", "Tarzan")
 			->to_list();
 
 		auto query_result3 = session.query<infrastructure::entities::User>(documents::queries::Query::collection("users"))
-			->where_ends_with("Name", 'n')
+			->where_ends_with("name", 'n')
 			->to_list();
 
 		ASSERT_EQ(2, query_result.size());
@@ -424,7 +424,7 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto results = session.query<infrastructure::entities::User>()
-			->group_by({ "Name" })
+			->group_by({ "name" })
 			->select_key()
 			->select_count()
 			->order_by_descending("count")
@@ -445,10 +445,10 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto results = session.query<infrastructure::entities::User>()
-			->group_by({ "Name" })
+			->group_by({ "name" })
 			->select_key()
-			->select_sum({documents::session::GroupByField("Age")})
-			->order_by_descending("Age")
+			->select_sum({documents::session::GroupByField("age")})
+			->order_by_descending("age")
 			->of_type<query_test::ReduceResult>()
 			->to_list();
 
@@ -483,8 +483,8 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto ages = session.query<infrastructure::entities::User>()
-			->add_order("Age", true, documents::session::OrderingType::LONG)
-			->select_fields<int32_t>({ "Age" })
+			->add_order("age", true, documents::session::OrderingType::LONG)
+			->select_fields<int32_t>({ "age" })
 			->to_list();
 
 		ASSERT_EQ(3, ages.size());
@@ -501,7 +501,7 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto users_age = session.query<infrastructure::entities::User>()
-			->select_fields<infrastructure::entities::User>({ "Age" })
+			->select_fields<infrastructure::entities::User>({ "age" })
 			->to_list();
 
 		ASSERT_EQ(3, users_age.size());
@@ -520,7 +520,7 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto users = session.query<infrastructure::entities::User>()
-			->where_in<std::string>("Name", {"Tarzan", "NoSuch"})
+			->where_in<std::string>("name", {"Tarzan", "NoSuch"})
 			->to_list();
 
 		ASSERT_EQ(1, users.size());
@@ -533,7 +533,7 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto users = session.query<infrastructure::entities::User>()
-			->where_between("Age", 4, 5)
+			->where_between("age", 4, 5)
 			->to_list();
 
 		ASSERT_EQ(1, users.size());
@@ -547,7 +547,7 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto users = session.query<infrastructure::entities::User>()
-			->where_less_than("Age", 3)
+			->where_less_than("age", 3)
 			->to_list();
 
 		ASSERT_EQ(1, users.size());
@@ -561,7 +561,7 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto users = session.query<infrastructure::entities::User>()
-			->where_less_than_or_equal("Age", 3)
+			->where_less_than_or_equal("age", 3)
 			->to_list();
 
 		ASSERT_EQ(2, users.size());
@@ -574,7 +574,7 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto users = session.query<infrastructure::entities::User>()
-			->where_greater_than("Age", 3)
+			->where_greater_than("age", 3)
 			->to_list();
 
 		ASSERT_EQ(1, users.size());
@@ -588,7 +588,7 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto users = session.query<infrastructure::entities::User>()
-			->where_greater_than_or_equal("Age", 3)
+			->where_greater_than_or_equal("age", 3)
 			->to_list();
 
 		ASSERT_EQ(2, users.size());
@@ -620,7 +620,7 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto projections = session.query<infrastructure::entities::User>()
-			->select_fields<query_test::UserProjection>({"LastName"})
+			->select_fields<query_test::UserProjection>({"lastName"})
 			->to_list();
 
 		ASSERT_EQ(3, projections.size());
@@ -639,7 +639,7 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto unique_names = session.query<infrastructure::entities::User>()
-			->select_fields<std::string>({ "Name" })
+			->select_fields<std::string>({ "name" })
 			->distinct()
 			->to_list();
 
@@ -669,7 +669,7 @@ namespace ravendb::client::tests::client
 		session.save_changes();
 
 		auto names = session.query<infrastructure::entities::User>()
-			->search("Name", "Tarzan John", documents::queries::SearchOperator::OR)
+			->search("name", "Tarzan John", documents::queries::SearchOperator::OR)
 			->to_list();
 
 		ASSERT_EQ(3, names.size());
@@ -700,7 +700,7 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto users = session.query<infrastructure::entities::User>()
-			->order_by("Name")
+			->order_by("name")
 			->skip(2)
 			->take(1)
 			->to_list();
@@ -737,7 +737,7 @@ namespace ravendb::client::tests::client
 		query_test::add_users(store);
 		auto session = store->open_session();
 
-		auto users = session.advanced().raw_query<infrastructure::entities::User>("from Users where Age = $p0")
+		auto users = session.advanced().raw_query<infrastructure::entities::User>("from Users where age = $p0")
 			->add_parameter("p0", 5)
 			->to_list();
 
@@ -752,7 +752,7 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto users = session.query<infrastructure::entities::User>()
-			->where_Lucene("Name", "Tarzan")
+			->where_lucene("name", "Tarzan")
 			->to_list();
 
 		ASSERT_EQ(1, users.size());
@@ -766,19 +766,19 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto users = session.query<infrastructure::entities::User>()
-			->where_equals("Name", "tarzan")
+			->where_equals("name", "tarzan")
 			->to_list();
 
 		ASSERT_EQ(1, users.size());
 
 		users = session.query<infrastructure::entities::User>()
-			->where_equals("Name", "tarzan", true)
+			->where_equals("name", "tarzan", true)
 			->to_list();
 
 		ASSERT_EQ(0, users.size());// we queried for tarzan with exact
 
 		users = session.query<infrastructure::entities::User>()
-			->where_equals("Name", "Tarzan", true)
+			->where_equals("name", "Tarzan", true)
 			->to_list();
 
 		ASSERT_EQ(1, users.size());// we queried for Tarzan with exact
@@ -792,19 +792,19 @@ namespace ravendb::client::tests::client
 
 		auto users = session.query<infrastructure::entities::User>()
 			->not_next()
-			->where_equals("Name", "tarzan")
+			->where_equals("name", "tarzan")
 			->to_list();
 
 		ASSERT_EQ(2, users.size());
 
 		users = session.query<infrastructure::entities::User>()
-			->where_not_equals("Name", "tarzan")
+			->where_not_equals("name", "tarzan")
 			->to_list();
 
 		ASSERT_EQ(2, users.size());
 
 		users = session.query<infrastructure::entities::User>()
-			->where_not_equals("Name", "Tarzan", true)
+			->where_not_equals("name", "Tarzan", true)
 			->to_list();
 
 		ASSERT_EQ(2, users.size());
@@ -825,7 +825,7 @@ namespace ravendb::client::tests::client
 		ASSERT_TRUE(first);
 
 		auto single = session.query<infrastructure::entities::User>()
-			->where_equals("Name", "Tarzan")
+			->where_equals("name", "Tarzan")
 			->single();
 
 		ASSERT_TRUE(single);
@@ -852,7 +852,7 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		ASSERT_EQ(1,
-			session.advanced().raw_query<infrastructure::entities::User>("from Users where Name = $name")
+			session.advanced().raw_query<infrastructure::entities::User>("from Users where name = $name")
 			->add_parameter("name", "Tarzan")
 			->count());
 	}
@@ -883,13 +883,13 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto users = session.query<infrastructure::entities::User>()
-			->where_exists("Name")
+			->where_exists("name")
 			->to_list();
 
 		ASSERT_EQ(3, users.size());
 
 		users = session.query<infrastructure::entities::User>()
-			->where_exists("Name")
+			->where_exists("name")
 			->and_also()
 			->not_next()
 			->where_exists("no_such_field")
@@ -905,10 +905,10 @@ namespace ravendb::client::tests::client
 		auto session = store->open_session();
 
 		auto users = session.query<infrastructure::entities::User>()
-			->where_equals("Name", "Tarzan")
+			->where_equals("name", "Tarzan")
 			->boost(5)
 			->or_else()
-			->where_equals("Name", "John")
+			->where_equals("name", "John")
 			->boost(2)
 			->order_by_score()
 			->to_list();
@@ -919,10 +919,10 @@ namespace ravendb::client::tests::client
 		ASSERT_EQ("John", users[2]->name);
 
 		users = session.query<infrastructure::entities::User>()
-			->where_equals("Name", "Tarzan")
+			->where_equals("name", "Tarzan")
 			->boost(2)
 			->or_else()
-			->where_equals("Name", "John")
+			->where_equals("name", "John")
 			->boost(5)
 			->order_by_score()
 			->to_list();
@@ -949,8 +949,8 @@ namespace ravendb::client::tests::client
 			auto query_result = session.advanced()
 				.document_query<query_test::DogsIndexResult>(query_test::DogsIndex().get_index_name(), {}, false)
 				->wait_for_non_stale_results()
-				->order_by("Name", documents::session::OrderingType::ALPHA_NUMERIC)
-				->where_greater_than("Age", 2)
+				->order_by("name", documents::session::OrderingType::ALPHA_NUMERIC)
+				->where_greater_than("age", 2)
 				->to_list();
 
 			ASSERT_EQ(4, query_result.size());
@@ -976,7 +976,7 @@ namespace ravendb::client::tests::client
 
 		auto query_result = session.advanced()
 			.document_query<infrastructure::entities::User>({}, "Users", false)
-			->where_equals("Name", long_name)
+			->where_equals("name", long_name)
 			->to_list();
 
 		ASSERT_EQ(1, query_result.size());
@@ -1000,9 +1000,9 @@ namespace ravendb::client::tests::client
 
 			auto query_result = session.advanced()
 				.document_query<query_test::DogsIndexResult>(query_test::DogsIndex().get_index_name(), {}, false)
-				->where_greater_than("Age", 2)
+				->where_greater_than("age", 2)
 				->and_also()
-				->where_equals("Vaccinated", false)
+				->where_equals("vaccinated", false)
 				->to_list();
 
 			ASSERT_EQ(1, query_result.size());
@@ -1010,9 +1010,9 @@ namespace ravendb::client::tests::client
 
 			query_result = session.advanced()
 				.document_query<query_test::DogsIndexResult>(query_test::DogsIndex().get_index_name(), {}, false)
-				->where_less_than_or_equal("Age", 2)
+				->where_less_than_or_equal("age", 2)
 				->and_also()
-				->where_equals("Vaccinated", false)
+				->where_equals("vaccinated", false)
 				->to_list();
 
 			ASSERT_EQ(3, query_result.size());

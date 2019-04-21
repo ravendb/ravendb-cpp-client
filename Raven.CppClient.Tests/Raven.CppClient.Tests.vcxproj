@@ -66,6 +66,7 @@
     <ClCompile Include="AdvancedPatchingTests.cpp" />
     <ClCompile Include="BasicQueryTests.cpp" />
     <ClCompile Include="BasicDocumentsSessionTests.cpp" />
+    <ClCompile Include="BoundingBoxIndexTest.cpp" />
     <ClCompile Include="ClientConfigurationTest.cpp" />
     <ClCompile Include="ConnectionDetailsHolder.cpp" />
     <ClCompile Include="CreateSampleDataOperation.cpp" />
@@ -77,6 +78,7 @@
     <ClCompile Include="IndexOperationsTest.cpp" />
     <ClCompile Include="JavaScriptIndexTest.cpp" />
     <ClCompile Include="PutDocumentCommandTest.cpp" />
+    <ClCompile Include="RavenDB_8761.cpp" />
     <ClCompile Include="raven_test_definitions.cpp" />
     <ClCompile Include="DeleteTest.cpp" />
     <ClCompile Include="DocumentIdPropertyTest.cpp" />

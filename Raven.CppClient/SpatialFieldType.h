@@ -13,6 +13,6 @@ namespace ravendb::client::documents::indexes::spatial
 	{
 		{SpatialFieldType::UNSET, nullptr},
 		{SpatialFieldType::GEOGRAPHY, "Geography"},
-		{SpatialFieldType::CARTESIAN, "Cartasian"}
+		{SpatialFieldType::CARTESIAN, "Cartesian"}
 	})
 }

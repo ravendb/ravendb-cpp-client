@@ -48,8 +48,8 @@ namespace ravendb::client::tests::client::documents::operations::indexes
 			~Users_Index() override = default;
 			Users_Index()
 			{
-				SET_DEFAULT_INDEX_NAME;
-				map = "from u in docs.Users select new { u.Name }";
+				SET_DEFAULT_INDEX_NAME();
+				map = "from u in docs.Users select new { u.name }";
 			}
 		};
 
@@ -59,8 +59,8 @@ namespace ravendb::client::tests::client::documents::operations::indexes
 			~UsersInvalidIndex() override = default;
 			UsersInvalidIndex()
 			{
-				SET_DEFAULT_INDEX_NAME;
-				map = "from u in docs.Users select new { a = 5 / u.Age }";
+				SET_DEFAULT_INDEX_NAME();
+				map = "from u in docs.Users select new { a = 5 / u.age }";
 			}
 		};
 	};
@@ -142,7 +142,7 @@ namespace ravendb::client::tests::client::documents::operations::indexes
 		wait_for_indexing(store, store->get_database());
 
 		auto terms = store->maintenance()->send(
-			ravendb::client::documents::operations::indexes::GetTermsOperation(Users_Index().get_index_name(), "Name"));
+			ravendb::client::documents::operations::indexes::GetTermsOperation(Users_Index().get_index_name(), "name"));
 
 		ASSERT_EQ(1, terms->size());
 		ASSERT_NE(std::find(terms->cbegin(), terms->cend(), "alexander"), terms->cend());

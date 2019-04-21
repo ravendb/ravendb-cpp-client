@@ -11,11 +11,11 @@ namespace ravendb::client::tests::infrastructure::entities
 		std::string id;
 		std::string company;
 		std::string employee;
-		impl::DateTimeOffset ordered_at{};
-		impl::DateTimeOffset required_at{};
-		impl::DateTimeOffset shipped_at{};
-		Address ship_to;
-		std::string ship_via;
+		impl::DateTimeOffset orderedAt{};
+		impl::DateTimeOffset requiredAt{};
+		impl::DateTimeOffset shippedAt{};
+		Address shipTo;
+		std::string shipVia;
 		double freight{};
 		std::vector<OrderLine> lines;
 	};
@@ -24,33 +24,30 @@ namespace ravendb::client::tests::infrastructure::entities
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		set_val_to_json(j, "Id", o.id);
-		set_val_to_json(j, "Company", o.company);
-		set_val_to_json(j, "Employee", o.employee);
-		set_val_to_json(j, "OrderedAt", o.ordered_at);
-		set_val_to_json(j, "RequiredAt", o.required_at);
-		set_val_to_json(j, "ShippedAt", o.shipped_at);
-		set_val_to_json(j, "ShipTo", o.ship_to);
-		set_val_to_json(j, "ShipVia", o.ship_via);
-		set_val_to_json(j, "Freight", o.freight);
-		set_val_to_json(j, "Lines", o.lines);
-		//j["@metadata"]["@collection"] = "Orders";
+		set_val_to_json(j, "company", o.company);
+		set_val_to_json(j, "employee", o.employee);
+		set_val_to_json(j, "orderedAt", o.orderedAt);
+		set_val_to_json(j, "requiredAt", o.requiredAt);
+		set_val_to_json(j, "shippedAt", o.shippedAt);
+		set_val_to_json(j, "shipTo", o.shipTo);
+		set_val_to_json(j, "shipVia", o.shipVia);
+		set_val_to_json(j, "freight", o.freight);
+		set_val_to_json(j, "lines", o.lines);
 	}
 
 	inline void from_json(const nlohmann::json& j, Order& o)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		get_val_from_json(j, "Id", o.id);
-		get_val_from_json(j, "Company", o.company);
-		get_val_from_json(j, "Employee", o.employee);
-		get_val_from_json(j, "OrderedAt", o.ordered_at);
-		get_val_from_json(j, "RequiredAt", o.required_at);
-		get_val_from_json(j, "ShippedAt", o.shipped_at);
-		get_val_from_json(j, "ShipTo", o.ship_to);
-		get_val_from_json(j, "ShipVia", o.ship_via);
-		get_val_from_json(j, "Freight", o.freight);
-		get_val_from_json(j, "Lines", o.lines);
+		get_val_from_json(j, "company", o.company);
+		get_val_from_json(j, "employee", o.employee);
+		get_val_from_json(j, "orderedAt", o.orderedAt);
+		get_val_from_json(j, "requiredAt", o.requiredAt);
+		get_val_from_json(j, "shippedAt", o.shippedAt);
+		get_val_from_json(j, "shipTo", o.shipTo);
+		get_val_from_json(j, "shipVia", o.shipVia);
+		get_val_from_json(j, "freight", o.freight);
+		get_val_from_json(j, "lines", o.lines);
 	}
 }
 

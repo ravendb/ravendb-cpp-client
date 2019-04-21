@@ -142,7 +142,7 @@ namespace ravendb::client::documents::session::tokens
 			writer << ", ";
 			options.where_shape->write_to(writer);
 
-			if(std::abs(options.distance_error_pct - constants::documents::indexing::spacial::DEFAULT_DISTANCE_ERROR_PCT) >
+			if(std::abs(options.distance_error_pct - constants::documents::indexing::spatial::DEFAULT_DISTANCE_ERROR_PCT) >
 				1e-40)
 			{
 				writer << ", " << options.distance_error_pct;

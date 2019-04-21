@@ -292,7 +292,7 @@ namespace ravendb::client::documents::session
 
 		void _skip(int32_t count);
 
-		void _where_Lucene(const std::string& field_name, const std::string& where_clause, bool exact);
+		void _where_lucene(const std::string& field_name, const std::string& where_clause, bool exact);
 
 		void _open_subclause();
 
@@ -413,8 +413,8 @@ namespace ravendb::client::documents::session
 			const std::optional<queries::highlighting::HighlightingOptions>& options,
 			std::optional<queries::highlighting::Highlightings>& highlightings_reference);
 
-		void _spatial(const queries::spatial::DynamicSpatialField& dynamic_field, const queries::spatial::SpatialCriteria& criteria);
 		void _spatial(const std::string& field_name, const queries::spatial::SpatialCriteria& criteria);
+		void _spatial(const queries::spatial::DynamicSpatialField& dynamic_field, const queries::spatial::SpatialCriteria& criteria);
 
 		void _order_by_distance(const queries::spatial::DynamicSpatialField& field, double latitude, double longitude);
 		void _order_by_distance(const std::string& field_name, double latitude, double longitude);
@@ -1026,7 +1026,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	void AbstractDocumentQuery<T>::_where_Lucene(const std::string& field_name, const std::string& where_clause,
+	void AbstractDocumentQuery<T>::_where_lucene(const std::string& field_name, const std::string& where_clause,
 		bool exact)
 	{
 		auto valid_field_name = ensure_valid_field_name(field_name, false);

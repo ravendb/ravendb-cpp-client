@@ -34,7 +34,7 @@ namespace ravendb::client::documents::indexes
 		set_val_to_json(j, "Storage", ifo.storage);
 		set_val_to_json(j, "Indexing", ifo.indexing);
 		set_val_to_json(j, "TermVector", ifo.term_vector);
-		set_val_to_json(j, "Spacial", ifo.spatial);
+		set_val_to_json(j, "Spatial", ifo.spatial);
 		set_val_to_json(j, "Analyzer", ifo.analyzer);
 		set_val_to_json(j, "Suggestions", ifo.suggestions);
 	}
@@ -46,7 +46,7 @@ namespace ravendb::client::documents::indexes
 		get_val_from_json(j, "Storage", ifo.storage);
 		get_val_from_json(j, "Indexing", ifo.indexing);
 		get_val_from_json(j, "TermVector", ifo.term_vector);
-		get_val_from_json(j, "Spacial", ifo.spatial);
+		get_val_from_json(j, "Spatial", ifo.spatial);
 		get_val_from_json(j, "Analyzer", ifo.analyzer);
 		get_val_from_json(j, "Suggestions", ifo.suggestions);
 	}

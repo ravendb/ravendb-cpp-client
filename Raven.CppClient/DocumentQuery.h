@@ -115,7 +115,7 @@ namespace ravendb::client::documents::session
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> skip(int32_t count);
 
-		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_Lucene(const std::string& field_name, const std::string& where_clause, bool exact = false);
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_lucene(const std::string& field_name, const std::string& where_clause, bool exact = false);
 
 		template<typename TValue>
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_equals(std::string field_name, const TValue& value, bool exact = false);
@@ -210,12 +210,12 @@ namespace ravendb::client::documents::session
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> within_radius_of(
 			const std::string& field_name, double radius, double latitude, double longitude,
 			const std::optional<indexes::spatial::SpatialUnits>& radius_units = {},
-			double dist_error_percent = constants::documents::indexing::spacial::DEFAULT_DISTANCE_ERROR_PCT);
+			double dist_error_percent = constants::documents::indexing::spatial::DEFAULT_DISTANCE_ERROR_PCT);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> relates_to_shape(const std::string& field_name, const std::string& shape_wkt,
 			indexes::spatial::SpatialRelation relation,
 			const std::optional<indexes::spatial::SpatialUnits>& units = {},
-			double dist_error_percent = constants::documents::indexing::spacial::DEFAULT_DISTANCE_ERROR_PCT);
+			double dist_error_percent = constants::documents::indexing::spatial::DEFAULT_DISTANCE_ERROR_PCT);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> spatial(const std::string& field_name,
 			std::function<std::unique_ptr<queries::spatial::SpatialCriteria>(const queries::spatial::SpatialCriteriaFactory&)> clause);
@@ -401,6 +401,9 @@ namespace ravendb::client::documents::session
 	template <typename TProjection>
 	std::shared_ptr<IDocumentQuery<TProjection, DocumentQuery<TProjection>>> DocumentQuery<T>::select_fields()
 	{
+		static_assert(std::is_default_constructible_v<TProjection>, "'TProjection' must be default construclible "
+			"in order for this query to work");
+
 		nlohmann::json sample = TProjection();
 
 		std::vector<std::string> fields{};
@@ -648,10 +651,10 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_Lucene(const std::string& field_name,
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_lucene(const std::string& field_name,
 		const std::string& where_clause, bool exact)
 	{
-		AbstractDocumentQuery<T>::_where_Lucene(field_name, where_clause, exact);
+		AbstractDocumentQuery<T>::_where_lucene(field_name, where_clause, exact);
 		return _weak_this.lock();
 	}
 
@@ -950,7 +953,7 @@ namespace ravendb::client::documents::session
 		> clause)
 	{
 		auto criteria = clause(queries::spatial::SpatialCriteriaFactory::INSTANCE);
-		AbstractDocumentQuery<T>::_spatial(field_name, std::move(criteria));
+		AbstractDocumentQuery<T>::_spatial(field_name, *criteria);
 		return _weak_this.lock();
 	}
 
@@ -961,7 +964,7 @@ namespace ravendb::client::documents::session
 		)> clause)
 	{
 		auto criteria = clause(queries::spatial::SpatialCriteriaFactory::INSTANCE);
-		AbstractDocumentQuery<T>::_spatial(field_name, std::move(criteria));
+		AbstractDocumentQuery<T>::_spatial(field_name, *criteria);
 		return _weak_this.lock();
 	}
 
