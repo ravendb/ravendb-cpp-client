@@ -46,6 +46,7 @@ namespace ravendb::client
 
 			namespace operations
 			{
+				class LoadStartingWithOperation;
 				class LoadOperation;
 				class BatchOperation;
 			}
@@ -94,6 +95,7 @@ namespace ravendb::client::documents::session
 	{
 	public:
 		friend operations::LoadOperation;
+		friend operations::LoadStartingWithOperation;
 		friend operations::BatchOperation;
 
 		static const int32_t DEFAULT_MAX_NUMBER_OF_REQUESTS_PER_SESSION = 30;
@@ -230,6 +232,8 @@ namespace ravendb::client::documents::session
 		template<typename T>
 		std::optional<std::string> get_document_id(std::shared_ptr<T> entity) const;
 
+		void increment_request_count();
+
 		template<typename T>
 		std::shared_ptr<T> track_entity(const DocumentInfo& document_found,
 			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
@@ -325,8 +329,6 @@ namespace ravendb::client::documents::session
 		void initialize();
 
 		void set_weak_this(std::shared_ptr<InMemoryDocumentSessionOperations> ptr);
-
-		void increment_request_count();
 
 		virtual std::string generate_id(std::type_index type, std::shared_ptr<void> entity) const = 0;
 

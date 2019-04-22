@@ -319,6 +319,12 @@
     <ClCompile Include="WktField.cpp">
       <Filter>ravendb.client\documents\queries\spatial</Filter>
     </ClCompile>
+    <ClCompile Include="LoadStartingWithOperation.cpp">
+      <Filter>ravendb.client\documents\session\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadOperation.cpp">
+      <Filter>ravendb.client\documents\session\operations</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -1115,6 +1121,9 @@
     </ClInclude>
     <ClInclude Include="EventHelper.h">
       <Filter>ravendb.client\primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadStartingWithOperation.h">
+      <Filter>ravendb.client\documents\session\operations</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -2,6 +2,7 @@
 #include "InMemoryDocumentSessionOperations.h"
 #include "DocumentsByIdsMap.h"
 #include "LoadOperation.h"
+#include "LoadStartingWithOperation.h"
 #include "RawDocumentQuery.h"
 #include "JavaScriptArray.h"
 #include "ResponseTimeInformation.h"
@@ -41,6 +42,15 @@ namespace ravendb::client::documents::session
 
 		operations::LoadOperation load_impl(const std::vector<std::reference_wrapper<const std::string>>& ids,
 		const std::vector<std::string>& includes);
+
+		operations::LoadStartingWithOperation load_starting_with_internal(std::string id_prefix,
+			std::optional<std::string> matches = {},
+			int32_t start = 0,
+			int32_t page_size = 25,
+			std::optional<std::string> exclude = {},
+			std::optional<std::string> start_after = {},
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {});
 
 		void load_internal(const std::vector<std::reference_wrapper<const std::string>>& ids,
 			operations::LoadOperation& operation);
@@ -108,6 +118,16 @@ namespace ravendb::client::documents::session
 		//load by collections of ids (std::string)
 		template<typename T, typename InputIt>
 		DocumentsByIdsMap<T> load(InputIt first, InputIt last,
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {});
+
+		template<typename T>
+		std::vector<std::shared_ptr<T>> load_starting_with(std::string id_prefix,
+			std::optional<std::string> matches = {},
+			int32_t start = 0,
+			int32_t page_size = 25,
+			std::optional<std::string> exclude = {},
+			std::optional<std::string> start_after = {},
 			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
 			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {});
 
@@ -243,12 +263,25 @@ namespace ravendb::client::documents::session
 		const std::optional<DocumentInfo::FromJsonConverter>& from_json,
 		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
 	{
-		static_assert(std::is_same_v<typename std::iterator_traits<InputIt>::value_type, std::string>, "invalid iterator type");
+		static_assert(std::is_same_v<typename std::iterator_traits<InputIt>::value_type,
+			std::remove_const_t<std::string>>, "invalid iterator type");
 
 		std::vector<std::reference_wrapper<const std::string>> ids{};
 		std::transform(first, last, std::back_inserter(ids), [](const std::string& id) {return std::cref(id); });
 
 		return load_impl(ids).get_documents<T>(from_json, to_json);
+	}
+
+	template <typename T>
+	std::vector<std::shared_ptr<T>> DocumentSessionImpl::load_starting_with(std::string id_prefix,
+		std::optional<std::string> matches, int32_t start, int32_t page_size, std::optional<std::string> exclude,
+		std::optional<std::string> start_after,
+		const std::optional<DocumentInfo::FromJsonConverter>& from_json,
+		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
+	{
+		return load_starting_with_internal(std::move(id_prefix), std::move(matches), start, page_size,
+			std::move(exclude), std::move(start_after))
+			.get_documents<T>(from_json, to_json);
 	}
 
 	template <typename T>

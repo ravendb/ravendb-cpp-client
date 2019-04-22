@@ -19,6 +19,16 @@ namespace ravendb::client::impl::utils
 
 	//Useful for validating string arguments
 	bool is_blank(const std::string& str);
+
+	template<typename T>
+	std::shared_ptr<T> default_value()
+	{
+		if constexpr (std::is_fundamental_v<T>)
+		{
+			return std::make_shared<T>();
+		}
+		else return std::shared_ptr<void>();
+	}
 }
 
 bool operator==(const std::tm& lhs, const std::tm& rhs);

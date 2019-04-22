@@ -10,6 +10,7 @@
 #include "SimpleStopWatch.h"
 #include "MultiGetOperation.h"
 #include "LazySessionOperations.h"
+#include "LoadStartingWithOperation.h"
 
 namespace ravendb::client::documents::session
 {
@@ -60,6 +61,26 @@ namespace ravendb::client::documents::session
 		if (cmd)
 		{
 			_request_executor->execute(*cmd);
+			load_op.set_result(cmd->get_result());
+		}
+
+		return load_op;
+	}
+
+	operations::LoadStartingWithOperation DocumentSessionImpl::load_starting_with_internal(std::string id_prefix,
+		std::optional<std::string> matches, int32_t start, int32_t page_size, std::optional<std::string> exclude,
+		std::optional<std::string> start_after, const std::optional<DocumentInfo::FromJsonConverter>& from_json,
+		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
+	{
+		auto load_op = operations::LoadStartingWithOperation(_weak_this.lock());
+		load_op.with_start_with(std::move(id_prefix), std::move(matches),
+			start, page_size, std::move(exclude), std::move(start_after));
+
+		auto cmd = load_op.create_request();
+		if (cmd)
+		{
+			_request_executor->execute(*cmd);
+			//TODO stream
 			load_op.set_result(cmd->get_result());
 		}
 

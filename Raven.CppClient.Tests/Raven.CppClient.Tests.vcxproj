@@ -77,6 +77,7 @@
     <ClCompile Include="IndexesFromClientTest.cpp" />
     <ClCompile Include="IndexOperationsTest.cpp" />
     <ClCompile Include="JavaScriptIndexTest.cpp" />
+    <ClCompile Include="LoadAllStartingWith.cpp" />
     <ClCompile Include="PutDocumentCommandTest.cpp" />
     <ClCompile Include="RavenDB_8761.cpp" />
     <ClCompile Include="raven_test_definitions.cpp" />

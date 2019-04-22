@@ -120,6 +120,9 @@
     <ClCompile Include="RavenDB_8761.cpp">
       <Filter>ravendb.client.tests\test\server\documents\indexing.auto</Filter>
     </ClCompile>
+    <ClCompile Include="LoadAllStartingWith.cpp">
+      <Filter>ravendb.client.tests\test\mailing_list</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -262,6 +265,9 @@
     </Filter>
     <Filter Include="ravendb.client.tests\test\server\documents\indexing.auto">
       <UniqueIdentifier>{72533e03-d472-43e1-af22-8019b79c8418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\mailing_list">
+      <UniqueIdentifier>{6ebff97a-1276-4d19-a2b1-274d092ef224}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
