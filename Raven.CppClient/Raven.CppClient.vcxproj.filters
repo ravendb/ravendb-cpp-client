@@ -1125,6 +1125,9 @@
     <ClInclude Include="LoadStartingWithOperation.h">
       <Filter>ravendb.client\documents\session\operations</Filter>
     </ClInclude>
+    <ClInclude Include="LazyStartsWithOperation.h">
+      <Filter>ravendb.client\documents\session\operations\lazy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">

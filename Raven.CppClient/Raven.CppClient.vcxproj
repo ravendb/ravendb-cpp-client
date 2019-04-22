@@ -235,6 +235,7 @@
     <ClInclude Include="LazyQueryOperation.h" />
     <ClInclude Include="LazySessionOperations.h" />
     <ClInclude Include="LazySessionOperationsImpl.h" />
+    <ClInclude Include="LazyStartsWithOperation.h" />
     <ClInclude Include="LoadStartingWithOperation.h" />
     <ClInclude Include="LoadToken.h" />
     <ClInclude Include="MethodCall.h" />

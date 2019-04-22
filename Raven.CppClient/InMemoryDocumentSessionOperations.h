@@ -47,6 +47,11 @@ namespace ravendb::client
 			namespace operations
 			{
 				class LoadStartingWithOperation;
+				namespace lazy
+				{
+					template<typename U>
+					class LazyStartsWithOperation;
+				}
 				class LoadOperation;
 				class BatchOperation;
 			}
@@ -96,6 +101,7 @@ namespace ravendb::client::documents::session
 	public:
 		friend operations::LoadOperation;
 		friend operations::LoadStartingWithOperation;
+		friend operations::lazy::LazyStartsWithOperation;
 		friend operations::BatchOperation;
 
 		static const int32_t DEFAULT_MAX_NUMBER_OF_REQUESTS_PER_SESSION = 30;

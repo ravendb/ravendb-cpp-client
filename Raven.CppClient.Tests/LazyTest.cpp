@@ -274,8 +274,8 @@ namespace ravendb::client::tests::client::lazy
 			auto session = store->open_session();
 
 			auto lazy_order = session.advanced().lazily()
-				.include("Employee")
-				.include("Company")
+				.include("employee")
+				.include("company")
 				.load<infrastructure::entities::Order>("orders/1");
 
 			ASSERT_EQ(0, session.advanced().get_number_of_requests());
@@ -300,7 +300,7 @@ namespace ravendb::client::tests::client::lazy
 			std::vector<std::string> ids = { "orders/1", "orders/2" };
 
 			auto lazy_orders = session.advanced().lazily()
-				.include("Employee")
+				.include("employee")
 				.load<infrastructure::entities::Order>(ids.begin(), ids.end());
 
 			ASSERT_EQ(0, session.advanced().get_number_of_requests());

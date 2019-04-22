@@ -222,7 +222,8 @@ namespace ravendb::client::documents::session
 		auto load_operation = std::make_unique<operations::LoadOperation>(_weak_this.lock());
 		load_operation->by_ids(ref_ids).with_includes(includes);
 
-		auto lazy_load_operation = std::make_shared<operations::lazy::LazyLoadOperation<T>>(_weak_this.lock(), std::move(load_operation));
+		auto lazy_load_operation = std::make_shared<operations::lazy::LazyLoadOperation<T>>(_weak_this.lock(), std::move(load_operation),
+			from_json, to_json);
 		lazy_load_operation->by_ids(ids).with_includes(includes);
 
 		auto get_operation_result = [](std::shared_ptr<operations::lazy::ILazyOperation> operation)->DocumentsByIdsMap<T>

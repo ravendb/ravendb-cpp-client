@@ -4,8 +4,9 @@
 #include "DocumentSession.h"
 #include "AdvancedSessionOperations.h"
 #include "EntityIdHelperUtil.h"
+#include "LazySessionOperations.h"
 
-namespace load_all_startin_with
+namespace load_all_starting_with
 {
 	struct Abc
 	{
@@ -39,13 +40,13 @@ namespace ravendb::client::tests::mailing_list
 	protected:
 		void customise_store(std::shared_ptr<client::documents::DocumentStore> store) override
 		{
-			store->set_before_perform(infrastructure::set_for_fiddler);
+			//store->set_before_perform(infrastructure::set_for_fiddler);
 		}
 
 		static void SetUpTestCase()
 		{
-			REGISTER_ID_PROPERTY_FOR(load_all_startin_with::Abc, id);
-			REGISTER_ID_PROPERTY_FOR(load_all_startin_with::Xyz, id);
+			REGISTER_ID_PROPERTY_FOR(load_all_starting_with::Abc, id);
+			REGISTER_ID_PROPERTY_FOR(load_all_starting_with::Xyz, id);
 		}
 	};
 
@@ -55,12 +56,12 @@ namespace ravendb::client::tests::mailing_list
 		{
 			auto session = store->open_session();
 
-			auto abc1 = std::make_shared<load_all_startin_with::Abc>();
+			auto abc1 = std::make_shared<load_all_starting_with::Abc>();
 			abc1->id = "abc/1";
-			auto abc2 = std::make_shared<load_all_startin_with::Abc>();
+			auto abc2 = std::make_shared<load_all_starting_with::Abc>();
 			abc2->id = "abc/2";
 
-			auto xyz1 = std::make_shared<load_all_startin_with::Xyz>();
+			auto xyz1 = std::make_shared<load_all_starting_with::Xyz>();
 			xyz1->id = "xyz/1";
 
 			session.store(abc1);
@@ -71,14 +72,35 @@ namespace ravendb::client::tests::mailing_list
 		{
 			auto session = store->open_session();
 
-			auto load_results1 = session.advanced().load_starting_with<load_all_startin_with::Abc>("abc/");
-			auto load_results2 = session.advanced().load_starting_with<load_all_startin_with::Xyz>("xyz/");
+			auto load_results1 = session.advanced().load_starting_with<load_all_starting_with::Abc>("abc/");
+			auto load_results2 = session.advanced().load_starting_with<load_all_starting_with::Xyz>("xyz/");
 
 			ASSERT_EQ(2, load_results1.size());
 			ASSERT_EQ("abc/1", load_results1[0]->id);
 
 			ASSERT_EQ(1, load_results2.size());
 			ASSERT_EQ("xyz/1", load_results2[0]->id);
+		}
+
+		{
+			auto session = store->open_session();
+
+			auto load_results1 = session
+				.advanced()
+				.lazily()
+				.load_starting_with<load_all_starting_with::Abc>("abc/")
+				.get_value();
+			auto load_results2 = session
+				.advanced()
+				.lazily()
+				.load_starting_with<load_all_starting_with::Xyz>("xyz/")
+				.get_value();
+
+			ASSERT_EQ(2, load_results1.size());
+			ASSERT_EQ("abc/1", load_results1["abc/1"]->id);
+
+			ASSERT_EQ(1, load_results2.size());
+			ASSERT_EQ("xyz/1", load_results2["xyz/1"]->id);
 		}
 	}
 }

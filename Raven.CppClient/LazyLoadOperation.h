@@ -21,14 +21,20 @@ namespace ravendb::client::documents::session::operations::lazy
 
 		ResultType _result{};
 		QueryResult _query_result{};
-		boolean _requires_retry = false;
+		bool _requires_retry = false;
+
+		const std::optional<DocumentInfo::FromJsonConverter> from_json;
+		const std::optional<DocumentInfo::ToJsonConverter> to_json;
 
 		void handle_response(std::shared_ptr<commands::GetDocumentsResult> load_result);
 
 	public:
 		~LazyLoadOperation() override = default;
 
-		LazyLoadOperation(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::unique_ptr<LoadOperation> load_operation);
+		LazyLoadOperation(std::shared_ptr<InMemoryDocumentSessionOperations> session,
+			std::unique_ptr<LoadOperation> load_operation,
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {});
 
 		std::optional<commands::multi_get::GetRequest> create_request() override;
 
@@ -58,14 +64,19 @@ namespace ravendb::client::documents::session::operations::lazy
 
 		if (!_requires_retry)
 		{
-			_result = ResultType(_load_operation->get_documents<T>());
+			_result = _load_operation->get_documents<T>(from_json, to_json);
 		}
 	}
 
 	template <typename T>
-	LazyLoadOperation<T>::LazyLoadOperation(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::unique_ptr<LoadOperation> load_operation)
+	LazyLoadOperation<T>::LazyLoadOperation(std::shared_ptr<InMemoryDocumentSessionOperations> session,
+		std::unique_ptr<LoadOperation> load_operation,
+		const std::optional<DocumentInfo::FromJsonConverter>& from_json,
+		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
 		: _session(session)
 		, _load_operation(std::move(load_operation))
+		, from_json(from_json)
+		, to_json(to_json)
 	{}
 
 	template <typename T>

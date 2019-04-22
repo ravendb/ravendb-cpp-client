@@ -50,5 +50,25 @@ namespace ravendb::client::documents::session::operations::lazy
 		{
 			return _lazy_session_operations_impl->load<T>(ids.begin(), ids.end(), on_eval, from_json, to_json);
 		}
+
+		template<typename T>
+		Lazy<DocumentsByIdsMap<T>> load_starting_with(std::string id_prefix,
+			std::optional<std::string> matches = {},
+			int32_t start = 0,
+			int32_t page_size = 25,
+			std::optional<std::string> exclude = {},
+			std::optional<std::string> start_after = {},
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
+		{
+			return _lazy_session_operations_impl->load_starting_with<T>(
+				std::move(id_prefix),
+				std::move(matches),
+				start,
+				page_size,
+				std::move(exclude),
+				std::move(start_after),
+				from_json, to_json);
+		}
 	};
 }
