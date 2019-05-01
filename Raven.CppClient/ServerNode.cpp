@@ -10,7 +10,7 @@ namespace ravendb::client::http
 
 		get_val_from_json(j, "Url", sn.url);
 		get_val_from_json(j, "Database", sn.database);
-		get_val_from_json(j, "ClusterTag", sn.clusterTag);
+		get_val_from_json(j, "ClusterTag", sn.cluster_tag);
 		get_val_from_json(j, "ServerRole", sn.server_role);
 	}
 }

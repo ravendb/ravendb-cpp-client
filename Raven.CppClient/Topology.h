@@ -7,8 +7,8 @@ namespace ravendb::client::http
 
 	struct Topology
 	{
-		std::vector<ServerNode> nodes{};
-		int64_t etag = -1;
+		std::optional<int64_t> etag{};
+		std::shared_ptr<std::vector<std::shared_ptr<ServerNode>>> nodes{};
 	};
 
 	void from_json(const nlohmann::json& j, Topology& top);

@@ -25,18 +25,24 @@ namespace ravendb::client::impl
 		_curl_handles.push(std::move(curl));
 	}
 
-	CurlHandlesHolder::ReturnCurl::ReturnCurl(CurlHandleUniquePtr curl, CurlHandlesHolder& h)
+	CurlHandlesHolder::CurlReference::CurlReference(CurlHandleUniquePtr curl, CurlHandlesHolder& h)
 		: _curl(std::move(curl))
 		, _holder(&h)
 	{}
 
-	CurlHandlesHolder::ReturnCurl::~ReturnCurl()
+	CurlHandlesHolder::CurlReference::~CurlReference()
 	{
+		url.clear();
+		method.clear();
+		headers.clear();
+		set_before_perform.reset();
+		set_after_perform.reset();
+
 		curl_easy_reset(this->get());
 		_holder->return_curl_handle_to_holder(std::move(_curl));
 	}
 
-	CURL* CurlHandlesHolder::ReturnCurl::get() const
+	CURL* CurlHandlesHolder::CurlReference::get() const
 	{
 		if (_curl)
 		{
@@ -44,11 +50,11 @@ namespace ravendb::client::impl
 		}
 		else
 		{
-			throw std::runtime_error("ReturnCurl object does not contain valid curl handle");
+			throw std::runtime_error("CurlReference object does not contain valid curl handle");
 		}
 	}
 
-	CurlHandlesHolder::ReturnCurl CurlHandlesHolder::checkout_curl()
+	CurlHandlesHolder::CurlReference CurlHandlesHolder::checkout_curl()
 	{
 		std::lock_guard<std::mutex> lg(_curl_handles_lock);
 		if (_curl_handles.empty())

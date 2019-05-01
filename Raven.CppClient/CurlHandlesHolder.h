@@ -40,7 +40,7 @@ namespace ravendb::client::impl
 
 		~CurlHandlesHolder() = default;
 
-		class ReturnCurl
+		class CurlReference
 		{
 			friend CurlHandlesHolder;
 		private:
@@ -48,19 +48,26 @@ namespace ravendb::client::impl
 
 			CurlHandlesHolder* _holder;
 
-			ReturnCurl(CurlHandleUniquePtr curl, CurlHandlesHolder& h);
+		public:
+			std::string url{};
+			std::string method{};
+			std::unordered_map<std::string, std::string> headers{};
+
+			std::optional<CurlOptionsSetter> set_before_perform{};
+			std::optional<CurlOptionsSetter> set_after_perform{};
+
+		private:
+			CurlReference(CurlHandleUniquePtr curl, CurlHandlesHolder& h);
 
 		public:
-			ReturnCurl(const ReturnCurl& other) = delete;
-			ReturnCurl(ReturnCurl&& other) = delete;
-			ReturnCurl& operator=(const ReturnCurl& other) = delete;
-			ReturnCurl& operator=(ReturnCurl&& other) = delete;
-
-			~ReturnCurl();
-
 			CURL* get() const;
+
+			CurlReference(CurlReference&& other) = delete;
+			CurlReference& operator=(CurlReference&& other) = delete;
+
+			~CurlReference();
 		};
 
-		ReturnCurl checkout_curl();
+		CurlReference checkout_curl();
 	};
 }

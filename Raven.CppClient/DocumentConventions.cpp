@@ -309,8 +309,13 @@ namespace ravendb::client::documents::conventions
 		return _find_cpp_class_name(entity_type);
 	}
 
-	void DocumentConventions::update_from(const operations::configuration::ClientConfiguration& configuration)
+	void DocumentConventions::update_from(const std::optional<operations::configuration::ClientConfiguration>& configuration)
 	{
+		if(!configuration)
+		{
+			return;
+		}
+
 		static std::mutex m{};
 
 		auto lock = std::lock_guard(m);

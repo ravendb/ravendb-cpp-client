@@ -6,7 +6,7 @@
 
 namespace ravendb::client::documents::operations
 {
-	class GetStatisticsOperation : public operations::IMaintenanceOperation<DatabaseStatistics>
+	class GetStatisticsOperation : public IMaintenanceOperation<DatabaseStatistics>
 	{
 	private:
 		const std::optional<std::string> _debug_tag{};
@@ -37,7 +37,7 @@ namespace ravendb::client::documents::operations
 				: _debug_tag(std::move(debug_tag))
 			{}
 
-			void create_request(CURL* curl, const http::ServerNode& node, std::string& url) override
+			void create_request(CURL* curl, const http::ServerNode& node, std::optional<std::string>& url) override
 			{
 				std::ostringstream path_builder;
 				path_builder << node.url << "/databases/" << node.database << "/stats";
@@ -49,7 +49,7 @@ namespace ravendb::client::documents::operations
 
 				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
 
-				url = path_builder.str();
+				url.emplace(path_builder.str());
 			}
 
 			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override

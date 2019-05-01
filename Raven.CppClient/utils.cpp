@@ -29,7 +29,7 @@ namespace ravendb::client::impl::utils
 	size_t utils::push_headers(char *buffer, size_t size, size_t nitems, void *userdata)
 	{
 		auto real_size = size * nitems;
-		auto headers = static_cast<std::map<std::string, std::string>*>(userdata);
+		auto headers = static_cast<std::unordered_map<std::string, std::string>*>(userdata);
 		auto result = static_cast<char*>(memchr(buffer, ':', real_size));
 		if (result == nullptr) // doesn't have ':', probably not a header line, not interesting
 			return real_size;
@@ -52,7 +52,7 @@ namespace ravendb::client::impl::utils
 	{
 		auto real_size = size * nmemb;
 		auto& output_buffer = *static_cast<std::string*>(output_buffer_void);
-		output_buffer.append((char*)contents, real_size);
+		output_buffer.append(contents, real_size);
 		return real_size;
 	}
 

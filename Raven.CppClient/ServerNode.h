@@ -24,7 +24,7 @@ namespace ravendb::client::http
 	{
 		std::string url{};
 		std::string database{};
-		std::string clusterTag{};
+		std::string cluster_tag{};
 		Role server_role = Role::NONE;
 
 		ServerNode() = default;
@@ -32,15 +32,20 @@ namespace ravendb::client::http
 		ServerNode(std::string url, std::string db, std::string tag, Role role = Role::NONE)
 			: url(std::move(url))
 			, database(std::move(db))
-			, clusterTag(std::move(tag))
+			, cluster_tag(std::move(tag))
 			, server_role(role)
 		{}
 
-		bool operator==(const ServerNode& other)
+		friend bool operator==(const ServerNode& lhs, const ServerNode& rhs)
 		{
-			return (&other == this)||(this->url == other.url && this->database == other.database);
+			return lhs.url == rhs.url
+				&& lhs.database == rhs.database;
 		}
 
+		friend bool operator!=(const ServerNode& lhs, const ServerNode& rhs)
+		{
+			return !(lhs == rhs);
+		}
 	};
 
 	void from_json(const nlohmann::json& j, ServerNode& sn);
