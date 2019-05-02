@@ -16,11 +16,18 @@ namespace ravendb::client::http
 		return _timer_period = _timer_period + std::chrono::milliseconds(100);
 	}
 
-	void NodeStatus::start_timer(std::chrono::milliseconds next_timer_period)
+	void NodeStatus::start_timer()
 	{
 		auto re = _request_executor.lock();
 		
-		_timer = primitives::Timer::create(re->_scheduler, [this]() {timer_callback(); }, _timer_period);
+		_timer = primitives::Timer::create(re->_scheduler, 
+			[weak_this = _weak_this]()
+		{
+			if (auto ns = weak_this.lock())
+			{
+				ns->timer_callback();
+			}
+		}, _timer_period);
 		
 	}
 
@@ -41,12 +48,20 @@ namespace ravendb::client::http
 	}
 
 	NodeStatus::NodeStatus(std::weak_ptr<RequestExecutor> request_executor, int32_t node_index_param,
-		std::shared_ptr<ServerNode> node_param)
+		std::shared_ptr<const ServerNode> node_param)
 		: _timer_period(std::chrono::milliseconds(100))
 		, _request_executor(request_executor)
 		, node_index(node_index_param)
 		, node(node_param)
 	{}
+
+	std::shared_ptr<NodeStatus> NodeStatus::create(std::weak_ptr<RequestExecutor> request_executor,
+		int32_t node_index_param, std::shared_ptr<const ServerNode> node_param)
+	{
+		auto object = std::shared_ptr<NodeStatus>(new NodeStatus(request_executor, node_index_param, node_param));
+		object->_weak_this = object;
+		return object;
+	}
 
 	void NodeStatus::close()
 	{

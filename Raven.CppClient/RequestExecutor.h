@@ -43,7 +43,8 @@ namespace ravendb::client::http
 		std::timed_mutex _update_database_topology_mutex{};
 		std::mutex _update_client_configuration_mutex{};
 
-		std::unordered_map<std::shared_ptr<ServerNode>, NodeStatus> _failed_nodes_timers;
+		std::unordered_map<std::shared_ptr<const ServerNode>, std::shared_ptr<NodeStatus>,
+			std::hash<std::shared_ptr<const ServerNode>>, CompareSharedPtrConstServerNode> _failed_nodes_timers;
 		std::shared_mutex _failed_nodes_timers_mutex{};
 
 		const std::optional<impl::CertificateDetails> _certificate_details;
@@ -56,7 +57,7 @@ namespace ravendb::client::http
 
 		HttpCache cache{};//TODO implement it!
 
-		std::shared_ptr<ServerNode> _topology_taken_from_node{};
+		std::shared_ptr<const ServerNode> _topology_taken_from_node{};
 
 		//TODO think of an alternative
 		//public final ThreadLocal<AggressiveCacheOptions> aggressiveCaching = new ThreadLocal<>();
@@ -109,9 +110,11 @@ namespace ravendb::client::http
 
 		void update_topology_callback();
 
+
+
 		//TODO old version for checks
 		template<typename TResult>
-		std::shared_ptr<TResult> execute_internal(ServerNode& node, RavenCommand<TResult>& cmd);
+		std::shared_ptr<TResult> execute_internal(ServerNode& node, RavenCommand<TResult>& command);
 
 		template<typename TResult>
 		void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, 
@@ -120,7 +123,7 @@ namespace ravendb::client::http
 		void configure_curl_before_perform(impl::CurlHandlesHolder::CurlReference& curl_ref) const;
 
 		template<typename TResult>
-		void throwFailedToContactAllNodes(const RavenCommand<TResult>& command,
+		void throw_failed_to_contact_all_nodes(const RavenCommand<TResult>& command,
 			const impl::CurlHandlesHolder::CurlReference& curl_ref, std::exception_ptr e,
 			std::optional<std::exception_ptr> timeout_exception) const;
 
@@ -136,10 +139,29 @@ namespace ravendb::client::http
 		
 		template<typename TResult>
 		bool handle_unsuccessful_response(std::shared_ptr<const ServerNode> chosen_node,
-			const std::optional<int32_t>& node_index, RavenCommand<TResult> command,
+			const std::optional<int32_t>& node_index, RavenCommand<TResult>& command,
 			const impl::CurlHandlesHolder::CurlReference& curl_ref, const impl::CurlResponse& response,
-			const std::string& url, const documents::session::SessionInfo& session_info,
+			const std::string& url, const std::optional<documents::session::SessionInfo>& session_info,
 			bool should_retry);
+
+		static void handle_conflict(const impl::CurlResponse& response);
+
+		template<typename TResult>
+		bool handle_server_down(std::shared_ptr<const ServerNode> chosen_node,
+			const std::optional<int32_t>& node_index, RavenCommand<TResult>& command,
+			const impl::CurlHandlesHolder::CurlReference& curl_ref, const impl::CurlResponse& response,
+			std::exception_ptr e, const std::optional<documents::session::SessionInfo>& session_info);
+
+		void spawn_health_check(std::shared_ptr<const ServerNode> chosen_node, int32_t node_index);
+
+		void check_node_status_callback(const NodeStatus& node_status);
+
+		template<typename TResult>
+		static void add_failed_response_to_command(std::shared_ptr<const ServerNode> chosen_node,
+			RavenCommand<TResult>& command, const impl::CurlHandlesHolder::CurlReference& curl_ref,
+			const impl::CurlResponse& response, std::exception_ptr e);
+
+		void ensure_node_selector();
 
 	protected:
 		RequestExecutor(
@@ -161,7 +183,7 @@ namespace ravendb::client::http
 		static std::vector<std::string> validate_urls(const std::vector<std::string>& initial_urls,
 			const std::optional<impl::CertificateDetails>& certificate);
 
-
+		void perform_health_check(std::shared_ptr<const ServerNode> server_node, int32_t node_index);
 
 
 	public:
@@ -234,7 +256,16 @@ namespace ravendb::client::http
 
 		bool in_speed_test_phase() const;
 
+		std::shared_ptr<const ServerNode> handle_server_not_responsive(const std::string& url,
+			std::shared_ptr<const ServerNode> chosen_node, int32_t node_index, std::exception_ptr e);
+
 		void close();
+
+		CurrentIndexAndNode get_preferred_node();
+
+		CurrentIndexAndNode get_node_by_session_id(int32_t session_id);
+
+		CurrentIndexAndNode get_fastest_node();
 	};
 
 	template <typename TResult>
@@ -277,13 +308,13 @@ namespace ravendb::client::http
 	}
 
 	template<typename TResult>
-	std::shared_ptr<TResult> RequestExecutor::execute_internal(ServerNode & node, RavenCommand<TResult>& cmd)
+	std::shared_ptr<TResult> RequestExecutor::execute_internal(ServerNode & node, RavenCommand<TResult>& command)
 	{
 		auto curl_ref = _curl_holder.checkout_curl();
 		auto curl = curl_ref.get();
 
 		std::string url;
-		cmd.create_request(curl_ref, node, url);
+		command.create_request(curl_ref, node, url);
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 
 		if (_certificate_details)//using certificate
@@ -307,7 +338,7 @@ namespace ravendb::client::http
 				<< ", status code: "
 				<< std::to_string(response.status_code)
 				<< "\n"
-				<< response.error_buffer
+				<< response.error
 				<< "\n";
 
 			throw RavenError(error_builder.str(), RavenError::ErrorType::GENERIC);
@@ -317,14 +348,14 @@ namespace ravendb::client::http
 			set_after_perform(curl);
 		}
 
-		cmd.status_code = response.status_code;
+		command.status_code = response.status_code;
 		switch (response.status_code)
 		{
 		case 200:
 		case 201:
 		{
-			auto result = response.output_buffer.empty() ? nlohmann::json() : nlohmann::json::parse(response.output_buffer);
-			cmd.set_response(curl, result, false);
+			auto result = response.output.empty() ? nlohmann::json() : nlohmann::json::parse(response.output);
+			command.set_response(curl, result, false);
 			break;
 		}
 		case 204:
@@ -332,21 +363,21 @@ namespace ravendb::client::http
 		case 304:
 			break;
 		case 404:
-			cmd.set_response_not_found(curl);
+			command.set_response_not_found(curl);
 			break;
 		case 503:
 			if (response.headers.find("Database-Missing") != response.headers.end())
 			{
-				throw RavenError(response.output_buffer, RavenError::ErrorType::DATABASE_DOES_NOT_EXIST);
+				throw RavenError(response.output, RavenError::ErrorType::DATABASE_DOES_NOT_EXIST);
 			}
-			throw RavenError(response.output_buffer, RavenError::ErrorType::SERVICE_NOT_AVAILABLE);
+			throw RavenError(response.output, RavenError::ErrorType::SERVICE_NOT_AVAILABLE);
 		case 500:
-			throw RavenError(response.output_buffer, RavenError::ErrorType::INTERNAL_SERVER_ERROR);
+			throw RavenError(response.output, RavenError::ErrorType::INTERNAL_SERVER_ERROR);
 		default:
-			throw RavenError(response.output_buffer, RavenError::ErrorType::UNEXPECTED_RESPONSE);
+			throw RavenError(response.output, RavenError::ErrorType::UNEXPECTED_RESPONSE);
 		}
 
-		return cmd.get_result();
+		return command.get_result();
 	}
 
 	template <typename TResult>
@@ -362,7 +393,7 @@ namespace ravendb::client::http
 	}
 
 	template <typename TResult>
-	void RequestExecutor::throwFailedToContactAllNodes(const RavenCommand<TResult>& command,
+	void RequestExecutor::throw_failed_to_contact_all_nodes(const RavenCommand<TResult>& command,
 		const impl::CurlHandlesHolder::CurlReference& curl_ref, std::exception_ptr e,
 		std::optional<std::exception_ptr> timeout_exception) const
 	{
@@ -443,7 +474,7 @@ namespace ravendb::client::http
 				{
 					auto url_ref = std::optional<std::string>();
 					auto curl_ref = _curl_holder.checkout_curl();
-					create_request(curl_ref, *nodes[task_number], command, url_ref);
+					create_request(curl_ref, nodes[task_number], command, url_ref);
 					return { task_number, command.send(curl_ref) };
 				}
 				catch (...)
@@ -504,11 +535,11 @@ namespace ravendb::client::http
 
 	template <typename TResult>
 	bool RequestExecutor::handle_unsuccessful_response(std::shared_ptr<const ServerNode> chosen_node,
-		const std::optional<int32_t>& node_index, RavenCommand<TResult> command,
+		const std::optional<int32_t>& node_index, RavenCommand<TResult>& command,
 		const impl::CurlHandlesHolder::CurlReference& curl_ref, const impl::CurlResponse& response,
-		const std::string& url, const documents::session::SessionInfo& session_info, bool should_retry)
+		const std::string& url, const std::optional<documents::session::SessionInfo>& session_info, bool should_retry)
 	{
-		switch (response.status_code)
+		switch (static_cast<HttpStatus>(response.status_code))
 		{
 		case HttpStatus::SC_NOT_FOUND:
 			//TODO
@@ -537,15 +568,16 @@ namespace ravendb::client::http
 				throw std::runtime_error(msg.str());
 			}
 		case HttpStatus::SC_GONE:// request not relevant for the chosen node - the database has been moved to a different one
-			if(!should_retry)
+		{
+			if (!should_retry)
 			{
 				return false;
 			}
-			if(node_index)
+			if (node_index)
 			{
 				_node_selector->on_failed_request(*node_index);
 			}
-			if(!command.is_failed_with_node(chosen_node))
+			if (!command.is_failed_with_node(chosen_node))
 			{
 				//TODO
 				//command.getFailedNodes().put(chosenNode, new UnsuccessfulRequestException("Request to " + request.getURI() + " (" + request.getMethod() + ") is not relevant for this node anymore."));
@@ -555,10 +587,10 @@ namespace ravendb::client::http
 			}
 			auto index_and_node = choose_node_for_request(command, session_info);
 
-			if(command.get_failed_nodes().find(index_and_node.current_node) == command.get_failed_nodes().end())
+			if (command.get_failed_nodes().find(index_and_node.current_node) == command.get_failed_nodes().end())
 			{
 				// we tried all the nodes, let's try to update topology and retry one more time
-				if(!update_topology_async(chosen_node, 60 * 1000,
+				if (!update_topology_async(chosen_node, 60 * 1000,
 					true, "handle-unsuccessful-response").get())
 				{
 					return false;
@@ -573,12 +605,12 @@ namespace ravendb::client::http
 
 			execute(index_and_node.current_node, index_and_node.current_index, command, false, session_info);
 			return true;
-
+		}
 		case HttpStatus::SC_GATEWAY_TIMEOUT:
 		case HttpStatus::SC_REQUEST_TIMEOUT:
 		case HttpStatus::SC_BAD_GATEWAY:
 		case HttpStatus::SC_SERVICE_UNAVAILABLE:
-			return handle_rever_down(url, chosen_node, node_index, command, curl_ref, response, {}, session_info);
+			return handle_server_down(chosen_node, node_index, command, curl_ref, response, {}, session_info);
 		case HttpStatus::SC_CONFLICT:
 			handle_conflict(response);
 			break;
@@ -586,10 +618,54 @@ namespace ravendb::client::http
 			command.on_response_failure(response);
 			//TODO
 			//ExceptionDispatcher.throwException(response);
-			throw RavenError(response.output_buffer, RavenError::ErrorType::GENERIC);
+			throw RavenError(response.output, RavenError::ErrorType::GENERIC);
 			break;
 		}
 		return false;
+	}
+
+	template <typename TResult>
+	bool RequestExecutor::handle_server_down(std::shared_ptr<const ServerNode> chosen_node,
+		const std::optional<int32_t>& node_index, RavenCommand<TResult>& command,
+		const impl::CurlHandlesHolder::CurlReference& curl_ref, const impl::CurlResponse& response,
+		std::exception_ptr e, const std::optional<documents::session::SessionInfo>& session_info)
+	{
+		add_failed_response_to_command(chosen_node, command, curl_ref, response, e);
+
+		if(!node_index)
+		{
+			//We executed request over a node not in the topology. This means no failover...
+			return false;
+		}
+
+		spawn_health_check(chosen_node, *node_index);
+
+		if(!_node_selector)
+		{
+			return false;
+		}
+
+		_node_selector->on_failed_request(*node_index);
+
+		auto current_node_and_index = _node_selector->get_preferred_node();
+		if(command.get_failed_nodes().find(current_node_and_index.current_node) ==
+			command.get_failed_nodes().end())
+		{
+			return false; //we tried all the nodes...nothing left to do
+		}
+
+		execute(current_node_and_index.current_node, current_node_and_index.current_index, command, false, session_info);
+
+		return true;
+	}
+
+	template <typename TResult>
+	void RequestExecutor::add_failed_response_to_command(std::shared_ptr<const ServerNode> chosen_node,
+		RavenCommand<TResult>& command, const impl::CurlHandlesHolder::CurlReference& curl_ref,
+		const impl::CurlResponse& response, std::exception_ptr e)
+	{
+		//TODO implement
+		command.get_failed_nodes().insert_or_assign(chosen_node, e);
 	}
 
 	template <typename TResult>
@@ -722,11 +798,10 @@ namespace ravendb::client::http
 				throw;
 			}
 
-			if(!handle_server_down(url_ref.value(), chosen_node, node_index, command, curl_ref, response,
+			if(!handle_server_down(chosen_node, node_index, command, curl_ref, *response,
 				std::current_exception(),session_info))
 			{
-				throw_failed_to_contact_all_nodes(command, curl_ref, std::current_exception(),
-					std::current_exception(), {});
+				throw_failed_to_contact_all_nodes(command, curl_ref, std::current_exception(), {});
 			}
 			return;
 		}
@@ -748,7 +823,7 @@ namespace ravendb::client::http
 
 				if(refresh_topology)
 				{
-					update_topology_async(server_node, 0).get();
+					update_topology_async(std::const_pointer_cast<const ServerNode>(server_node), 0).get();
 				}
 				if(refresh_client_configuration)
 				{
@@ -776,7 +851,7 @@ namespace ravendb::client::http
 
 			if(response->status_code >= 400)
 			{
-				if(!handle_unsuccessful_response(chosen_node, node_index, command, curl_ref, *url_ref, session_info, should_retry))
+				if(!handle_unsuccessful_response(chosen_node, node_index, command, curl_ref, *response, *url_ref, session_info, should_retry))
 				{
 					if(auto it = response->headers.find("Database-Missing");
 						it != response->headers.end())
@@ -801,7 +876,7 @@ namespace ravendb::client::http
 				finally();
 				return;// we either handled this already in the unsuccessful response or we are throwing
 			}
-			response_dispose = command.process_response(cache, response, *url_ref);
+			response_dispose = command.process_response(/*cache,*/ *response, *url_ref);
 			_last_returned_response = std::chrono::steady_clock::now();
 		}
 		catch (...)

@@ -9,7 +9,7 @@ namespace ravendb::client::extensions::http_extensions
 		if(auto it = response.headers.find(header);
 			it != response.headers.end())
 		{
-			return impl::utils::CompareStringsIgnoreCase()(it->first, "true");
+			return impl::utils::CompareStringsIgnoreCase()(it->second, "true");
 		}
 		return {};
 	}

@@ -116,11 +116,13 @@ namespace ravendb::client::http
 					server_node->url = url;
 					server_node->database = re->_database_name.value_or("");
 
-					re->update_topology_async(server_node, INT32_MAX, false, "first-topology-update").wait();
+					auto const_server_node = std::const_pointer_cast<ServerNode const>(server_node);
+
+					re->update_topology_async(const_server_node, INT32_MAX, false, "first-topology-update").wait();
 
 					re->initialize_update_topology_timer();
 
-					re->_topology_taken_from_node = server_node;
+					re->_topology_taken_from_node = const_server_node;
 					return;
 				}
 				//TODO
@@ -231,9 +233,11 @@ namespace ravendb::client::http
 
 	void RequestExecutor::dispose_all_failed_nodes_timers()
 	{
+		auto lock = std::lock_guard(_failed_nodes_timers_mutex);
+
 		for(auto& [node, status] : _failed_nodes_timers)
 		{
-			status.close();
+			status->close();
 		}
 		_failed_nodes_timers.clear();
 	}
@@ -265,6 +269,118 @@ namespace ravendb::client::http
 		curl_ref.set_before_perform.emplace(set_before_perform);
 
 		curl_ref.set_after_perform.emplace(set_after_perform);
+	}
+
+	void RequestExecutor::handle_conflict(const impl::CurlResponse& response)
+	{
+		//TODO
+		//ExceptionDispatcher.throwException(response);
+		std::ostringstream msg{};
+		msg << "Returned code: " << response.status_code << " with error: " << response.error <<
+			"and body :" << response.output;
+		throw std::runtime_error(msg.str());
+	}
+
+	void RequestExecutor::spawn_health_check(std::shared_ptr<const ServerNode> chosen_node, int32_t node_index)
+	{
+		auto node_status = NodeStatus::create(_weak_this, node_index, chosen_node);
+
+		auto lock = std::lock_guard(_failed_nodes_timers_mutex);
+
+		auto insert_res = _failed_nodes_timers.try_emplace(chosen_node, node_status);
+
+		if(insert_res.second)
+		{
+			insert_res.first->second->start_timer();
+		}
+	}
+
+	void RequestExecutor::check_node_status_callback(const NodeStatus& node_status)
+	{
+		auto copy = get_topology_nodes();
+
+		if(node_status.node_index >= copy->size())
+		{
+			return; // topology index changed / removed
+		}
+
+		auto server_node = std::const_pointer_cast<const ServerNode>(copy->at(node_status.node_index));
+		if(!CompareSharedPtrConstServerNode()(server_node, node_status.node))
+		{
+			return;  // topology changed, nothing to check
+		}
+
+		try
+		{
+			auto status = std::shared_ptr<NodeStatus>();
+
+			try
+			{
+				perform_health_check(server_node, node_status.node_index);
+			}
+			catch (std::exception& e)
+			{
+				//TODO
+				//if (logger.isInfoEnabled()) {
+				//	logger.info(serverNode.getClusterTag() + " is still down", e);
+				//{
+				auto lock = std::lock_guard(_failed_nodes_timers_mutex);
+
+				if(auto it = _failed_nodes_timers.find(node_status.node);
+					it != _failed_nodes_timers.end())
+				{
+					status = it->second;
+					status->update_timer();
+				}
+				return; // we will wait for the next timer call
+			}
+
+			{
+				auto lock = std::lock_guard(_failed_nodes_timers_mutex);
+
+				if (auto it = _failed_nodes_timers.find(node_status.node);
+					it != _failed_nodes_timers.end())
+				{
+					status = it->second;
+					_failed_nodes_timers.erase(node_status.node);
+					status->close();
+				}
+			}
+			if(_node_selector)
+			{
+				_node_selector->restore_node_index(node_status.node_index);
+			}
+		}
+		catch (std::exception& e)
+		{
+			//TODO
+			// if (logger.isInfoEnabled()) {
+			//	logger.info("Failed to check node topology, will ignore this node until next topology update", e);
+			//}
+		}
+	}
+
+	void RequestExecutor::ensure_node_selector()
+	{
+		if(_first_topology_update)
+		{
+			_first_topology_update->get();
+		}
+
+		if(!_node_selector)
+		{
+			auto topolody = std::make_shared<Topology>();
+			topolody->nodes = std::make_shared<std::vector<std::shared_ptr<ServerNode>>>();
+
+			const auto& topology_nodes = *get_topology_nodes();
+
+			topolody->nodes->reserve(topology_nodes.size());
+			for (const auto& server_node : topology_nodes)
+			{
+				topolody->nodes->emplace_back(std::make_shared<ServerNode>(*server_node));
+			}
+			_node_selector.emplace(topolody, _scheduler);
+		}
 	}
 
 	RequestExecutor::RequestExecutor(
@@ -400,6 +516,12 @@ namespace ravendb::client::http
 		return std::move(clean_urls);
 	}
 
+	void RequestExecutor::perform_health_check(std::shared_ptr<const ServerNode> server_node, int32_t node_index)
+	{
+		auto command = failure_check_operation.get_command(_conventions);
+		execute(server_node, node_index, *command, false, {});
+	}
+
 	std::shared_ptr<const Topology> RequestExecutor::get_topology() const
 	{
 		return _node_selector ? _node_selector->get_topology() : std::shared_ptr<const Topology>();
@@ -508,6 +630,28 @@ namespace ravendb::client::http
 		return _node_selector ? _node_selector->in_speed_test_phase() : false;
 	}
 
+	std::shared_ptr<const ServerNode> RequestExecutor::handle_server_not_responsive(const std::string& url,
+		std::shared_ptr<const ServerNode> chosen_node, int32_t node_index, std::exception_ptr e)
+	{
+		spawn_health_check(chosen_node, node_index);
+		if(_node_selector)
+		{
+			_node_selector->on_failed_request(node_index);
+		}
+
+		auto preferred_node = get_preferred_node();
+		try
+		{
+			update_topology_async(preferred_node.current_node, 0, true, "handle-server-not-responsive").get();
+		}
+		catch (...)
+		{
+			std::rethrow_exception(e);
+		}
+
+		return preferred_node.current_node;
+	}
+
 	void RequestExecutor::close()
 	{
 		if(_disposed)
@@ -522,6 +666,24 @@ namespace ravendb::client::http
 			_update_topology_timer->close();
 		}
 		dispose_all_failed_nodes_timers();
+	}
+
+	CurrentIndexAndNode RequestExecutor::get_preferred_node()
+	{
+		ensure_node_selector();
+		return _node_selector->get_preferred_node();
+	}
+
+	CurrentIndexAndNode RequestExecutor::get_node_by_session_id(int32_t session_id)
+	{
+		ensure_node_selector();
+		return _node_selector->get_node_by_session_id(session_id);
+	}
+
+	CurrentIndexAndNode RequestExecutor::get_fastest_node()
+	{
+		ensure_node_selector();
+		return _node_selector->get_fastest_node();
 	}
 
 	std::shared_ptr<RequestExecutor> RequestExecutor::create(

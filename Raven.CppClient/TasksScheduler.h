@@ -43,7 +43,7 @@ namespace ravendb::client::impl
 					{
 						return;
 					}
-					task = _tasks.extract(_tasks.begin()).mapped();
+					_tasks.extract(_tasks.begin()).mapped().swap(task);
 				}
 				_executor_service->add_task(std::move(task));
 			}
@@ -55,7 +55,7 @@ namespace ravendb::client::impl
 			, _scheduler([this]() {work(); })
 		{}
 
-		void schedule_task(IExecutorService::Task task, std::chrono::milliseconds delay)
+		void schedule_task(IExecutorService::Task&& task, std::chrono::milliseconds delay)
 		{
 			{
 				auto lock = std::lock_guard(_mutex);
@@ -64,7 +64,7 @@ namespace ravendb::client::impl
 			_cv.notify_one();
 		}
 
-		void schedule_task_immediately(IExecutorService::Task task)
+		void schedule_task_immediately(IExecutorService::Task&& task)
 		{
 			_executor_service->add_task(std::move(task));
 		}

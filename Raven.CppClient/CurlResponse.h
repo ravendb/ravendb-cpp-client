@@ -5,11 +5,14 @@ namespace ravendb::client::impl
 {
 	struct CurlResponse
 	{
-		char error_buffer[CURL_ERROR_SIZE] = { '\0' };
-		std::string output_buffer{};
+		std::string_view error{};
+		std::string output{};
 		std::unordered_map<std::string, std::string> headers{}; 
 		long status_code{};
 		CURLcode perform_result{};
+	
+	private:
+		char error_buffer[CURL_ERROR_SIZE] = { '\0' };
 
 	private:
 		explicit CurlResponse(const CurlHandlesHolder::CurlReference& curl_ref);

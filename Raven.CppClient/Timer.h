@@ -33,7 +33,7 @@ namespace ravendb::client::primitives
 		}
 
 		Timer(std::shared_ptr<impl::TasksScheduler> scheduler,
-			impl::IExecutorService::Task action,
+			impl::IExecutorService::Task&& action,
 			std::optional<std::chrono::milliseconds> period = {})
 			: _scheduler(scheduler)
 			, _action(std::move(action))
@@ -42,7 +42,7 @@ namespace ravendb::client::primitives
 
 	public:
 		static std::shared_ptr<Timer> create(std::shared_ptr<impl::TasksScheduler> scheduler,
-			impl::IExecutorService::Task action,
+			impl::IExecutorService::Task&& action,
 			std::chrono::milliseconds delay,
 			std::optional<std::chrono::milliseconds> period = {})
 		{
@@ -68,7 +68,7 @@ namespace ravendb::client::primitives
 
 		void close()
 		{
-			auto lock = std::shared_lock(_lock);
+			auto lock = std::unique_lock(_lock);
 			_period.reset();
 		}
 	};

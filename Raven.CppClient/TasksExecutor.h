@@ -32,7 +32,7 @@ namespace ravendb::client::impl
 					{
 						return;
 					}
-					task = _tasks.front();
+					_tasks.front().swap(task);
 					_tasks.pop();
 				}
 				task();
@@ -49,7 +49,7 @@ namespace ravendb::client::impl
 			}
 		}
 
-		void add_task(Task task) override
+		void add_task(Task&& task) override
 		{
 			{
 				auto lock = std::lock_guard(_mutex);

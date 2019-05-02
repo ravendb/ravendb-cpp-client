@@ -77,7 +77,18 @@ namespace ravendb::client::constants
 		constexpr char TRANSFER_ENCODING[] = "Transfer-Encoding";
 		constexpr char CONTENT_ENCODING[] = "Content-Encoding";
 		constexpr char CONTENT_LENGTH[] = "Content-Length";
+		constexpr char CONTENT_TYPE[] = "Content-Type";
 	}
+	namespace methods
+	{
+		constexpr char GET[] = "GET";
+		constexpr char POST[] = "POST";
+		constexpr char PUT[] = "PUT";
+		constexpr char DELETE_[] = "DELETE";
+		constexpr char PATCH[] = "PATCH";
+		constexpr char RESET[] = "RESET";
+	}
+
 	namespace counters
 	{
 		constexpr char ALL[] = "@all_counters";
