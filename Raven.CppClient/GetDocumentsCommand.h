@@ -2,7 +2,6 @@
 #include "stdafx.h"
 #include "RavenCommand.h"
 #include "GetDocumentsResult.h"
-#include "utils.h"
 //TODO put in final project
 #include "C:\work\xxhash_cpp\xxhash\xxhash.hpp"
 
@@ -42,7 +41,8 @@ namespace ravendb::client::documents::commands
 			return hash_stream.digest();
 		}
 
-		void prepare_request_with_multiple_ids(std::ostringstream& path_builder, CURL* curl)
+		void prepare_request_with_multiple_ids(std::ostringstream& path_builder,
+			impl::CurlHandlesHolder::CurlReference& curl_ref)
 		{
 			std::size_t totalLen = 0;
 			const auto& unique_ids = _ids;
@@ -57,23 +57,24 @@ namespace ravendb::client::documents::commands
 			{
 				for (const auto& id : unique_ids)
 				{
-					path_builder << "&id=" << ravendb::client::impl::utils::url_escape(curl, id);
+					path_builder << "&id=" << http::url_encode(curl_ref, id);
 				}
-				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+				curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPGET, 1);
+				curl_ref.method = constants::methods::GET;
 				return;
 			}
 			else // ids too big, must use POST
 			{
-				curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
+				curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPPOST, 1);
+				curl_ref.method = constants::methods::POST;
 
 				uint64_t hash = calculate_docs_ids_hash(unique_ids.cbegin(), unique_ids.cend());
 				path_builder << "&loadHash=" << hash;				
 
 				auto&& json_str = nlohmann::json({ {"Ids", unique_ids} }).dump();
-				curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, json_str.c_str());
+				curl_easy_setopt(curl_ref.get(), CURLOPT_COPYPOSTFIELDS, json_str.c_str());
 
-				_headers_list.append("Content-Type: application/json");
-				curl_easy_setopt(curl, CURLOPT_HTTPHEADER, _headers_list.get());
+				curl_ref.headers.emplace(constants::headers::CONTENT_TYPE, "application/json");
 			}
 		}
 
@@ -138,10 +139,11 @@ namespace ravendb::client::documents::commands
 			, _start_after(std::move(start_after))
 		{}
 
-		void create_request(CURL* curl, const http::ServerNode& node, std::string& url) override
+		void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+			std::optional<std::string>& url_ref) override
 		{
 			std::ostringstream path_builder{};
-			path_builder << node.url << "/databases/" << node.database << "/docs?";
+			path_builder << node->url << "/databases/" << node->database << "/docs?";
 
 			if (_start.has_value())
 			{
@@ -160,7 +162,7 @@ namespace ravendb::client::documents::commands
 
 			if (_start_with.has_value())
 			{
-				path_builder << "&startsWith=" << ravendb::client::impl::utils::url_escape(curl, *_start_with);
+				path_builder << "&startsWith=" << http::url_encode(curl_ref, *_start_with);
 				if (_matches)
 				{
 					path_builder << "&matches=" << *_matches;
@@ -192,25 +194,26 @@ namespace ravendb::client::documents::commands
 			//	}
 			//}
 
-			curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+			curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPGET, 1);
+			curl_ref.method = constants::methods::GET;
 
 			if (_id)
 			{
-				path_builder << "&id=" << ravendb::client::impl::utils::url_escape(curl, *_id);
+				path_builder << "&id=" << http::url_encode(curl_ref, *_id);
 			}
 			else if (!_ids.empty())
 			{
-				prepare_request_with_multiple_ids(path_builder, curl);
+				prepare_request_with_multiple_ids(path_builder, curl_ref);
 			}
 
-			url = path_builder.str();
+			url_ref.emplace(path_builder.str());
 		}
 
-		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
+		void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override
 		{
-			if (!response.is_null())
+			if (response)
 			{
-				_result = std::make_shared<ResultType>(response.get<ResultType>());
+				_result = std::make_shared<ResultType>(response->get<ResultType>());
 			}
 			else
 			{
@@ -218,7 +221,7 @@ namespace ravendb::client::documents::commands
 			}
 		}
 
-		bool is_read_request() const noexcept override
+		bool is_read_request() const override
 		{
 			return true;
 		}

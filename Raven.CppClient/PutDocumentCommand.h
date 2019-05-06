@@ -32,7 +32,7 @@ namespace ravendb::client::documents::commands
 			std::ostringstream path_builder;
 
 			path_builder << node->url << "/databases/" << node->database
-				<< "/docs?id=" << url_encode(curl_ref, _id);
+				<< "/docs?id=" << http::url_encode(curl_ref, _id);
 
 			curl_easy_setopt(curl, CURLOPT_PUT, 1L);
 			curl_ref.method = constants::methods::PUT;
@@ -53,7 +53,7 @@ namespace ravendb::client::documents::commands
 			_result = std::make_shared<ResultType>(response->get<ResultType>());
 		}
 
-		bool is_read_request() const noexcept override
+		bool is_read_request() const override
 		{
 			return false;
 		}

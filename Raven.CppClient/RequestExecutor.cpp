@@ -99,7 +99,7 @@ namespace ravendb::client::http
 	{
 		auto initial_urls = validate_urls(input_urls, _certificate_details);
 
-		auto task = std::packaged_task<void()>([initial_urls, weak_this = _weak_this]()->void
+		auto task = std::make_shared<std::packaged_task<void()>>([initial_urls, weak_this = _weak_this]()->void
 		{
 			auto re = weak_this.lock();
 			if(!re)
@@ -198,8 +198,8 @@ namespace ravendb::client::http
 			re->throw_exceptions(std::move(details));
 		});
 
-		auto fut = task.get_future();
-		_scheduler->schedule_task_immediately([task = std::move(task)]() mutable ->void { task(); });
+		auto fut = task->get_future();
+		_scheduler->schedule_task_immediately([task]()->void { (*task)(); });
 		return std::make_shared<std::future<void>>(std::move(fut));
 
 		//GetDatabaseTopologyCommand getTopology{};
@@ -422,7 +422,7 @@ namespace ravendb::client::http
 			return std::move(fut);
 		}
 
-		auto task = std::packaged_task<void()>(
+		auto task = std::make_shared<std::packaged_task<void()>>(
 			[weak_this = _weak_this]()->void
 		{
 			auto re = weak_this.lock();
@@ -460,8 +460,8 @@ namespace ravendb::client::http
 			re->_disable_client_configuration_updates = old_disable_client_configuration_updates;
 		});
 
-		auto fut = task.get_future();
-		_scheduler->schedule_task_immediately([task = std::move(task)]() mutable ->void { task(); });
+		auto fut = task->get_future();
+		_scheduler->schedule_task_immediately([task]()->void { (*task)(); });
 		return std::move(fut);
 	}
 
@@ -568,7 +568,7 @@ namespace ravendb::client::http
 			return std::move(fut);
 		}
 
-		auto task = std::packaged_task<bool()>(
+		auto task = std::make_shared<std::packaged_task<bool()>>(
 			[weak_this = _weak_this, node, timeout, force_update, debug_tag = std::move(debug_tag)]()->bool
 		{
 			auto re = weak_this.lock();
@@ -620,8 +620,8 @@ namespace ravendb::client::http
 			return true;
 		});
 
-		auto fut = task.get_future();
-		_scheduler->schedule_task_immediately([task = std::move(task)]() mutable ->void { task(); });
+		auto fut = task->get_future();
+		_scheduler->schedule_task_immediately([task]()->void { (*task)(); });
 		return std::move(fut);
 	}
 

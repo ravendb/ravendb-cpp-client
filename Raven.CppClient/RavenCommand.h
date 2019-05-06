@@ -9,9 +9,14 @@
 #include "GetCppClassName.h"
 #include "ResponseDisposeHandling.h"
 #include "HttpStatus.h"
+#include "constants.h"
 
 namespace ravendb::client::http
 {
+	std::string url_encode(CURL* curl, const std::string& value);
+	std::string url_encode(const impl::CurlHandlesHolder::CurlReference& curl_ref, const std::string& value);
+	std::string url_encode(const std::string& value);
+
 	enum class RavenCommandResponseType
 	{
 		EMPTY,
@@ -42,8 +47,6 @@ namespace ravendb::client::http
 	protected:
 		RavenCommand() = default;
 
-		static std::string url_encode(const impl::CurlHandlesHolder::CurlReference& curl_ref, const std::string& value);
-
 		//TODO
 		//void cacheResponse(HttpCache cache, String url, CloseableHttpResponse response, String responseJson)
 
@@ -72,14 +75,14 @@ namespace ravendb::client::http
 
 		bool can_cache_aggressively() const;
 
-		virtual void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const ServerNode> node,
+		virtual void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
 			std::optional<std::string>& url_ref) = 0;
 
 		virtual void set_response(const std::optional<nlohmann::json>& response, bool from_cache);
 
 		static impl::CurlResponse send(const impl::CurlHandlesHolder::CurlReference& curl_ref);
 
-		void set_response_raw(const impl::CurlResponse& response);
+		virtual void set_response_raw(const impl::CurlResponse& response);
 		
 		std::unordered_map<std::shared_ptr<const ServerNode>, std::exception_ptr,
 			std::hash<std::shared_ptr<const ServerNode>>, CompareSharedPtrConstServerNode>& get_failed_nodes();
@@ -96,23 +99,6 @@ namespace ravendb::client::http
 
 	template <typename TResult>
 	const std::string RavenCommand<TResult>::result_type_name = impl::utils::GetCppClassName()(typeid(ResultType));
-
-	template <typename TResult>
-	std::string RavenCommand<TResult>::url_encode(const impl::CurlHandlesHolder::CurlReference& curl_ref,
-		const std::string& value)
-	{
-		char* result = curl_easy_escape(curl_ref.get(), value.c_str(), static_cast<int>(value.length()));
-
-		if (result == nullptr)
-		{
-			throw std::invalid_argument("url escape failed on: " + value);
-		}
-
-		auto str = std::string(result);
-		curl_free(result);
-
-		return str;
-	}
 
 	template <typename TResult>
 	void RavenCommand<TResult>::throw_invalid_response()

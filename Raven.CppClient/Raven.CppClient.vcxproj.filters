@@ -341,6 +341,9 @@
     <ClCompile Include="http_extensions.cpp">
       <Filter>ravendb.client\extensions</Filter>
     </ClCompile>
+    <ClCompile Include="RavenCommand.cpp">
+      <Filter>ravendb.client\http</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">

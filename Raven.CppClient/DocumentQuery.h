@@ -33,7 +33,7 @@ namespace ravendb::client::documents::session
 			std::optional<std::string> index_name,
 			std::optional<std::string> collection_name, bool is_group_by);
 
-		std::shared_ptr<DocumentConventions> get_conventions() const;
+		std::shared_ptr<conventions::DocumentConventions> get_conventions() const;
 
 		std::vector<std::shared_ptr<T>> to_list(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
 
@@ -66,16 +66,16 @@ namespace ravendb::client::documents::session
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> wait_for_non_stale_results(const std::optional<std::chrono::milliseconds>& wait_timeout = {});
 
-		IndexQuery get_index_query() const;
+		queries::IndexQuery get_index_query() const;
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_parameter(std::string name, nlohmann::json object);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_order(const std::string& field_name,
 			bool descending, OrderingType ordering = OrderingType::STRING);
 
-		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_after_query_executed_listener(std::function<void(const QueryResult&)> action);
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_after_query_executed_listener(std::function<void(const queries::QueryResult&)> action);
 
-		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> remove_after_query_executed_listener(std::function<void(const QueryResult&)> action);
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> remove_after_query_executed_listener(std::function<void(const queries::QueryResult&)> action);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_after_stream_executed_listener(std::function<void(const nlohmann::json&)> action);
 
@@ -186,10 +186,10 @@ namespace ravendb::client::documents::session
 			OrderingType ordering = OrderingType::STRING);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_before_query_executed_listener(
-			std::function<void(const IndexQuery&)> action);
+			std::function<void(const queries::IndexQuery&)> action);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> remove_before_query_executed_listener(
-			std::function<void(const IndexQuery&)> action);
+			std::function<void(const queries::IndexQuery&)> action);
 
 		Lazy<int32_t> count_lazily();
 
@@ -254,7 +254,7 @@ namespace ravendb::client::documents::session
 
 		bool is_distinct() const;
 
-		QueryResult get_query_result();
+		queries::QueryResult get_query_result();
 
 		std::shared_ptr<IGroupByDocumentQuery<T, GroupByDocumentQuery<T>>> group_by(const std::vector<std::string>& field_names);
 
@@ -379,7 +379,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::shared_ptr<DocumentConventions> DocumentQuery<T>::get_conventions() const
+	std::shared_ptr<conventions::DocumentConventions> DocumentQuery<T>::get_conventions() const
 	{
 		return AbstractDocumentQuery<T>::get_conventions();
 	}
@@ -488,7 +488,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	IndexQuery DocumentQuery<T>::get_index_query() const
+	queries::IndexQuery DocumentQuery<T>::get_index_query() const
 	{
 		return AbstractDocumentQuery<T>::get_index_query();
 	}
@@ -517,7 +517,7 @@ namespace ravendb::client::documents::session
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::add_after_query_executed_listener(
-		std::function<void(const QueryResult&)> action)
+		std::function<void(const queries::QueryResult&)> action)
 	{
 		AbstractDocumentQuery<T>::_add_after_query_executed_listener(action);
 		return _weak_this.lock();
@@ -525,7 +525,7 @@ namespace ravendb::client::documents::session
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::remove_after_query_executed_listener(
-		std::function<void(const QueryResult&)> action)
+		std::function<void(const queries::QueryResult&)> action)
 	{
 		AbstractDocumentQuery<T>::_remove_after_query_executed_listener(action);
 		return _weak_this.lock();
@@ -865,7 +865,7 @@ namespace ravendb::client::documents::session
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::add_before_query_executed_listener(
-		std::function<void(const IndexQuery&)> action)
+		std::function<void(const queries::IndexQuery&)> action)
 	{
 		AbstractDocumentQuery<T>::_add_before_query_executed_listener(action);
 		return _weak_this.lock();
@@ -873,7 +873,7 @@ namespace ravendb::client::documents::session
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::remove_before_query_executed_listener(
-		std::function<void(const IndexQuery&)> action)
+		std::function<void(const queries::IndexQuery&)> action)
 	{
 		AbstractDocumentQuery<T>::_remove_before_query_executed_listener(action);
 		return _weak_this.lock();
@@ -1079,7 +1079,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	QueryResult DocumentQuery<T>::get_query_result()
+	queries::QueryResult DocumentQuery<T>::get_query_result()
 	{
 		return AbstractDocumentQuery<T>::get_query_result();
 	}

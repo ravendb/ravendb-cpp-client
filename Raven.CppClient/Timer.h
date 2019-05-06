@@ -1,5 +1,6 @@
 #pragma once
 #include <shared_mutex>
+#include <chrono>
 #include "TasksScheduler.h"
 
 namespace ravendb::client::primitives

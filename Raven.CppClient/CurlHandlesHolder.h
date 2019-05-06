@@ -3,6 +3,7 @@
 #include <queue>
 #include <functional>
 #include <mutex>
+#include <optional>
 
 namespace ravendb::client::impl
 {

@@ -32,23 +32,30 @@ namespace ravendb::client::serverwide::operations
 		: _database(std::move(database))
 	{}
 
-	void GetDatabaseRecordOperation::GetDatabaseRecordCommand::create_request(
-		CURL * curl, const http::ServerNode & node, std::string & url)
+	void GetDatabaseRecordOperation::GetDatabaseRecordCommand::create_request(impl::CurlHandlesHolder::CurlReference& curl_ref,
+		std::shared_ptr<const http::ServerNode> node,
+		std::optional<std::string>& url_ref)
 	{
-		std::ostringstream urlBuilder;
-		urlBuilder << node.url << "/admin/databases?name=" << _database;
+		std::ostringstream url_builder;
+		url_builder << node->url << "/admin/databases?name=" << _database;
 
-		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+		curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPGET, 1);
+		curl_ref.method = constants::methods::GET;
 
-		url = urlBuilder.str();
+		url_ref.emplace(url_builder.str());
 	}
 
-	void GetDatabaseRecordOperation::GetDatabaseRecordCommand::set_response(CURL * curl, const nlohmann::json & response, bool from_cache)
+	void GetDatabaseRecordOperation::GetDatabaseRecordCommand::set_response(const std::optional<nlohmann::json>& response, bool from_cache)
 	{
-		_result = std::make_shared<ResultType>(response.get<ResultType>());
+		if(!response)
+		{
+			_result.reset();
+			return;
+		}
+		_result = std::make_shared<ResultType>(response->get<ResultType>());
 	}
 
-	bool GetDatabaseRecordOperation::GetDatabaseRecordCommand::is_read_request() const noexcept
+	bool GetDatabaseRecordOperation::GetDatabaseRecordCommand::is_read_request() const
 	{
 		return false;
 	}

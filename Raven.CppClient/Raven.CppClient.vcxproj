@@ -469,6 +469,7 @@
     <ClCompile Include="QueryOperatorToken.cpp" />
     <ClCompile Include="QueryStatistics.cpp" />
     <ClCompile Include="QueryTimings.cpp" />
+    <ClCompile Include="RavenCommand.cpp" />
     <ClCompile Include="ShapeToken.cpp" />
     <ClCompile Include="SpatialCriteria.cpp" />
     <ClCompile Include="SpatialCriteriaFactory.cpp" />

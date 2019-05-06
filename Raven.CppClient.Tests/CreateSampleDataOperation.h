@@ -13,7 +13,8 @@ namespace ravendb::client::tests::infrastructure
 		class CreateSampleDataCommand : public http::VoidRavenCommand
 		{
 		public:
-			void create_request(CURL* curl, const http::ServerNode& node, std::string& url) override;
+			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+				std::optional<std::string>& url_ref) override;
 		};
 	};
 }

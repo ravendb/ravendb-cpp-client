@@ -150,7 +150,7 @@ namespace ravendb::client::documents
 				return it->second;
 			}
 			std::shared_ptr<http::RequestExecutor> re = http::RequestExecutor::create(
-				get_urls(), db_name, get_conventions(), _certificate_details, _set_before_perform, _set_after_perform);
+				get_urls(), db_name, _certificate_details, _scheduler, get_conventions(), _set_before_perform, _set_after_perform);
 			_request_executors.insert_or_assign(db_name, re);
 			return re;
 		}

@@ -1,14 +1,8 @@
 #pragma once
-#include "stdafx.h"
-#include "RavenCommand.h"
 #include "IOperation.h"
 #include "OperationIdResult.h"
 #include "IndexQuery.h"
 #include "QueryOperationOptions.h"
-
-using
-ravendb::client::http::RavenCommand,
-ravendb::client::http::ServerNode;
 
 namespace ravendb::client::documents::operations
 {
@@ -28,34 +22,37 @@ namespace ravendb::client::documents::operations
 			, _options(std::move(options))
 		{}
 
-		std::unique_ptr<RavenCommand<OperationIdResult>> get_command
-		(std::shared_ptr<IDocumentStore> store, std::shared_ptr<DocumentConventions> conventions, HttpCache& cache) const override
+		std::unique_ptr<http::RavenCommand<OperationIdResult>> get_command
+		(std::shared_ptr<IDocumentStore> store, std::shared_ptr<conventions::DocumentConventions> conventions, http::HttpCache& cache) const override
 		{
 			return std::make_unique<DeleteByQueryCommand>(conventions, _query_to_delete, _options);
 		}
 
 	private:
-		class DeleteByQueryCommand : public RavenCommand<OperationIdResult>
+		class DeleteByQueryCommand : public http::RavenCommand<OperationIdResult>
 		{
 		private:
-			const std::shared_ptr<DocumentConventions> _conventions;//TODO currently unused, check later
+			const std::shared_ptr<conventions::DocumentConventions> _conventions;//TODO currently unused, check later
 			const std::string _query_to_delete_str;
 			const std::optional<queries::QueryOperationOptions> _options;
 
 		public:
 			~DeleteByQueryCommand() override = default;
 
-			DeleteByQueryCommand(std::shared_ptr<DocumentConventions> conventions,
+			DeleteByQueryCommand(std::shared_ptr<conventions::DocumentConventions> conventions,
 				const queries::IndexQuery& query_to_delete, std::optional<queries::QueryOperationOptions> options)
 				: _conventions(conventions)
 				, _query_to_delete_str(nlohmann::json(query_to_delete).dump())
 				, _options(std::move(options))
 			{}
 
-			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+				std::optional<std::string>& url_ref) override
 			{
+				auto curl = curl_ref.get();
 				std::ostringstream path_builder;
-				path_builder << node.url << "/databases/" << node.database <<
+
+				path_builder << node->url << "/databases/" << node->database <<
 					"/queries" <<
 					"?allowStale=";
 				if(_options)
@@ -79,22 +76,29 @@ namespace ravendb::client::documents::operations
 					path_builder << "&staleTimeout=" << impl::utils::MillisToTimeSpanConverter(*_options->stale_timeout);
 				}
 				
-				curl_easy_setopt(curl, CURLOPT_READFUNCTION, impl::utils::read_callback);
+				curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
 				curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 				curl_easy_setopt(curl, CURLOPT_READDATA, &_query_to_delete_str);
 				curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_query_to_delete_str.length());
 				curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+				curl_ref.method = constants::methods::DELETE_;
 
-				url = path_builder.str();
+				curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE, "application/json");
+
+				url_ref.emplace(path_builder.str());
 			}
 
 
-			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
+			void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override
 			{
-				_result = std::make_shared<ResultType>(response.get<ResultType>());
+				if(!response)
+				{
+					throw_invalid_response();
+				}
+				_result = std::make_shared<ResultType>(response->get<ResultType>());
 			}
 
-			bool is_read_request() const noexcept override
+			bool is_read_request() const override
 			{
 				return false;
 			}

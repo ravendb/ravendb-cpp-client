@@ -22,18 +22,18 @@ namespace ravendb::client::documents::session
 		IQueryBase() = default;
 
 	public:
-		std::shared_ptr<DocumentConventions> get_conventions() const;
+		std::shared_ptr<conventions::DocumentConventions> get_conventions() const;
 
-		auto add_before_query_executed_listener(std::function<void(const IndexQuery&)> action);
-		auto remove_before_query_executed_listener(std::function<void(const IndexQuery&)> action);
+		auto add_before_query_executed_listener(std::function<void(const queries::IndexQuery&)> action);
+		auto remove_before_query_executed_listener(std::function<void(const queries::IndexQuery&)> action);
 
-		auto add_after_query_executed_listener(std::function<void(const QueryResult&)> action);
-		auto remove_after_query_executed_listener(std::function<void(const QueryResult&)> action);
+		auto add_after_query_executed_listener(std::function<void(const queries::QueryResult&)> action);
+		auto remove_after_query_executed_listener(std::function<void(const queries::QueryResult&)> action);
 
 		auto add_after_stream_executed_listener(std::function<void(const nlohmann::json&)> action);
 		auto remove_after_stream_executed_listener(std::function<void(const nlohmann::json&)> action);
 
-		void invoke_after_query_executed(const QueryResult& result);
+		void invoke_after_query_executed(const queries::QueryResult& result);
 		void invoke_after_stream_executed(const nlohmann::json& result);
 
 		auto no_caching();
@@ -52,41 +52,41 @@ namespace ravendb::client::documents::session
 
 		auto wait_for_non_stale_results(const std::optional<std::chrono::milliseconds>& timeout = {});
 
-		IndexQuery get_index_query() const;
+		queries::IndexQuery get_index_query() const;
 
 		auto add_parameter(std::string name, nlohmann::json value);
 	};
 
 	template <typename T, class TThis>
-	std::shared_ptr<DocumentConventions> IQueryBase<T, TThis>::get_conventions() const
+	std::shared_ptr<conventions::DocumentConventions> IQueryBase<T, TThis>::get_conventions() const
 	{
 		return cast_down()->get_conventions();
 	}
 
 	template <typename T, class TThis>
 	auto IQueryBase<T, TThis>::add_before_query_executed_listener(
-		std::function<void(const IndexQuery&)> action)
+		std::function<void(const queries::IndexQuery&)> action)
 	{
 		return cast_down()->add_before_query_executed_listener(action);
 	}
 
 	template <typename T, class TThis>
 	auto IQueryBase<T, TThis>::remove_before_query_executed_listener(
-		std::function<void(const IndexQuery&)> action)
+		std::function<void(const queries::IndexQuery&)> action)
 	{
 		return cast_down()->remove_before_query_executed_listener(action);
 	}
 
 	template <typename T, class TThis>
 	auto IQueryBase<T, TThis>::add_after_query_executed_listener(
-		std::function<void(const QueryResult&)> action)
+		std::function<void(const queries::QueryResult&)> action)
 	{
 		return cast_down()->add_after_query_executed_listener(action);
 	}
 
 	template <typename T, class TThis>
 	auto IQueryBase<T, TThis>::remove_after_query_executed_listener(
-		std::function<void(const QueryResult&)> action)
+		std::function<void(const queries::QueryResult&)> action)
 	{
 		return cast_down()->remove_after_query_executed_listener(action);
 	}
@@ -106,7 +106,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T, class TThis>
-	void IQueryBase<T, TThis>::invoke_after_query_executed(const QueryResult& result)
+	void IQueryBase<T, TThis>::invoke_after_query_executed(const queries::QueryResult& result)
 	{
 		return cast_down()->invoke_after_query_executed(result);
 	}
@@ -166,7 +166,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T, class TThis>
-	IndexQuery IQueryBase<T, TThis>::get_index_query() const
+	queries::IndexQuery IQueryBase<T, TThis>::get_index_query() const
 	{
 		return cast_down()->get_index_query();
 	}

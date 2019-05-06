@@ -14,27 +14,27 @@ namespace ravendb::client::documents::session::operations::lazy
 		using ResultType = std::vector<std::shared_ptr<T>>;
 
 	private:
-		std::shared_ptr<DocumentConventions> _conventions;
+		std::shared_ptr<conventions::DocumentConventions> _conventions;
 		std::shared_ptr<QueryOperation> _query_operation;
-		const std::vector<std::function<void(const QueryResult&)>> _after_query_executed;
+		const std::vector<std::function<void(const queries::QueryResult&)>> _after_query_executed;
 
 		ResultType _result{};
-		QueryResult _query_result{};
+		queries::QueryResult _query_result{};
 		boolean _requires_retry = false;
 
-		void handle_response(const std::optional<QueryResult>& query_result);
+		void handle_response(const std::optional<queries::QueryResult>& query_result);
 
 	public:
 		~LazyQueryOperation() override = default;
 
-		LazyQueryOperation(std::shared_ptr<DocumentConventions> conventions, std::shared_ptr<QueryOperation> query_operation,
-			std::vector<std::function<void(const QueryResult&)>> after_query_executed);
+		LazyQueryOperation(std::shared_ptr<conventions::DocumentConventions> conventions, std::shared_ptr<QueryOperation> query_operation,
+			std::vector<std::function<void(const queries::QueryResult&)>> after_query_executed);
 
 		std::optional<commands::multi_get::GetRequest> create_request() override;
 
 		ResultType get_result() const;
 
-		QueryResult get_query_result() const override;
+		queries::QueryResult get_query_result() const override;
 
 		bool is_requires_retry() const override;
 
@@ -43,7 +43,7 @@ namespace ravendb::client::documents::session::operations::lazy
 
 
 	template <typename T>
-	void LazyQueryOperation<T>::handle_response(const std::optional<QueryResult>& query_result)
+	void LazyQueryOperation<T>::handle_response(const std::optional<queries::QueryResult>& query_result)
 	{
 		if (!query_result)
 		{
@@ -59,8 +59,9 @@ namespace ravendb::client::documents::session::operations::lazy
 	}
 
 	template <typename T>
-	LazyQueryOperation<T>::LazyQueryOperation(std::shared_ptr<DocumentConventions> conventions, std::shared_ptr<QueryOperation> query_operation,
-		std::vector<std::function<void(const QueryResult&)>> after_query_executed)
+	LazyQueryOperation<T>::LazyQueryOperation(std::shared_ptr<conventions::DocumentConventions> conventions,
+		std::shared_ptr<QueryOperation> query_operation,
+		std::vector<std::function<void(const queries::QueryResult&)>> after_query_executed)
 		: _conventions(conventions)
 		, _query_operation(query_operation)
 		, _after_query_executed(std::move(after_query_executed))
@@ -107,10 +108,10 @@ namespace ravendb::client::documents::session::operations::lazy
 			return;
 		}
 
-		std::optional<QueryResult> query_result{};
+		std::optional<queries::QueryResult> query_result{};
 		if (response.result)
 		{
-			query_result = nlohmann::json::parse(*response.result).get<QueryResult>();
+			query_result = nlohmann::json::parse(*response.result).get<queries::QueryResult>();
 		}
 		handle_response(query_result);
 	}

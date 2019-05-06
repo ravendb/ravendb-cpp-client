@@ -1,13 +1,6 @@
 #pragma once
-#include "stdafx.h"
 #include "IVoidMaintenanceOperation.h"
 #include "IndexLockMode.h"
-
-using
-	ravendb::client::http::RavenCommand,
-	ravendb::client::http::ServerNode,
-	ravendb::client::http::VoidRavenCommand,
-	ravendb::client::documents::indexes::IndexLockMode;
 
 namespace ravendb::client::documents::operations::indexes
 {
@@ -16,7 +9,7 @@ namespace ravendb::client::documents::operations::indexes
 		struct Parameters
 		{
 			std::vector<std::string> index_names{};
-			IndexLockMode mode = IndexLockMode::UNSET;
+			documents::indexes::IndexLockMode mode = documents::indexes::IndexLockMode::UNSET;
 		};
 
 		inline void to_json(nlohmann::json& j, const Parameters& p)
@@ -36,7 +29,7 @@ namespace ravendb::client::documents::operations::indexes
 	public:
 		~SetIndexesLockOperation() override = default;
 
-		SetIndexesLockOperation(std::string index_name, IndexLockMode mode)
+		SetIndexesLockOperation(std::string index_name, documents::indexes::IndexLockMode mode)
 			: SetIndexesLockOperation(set_indexes_lock_op::Parameters{ {std::move(index_name)}, mode })
 		{}
 
@@ -54,7 +47,7 @@ namespace ravendb::client::documents::operations::indexes
 					throw std::invalid_argument("Index name must have a non empty value");
 				}
 			}
-			if (parameters.mode == IndexLockMode::UNSET)
+			if (parameters.mode == documents::indexes::IndexLockMode::UNSET)
 			{
 				throw std::invalid_argument("Lock mode must not be UNSET");
 			}
@@ -70,7 +63,7 @@ namespace ravendb::client::documents::operations::indexes
 		}
 
 	private:
-		class SetIndexLockCommand : public VoidRavenCommand
+		class SetIndexLockCommand : public http::VoidRavenCommand
 		{
 		private:
 			const nlohmann::json _parameters_json;
@@ -82,16 +75,20 @@ namespace ravendb::client::documents::operations::indexes
 				: _parameters_json(parameters)
 			{}
 
-			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+				std::optional<std::string>& url_ref) override
 			{
 				std::ostringstream path_builder;
-				path_builder << node.url << "/databases/" << node.database
+				path_builder << node->url << "/databases/" << node->database
 					<< "/indexes/set-lock";
 
-				curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
-				curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, _parameters_json.dump().c_str());
+				curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE, "application/json");
 
-				url = path_builder.str();
+				curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPPOST, 1);
+				curl_easy_setopt(curl_ref.get(), CURLOPT_COPYPOSTFIELDS, _parameters_json.dump().c_str());
+				curl_ref.method = constants::methods::POST;
+
+				url_ref.emplace(path_builder.str());
 			}
 		};
 

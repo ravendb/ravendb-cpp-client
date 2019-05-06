@@ -242,9 +242,9 @@ namespace ravendb::client::tests::client::indexing
 		ASSERT_EQ(documents::indexes::IndexPriority::NORMAL, stats->priority);
 
 		store->maintenance()->send(documents::operations::indexes::SetIndexesLockOperation(index.name,
-			IndexLockMode::LOCKED_IGNORE));
+			documents::indexes::IndexLockMode::LOCKED_IGNORE));
 		store->maintenance()->send(documents::operations::indexes::SetIndexesPriorityOperation(index.name,
-			IndexPriority::LOW));
+		documents::indexes::IndexPriority::LOW));
 
 		stats = store->maintenance()->send(documents::operations::indexes::GetIndexStatisticsOperation(index.name));
 

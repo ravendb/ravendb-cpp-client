@@ -1,7 +1,8 @@
 #pragma once
 #include <thread>
-#include "IExecutorService.h"
+#include <atomic>
 #include <condition_variable>
+#include "IExecutorService.h"
 
 namespace ravendb::client::impl
 {

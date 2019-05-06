@@ -1,12 +1,6 @@
 #pragma once
 #include "stdafx.h"
 #include "IVoidMaintenanceOperation.h"
-#include "utils.h"
-
-using
-ravendb::client::http::RavenCommand,
-ravendb::client::http::ServerNode,
-ravendb::client::http::VoidRavenCommand;
 
 namespace ravendb::client::documents::operations::indexes
 {
@@ -32,13 +26,13 @@ namespace ravendb::client::documents::operations::indexes
 		}())
 		{}
 
-		std::unique_ptr<http::VoidRavenCommandBase> get_command(std::shared_ptr<DocumentConventions> conventions) const override
+		std::unique_ptr<http::VoidRavenCommandBase> get_command(std::shared_ptr<conventions::DocumentConventions> conventions) const override
 		{
 			return std::make_unique<ResetIndexCommand>(_index_name);
 		}
 
 	private:
-		class ResetIndexCommand : public VoidRavenCommand
+		class ResetIndexCommand : public http::VoidRavenCommand
 		{
 		private:
 			const std::string _index_name;
@@ -60,15 +54,17 @@ namespace ravendb::client::documents::operations::indexes
 			}())
 			{}
 
-			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+				std::optional<std::string>& url_ref) override
 			{
 				std::ostringstream path_builder;
-				path_builder << node.url << "/databases/" << node.database
-					<< "/indexes?name=" << impl::utils::url_escape(curl, _index_name);
+				path_builder << node->url << "/databases/" << node->database
+					<< "/indexes?name=" << http::url_encode(curl_ref, _index_name);
 
-				curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "RESET");
+				curl_easy_setopt(curl_ref.get(), CURLOPT_CUSTOMREQUEST, "RESET");
+				curl_ref.method = constants::methods::RESET;
 
-				url = path_builder.str();
+				url_ref.emplace(path_builder.str());
 			}
 		};
 	};

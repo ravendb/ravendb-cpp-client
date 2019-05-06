@@ -41,7 +41,8 @@ namespace ravendb::client::tests::old_tests
 		bool does_document_exist(const std::string& doc_id)
 		{
 			documents::commands::GetDocumentsCommand cmd(doc_id, {}, true);
-			auto&& res = test_suite_executor->get().execute(cmd);
+			test_suite_executor->get().execute(cmd);
+			auto&& res = cmd.get_result();
 
 			return !res->results.empty() && !res->results[0].is_null();
 		}
@@ -55,7 +56,8 @@ namespace ravendb::client::tests::old_tests
 		ASSERT_TRUE(does_document_exist(example_user.id));
 
 		documents::commands::GetDocumentsCommand cmd(example_user.id, {}, false);
-		auto&& res = test_suite_executor->get().execute(cmd);
+		test_suite_executor->get().execute(cmd);
+		auto&& res = cmd.get_result();
 
 		infrastructure::entities::User check_user = res->results[0].get<infrastructure::entities::User>();
 		ASSERT_EQ(example_user, check_user);
@@ -76,7 +78,8 @@ namespace ravendb::client::tests::old_tests
 		ASSERT_TRUE(does_document_exist(example_user.id));
 
 		documents::commands::GetDocumentsCommand cmd1(example_user.id, {}, true);
-		auto&& res = test_suite_executor->get().execute(cmd1);
+		test_suite_executor->get().execute(cmd1);
+		auto&& res = cmd1.get_result();
 		auto&& change_vector = res->results[0].at("@metadata").at("@change-vector").get<std::string>();
 
 		std::string wrong_change_vector(change_vector.crbegin(), change_vector.crend());
@@ -98,7 +101,8 @@ namespace ravendb::client::tests::old_tests
 	TEST_F(BasicDocumentCommandsTests, CanGetNextOperationId)
 	{
 		documents::commands::GetNextOperationIdCommand cmd{};
-		auto&& res = test_suite_executor->get().execute(cmd);
+		test_suite_executor->get().execute(cmd);
+		auto&& res = cmd.get_result();
 
 		ASSERT_GE(*res, 0);
 	}

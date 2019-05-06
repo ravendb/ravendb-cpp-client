@@ -49,7 +49,7 @@ namespace ravendb::client::tests::driver
 			for (auto&[identifier, store] : document_stores)
 			{
 				auto delete_database_operation = serverwide::operations::DeleteDatabasesOperation(store->get_database(), true);
-				store->get_request_executor()->execute(delete_database_operation.get_command(store->get_conventions()));
+				store->get_request_executor()->execute(*delete_database_operation.get_command(store->get_conventions()));
 			}
 			document_stores.clear();
 		}
@@ -120,7 +120,7 @@ namespace ravendb::client::tests::driver
 		auto create_database_operation = serverwide::operations::CreateDatabaseOperation(database_record);
 		//TODO implement using documentStore.maintenance().server().send(createDatabaseOperation);
 		document_store->get_request_executor()->execute(
-			create_database_operation.get_command(document_store->get_conventions()));
+			*create_database_operation.get_command(document_store->get_conventions()));
 
 		auto store = documents::DocumentStore::create(document_store->get_urls(), database_name);
 		if(secured)
@@ -161,8 +161,9 @@ namespace ravendb::client::tests::driver
 
 		while(sp.millis_elapsed() < wait_timeout)
 		{
-			auto database_statistics = store->get_request_executor(store->get_database())->
-				execute(documents::operations::GetStatisticsOperation().get_command(store->get_conventions()));
+			auto cmd = documents::operations::GetStatisticsOperation().get_command(store->get_conventions());
+			store->get_request_executor(store->get_database())->execute(*cmd);
+			auto database_statistics = cmd->get_result();
 
 			std::vector<std::reference_wrapper<documents::operations::IndexInformation>> indexes{};
 

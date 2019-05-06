@@ -18,6 +18,8 @@ namespace ravendb::client::impl
 		explicit CurlResponse(const CurlHandlesHolder::CurlReference& curl_ref);
 
 	public:
-		static const CurlResponse run_curl_perform(const CurlHandlesHolder::CurlReference& curl_ref);
+		static CurlResponse run_curl_perform(const CurlHandlesHolder::CurlReference& curl_ref);
+
+		CurlResponse();
 	};
 }

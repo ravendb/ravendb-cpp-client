@@ -32,17 +32,20 @@ namespace ravendb::client::tests::old_tests
 	TEST_F(GetDocumentsCommandTests, CanGetPagedSetOfDocuments)
 	{
 		GetDocumentsCommand cmd1(0, INT32_MAX);
-		auto all_docs = test_suite_executor->get().execute(cmd1);
+		test_suite_executor->get().execute(cmd1);
+		auto all_docs = cmd1.get_result();
 		int32_t num_of_docs = (int32_t)all_docs->results.size();
 		int32_t half_num_of_docs = num_of_docs / 2;
 
 		GetDocumentsCommand cmd2(0, half_num_of_docs);
-		auto half_docs = test_suite_executor->get().execute(cmd2);
+		test_suite_executor->get().execute(cmd2);
+		auto half_docs = cmd2.get_result();
 		ASSERT_EQ(half_docs->results.size(), half_num_of_docs);
 
 		int32_t rand_num = rand() % half_num_of_docs;
 		GetDocumentsCommand cmd3(half_num_of_docs, rand_num);
-		auto some_docs = test_suite_executor->get().execute(cmd3);
+		test_suite_executor->get().execute(cmd3);
+		auto some_docs = cmd3.get_result();
 		ASSERT_EQ(some_docs->results.size(), rand_num);
 	}
 
@@ -55,7 +58,8 @@ namespace ravendb::client::tests::old_tests
 			orders_list.push_back(std::string("orders/") + std::to_string(i) + "-A");
 		}
 		GetDocumentsCommand cmd(orders_list, {}, true);
-		auto orders = test_suite_executor->get().execute(cmd)->results;
+		test_suite_executor->get().execute(cmd);
+		auto orders = cmd.get_result()->results;
 		ASSERT_EQ(orders.size(), NUM_OF_ORDERS);
 	}
 
@@ -75,7 +79,8 @@ namespace ravendb::client::tests::old_tests
 			}
 		}
 		GetDocumentsCommand cmd(orders_list, {}, true);
-		auto orders = test_suite_executor->get().execute(cmd)->results;
+		test_suite_executor->get().execute(cmd);
+		auto orders = cmd.get_result()->results;
 		for (int i = 1; i <= NUM_OF_ORDERS; ++i)
 		{
 			if (i % 2 != 0)
@@ -100,7 +105,8 @@ namespace ravendb::client::tests::old_tests
 			orders_list.push_back(std::string("orders/") + std::to_string(i) + "-A");
 		}
 		GetDocumentsCommand cmd(orders_list, {"Company"}, true);
-		auto res = test_suite_executor->get().execute(cmd);
+		test_suite_executor->get().execute(cmd);
+		auto res = cmd.get_result();
 		ASSERT_EQ(res->results.size(), NUM_OF_ORDERS);
 		ASSERT_EQ(res->includes.size(), NUM_OF_ORDERS-1);//there is a duplicate
 	}
@@ -113,7 +119,8 @@ namespace ravendb::client::tests::old_tests
 		const std::string exclude = "*5*";
 
 		GetDocumentsCommand cmd(starts_with, starts_after, matches, exclude, 0, 100, true);
-		auto res = test_suite_executor->get().execute(cmd);
+		test_suite_executor->get().execute(cmd);
+		auto res = cmd.get_result();
 		ASSERT_EQ(res->results.size(), 8);//101-A to 109-A without 105-A
 		ASSERT_EQ(res->includes.size(), 0);
 	}

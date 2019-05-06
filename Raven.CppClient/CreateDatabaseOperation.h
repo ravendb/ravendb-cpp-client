@@ -43,17 +43,18 @@ namespace ravendb::client::serverwide::operations
 			const std::string _database_document;
 
 		public:
-
 			~CreateDatabaseCommand() override;
 
+			//TODO add etag
 			CreateDatabaseCommand(std::shared_ptr<documents::conventions::DocumentConventions> conventions,
 				DatabaseRecord database_record, int32_t replication_factor);
 
-			void create_request(CURL* curl, const http::ServerNode& node, std::string& url) override;
+			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+				std::optional<std::string>& url_ref) override;
 
-			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override;
+			void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override;
 
-			bool is_read_request() const noexcept override;
+			bool is_read_request() const override;
 		};
 	};
 }

@@ -32,7 +32,7 @@ namespace ravendb::client::http
 	private:
 		std::chrono::milliseconds next_timer_period();
 
-		static void timer_callback();
+		void timer_callback();
 
 		NodeStatus(std::weak_ptr<RequestExecutor> request_executor, int32_t node_index_param,
 			std::shared_ptr<const ServerNode> node_param);

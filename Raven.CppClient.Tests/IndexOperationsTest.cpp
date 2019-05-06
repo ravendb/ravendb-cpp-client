@@ -223,12 +223,12 @@ namespace ravendb::client::tests::client::documents::operations::indexes
 		store->maintenance()->send(ravendb::client::documents::operations::indexes::PutIndexesOperation({ index_def }));
 
 		store->maintenance()->send(
-			ravendb::client::documents::operations::indexes::SetIndexesLockOperation(index_def.name, IndexLockMode::LOCKED_ERROR));
+			ravendb::client::documents::operations::indexes::SetIndexesLockOperation(index_def.name, ravendb::client::documents::indexes::IndexLockMode::LOCKED_ERROR));
 
 		auto new_index_def = store->maintenance()->send(
 			ravendb::client::documents::operations::indexes::GetIndexOperation(index_def.name));
 
-		ASSERT_EQ(IndexLockMode::LOCKED_ERROR, new_index_def->lock_mode);
+		ASSERT_EQ(ravendb::client::documents::indexes::IndexLockMode::LOCKED_ERROR, new_index_def->lock_mode);
 	}
 
 	TEST_F(IndexOperationsTest, CanSetIndexPriority)
@@ -240,12 +240,12 @@ namespace ravendb::client::tests::client::documents::operations::indexes
 		store->maintenance()->send(ravendb::client::documents::operations::indexes::PutIndexesOperation({ index_def }));
 
 		store->maintenance()->send(
-			ravendb::client::documents::operations::indexes::SetIndexesPriorityOperation(index_def.name, IndexPriority::HIGH));
+			ravendb::client::documents::operations::indexes::SetIndexesPriorityOperation(index_def.name, ravendb::client::documents::indexes::IndexPriority::HIGH));
 
 		auto new_index_def = store->maintenance()->send(
 			ravendb::client::documents::operations::indexes::GetIndexOperation(index_def.name));
 
-		ASSERT_EQ(IndexPriority::HIGH, new_index_def->priority);
+		ASSERT_EQ(ravendb::client::documents::indexes::IndexPriority::HIGH, new_index_def->priority);
 	}
 
 	TEST_F(IndexOperationsTest, CanListErrors)

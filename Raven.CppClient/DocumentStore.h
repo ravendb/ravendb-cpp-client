@@ -3,6 +3,8 @@
 #include <map>
 #include "DocumentStoreBase.h"
 #include "CompareStringsIgnoreCase.h"
+#include "TasksScheduler.h"
+#include "TasksExecutor.h"
 
 namespace ravendb::client::documents::identity
 {
@@ -20,6 +22,9 @@ namespace ravendb::client::documents
 		};
 
 	private:
+		std::shared_ptr<impl::TasksScheduler> _scheduler = std::make_shared<impl::TasksScheduler>(
+			std::make_shared<impl::TasksExecutor>());
+
 		mutable std::map<std::string, std::shared_ptr<http::RequestExecutor>, impl::utils::CompareStringsIgnoreCase> _request_executors{};
 		mutable std::shared_mutex _request_executors_mutex{};
 

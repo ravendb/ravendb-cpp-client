@@ -3,7 +3,6 @@
 #include "FieldsToFetchToken.h"
 #include "InMemoryDocumentSessionOperations.h"
 #include "SimpleStopWatch.h"
-#include "utils.h"
 
 namespace ravendb::client::documents::session::operations
 {
@@ -35,9 +34,9 @@ namespace ravendb::client::documents::session::operations
 
 		commands::QueryCommand create_request() const;
 
-		const QueryResult& get_current_query_results() const;
+		const queries::QueryResult& get_current_query_results() const;
 
-		void set_result(const QueryResult& query_result);
+		void set_result(const queries::QueryResult& query_result);
 
 		template<typename T>
 		std::vector<std::shared_ptr<T>> complete(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
@@ -49,12 +48,12 @@ namespace ravendb::client::documents::session::operations
 			std::shared_ptr<tokens::FieldsToFetchToken> fields_to_fetch,
 			bool disable_entities_tracking, std::shared_ptr<InMemoryDocumentSessionOperations> session);
 
-		void ensure_is_acceptable_and_save_result(const QueryResult& result);
+		void ensure_is_acceptable_and_save_result(const queries::QueryResult& result);
 
-		static void ensure_is_acceptable(const QueryResult& result, bool wait_for_non_stale_result,
+		static void ensure_is_acceptable(const queries::QueryResult& result, bool wait_for_non_stale_result,
 			impl::SimpleStopWatch& stop_watch);
 
-		const IndexQuery& get_index_query() const;
+		const queries::IndexQuery& get_index_query() const;
 	};
 
 	inline void QueryOperation::start_timing()

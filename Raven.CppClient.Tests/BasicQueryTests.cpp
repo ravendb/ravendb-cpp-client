@@ -18,7 +18,7 @@ namespace ravendb::client::tests::old_tests
 		{
 			test_suite_executor = definitions::GET_REQUEST_EXECUTOR();
 			auto op = infrastructure::CreateSampleDataOperation();
-			test_suite_executor->get().execute(op.get_command({}));
+			test_suite_executor->get().execute(*op.get_command({}));
 		}
 		static void TearDownTestCase()
 		{
@@ -34,13 +34,14 @@ namespace ravendb::client::tests::old_tests
 		)";
 		const std::string prefix = "An";
 
-		IndexQuery index_query(query);
+		documents::queries::IndexQuery index_query(query);
 		index_query.query_parameters.emplace("prefix", prefix);
 		index_query.wait_for_non_stale_results = true;
 		index_query.wait_for_non_stale_results_timeout = std::chrono::seconds(10);
 
 		auto cmd = documents::commands::QueryCommand({}, index_query, false, false);
-		auto&& res = test_suite_executor->get().execute(cmd);
+		test_suite_executor->get().execute(cmd);
+		auto&& res = cmd.get_result();
 
 		//essential assertions
 		ASSERT_EQ(res->total_results, 2);
@@ -63,12 +64,13 @@ namespace ravendb::client::tests::old_tests
 			where search(Company,"*/?-*")
 			include Company 
 		)";
-		IndexQuery index_query(query);
+		documents::queries::IndexQuery index_query(query);
 		index_query.wait_for_non_stale_results = true;
 		index_query.wait_for_non_stale_results_timeout = std::chrono::seconds(10);
 
 		auto cmd = documents::commands::QueryCommand({}, index_query, false, false);
-		auto&& res = test_suite_executor->get().execute(cmd);
+		test_suite_executor->get().execute(cmd);
+		auto&& res = cmd.get_result();
 
 		//results assertions
 		ASSERT_EQ(res->total_results, 86);
@@ -83,12 +85,13 @@ namespace ravendb::client::tests::old_tests
 	TEST_F(BasicQueryTests, CandDeleteByQuery)
 	{
 		const std::string categories_query = "from Categories";
-		IndexQuery categories_index_query(categories_query);
+		documents::queries::IndexQuery categories_index_query(categories_query);
 		categories_index_query.wait_for_non_stale_results = true;
 		categories_index_query.wait_for_non_stale_results_timeout = std::chrono::seconds(1);
 		
 		auto cmd1 = documents::commands::QueryCommand({}, categories_index_query, true, false);
-		auto&& res1 = test_suite_executor->get().execute(cmd1);
+		test_suite_executor->get().execute(cmd1);
+		auto&& res1 = cmd1.get_result();
 		//Categories count
 		const auto total_categories = res1->total_results;
 		
@@ -98,26 +101,30 @@ namespace ravendb::client::tests::old_tests
 		)";
 		const std::string prefix = "M";
 
-		IndexQuery custom_index_query(custom_query);
+		documents::queries::IndexQuery custom_index_query(custom_query);
 		custom_index_query.query_parameters.emplace("prefix", prefix);
 		custom_index_query.wait_for_non_stale_results = true;
 		custom_index_query.wait_for_non_stale_results_timeout = std::chrono::seconds(1);
 
 		auto cmd2 = documents::commands::QueryCommand({}, custom_index_query, true, false);
-		auto&& res2 = test_suite_executor->get().execute(cmd2);
+		test_suite_executor->get().execute(cmd2);
+		auto&& res2 = cmd2.get_result();
 		//Custom query results count
 		const auto custom_query_tot_res = res2->total_results;
 		ASSERT_GE(total_categories, custom_query_tot_res);
 
 		documents::queries::QueryOperationOptions query_op_options({}, false, std::chrono::seconds(1), false);
 		auto op3 = documents::operations::DeleteByQueryOperation(custom_index_query, query_op_options);
-		HttpCache cache;
-		auto&& res3 = test_suite_executor->get().execute(op3.get_command(documents::DocumentStore::create(), {}, cache));
+		http::HttpCache cache;
+		auto cmd3 = op3.get_command(documents::DocumentStore::create(), {}, cache);
+		test_suite_executor->get().execute(*cmd3);
+		auto&& res3 = cmd3->get_result();
 		ASSERT_GT(res3->operation_id, 0);
 
 		std::this_thread::sleep_for(std::chrono::seconds(1));//TODO something better
 
-		auto&& res4 = test_suite_executor->get().execute(cmd1);
+		test_suite_executor->get().execute(cmd1);
+		auto&& res4 = cmd1.get_result();
 		const auto categories_left = res4->total_results;
 		//Rest of employees = All employees - Custom query results
 		ASSERT_EQ(total_categories - custom_query_tot_res, categories_left);

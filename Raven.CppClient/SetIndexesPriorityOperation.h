@@ -1,13 +1,6 @@
 #pragma once
-#include "stdafx.h"
 #include "IVoidMaintenanceOperation.h"
 #include "IndexPriority.h"
-
-using
-ravendb::client::http::RavenCommand,
-ravendb::client::http::ServerNode,
-ravendb::client::http::VoidRavenCommand,
-ravendb::client::documents::indexes::IndexPriority;
 
 namespace ravendb::client::documents::operations::indexes
 {
@@ -16,7 +9,7 @@ namespace ravendb::client::documents::operations::indexes
 		struct Parameters
 		{
 			std::vector<std::string> index_names{};
-			IndexPriority priority = IndexPriority::UNSET;
+			documents::indexes::IndexPriority priority = documents::indexes::IndexPriority::UNSET;
 		};
 
 		inline void to_json(nlohmann::json& j, const Parameters& p)
@@ -36,7 +29,7 @@ namespace ravendb::client::documents::operations::indexes
 	public:
 		~SetIndexesPriorityOperation() override = default;
 
-		SetIndexesPriorityOperation(std::string index_name, IndexPriority priority)
+		SetIndexesPriorityOperation(std::string index_name, documents::indexes::IndexPriority priority)
 			: SetIndexesPriorityOperation(set_indexes_priority_op::Parameters{ {std::move(index_name)}, priority })
 		{}
 
@@ -54,7 +47,7 @@ namespace ravendb::client::documents::operations::indexes
 					throw std::invalid_argument("Index name must have a non empty value");
 				}
 			}
-			if (parameters.priority == IndexPriority::UNSET)
+			if (parameters.priority == documents::indexes::IndexPriority::UNSET)
 			{
 				throw std::invalid_argument("Priority must not be UNSET");
 			}
@@ -69,7 +62,7 @@ namespace ravendb::client::documents::operations::indexes
 		}
 
 	private:
-		class SetIndexPriorityCommand : public VoidRavenCommand
+		class SetIndexPriorityCommand : public http::VoidRavenCommand
 		{
 		private:
 			const nlohmann::json _parameters_json;
@@ -81,16 +74,19 @@ namespace ravendb::client::documents::operations::indexes
 				: _parameters_json(parameters)
 			{}
 
-			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+				std::optional<std::string>& url_ref) override
 			{
 				std::ostringstream path_builder;
-				path_builder << node.url << "/databases/" << node.database
+				path_builder << node->url << "/databases/" << node->database
 					<< "/indexes/set-priority";
 
-				curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
-				curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, _parameters_json.dump().c_str());
+				curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPPOST, 1);
+				curl_easy_setopt(curl_ref.get(), CURLOPT_COPYPOSTFIELDS, _parameters_json.dump().c_str());
+				curl_ref.method = constants::methods::POST;
+				curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE, "application/json");
 
-				url = path_builder.str();
+				url_ref.emplace(path_builder.str());
 			}
 		};
 	};

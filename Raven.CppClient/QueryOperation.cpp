@@ -38,17 +38,17 @@ namespace ravendb::client::documents::session::operations
 		return commands::QueryCommand(_session.lock()->get_conventions(), _index_query, _metadata_only, _index_entries_only);
 	}
 
-	const QueryResult& QueryOperation::get_current_query_results() const
+	const queries::QueryResult& QueryOperation::get_current_query_results() const
 	{
 		return _current_query_result;
 	}
 
-	void QueryOperation::set_result(const QueryResult& query_result)
+	void QueryOperation::set_result(const queries::QueryResult& query_result)
 	{
 		ensure_is_acceptable_and_save_result(query_result);
 	}
 
-	void QueryOperation::ensure_is_acceptable_and_save_result(const QueryResult& result)
+	void QueryOperation::ensure_is_acceptable_and_save_result(const queries::QueryResult& result)
 	{
 		ensure_is_acceptable(result, _index_query.wait_for_non_stale_results, _stop_watch);
 
@@ -57,7 +57,7 @@ namespace ravendb::client::documents::session::operations
 		//TODO add the logger treatment 
 	}
 
-	void QueryOperation::ensure_is_acceptable(const QueryResult& result, bool wait_for_non_stale_result,
+	void QueryOperation::ensure_is_acceptable(const queries::QueryResult& result, bool wait_for_non_stale_result,
 		impl::SimpleStopWatch& stop_watch)
 	{
 		if (wait_for_non_stale_result && result.is_stale)
@@ -72,7 +72,7 @@ namespace ravendb::client::documents::session::operations
 		}
 	}
 
-	const IndexQuery& QueryOperation::get_index_query() const
+	const queries::IndexQuery& QueryOperation::get_index_query() const
 	{
 		return _index_query;
 	}

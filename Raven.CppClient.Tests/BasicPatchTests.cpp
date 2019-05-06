@@ -30,7 +30,8 @@ namespace ravendb::client::tests::old_tests
 		void TearDown() override
 		{
 			auto  get_docs_cmd = documents::commands::GetDocumentsCommand({}, {}, {}, {},0,100,true);
-			auto results = test_suite_executor->get().execute(get_docs_cmd);
+			test_suite_executor->get().execute(get_docs_cmd);
+			auto results = get_docs_cmd.get_result();
 			for (const auto& res : results->results)
 			{
 				auto del_doc_cmd = documents::commands::DeleteDocumentCommand(res["@metadata"]["@id"].get<std::string>());
@@ -46,15 +47,17 @@ namespace ravendb::client::tests::old_tests
 		user_json["@metadata"]["@collection"] = "Users";
 
 		auto put_doc_cmd = documents::commands::PutDocumentCommand(user.id, {}, user_json);
-		auto&& res1 = test_suite_executor->get().execute(put_doc_cmd);
+		test_suite_executor->get().execute(put_doc_cmd);
+		auto&& res1 = put_doc_cmd.get_result();
 		ASSERT_EQ(res1->id, user.id);
 
 		auto op = documents::operations::PatchOperation(user.id, {},
 			documents::operations::PatchRequest(R"(this.LastName = "The Great")"));
 
-		HttpCache cache;
-		auto&& res2 = test_suite_executor->get().execute(op.get_command(
-			documents::DocumentStore::create(), {}, cache));
+		http::HttpCache cache;
+		auto cmd = op.get_command(documents::DocumentStore::create(), {}, cache);
+		test_suite_executor->get().execute(*cmd);
+		auto&& res2 = cmd->get_result();
 
 		auto check_user = user;
 		check_user.lastName = "The Great";
@@ -64,7 +67,8 @@ namespace ravendb::client::tests::old_tests
 		ASSERT_EQ(check_user, modified_user);
 
 		auto get_doc_cmd = documents::commands::GetDocumentsCommand(user.id, {}, false);
-		auto&& res3= test_suite_executor->get().execute(get_doc_cmd);
+		test_suite_executor->get().execute(get_doc_cmd);
+		auto&& res3 = get_doc_cmd.get_result();
 
 		infrastructure::entities::User ret_user = res3->results[0].get<infrastructure::entities::User>();
 		ASSERT_EQ(check_user, ret_user);
@@ -85,7 +89,8 @@ namespace ravendb::client::tests::old_tests
 			user_json["@metadata"]["@collection"] = "Users";
 
 			auto put_doc_cmd = documents::commands::PutDocumentCommand(users[i].id, {}, user_json);
-			auto res = test_suite_executor->get().execute(put_doc_cmd);
+			test_suite_executor->get().execute(put_doc_cmd);
+			auto res = put_doc_cmd.get_result();
 			ASSERT_EQ(res->id, users[i].id);
 		}
 
@@ -101,16 +106,18 @@ namespace ravendb::client::tests::old_tests
 		auto op = documents::operations::PatchByQueryOperation(update_index_query);
 
 		{
-			HttpCache cache;
-			auto&& res = test_suite_executor->get().execute(op.get_command(
-				documents::DocumentStore::create(), {}, cache));
+			http::HttpCache cache;
+			auto cmd = op.get_command(documents::DocumentStore::create(), {}, cache);
+			test_suite_executor->get().execute(*cmd);
+			auto&& res = cmd->get_result();
 			EXPECT_GT(res->operation_id, 0);
 		}
 		//wait for completion
 		std::this_thread::sleep_for(std::chrono::seconds(3));//TODO something better
 
 		auto get_doc_cmd = documents::commands::GetDocumentsCommand(0,100);
-		auto&& res = test_suite_executor->get().execute(get_doc_cmd);
+		test_suite_executor->get().execute(get_doc_cmd);
+		auto&& res = get_doc_cmd.get_result();
 		for (size_t i = 0; i < users.size(); ++i)
 		{
 			auto u = res->results[users.size() - i - 1].get<infrastructure::entities::User>();
@@ -125,7 +132,8 @@ namespace ravendb::client::tests::old_tests
 		user_json["@metadata"]["@collection"] = "Users";
 
 		auto put_doc_cmd = documents::commands::PutDocumentCommand(user.id, {},user_json);
-		auto&& res1 = test_suite_executor->get().execute(put_doc_cmd);
+		test_suite_executor->get().execute(put_doc_cmd);
+		auto&& res1 = put_doc_cmd.get_result();
 		ASSERT_EQ(res1->id, user.id);
 
 		std::string update_query = R"(
@@ -135,14 +143,17 @@ namespace ravendb::client::tests::old_tests
 				throw "Error"
 			})";
 		auto op2 = documents::operations::PatchByQueryOperation(update_query);
-		HttpCache cache;
-		auto&& res2 = test_suite_executor->get().execute(op2.get_command(
-			documents::DocumentStore::create(), {}, cache));
+		http::HttpCache cache;
+		auto cmd2 = op2.get_command(documents::DocumentStore::create(), {}, cache);
+		test_suite_executor->get().execute(*cmd2);
+		auto&& res2 = cmd2->get_result();
 
 		std::this_thread::sleep_for(std::chrono::seconds(3));//TODO use TBD waitForCompletion()
 
 		auto op3 = documents::operations::GetOperationStateOperation(res2->operation_id);
-		auto&& res3 = test_suite_executor->get().execute(op3.get_command({}));
+		auto cmd3 = op3.get_command({});
+		test_suite_executor->get().execute(*cmd3);
+		auto&& res3 = cmd3->get_result();
 
 		ASSERT_EQ((*res3)["Status"].get<std::string>(), "Faulted");
 		ASSERT_EQ((*res3)["Result"]["Type"].get<std::string>(), "Raven.Client.Exceptions.Documents.Patching.JavaScriptException");

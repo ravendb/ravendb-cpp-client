@@ -20,7 +20,7 @@ namespace ravendb::client::documents::session::operations::lazy
 		std::vector<std::string> _includes{};
 
 		ResultType _result{};
-		QueryResult _query_result{};
+		queries::QueryResult _query_result{};
 		bool _requires_retry = false;
 
 		const std::optional<DocumentInfo::FromJsonConverter> from_json;
@@ -46,7 +46,7 @@ namespace ravendb::client::documents::session::operations::lazy
 
 		ResultType get_result() const;
 
-		QueryResult get_query_result() const override;
+		queries::QueryResult get_query_result() const override;
 
 		bool is_requires_retry() const override;
 
@@ -102,7 +102,7 @@ namespace ravendb::client::documents::session::operations::lazy
 		std::for_each(ids_to_check_on_server.cbegin(), ids_to_check_on_server.cend(),
 			[&](const std::reference_wrapper<const std::string>& id)
 		{
-		  query_builder << "&id=" << impl::utils::url_escape(nullptr, id.get());
+		  query_builder << "&id=" << http::url_encode(id.get());
 		});
 
 		if (const bool has_items = !ids_to_check_on_server.empty();

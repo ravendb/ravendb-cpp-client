@@ -8,9 +8,15 @@ namespace ravendb::client::http
 	NodeSelector::NodeSelectorState::NodeSelectorState(std::shared_ptr<Topology> topology_param)
 		: topology(std::const_pointer_cast<const Topology>(topology_param))
 		, nodes(std::const_pointer_cast<const std::vector<std::shared_ptr<ServerNode>>>(topology->nodes))
-		, failures(topology->nodes->size(), 0)
+		, failures(topology->nodes->size())
 		, fastest_records(topology->nodes->size(), 0)
-	{}
+	{
+		
+		for (size_t i = 0; i < failures.size(); ++i)
+		{
+			failures[i].store(0);
+		}
+	}
 
 	CurrentIndexAndNode NodeSelector::unlikely_everyone_faulted_choice(const NodeSelectorState& state)
 	{
@@ -131,11 +137,12 @@ namespace ravendb::client::http
 
 #ifdef min
 #undef min
-		int32_t len = std::min(server_nodes->size(), state_failures.size());
 #endif
+		int32_t len =static_cast<int32_t>(std::min(server_nodes->size(), state_failures.size()));
+
 		for(int32_t i = 0; i < len; ++i)
 		{
-			if(state_failures[i] == 0 && !impl::utils::is_blank(server_nodes->at(i)->url))
+			if(state_failures[i].load() == 0 && !impl::utils::is_blank(server_nodes->at(i)->url))
 			{
 				return CurrentIndexAndNode(i, server_nodes->at(i));
 			}
@@ -150,7 +157,7 @@ namespace ravendb::client::http
 
 		for(int32_t i = index; i < state.failures.size(); ++i)
 		{
-			if(state.failures[i] == 0 && state.nodes->at(i)->server_role == Role::MEMBER)
+			if(state.failures[i].load() == 0 && state.nodes->at(i)->server_role == Role::MEMBER)
 			{
 				return CurrentIndexAndNode(i, state.nodes->at(i));
 			}
@@ -158,7 +165,7 @@ namespace ravendb::client::http
 
 		for (int32_t i = 0; i < index; ++i)
 		{
-			if (state.failures[i] == 0 && state.nodes->at(i)->server_role == Role::MEMBER)
+			if (state.failures[i].load() == 0 && state.nodes->at(i)->server_role == Role::MEMBER)
 			{
 				return CurrentIndexAndNode(i, state.nodes->at(i));
 			}
@@ -171,7 +178,7 @@ namespace ravendb::client::http
 	{
 		auto& state = *_state;
 
-		if(state.failures[state.fastest] == 0 && state.nodes->at(state.fastest)->server_role == Role::MEMBER)
+		if(state.failures[state.fastest].load() == 0 && state.nodes->at(state.fastest)->server_role == Role::MEMBER)
 		{
 			return CurrentIndexAndNode(state.fastest, state.nodes->at(state.fastest));
 		}

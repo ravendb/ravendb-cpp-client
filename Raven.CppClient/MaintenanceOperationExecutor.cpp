@@ -67,6 +67,6 @@ namespace ravendb::client::documents::operations
 	{
 		assert_database_set();
 		auto command = operation.get_command(get_request_executor()->get_conventions());
-		get_request_executor()->execute(std::move(command));
+		get_request_executor()->execute(*command);
 	}
 }

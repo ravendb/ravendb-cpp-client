@@ -4,7 +4,6 @@
 #include "GetRequest.h"
 #include "GetResponse.h"
 #include "QueryResult.h"
-#include "utils.h"
 
 namespace ravendb::client::documents::session::operations::lazy
 {
@@ -48,7 +47,7 @@ namespace ravendb::client::documents::session::operations::lazy
 
 		ResultType get_result() const;
 
-		QueryResult get_query_result() const override;
+		queries::QueryResult get_query_result() const override;
 
 		bool is_requires_retry() const override;
 
@@ -79,7 +78,7 @@ namespace ravendb::client::documents::session::operations::lazy
 		std::ostringstream query_builder{};
 		std::string empty_string{};
 		query_builder <<
-			"?startsWith=" << impl::utils::url_escape(nullptr, _id_prefix) <<
+			"?startsWith=" << http::url_encode(_id_prefix) <<
 			"&matches=" << (_matches ? *_matches : empty_string) <<
 			"&exclude=" << (_exclude ? *_exclude : empty_string) <<
 			"&start=" << _start <<

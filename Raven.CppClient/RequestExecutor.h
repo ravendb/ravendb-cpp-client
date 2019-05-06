@@ -239,7 +239,7 @@ namespace ravendb::client::http
 			bool force_update = false, std::optional<std::string> debug_tag = {});
 
 		template<typename TResult>
-		std::shared_ptr<TResult> execute(RavenCommand<TResult>& command, 
+		void execute(RavenCommand<TResult>& command, 
 			const std::optional<documents::session::SessionInfo>& session_info = {});
 
 		template<typename TResult>
@@ -284,7 +284,7 @@ namespace ravendb::client::http
 					{
 						throw std::runtime_error("No known topology and no previously known one, cannot proceed, likely a bug");
 					}
-					_first_topology_update = std::make_shared<std::future<void>>(first_topology_update(_last_known_urls));
+					_first_topology_update = first_topology_update(_last_known_urls);
 				}
 				topology_update = _first_topology_update;
 			}
@@ -468,14 +468,15 @@ namespace ravendb::client::http
 		{
 			++number_of_server_requests;
 
-			auto pack_task = std::packaged_task<IndexAndResponse()>([&, task_number = i]()->IndexAndResponse
+			auto pack_task = std::make_shared<std::packaged_task<IndexAndResponse()>>(
+				[&, task_number = i]()->IndexAndResponse
 			{
 				try
 				{
 					auto url_ref = std::optional<std::string>();
 					auto curl_ref = _curl_holder.checkout_curl();
 					create_request(curl_ref, nodes[task_number], command, url_ref);
-					return { task_number, command.send(curl_ref) };
+					return IndexAndResponse(task_number, command.send(curl_ref));
 				}
 				catch (...)
 				{
@@ -484,8 +485,38 @@ namespace ravendb::client::http
 					std::throw_with_nested(std::runtime_error("Request execution failed"));
 				}
 			});
-			tasks[i] = std::make_shared<std::future<IndexAndResponse>>(pack_task.get_future());
-			_scheduler->schedule_task_immediately([task = std::move(pack_task)]() mutable ->void { task(); });
+
+			tasks[i] = std::make_shared<std::future<IndexAndResponse>>(pack_task->get_future());
+
+			//TODO erase later
+			//auto task = [this, &nodes, &command, &number_of_failed_tasks, &tasks,
+			//	task_number = i, promise = std::move(promise)]() mutable ->void
+			//{
+			//	try
+			//	{
+			//		auto url_ref = std::optional<std::string>();
+			//		auto curl_ref = _curl_holder.checkout_curl();
+			//		create_request(curl_ref, nodes[task_number], command, url_ref);
+			//		promise.set_value(IndexAndResponse(task_number, command.send(curl_ref)));
+			//	}
+			//	catch (...)
+			//	{
+			//		++number_of_failed_tasks;
+			//		tasks[task_number].reset();
+
+			//		try
+			//		{
+			//			std::throw_with_nested(std::runtime_error("Request execution failed"));
+			//		}
+			//		catch (...)
+			//		{
+			//			promise.set_exception(std::current_exception());
+			//		}
+			//	}
+			//};
+
+
+			_scheduler->schedule_task_immediately([pack_task]()->void {(*pack_task)(); });
 			
 			if(nodes[i]->cluster_tag == chosen_node->cluster_tag)
 			{
@@ -669,7 +700,7 @@ namespace ravendb::client::http
 	}
 
 	template <typename TResult>
-	std::shared_ptr<TResult> RequestExecutor::execute(RavenCommand<TResult>& command,
+	void RequestExecutor::execute(RavenCommand<TResult>& command,
 		const std::optional<documents::session::SessionInfo>& session_info)
 	{
 		std::shared_ptr<std::future<void>> topology_update = _first_topology_update;
@@ -697,11 +728,12 @@ namespace ravendb::client::http
 
 		if(execute_unlikely)
 		{
-			return unlikely_execute(command, topology_update, session_info);
+			unlikely_execute(command, topology_update, session_info);
+			return;
 		}
 
 		auto current_index_and_node = choose_node_for_request(command, session_info);
-		return execute(current_index_and_node.current_node, current_index_and_node.current_index, command, true, session_info);
+		execute(current_index_and_node.current_node, current_index_and_node.current_index, command, true, session_info);
 	}
 
 	template <typename TResult>
@@ -756,7 +788,7 @@ namespace ravendb::client::http
 			curl_ref.headers.insert_or_assign(constants::headers::TOPOLOGY_ETAG, header.str());
 		}
 
-		auto response = std::optional<impl::CurlResponse>();
+		auto response = std::optional<impl::CurlResponse>{};
 		auto response_dispose = ResponseDisposeHandling::AUTOMATIC;
 
 		try
@@ -791,7 +823,7 @@ namespace ravendb::client::http
 				}
 			}
 		}
-		catch (std::exception& e)
+		catch (.../*std::exception& e*/)
 		{
 			if(!should_retry)
 			{
@@ -887,6 +919,7 @@ namespace ravendb::client::http
 		finally();
 	}
 
+	//TODO old version -> erase later
 	//template<typename TResult>
 	//std::shared_ptr<TResult> RequestExecutor::execute(RavenCommand<TResult>& cmd)
 	//{

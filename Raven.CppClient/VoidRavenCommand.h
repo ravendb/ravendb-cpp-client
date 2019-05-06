@@ -13,9 +13,10 @@ namespace ravendb::client::http
 	public:
 		~VoidRavenCommand() override = 0;
 
-		bool is_read_request() const noexcept override;
+		bool is_read_request() const override;
 
-		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override;
+		//TODO check if necessary
+		//void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override;
 	};
 
 	inline VoidRavenCommand::VoidRavenCommand()
@@ -25,14 +26,14 @@ namespace ravendb::client::http
 
 	inline VoidRavenCommand::~VoidRavenCommand() = default;
 
-	inline bool VoidRavenCommand::is_read_request() const noexcept
+	inline bool VoidRavenCommand::is_read_request() const
 	{
 		return false;
 	}
 
-	inline void VoidRavenCommand::set_response(CURL * curl, const nlohmann::json & response, bool from_cache)
-	{
-		_result.reset();
-	}
+	//inline void VoidRavenCommand::set_response(const std::optional<nlohmann::json>& response, bool from_cache)
+	//{
+	//	_result.reset();
+	//}
 }
 

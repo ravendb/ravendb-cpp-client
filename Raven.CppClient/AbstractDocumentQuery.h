@@ -76,7 +76,7 @@ namespace ravendb::client::documents::session
 
 		int32_t _current_clause_depth{};
 
-		std::shared_ptr<DocumentConventions> _conventions;
+		std::shared_ptr<conventions::DocumentConventions> _conventions;
 
 		bool _is_more_like_this{};
 
@@ -131,9 +131,9 @@ namespace ravendb::client::documents::session
 
 		bool disable_caching{};
 
-		std::vector<std::function<void(const IndexQuery&)>> before_query_executed_callback{};
+		std::vector<std::function<void(const queries::IndexQuery&)>> before_query_executed_callback{};
 
-		std::vector<std::function<void(const QueryResult&)>> after_query_executed_callback{};
+		std::vector<std::function<void(const queries::QueryResult&)>> after_query_executed_callback{};
 
 		std::vector<std::function<void(const nlohmann::json&)>> after_stream_executed_callback{};
 
@@ -163,7 +163,7 @@ namespace ravendb::client::documents::session
 
 		void build_include(std::ostringstream& writer) const;
 
-		void update_stats_highlightings_and_explanations(const QueryResult& query_result);
+		void update_stats_highlightings_and_explanations(const queries::QueryResult& query_result);
 
 		void build_select(std::ostringstream& writer) const;
 
@@ -217,11 +217,11 @@ namespace ravendb::client::documents::session
 
 		std::shared_ptr<operations::QueryOperation> initialize_query_operation();
 
-		IndexQuery get_index_query();
+		queries::IndexQuery get_index_query();
 
 		void add_group_by_alias(std::string field_name, std::string projected_name);
 
-		IndexQuery generate_index_query(std::string query) const;
+		queries::IndexQuery generate_index_query(std::string query) const;
 
 		void update_fields_to_fetch_token(std::shared_ptr<tokens::FieldsToFetchToken> fields_to_fetch);
 
@@ -249,7 +249,7 @@ namespace ravendb::client::documents::session
 
 		bool is_distinct() const;
 
-		std::shared_ptr<DocumentConventions> get_conventions() const;
+		std::shared_ptr<conventions::DocumentConventions> get_conventions() const;
 
 		std::shared_ptr<DocumentSessionImpl> get_session() const;
 
@@ -362,9 +362,9 @@ namespace ravendb::client::documents::session
 
 		void _statistics(std::shared_ptr<QueryStatistics>& stats) const;
 
-		void invoke_after_query_executed(const QueryResult& result);
+		void invoke_after_query_executed(const queries::QueryResult& result);
 
-		void invoke_before_query_executed(const IndexQuery& query);
+		void invoke_before_query_executed(const queries::IndexQuery& query);
 
 		void invoke_after_stream_executed(const nlohmann::json& result);
 
@@ -394,12 +394,12 @@ namespace ravendb::client::documents::session
 
 		std::shared_ptr<operations::QueryOperation> get_query_operation() const;
 
-		void _add_before_query_executed_listener(std::function<void(const IndexQuery&)> action);
-		void _remove_before_query_executed_listener(std::function<void(const IndexQuery&)> action);
+		void _add_before_query_executed_listener(std::function<void(const queries::IndexQuery&)> action);
+		void _remove_before_query_executed_listener(std::function<void(const queries::IndexQuery&)> action);
 
 
-		void _add_after_query_executed_listener(std::function<void(const QueryResult&)> action);
-		void _remove_after_query_executed_listener(std::function<void(const QueryResult&)> action);
+		void _add_after_query_executed_listener(std::function<void(const queries::QueryResult&)> action);
+		void _remove_after_query_executed_listener(std::function<void(const queries::QueryResult&)> action);
 
 
 		void _add_after_stream_executed_listener(std::function<void(const nlohmann::json&)> action);
@@ -428,7 +428,7 @@ namespace ravendb::client::documents::session
 
 		std::vector<std::shared_ptr<T>> to_list(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
 
-		QueryResult get_query_result();
+		queries::QueryResult get_query_result();
 
 		std::shared_ptr<T> first(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
 		std::shared_ptr<T> first_or_default(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
@@ -876,7 +876,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	IndexQuery AbstractDocumentQuery<T>::get_index_query()
+	queries::IndexQuery AbstractDocumentQuery<T>::get_index_query()
 	{
 		auto index_query = this->generate_index_query(*this);
 
@@ -1349,7 +1349,7 @@ namespace ravendb::client::documents::session
 		negate_if_needed(tokens, valid_field_name);
 
 		auto where_params = WhereParams<std::string>();
-		where_params.value = std::make_unique<std::string>(std::move(pattern));
+		where_params.value = &pattern;
 		where_params.field_name = valid_field_name;
 
 		auto parameter = add_query_parameter(transform_value(where_params));
@@ -1570,13 +1570,13 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	void AbstractDocumentQuery<T>::invoke_after_query_executed(const QueryResult& result)
+	void AbstractDocumentQuery<T>::invoke_after_query_executed(const queries::QueryResult& result)
 	{
 		primitives::EventHelper::invoke(after_query_executed_callback, result);
 	}
 
 	template <typename T>
-	void AbstractDocumentQuery<T>::invoke_before_query_executed(const IndexQuery& query)
+	void AbstractDocumentQuery<T>::invoke_before_query_executed(const queries::IndexQuery& query)
 	{
 		primitives::EventHelper::invoke(before_query_executed_callback, query);
 	}
@@ -1619,11 +1619,11 @@ namespace ravendb::client::documents::session
 		, load_tokens(std::move(load_tokens_param))
 	{
 		root_types.insert(typeid(T));
-		_add_after_query_executed_listener([*this] (const QueryResult& query_result) mutable
+		_add_after_query_executed_listener([*this] (const queries::QueryResult& query_result) mutable
 		{
 			update_stats_highlightings_and_explanations(query_result);
 		});
-		_conventions = session->get_conventions() ? session->get_conventions() : DocumentConventions::create();
+		_conventions = session->get_conventions() ? session->get_conventions() : conventions::DocumentConventions::create();
 	}
 
 	template <typename T>
@@ -2070,7 +2070,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	void AbstractDocumentQuery<T>::update_stats_highlightings_and_explanations(const QueryResult& query_result)
+	void AbstractDocumentQuery<T>::update_stats_highlightings_and_explanations(const queries::QueryResult& query_result)
 	{
 		query_stats->update_query_stats(query_result);
 		query_highlightings.update(query_result);
@@ -2148,7 +2148,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::shared_ptr<DocumentConventions> AbstractDocumentQuery<T>::get_conventions() const
+	std::shared_ptr<conventions::DocumentConventions> AbstractDocumentQuery<T>::get_conventions() const
 	{
 		return _conventions;
 	}
@@ -2173,14 +2173,14 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	void AbstractDocumentQuery<T>::_add_before_query_executed_listener(std::function<void(const IndexQuery&)> action)
+	void AbstractDocumentQuery<T>::_add_before_query_executed_listener(std::function<void(const queries::IndexQuery&)> action)
 	{
 		before_query_executed_callback.push_back(action);
 	}
 
 	template <typename T>
 	void AbstractDocumentQuery<T>::_remove_before_query_executed_listener(
-		std::function<void(const IndexQuery&)> action)
+		std::function<void(const queries::IndexQuery&)> action)
 	{
 		if (auto it = std::find(before_query_executed_callback.begin(), before_query_executed_callback.end(), action);
 			it != before_query_executed_callback.end())
@@ -2190,13 +2190,13 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	void AbstractDocumentQuery<T>::_add_after_query_executed_listener(std::function<void(const QueryResult&)> action)
+	void AbstractDocumentQuery<T>::_add_after_query_executed_listener(std::function<void(const queries::QueryResult&)> action)
 	{
 		after_query_executed_callback.push_back(action);
 	}
 
 	template <typename T>
-	void AbstractDocumentQuery<T>::_remove_after_query_executed_listener(std::function<void(const QueryResult&)> action)
+	void AbstractDocumentQuery<T>::_remove_after_query_executed_listener(std::function<void(const queries::QueryResult&)> action)
 	{
 		if (auto it = std::find(after_query_executed_callback.begin(), after_query_executed_callback.end(), action);
 			it != after_query_executed_callback.end())

@@ -29,7 +29,7 @@ namespace ravendb::client::documents::commands::multi_get
 			case http::HttpStatus::SC_NOT_FOUND:
 				break;
 			default:
-				are_errors = true;
+				are_errors = status_code != 0;
 				break;
 			}
 			return are_errors;

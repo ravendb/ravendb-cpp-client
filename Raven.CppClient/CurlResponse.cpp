@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "CurlResponse.h"
-#include "utils.h"
 #include "CurlSListHolder.h"
 
 namespace
@@ -53,9 +52,14 @@ namespace
 
 namespace ravendb::client::impl
 {
-	const CurlResponse CurlResponse::run_curl_perform(const CurlHandlesHolder::CurlReference& curl_ref)
+	CurlResponse CurlResponse::run_curl_perform(const CurlHandlesHolder::CurlReference& curl_ref)
 	{
 		return CurlResponse(curl_ref);
+	}
+
+	CurlResponse::CurlResponse()
+	{
+		error = error_buffer;
 	}
 
 	CurlResponse::CurlResponse(const CurlHandlesHolder::CurlReference& curl_ref)
@@ -72,7 +76,7 @@ namespace ravendb::client::impl
 		curl_easy_setopt(curl, CURLOPT_URL, curl_ref.url.c_str());
 		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers_list.get());
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, error_buffer);
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, utils::push_to_buffer);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, push_to_buffer);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output);
 		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, push_headers);
 		curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headers);
