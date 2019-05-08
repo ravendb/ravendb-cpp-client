@@ -1,5 +1,5 @@
 #include "pch.h"
-//#define __USE_FIDDLER__
+#define __USE_FIDDLER__
 #include "re_definitions.h"
 #include "User.h"
 #include "PatchOperation.h"
@@ -52,7 +52,7 @@ namespace ravendb::client::tests::old_tests
 		ASSERT_EQ(res1->id, user.id);
 
 		auto op = documents::operations::PatchOperation(user.id, {},
-			documents::operations::PatchRequest(R"(this.LastName = "The Great")"));
+			documents::operations::PatchRequest(R"(this.lastName = "The Great")"));
 
 		http::HttpCache cache;
 		auto cmd = op.get_command(documents::DocumentStore::create(), {}, cache);
@@ -98,7 +98,7 @@ namespace ravendb::client::tests::old_tests
 			from Users as user
 			update 
 			{
-				user.LastName += $PlusGreatness
+				user.lastName += $PlusGreatness
 			})";
 
 		auto update_index_query = documents::queries::IndexQuery(update_query);

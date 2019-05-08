@@ -55,7 +55,7 @@ namespace ravendb::client::impl
 				auto lock = std::lock_guard(_mutex);
 				_tasks.emplace(std::move(task));
 			}
-			_cv.notify_one();
+			_cv.notify_all();
 		}
 
 		~TasksExecutor() override

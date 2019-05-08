@@ -1,5 +1,5 @@
 #include "pch.h"
-//#define __USE_FIDDLER__
+#define __USE_FIDDLER__
 #include "re_definitions.h"
 
 #include "User.h"
@@ -79,7 +79,7 @@ namespace ravendb::client::tests::old_tests
 			for(auto& result : res1->results)
 			{
 				auto u = result.get<infrastructure::entities::User>();
-				documents::commands::DeleteDocumentCommand cmd2(u.id);
+				documents::commands::DeleteDocumentCommand cmd2(result["@metadata"]["@id"].get<std::string>());
 				test_suite_executor->get().execute(cmd2);
 			}
 		}
@@ -114,7 +114,7 @@ namespace ravendb::client::tests::old_tests
 				from user in docs.Users 
 				select new 
 				{
-					FullName = user.Name + " " + user.LastName
+					fullName = user.name + " " + user.lastName
 				})"};
 		}
 	};
@@ -128,9 +128,9 @@ namespace ravendb::client::tests::old_tests
 		auto op = documents::operations::indexes::GetIndexOperation(example_index.name);
 		auto cmd = op.get_command({});
 		test_suite_executor->get().execute(*cmd);
-		auto&& res = cmd->get_result();
+		auto res = cmd->get_result();
 
-		documents::indexes::IndexDefinition check_index =
+		const documents::indexes::IndexDefinition check_index =
 		{
 			example_index.name,
 			documents::indexes::IndexPriority::NORMAL,
@@ -220,7 +220,7 @@ namespace ravendb::client::tests::old_tests
 	{
 		ASSERT_TRUE(does_index_exist_by_get_index_op(example_index.name));
 
-		auto op = documents::operations::indexes::GetTermsOperation(example_index.name,"FullName");
+		auto op = documents::operations::indexes::GetTermsOperation(example_index.name,"fullName");
 		auto cmd = op.get_command({});
 		test_suite_executor->get().execute(*cmd);
 		auto&& res = cmd->get_result();
@@ -241,14 +241,14 @@ namespace ravendb::client::tests::old_tests
 			test_suite_executor->get().execute(*cmd);
 			auto&& res = cmd->get_result();
 
-			ASSERT_FALSE(res);
+			ASSERT_FALSE(*res);
 		}
 		auto changed_index = example_index;
 		changed_index.maps = { R"(
 				from user in docs.Users 
 				select new 
 				{
-					FullName = user.Name + ' ' + user.LastName + " from " + user.AddressId
+					fullName = user.name + ' ' + user.lastName + " from " + user.addressId
 				})" };
 		{
 			auto op = documents::operations::indexes::IndexHasChangedOperation(changed_index);
@@ -256,7 +256,7 @@ namespace ravendb::client::tests::old_tests
 			test_suite_executor->get().execute(*cmd);
 			auto&& res = cmd->get_result();
 
-			ASSERT_TRUE(res);
+			ASSERT_TRUE(*res);
 		}
 	}
 
@@ -414,7 +414,7 @@ namespace ravendb::client::tests::old_tests
 				from user in docs.Users 
 				select new 
 				{
-					a = 5 / user.Age
+					a = 5 / user.age
 				})" };
 		{
 			auto op = documents::operations::indexes::PutIndexesOperation({ invalid_index });

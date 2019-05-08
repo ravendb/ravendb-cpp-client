@@ -153,7 +153,7 @@ namespace ravendb::client::http
 	CurrentIndexAndNode NodeSelector::get_node_by_session_id(int32_t session_id) const
 	{
 		auto& state = *_state;
-		int32_t index = session_id & state.topology->nodes->size();
+		int32_t index = session_id % state.topology->nodes->size();
 
 		for(int32_t i = index; i < state.failures.size(); ++i)
 		{

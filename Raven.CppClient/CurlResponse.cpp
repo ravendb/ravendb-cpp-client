@@ -20,17 +20,17 @@ namespace
 
 	size_t push_headers(char *buffer, size_t size, size_t nitems, void *userdata)
 	{
-		auto real_size = size * nitems;
+		const auto real_size = size * nitems;
 		auto headers = static_cast<std::unordered_map<std::string, std::string>*>(userdata);
-		auto result = static_cast<char*>(memchr(buffer, ':', real_size));
-		if (result == nullptr) // doesn't have ':', probably not a header line, not interesting
+		auto delimiter = static_cast<char*>(memchr(buffer, ':', real_size));
+		if (delimiter == nullptr) // doesn't have ':', probably not a header line, not interesting
 			return real_size;
 
-		auto header_name_size = result - buffer;
+		auto header_name_size = delimiter - buffer;
 
 		auto header_name = std::string(buffer, header_name_size);
 
-		auto header_val = std::string(result + 1, real_size - header_name_size - 1);
+		auto header_val = std::string(delimiter + 1, real_size - header_name_size - 1);
 		// remove starting space and \r\n at end
 		left_trim(header_val);
 		right_trim(header_val);
@@ -70,7 +70,7 @@ namespace ravendb::client::impl
 		for(const auto&[name, value] : curl_ref.headers)
 		{
 			std::ostringstream header{};
-			header << name << " : " << value;
+			header << name << ": " << value;
 			headers_list.append(header.str());
 		}
 		curl_easy_setopt(curl, CURLOPT_URL, curl_ref.url.c_str());

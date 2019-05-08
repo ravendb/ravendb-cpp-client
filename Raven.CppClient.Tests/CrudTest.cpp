@@ -70,11 +70,11 @@ namespace ravendb::client::tests::client
 		auto result = documents_command.get_result();
 
 		auto user_json = result->results.at(0);
-		ASSERT_TRUE(user_json.find("LastName") != user_json.end());
+		ASSERT_TRUE(user_json.find("lastName") != user_json.end());
 
 		{
 			auto session = store->open_session();
-			auto users = session.advanced().raw_query<infrastructure::entities::User>("from Users where LastName = 'user1'")->to_list();
+			auto users = session.advanced().raw_query<infrastructure::entities::User>("from Users where lastName = 'user1'")->to_list();
 
 			ASSERT_EQ(1, users.size());
 		}

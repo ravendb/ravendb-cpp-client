@@ -41,7 +41,8 @@ namespace ravendb::client::http
 		bool _can_cache_aggressively{ true };
 
 	public:
-		static const std::string result_type_name;
+		const std::string result_type_name = impl::utils::GetCppClassName::get_class_name(typeid(ResultType));
+
 		int32_t status_code{};
 
 	protected:
@@ -97,8 +98,6 @@ namespace ravendb::client::http
 		void on_response_failure(const impl::CurlResponse& response){}
 	};
 
-	template <typename TResult>
-	const std::string RavenCommand<TResult>::result_type_name = impl::utils::GetCppClassName()(typeid(ResultType));
 
 	template <typename TResult>
 	void RavenCommand<TResult>::throw_invalid_response()

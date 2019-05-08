@@ -9,15 +9,15 @@ namespace ravendb::client::impl
 	class TasksScheduler
 	{
 	private:
-		const std::shared_ptr<IExecutorService> _executor_service;
-		std::thread _scheduler{};
-
 		std::multimap<std::chrono::steady_clock::time_point, IExecutorService::Task> _tasks{};
 
 		std::condition_variable _cv{};
 		std::mutex _mutex{};
 
 		std::atomic_bool _stop{ false };
+
+		const std::shared_ptr<IExecutorService> _executor_service;
+		std::thread _scheduler;
 
 		void work()
 		{

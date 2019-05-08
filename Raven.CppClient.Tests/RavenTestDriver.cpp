@@ -40,8 +40,6 @@ namespace ravendb::client::tests::driver
 
 	void RavenTestDriver::TearDown()
 	{
-		this->close();
-
 		//TODO this is until listeners are implemented
 		{
 			auto guard = std::lock_guard(documents_stores_guard);
@@ -51,9 +49,9 @@ namespace ravendb::client::tests::driver
 				auto delete_database_operation = serverwide::operations::DeleteDatabasesOperation(store->get_database(), true);
 				store->get_request_executor()->execute(*delete_database_operation.get_command(store->get_conventions()));
 			}
-			document_stores.clear();
 		}
 		//TODO ---------------------------------------
+		this->close();
 	}
 
 	RavenTestDriver::~RavenTestDriver() = default;
@@ -100,12 +98,16 @@ namespace ravendb::client::tests::driver
 					auto server = std::static_pointer_cast<documents::DocumentStoreBase>(global_secured_server);
 					server->set_urls({ secured_connection_details.get_url() });
 					server->set_certificate_details(secured_connection_details.get_certificate_details());
+					customise_store(std::static_pointer_cast<documents::DocumentStore>(server));
+					server->get_conventions()->set_disable_topology_updates(true);
 				}
 				else
 				{
 					global_server = documents::DocumentStore::create();
 					auto server = std::static_pointer_cast<documents::DocumentStoreBase>(global_server);
 					server->set_urls({ unsecured_connection_details.get_url() });
+					customise_store(std::static_pointer_cast<documents::DocumentStore>(server));
+					server->get_conventions()->set_disable_topology_updates(true);
 				}
 				get_global_server(secured)->initialize();
 			}

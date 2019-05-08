@@ -44,11 +44,11 @@ namespace ravendb::client::tests::old_tests
 			test_suite_executor->get().execute(cmd);
 			auto&& res = cmd.get_result();
 
-			return !res->results.empty() && !res->results[0].is_null();
+			return res && !res->results.empty() && !res->results[0].is_null();
 		}
 	};
 
-	const infrastructure::entities::User BasicDocumentCommandsTests::example_user{ "users/1-A", "Alexander", "Timoshenko", "Israel", 0, 38 };
+	const infrastructure::entities::User BasicDocumentCommandsTests::example_user{ "users/1", "Alexander", "Timoshenko", "Israel", 0, 38 };
 
 
 	TEST_F(BasicDocumentCommandsTests, CanGetDocument)
@@ -88,7 +88,7 @@ namespace ravendb::client::tests::old_tests
 		{
 			test_suite_executor->get().execute(cmd2);
 		}
-		catch (ravendb::client::RavenError& ex)
+		catch (std::exception & ex)
 		{
 			EXPECT_NE(std::string(ex.what()).find("ConcurrencyException"), std::string::npos);
 			ASSERT_TRUE(does_document_exist(example_user.id));

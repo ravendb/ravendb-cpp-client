@@ -14,8 +14,8 @@ namespace ravendb::client::tests::infrastructure::entities
 
 		friend bool operator==(const User& lhs, const User& rhs)
 		{
-			return lhs.id == rhs.id
-				&& lhs.name == rhs.name
+			return //lhs.id == rhs.id
+				   lhs.name == rhs.name
 				&& lhs.lastName == rhs.lastName
 				&& lhs.addressId == rhs.addressId
 				&& lhs.count == rhs.count

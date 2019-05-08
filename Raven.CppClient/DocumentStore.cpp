@@ -149,10 +149,30 @@ namespace ravendb::client::documents
 			{
 				return it->second;
 			}
-			std::shared_ptr<http::RequestExecutor> re = http::RequestExecutor::create(
-				get_urls(), db_name, _certificate_details, _scheduler, get_conventions(), _set_before_perform, _set_after_perform);
-			_request_executors.insert_or_assign(db_name, re);
-			return re;
+
+			std::optional<std::string> db_name_optional{};
+			if(!db_name.empty())
+			{
+				db_name_optional.emplace(db_name);
+			}
+
+			std::shared_ptr<http::RequestExecutor> executor{};
+
+			if(!get_conventions()->is_disable_topology_updates())
+			{
+				executor = http::RequestExecutor::create(
+					get_urls(), std::move(db_name_optional), _certificate_details, _scheduler, get_conventions(),
+					_set_before_perform, _set_after_perform);
+			}
+			else
+			{
+				executor = http::RequestExecutor::create_for_single_node_with_configuration_updates(
+					get_urls()[0], std::move(db_name_optional), _certificate_details, _scheduler, get_conventions(),
+					_set_before_perform, _set_after_perform);
+			}
+			_request_executors.insert_or_assign(db_name, executor);
+
+			return executor;
 		}
 	}
 

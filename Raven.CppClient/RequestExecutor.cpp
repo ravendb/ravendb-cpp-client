@@ -41,7 +41,7 @@ namespace ravendb::client::http
 
 		try
 		{
-			update_topology_async(server_node, 0, false, "timer-callback").get();
+			update_topology_async(server_node, 0, false, "timer-callback", false).get();
 		}
 		catch (std::exception& e)
 		{
@@ -72,6 +72,7 @@ namespace ravendb::client::http
 			{
 				re->update_topology_callback();
 			}
+
 		}, std::chrono::minutes(1), std::chrono::minutes(1)); 
 	}
 
@@ -95,7 +96,7 @@ namespace ravendb::client::http
 		{}
 	}
 
-	std::shared_ptr<std::future<void>> RequestExecutor::first_topology_update(const std::vector<std::string>& input_urls)
+	std::shared_future<void> RequestExecutor::first_topology_update(const std::vector<std::string>& input_urls)
 	{
 		auto initial_urls = validate_urls(input_urls, _certificate_details);
 
@@ -118,7 +119,7 @@ namespace ravendb::client::http
 
 					auto const_server_node = std::const_pointer_cast<ServerNode const>(server_node);
 
-					re->update_topology_async(const_server_node, INT32_MAX, false, "first-topology-update").wait();
+					re->update_topology_async(const_server_node, INT32_MAX, false, "first-topology-update", false).get();
 
 					re->initialize_update_topology_timer();
 
@@ -198,9 +199,8 @@ namespace ravendb::client::http
 			re->throw_exceptions(std::move(details));
 		});
 
-		auto fut = task->get_future();
 		_scheduler->schedule_task_immediately([task]()->void { (*task)(); });
-		return std::make_shared<std::future<void>>(std::move(fut));
+		return task->get_future().share();
 
 		//GetDatabaseTopologyCommand getTopology{};
 
@@ -417,9 +417,8 @@ namespace ravendb::client::http
 		if (_disposed)
 		{
 			std::promise<void> promise{};
-			auto fut = promise.get_future();
 			promise.set_value();
-			return std::move(fut);
+			return promise.get_future();
 		}
 
 		auto task = std::make_shared<std::packaged_task<void()>>(
@@ -460,9 +459,8 @@ namespace ravendb::client::http
 			re->_disable_client_configuration_updates = old_disable_client_configuration_updates;
 		});
 
-		auto fut = task->get_future();
 		_scheduler->schedule_task_immediately([task]()->void { (*task)(); });
-		return std::move(fut);
+		return task->get_future();
 	}
 
 	std::vector<std::string> RequestExecutor::validate_urls(const std::vector<std::string>& initial_urls,
@@ -558,7 +556,7 @@ namespace ravendb::client::http
 	}
 
 	std::future<bool> RequestExecutor::update_topology_async(std::shared_ptr<const ServerNode> node, int32_t timeout,
-		bool force_update, std::optional<std::string> debug_tag)
+		bool force_update, std::optional<std::string> debug_tag, bool run_async)
 	{
 		if(_disposed)
 		{
@@ -620,9 +618,15 @@ namespace ravendb::client::http
 			return true;
 		});
 
-		auto fut = task->get_future();
-		_scheduler->schedule_task_immediately([task]()->void { (*task)(); });
-		return std::move(fut);
+		if(run_async)
+		{
+			_scheduler->schedule_task_immediately([task]()->void { (*task)(); });
+		}
+		else
+		{
+			(*task)();
+		}
+		return task->get_future();
 	}
 
 	bool RequestExecutor::in_speed_test_phase() const
@@ -642,7 +646,7 @@ namespace ravendb::client::http
 		auto preferred_node = get_preferred_node();
 		try
 		{
-			update_topology_async(preferred_node.current_node, 0, true, "handle-server-not-responsive").get();
+			update_topology_async(preferred_node.current_node, 0, true, "handle-server-not-responsive", false).get();
 		}
 		catch (...)
 		{
@@ -704,7 +708,7 @@ namespace ravendb::client::http
 			set_after_perform));
 
 		executor->_weak_this = executor;
-		executor->_first_topology_update = executor->first_topology_update(initial_urls);
+		executor->_first_topology_update = std::make_shared<std::shared_future<void>>(executor->first_topology_update(initial_urls));
 
 		return executor;
 	}

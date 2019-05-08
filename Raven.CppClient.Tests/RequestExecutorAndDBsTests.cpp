@@ -37,7 +37,7 @@ namespace ravendb::client::tests::old_tests
 		try
 		{
 #ifdef __USE_FIDDLER__
-			auto test_suite_executor = get_raw_request_executor("no_such_db",false, true);
+			auto test_suite_executor = definitions::get_raw_request_executor("no_such_db",false, true);
 #else
 			auto test_suite_executor = definitions::get_raw_request_executor("no_such_db");
 #endif

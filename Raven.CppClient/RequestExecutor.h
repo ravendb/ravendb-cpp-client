@@ -84,7 +84,7 @@ namespace ravendb::client::http
 
 		bool _disposed{ false };
 
-		std::shared_ptr<std::future<void>> _first_topology_update;
+		std::shared_ptr<std::shared_future<void>> _first_topology_update;
 
 		std::vector<std::string> _last_known_urls{};
 
@@ -105,7 +105,7 @@ namespace ravendb::client::http
 		void initialize_update_topology_timer();
 
 		template<typename TResult>
-		void unlikely_execute(RavenCommand<TResult>& command, std::shared_ptr<std::future<void>> topology_update,
+		void unlikely_execute(RavenCommand<TResult>& command, std::shared_ptr<std::shared_future<void>>& topology_update,
 			const std::optional<documents::session::SessionInfo>& session_info);
 
 		void update_topology_callback();
@@ -176,7 +176,7 @@ namespace ravendb::client::http
 
 		void dispose_all_failed_nodes_timers();
 
-		std::shared_ptr<std::future<void>> first_topology_update(const std::vector<std::string>& input_urls);
+		std::shared_future<void> first_topology_update(const std::vector<std::string>& input_urls);
 
 		void throw_exceptions(std::string details) const;
 
@@ -236,7 +236,7 @@ namespace ravendb::client::http
 		const std::optional<impl::CertificateDetails>& get_certificate() const;
 
 		std::future<bool> update_topology_async(std::shared_ptr<const ServerNode>, int32_t timeout,
-			bool force_update = false, std::optional<std::string> debug_tag = {});
+			bool force_update = false, std::optional<std::string> debug_tag = {}, bool run_async = true);
 
 		template<typename TResult>
 		void execute(RavenCommand<TResult>& command, 
@@ -270,7 +270,7 @@ namespace ravendb::client::http
 
 	template <typename TResult>
 	void RequestExecutor::unlikely_execute(RavenCommand<TResult>& command,
-		std::shared_ptr<std::future<void>> topology_update,
+		std::shared_ptr<std::shared_future<void>>& topology_update,
 		const std::optional<documents::session::SessionInfo>& session_info)
 	{
 		try
@@ -284,7 +284,7 @@ namespace ravendb::client::http
 					{
 						throw std::runtime_error("No known topology and no previously known one, cannot proceed, likely a bug");
 					}
-					_first_topology_update = first_topology_update(_last_known_urls);
+					_first_topology_update = std::make_shared<std::shared_future<void>>(first_topology_update(_last_known_urls));
 				}
 				topology_update = _first_topology_update;
 			}
@@ -486,37 +486,8 @@ namespace ravendb::client::http
 				}
 			});
 
-			tasks[i] = std::make_shared<std::future<IndexAndResponse>>(pack_task->get_future());
-
-			//TODO erase later
-			//auto task = [this, &nodes, &command, &number_of_failed_tasks, &tasks,
-			//	task_number = i, promise = std::move(promise)]() mutable ->void
-			//{
-			//	try
-			//	{
-			//		auto url_ref = std::optional<std::string>();
-			//		auto curl_ref = _curl_holder.checkout_curl();
-			//		create_request(curl_ref, nodes[task_number], command, url_ref);
-			//		promise.set_value(IndexAndResponse(task_number, command.send(curl_ref)));
-			//	}
-			//	catch (...)
-			//	{
-			//		++number_of_failed_tasks;
-			//		tasks[task_number].reset();
-
-			//		try
-			//		{
-			//			std::throw_with_nested(std::runtime_error("Request execution failed"));
-			//		}
-			//		catch (...)
-			//		{
-			//			promise.set_exception(std::current_exception());
-			//		}
-			//	}
-			//};
-
-
 			_scheduler->schedule_task_immediately([pack_task]()->void {(*pack_task)(); });
+			tasks[i] = std::make_shared<std::future<IndexAndResponse>>(pack_task->get_future());
 			
 			if(nodes[i]->cluster_tag == chosen_node->cluster_tag)
 			{
@@ -561,7 +532,12 @@ namespace ravendb::client::http
 		}
 		//We can reach here if the number of failed task equal to the number
 		//of the nodes, in which case we have nothing to do.
-		return preferred_task->get().second;
+
+		if (preferred_task)
+		{
+			return preferred_task->get().second;
+		}
+		throw std::runtime_error("'execute_on_all_to_figure_out_the_fastest' failed");
 	}
 
 	template <typename TResult>
@@ -622,7 +598,7 @@ namespace ravendb::client::http
 			{
 				// we tried all the nodes, let's try to update topology and retry one more time
 				if (!update_topology_async(chosen_node, 60 * 1000,
-					true, "handle-unsuccessful-response").get())
+					true, "handle-unsuccessful-response", false).get())
 				{
 					return false;
 				}
@@ -703,7 +679,7 @@ namespace ravendb::client::http
 	void RequestExecutor::execute(RavenCommand<TResult>& command,
 		const std::optional<documents::session::SessionInfo>& session_info)
 	{
-		std::shared_ptr<std::future<void>> topology_update = _first_topology_update;
+		auto&& topology_update = _first_topology_update;
 		bool execute_unlikely = true;
 		do
 		{
@@ -855,7 +831,8 @@ namespace ravendb::client::http
 
 				if(refresh_topology)
 				{
-					update_topology_async(std::const_pointer_cast<const ServerNode>(server_node), 0).get();
+					update_topology_async(std::const_pointer_cast<const ServerNode>(server_node), 0,
+						false, {}, false).get();
 				}
 				if(refresh_client_configuration)
 				{
