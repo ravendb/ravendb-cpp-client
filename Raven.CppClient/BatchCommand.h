@@ -7,13 +7,9 @@
 #include "CommandDataBase.h"
 #include "BatchOptions.h"
 
-using
-ravendb::client::http::RavenCommand,
-ravendb::client::http::ServerNode;
-
 namespace ravendb::client::documents::commands::batches
 {
-	class BatchCommand : public RavenCommand<json::BatchCommandResult>
+	class BatchCommand : public http::RavenCommand<json::BatchCommandResult>
 	{
 	private:
 		const std::shared_ptr<conventions::DocumentConventions> _conventions;
@@ -95,26 +91,34 @@ namespace ravendb::client::documents::commands::batches
 		}
 
 		
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+		void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+			std::optional<std::string>& url) override
 		{
+			auto curl = curl_ref.get();
 			std::ostringstream path_builder;
-			path_builder << node.url << "/databases/" << node.database << "/bulk_docs";
+
+			path_builder << node->url << "/databases/" << node->database << "/bulk_docs";
 			append_options(path_builder);
 
+			curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE,"application/json");
 			curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
-			_headers_list.append("Content-Type: application/json");
-			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, _headers_list.get());
+			curl_ref.method = constants::methods::POST;
 			curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, _request_entity_str.c_str());
 
 			url = path_builder.str();
 		}
 
-		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
+		void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override
 		{
-			_result = std::make_shared<ResultType>(response.get<ResultType>());
+			if(!response)
+			{
+				throw std::runtime_error("Got null response from the server after doing a batch,"
+					" something is very wrong. Probably a garbled response.");
+			}
+			_result = std::make_shared<ResultType>(response->get<ResultType>());
 		}
 
-		bool is_read_request() const noexcept override
+		bool is_read_request() const override
 		{
 			return false;
 		}

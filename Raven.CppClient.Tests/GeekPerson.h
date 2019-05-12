@@ -17,7 +17,6 @@ namespace ravendb::client::tests::infrastructure::entities
 		set_val_to_json(j, "Name", gp.name);
 		set_val_to_json(j, "FavoritePrimes", gp.favorite_primes);
 		set_val_to_json(j, "FavoriteVeryLargePrimes", gp.favorite_very_large_primes);
-		//j["@metadata"]["@collection"] = "GeekPersons";
 	}
 
 	inline void from_json(const nlohmann::json& j, GeekPerson& gp)

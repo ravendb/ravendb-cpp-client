@@ -10,6 +10,8 @@
 #include "SimpleStopWatch.h"
 #include "MultiGetOperation.h"
 #include "LazySessionOperations.h"
+#include "LoadStartingWithOperation.h"
+#include "HeadDocumentCommand.h"
 
 namespace ravendb::client::documents::session
 {
@@ -60,6 +62,26 @@ namespace ravendb::client::documents::session
 		if (cmd)
 		{
 			_request_executor->execute(*cmd);
+			load_op.set_result(cmd->get_result());
+		}
+
+		return load_op;
+	}
+
+	operations::LoadStartingWithOperation DocumentSessionImpl::load_starting_with_internal(std::string id_prefix,
+		std::optional<std::string> matches, int32_t start, int32_t page_size, std::optional<std::string> exclude,
+		std::optional<std::string> start_after, const std::optional<DocumentInfo::FromJsonConverter>& from_json,
+		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
+	{
+		auto load_op = operations::LoadStartingWithOperation(_weak_this.lock());
+		load_op.with_start_with(std::move(id_prefix), std::move(matches),
+			start, page_size, std::move(exclude), std::move(start_after));
+
+		auto cmd = load_op.create_request();
+		if (cmd)
+		{
+			_request_executor->execute(*cmd);
+			//TODO stream
 			load_op.set_result(cmd->get_result());
 		}
 
@@ -315,7 +337,7 @@ namespace ravendb::client::documents::session
 		return response_time_duration;
 	}
 
-	bool DocumentSessionImpl::exists(const std::string& id)
+	bool DocumentSessionImpl::exists(std::string id)
 	{
 		if (_known_missing_ids.find(id) != _known_missing_ids.end())
 		{
@@ -326,8 +348,10 @@ namespace ravendb::client::documents::session
 			return true;
 		}
 
-		//TODO execute HeadDocumentCommand , for now->
-		throw std::runtime_error("Not implemented");
+		auto command = commands::HeadDocumentCommand(std::move(id));
+		_request_executor->execute(command, _session_info);
+
+		return static_cast<bool>(command.get_result());
 	}
 
 	void DocumentSessionImpl::save_changes()

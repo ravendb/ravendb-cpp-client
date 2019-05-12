@@ -14,6 +14,7 @@ namespace ravendb::client::documents::indexes::spatial
 
 		class GeographySpatialOptionsFactory
 		{
+		public:
 			SpatialOptions default_options() const;
 			SpatialOptions default_options(SpatialUnits circle_radius_units) const;
 
@@ -31,6 +32,7 @@ namespace ravendb::client::documents::indexes::spatial
 
 		class CartesianSpatialOptionsFactory
 		{
+		public:
 			SpatialOptions bounding_box_index() const;
 
 			SpatialOptions quad_prefix_tree_index(int32_t max_tree_level, SpatialBounds bounds) const;

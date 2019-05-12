@@ -19,17 +19,20 @@ namespace ravendb::client::documents::commands::multi_get
 			: _cache(cache)
 			, _commands(commands)
 		{
-			_response_type = http::RavenCommandResponseType::RAW;
+			//TODO change later and implement set_raw_response
+			//_response_type = http::RavenCommandResponseType::RAW;
 		}
 
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+		void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+			std::optional<std::string>& url_ref) override
 		{
 			std::ostringstream url_builder;
-			url_builder << node.url << "/databases/" << node.database;
+			url_builder << node->url << "/databases/" << node->database;
 
 			_base_url = url_builder.str();
 
-			curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
+			curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPPOST, 1);
+			curl_ref.method = constants::methods::POST;
 
 			//TODO use the cache
 
@@ -43,7 +46,7 @@ namespace ravendb::client::documents::commands::multi_get
 				nlohmann::json temp_object = nlohmann::json::object();
 
 				std::ostringstream temp_url{};
-				temp_url << "/databases/" << node.database + command.url;
+				temp_url << "/databases/" << node->database + command.url;
 				set_val_to_json(temp_object, "Url", temp_url.str());
 				set_val_to_json(temp_object, "Query", command.query);
 				set_val_to_json(temp_object, "Method", command.method);
@@ -59,26 +62,31 @@ namespace ravendb::client::documents::commands::multi_get
 				array.push_back(std::move(temp_object));
 			}
 			set_val_to_json(object, "Requests", std::move(array));
-			curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, object.dump().c_str());
+			curl_easy_setopt(curl_ref.get(), CURLOPT_COPYPOSTFIELDS, object.dump().c_str());
 
-			_headers_list.append("Content-Type: application/json");
-			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, _headers_list.get());
+			curl_ref.headers.emplace(constants::headers::CONTENT_TYPE, "application/json");
 
 			url_builder << "/multi_get";
-			url = url_builder.str();
+			url_ref.emplace(url_builder.str());
 		}
 
-		bool is_read_request() const noexcept override
+		bool is_read_request() const override
 		{
 			return false;
 		}
 
-		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
+		void set_response_raw(const impl::CurlResponse& response) override
 		{
-			auto it = response.find("Results");
-			if(it == response.end() || !it->is_array())
+			//TODO implement
+		}
+
+
+		void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override
+		{
+			auto it = response->find("Results");
+			if(it == response->end() || !it->is_array())
 			{
-				throw std::invalid_argument("wrong response");
+				throw_invalid_response();
 			}
 			_result = std::make_shared<ResultType>();
 			for(const auto& result : *it)

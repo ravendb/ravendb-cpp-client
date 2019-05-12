@@ -41,6 +41,9 @@ namespace ravendb::client::documents
 		void execute_indexes(std::vector<std::shared_ptr<indexes::AbstractIndexCreationTaskBase>>& tasks,
 			std::optional<std::string> database = {}) override;
 
+
+
+
 		std::shared_ptr<conventions::DocumentConventions> get_conventions() const override;
 
 		void set_conventions(std::shared_ptr<conventions::DocumentConventions> conventions);

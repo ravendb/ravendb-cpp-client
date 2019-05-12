@@ -100,4 +100,9 @@ namespace ravendb::client::documents::session
 	{
 		return _session_impl->get_entity_to_json();
 	}
+
+	bool AdvancedSessionOperations::exists(std::string id)
+	{
+		return _session_impl->exists(std::move(id));
+	}
 }

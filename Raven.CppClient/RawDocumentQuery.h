@@ -18,7 +18,7 @@ namespace ravendb::client::documents::session
 		static std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery>> create(
 			std::shared_ptr<InMemoryDocumentSessionOperations> session, std::string raw_query);
 
-		std::shared_ptr<DocumentConventions> get_conventions() const;
+		std::shared_ptr<conventions::DocumentConventions> get_conventions() const;
 
 
 		std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery>> skip(int32_t count);
@@ -43,19 +43,19 @@ namespace ravendb::client::documents::session
 		std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery>> wait_for_non_stale_results(
 			const std::chrono::milliseconds& timeout = {});
 
-		IndexQuery get_index_query() const;
+		queries::IndexQuery get_index_query() const;
 
 		std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery>> add_after_query_executed_listener(
-			std::function<void(const QueryResult&)> action);
+			std::function<void(const queries::QueryResult&)> action);
 
 		std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery>> remove_after_query_executed_listener(
-			std::function<void(const QueryResult&)> action);
+			std::function<void(const queries::QueryResult&)> action);
 
 		std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery>> add_before_query_executed_listener(
-			std::function<void(const IndexQuery&)> action);
+			std::function<void(const queries::IndexQuery&)> action);
 
 		std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery>> remove_before_query_executed_listener(
-			std::function<void(const IndexQuery&)> action);
+			std::function<void(const queries::IndexQuery&)> action);
 
 		std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery>> add_after_stream_executed_listener(
 			std::function<void(const nlohmann::json&)> action);
@@ -104,7 +104,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::shared_ptr<DocumentConventions> RawDocumentQuery<T>::get_conventions() const
+	std::shared_ptr<conventions::DocumentConventions> RawDocumentQuery<T>::get_conventions() const
 	{
 		return AbstractDocumentQuery<T>::get_conventions();
 	}
@@ -178,14 +178,14 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	IndexQuery RawDocumentQuery<T>::get_index_query() const
+	queries::IndexQuery RawDocumentQuery<T>::get_index_query() const
 	{
 		return AbstractDocumentQuery<T>::get_index_query();
 	}
 
 	template <typename T>
 	std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery<T>>> RawDocumentQuery<T>::
-		remove_after_query_executed_listener(std::function<void(const QueryResult&)> action)
+		remove_after_query_executed_listener(std::function<void(const queries::QueryResult&)> action)
 	{
 		AbstractDocumentQuery<T>::_remove_after_query_executed_listener(action);
 		return _weak_this.lock();
@@ -193,7 +193,7 @@ namespace ravendb::client::documents::session
 
 	template <typename T>
 	std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery<T>>> RawDocumentQuery<T>::add_after_query_executed_listener(
-		std::function<void(const QueryResult&)> action)
+		std::function<void(const queries::QueryResult&)> action)
 	{
 		AbstractDocumentQuery<T>::_add_after_query_executed_listener(action);
 		return _weak_this.lock();
@@ -201,7 +201,7 @@ namespace ravendb::client::documents::session
 
 	template <typename T>
 	std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery<T>>> RawDocumentQuery<T>::add_before_query_executed_listener(
-		std::function<void(const IndexQuery&)> action)
+		std::function<void(const queries::IndexQuery&)> action)
 	{
 		AbstractDocumentQuery<T>::_add_before_query_executed_listener(action);
 		return _weak_this.lock();
@@ -209,7 +209,7 @@ namespace ravendb::client::documents::session
 
 	template <typename T>
 	std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery<T>>> RawDocumentQuery<T>::
-		remove_before_query_executed_listener(std::function<void(const IndexQuery&)> action)
+		remove_before_query_executed_listener(std::function<void(const queries::IndexQuery&)> action)
 	{
 		AbstractDocumentQuery<T>::_remove_before_query_executed_listener(action);
 		return _weak_this.lock();

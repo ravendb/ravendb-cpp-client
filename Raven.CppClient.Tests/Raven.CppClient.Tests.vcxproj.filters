@@ -114,6 +114,18 @@
     <ClCompile Include="JavaScriptIndexTest.cpp">
       <Filter>ravendb.client.tests\test\client\indexing</Filter>
     </ClCompile>
+    <ClCompile Include="BoundingBoxIndexTest.cpp">
+      <Filter>ravendb.client.tests\test\spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_8761.cpp">
+      <Filter>ravendb.client.tests\test\server\documents\indexing.auto</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadAllStartingWith.cpp">
+      <Filter>ravendb.client.tests\test\mailing_list</Filter>
+    </ClCompile>
+    <ClCompile Include="ExistsTest.cpp">
+      <Filter>ravendb.client.tests\test\client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -244,6 +256,21 @@
     </Filter>
     <Filter Include="ravendb.client.tests\test\bugs">
       <UniqueIdentifier>{a1c05843-32b1-49d0-8c8f-a705c88f8e6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\spatial">
+      <UniqueIdentifier>{77a61a99-1d65-4c81-ae8b-c579572b5517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\server">
+      <UniqueIdentifier>{652658fd-b4da-4e3f-9d20-04a3af13e4ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\server\documents">
+      <UniqueIdentifier>{6f6ddc00-43af-487f-a124-e7f8a2c4ba1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\server\documents\indexing.auto">
+      <UniqueIdentifier>{72533e03-d472-43e1-af22-8019b79c8418}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\mailing_list">
+      <UniqueIdentifier>{6ebff97a-1276-4d19-a2b1-274d092ef224}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

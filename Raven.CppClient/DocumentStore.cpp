@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "DocumentStore.h"
+#include "TasksExecutor.h"
 #include "DocumentSession.h"
 #include "SessionOptions.h"
 #include "MaintenanceOperationExecutor.h"
@@ -32,6 +33,30 @@ namespace ravendb::client::documents
 		object->_weak_this = object;
 		object->initiate_operation_executors();
 		return object;
+	}
+
+	std::shared_ptr<impl::IExecutorService> DocumentStore::get_executor_service() const
+	{
+		return _executor_service;
+	}
+
+	void DocumentStore::set_executor_service(std::shared_ptr<impl::IExecutorService> executor_service)
+	{
+		if(!executor_service)
+		{
+			throw std::invalid_argument("'executor_service' shouldn't be empty");
+		}
+		_executor_service = executor_service;
+	}
+
+	void DocumentStore::set_default_executor_service(uint32_t num_of_threads)
+	{
+		_executor_service = std::make_shared<impl::TasksExecutor>(num_of_threads);
+	}
+
+	std::shared_ptr<impl::TasksScheduler> DocumentStore::get_scheduler() const
+	{
+		return _scheduler;
 	}
 
 	void DocumentStore::Deleter::operator()(DocumentStore* ptr) const
@@ -149,10 +174,30 @@ namespace ravendb::client::documents
 			{
 				return it->second;
 			}
-			std::shared_ptr<http::RequestExecutor> re = http::RequestExecutor::create(
-				get_urls(), db_name, get_conventions(), _certificate_details, _set_before_perform, _set_after_perform);
-			_request_executors.insert_or_assign(db_name, re);
-			return re;
+
+			std::optional<std::string> db_name_optional{};
+			if(!db_name.empty())
+			{
+				db_name_optional.emplace(db_name);
+			}
+
+			std::shared_ptr<http::RequestExecutor> executor{};
+
+			if(!get_conventions()->is_disable_topology_updates())
+			{
+				executor = http::RequestExecutor::create(
+					get_urls(), std::move(db_name_optional), _certificate_details, _scheduler, get_conventions(),
+					_set_before_perform, _set_after_perform);
+			}
+			else
+			{
+				executor = http::RequestExecutor::create_for_single_node_with_configuration_updates(
+					get_urls()[0], std::move(db_name_optional), _certificate_details, _scheduler, get_conventions(),
+					_set_before_perform, _set_after_perform);
+			}
+			_request_executors.insert_or_assign(db_name, executor);
+
+			return executor;
 		}
 	}
 
@@ -174,6 +219,13 @@ namespace ravendb::client::documents
 
 		try
 		{
+			//executor_service was no explicitly set -> using defaults
+			if (!_executor_service)
+			{
+				set_default_executor_service();
+			}
+			_scheduler = std::make_shared<impl::TasksScheduler>(_executor_service);
+
 			if (!get_conventions()->get_document_id_generator())// don't overwrite what the user is doing
 			{
 				_multi_db_hilo = std::make_unique<identity::MultiDatabaseHiLoIdGenerator>(

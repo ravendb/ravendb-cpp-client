@@ -10,9 +10,13 @@ namespace ravendb::client::http
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
 		get_val_from_json(j, "Etag", top.etag);
-		if (!get_val_from_json(j, "Nodes", top.nodes))
+
+		top.nodes = std::make_shared<std::vector<std::shared_ptr<ServerNode>>>();
+		top.nodes->reserve(j.at("Nodes").size());
+		for(const auto& json_node : j.at("Nodes"))
 		{
-			throw std::invalid_argument("\"Nodes\" is absent or isn't an array");
+			auto node = std::make_shared<ServerNode>(json_node.get<ServerNode>());
+			top.nodes->emplace_back(node);
 		}
 	}
 }

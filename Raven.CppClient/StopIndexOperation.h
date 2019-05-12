@@ -1,12 +1,5 @@
 #pragma once
-#include "stdafx.h"
 #include "IVoidMaintenanceOperation.h"
-#include "utils.h"
-
-using
-ravendb::client::http::RavenCommand,
-ravendb::client::http::ServerNode,
-ravendb::client::http::VoidRavenCommand;
 
 namespace ravendb::client::documents::operations::indexes
 {
@@ -39,7 +32,7 @@ namespace ravendb::client::documents::operations::indexes
 		}
 
 	private:
-		class StopIndexCommand : public VoidRavenCommand
+		class StopIndexCommand : public http::VoidRavenCommand
 		{
 		private:
 			const std::string _index_name;
@@ -61,16 +54,18 @@ namespace ravendb::client::documents::operations::indexes
 			}())
 			{}
 
-			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+				std::optional<std::string>& url_ref) override
 			{
 				std::ostringstream path_builder;
-				path_builder << node.url << "/databases/" << node.database
-					<< "/admin/indexes/stop?name=" << impl::utils::url_escape(curl, _index_name);
+				path_builder << node->url << "/databases/" << node->database
+					<< "/admin/indexes/stop?name=" << http::url_encode(curl_ref, _index_name);
 
-				curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
-				curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, "");
+				curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPPOST, 1);
+				curl_easy_setopt(curl_ref.get(), CURLOPT_COPYPOSTFIELDS, "");
+				curl_ref.method = constants::methods::POST;
 
-				url = path_builder.str();
+				url_ref.emplace(path_builder.str());
 			}
 		};
 	};

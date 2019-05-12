@@ -17,29 +17,31 @@ namespace ravendb::client::documents::operations::indexes
 
 	GetCollectionStatisticsOperation::GetCollectionStatisticsCommand::GetCollectionStatisticsCommand() = default;
 
-	void GetCollectionStatisticsOperation::GetCollectionStatisticsCommand::create_request(CURL* curl,
-		const http::ServerNode& node, std::string& url)
+	void GetCollectionStatisticsOperation::GetCollectionStatisticsCommand::create_request(
+		impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+		std::optional<std::string>& url_ref)
 	{
 		std::ostringstream path_builder;
-		path_builder << node.url << "/databases/" << node.database << "/collections/stats";
+		path_builder << node->url << "/databases/" << node->database << "/collections/stats";
 
-		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+		curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPGET, 1);
+		curl_ref.method = constants::methods::GET;
 
-		url = path_builder.str();
+		url_ref.emplace(path_builder.str());
 	}
 
-	void GetCollectionStatisticsOperation::GetCollectionStatisticsCommand::set_response(CURL* curl,
-		const nlohmann::json& response, bool from_cache)
+	void GetCollectionStatisticsOperation::GetCollectionStatisticsCommand::set_response(const std::optional<nlohmann::json>& response,
+		bool from_cache)
 	{
-		if (response.is_null())
+		if (!response)
 		{
 			throw_invalid_response();
 		}
 
-		_result = std::make_shared<ResultType>(response.get<ResultType>());
+		_result = std::make_shared<ResultType>(response->get<ResultType>());
 	}
 
-	bool GetCollectionStatisticsOperation::GetCollectionStatisticsCommand::is_read_request() const noexcept
+	bool GetCollectionStatisticsOperation::GetCollectionStatisticsCommand::is_read_request() const
 	{
 		return true;
 	}

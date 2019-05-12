@@ -15,28 +15,30 @@ namespace ravendb::client::documents::commands
 		, _last_range_max(last_range_max)
 	{}
 
-	void NextHiLoCommand::create_request(CURL* curl, const http::ServerNode& node, std::string& url)
+	void NextHiLoCommand::create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+		std::optional<std::string>& url_ref)
 	{
 		std::ostringstream path_builder{};
 
-		path_builder << node.url << "/databases/" << node.database <<
+		path_builder << node->url << "/databases/" << node->database <<
 			"/hilo/next?tag=" << _tag <<
 			"&lastBatchSize=" << _last_batch_size <<
 			"&lastRangeAt=" << _last_range_at.to_string() <<
 			"&identityPartsSeparator=" << _identity_parts_separator <<
 			"&lastMax=" << _last_range_max;
 
-		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+		curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPGET, 1);
+		curl_ref.method = constants::methods::GET;
 
-		url = path_builder.str();
+		url_ref.emplace(path_builder.str());
 	}
 
-	void NextHiLoCommand::set_response(CURL* curl, const nlohmann::json& response, bool from_cache)
+	void NextHiLoCommand::set_response(const std::optional<nlohmann::json>& response, bool from_cache)
 	{
-		_result = std::make_shared<ResultType>(response.get<ResultType>());
+		_result = std::make_shared<ResultType>(response->get<ResultType>());
 	}
 
-	bool NextHiLoCommand::is_read_request() const noexcept
+	bool NextHiLoCommand::is_read_request() const
 	{
 		return true;
 	}

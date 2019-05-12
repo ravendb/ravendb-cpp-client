@@ -10,8 +10,7 @@
 #include "raven_test_definitions.h"
 
 namespace ravendb::client::tests::definitions
-{
-	
+{	
 	DocumentStoreScope::DocumentStoreScope(const std::string& db_name, bool is_secured, bool use_fiddler)
 	{
 		static const auto sec_conn_details = infrastructure::ConnectionDetailsHolder(
@@ -49,14 +48,19 @@ namespace ravendb::client::tests::definitions
 		ravendb::client::serverwide::DatabaseRecord rec{};
 		rec.database_name = _document_store->get_database();
 		serverwide::operations::CreateDatabaseOperation op(rec);
-		server_wide_req_exec->execute(op.get_command({}));
+		server_wide_req_exec->execute(*op.get_command({}));
 	}
 
 	DocumentStoreScope::~DocumentStoreScope()
 	{
-		auto op = ravendb::client::serverwide::operations::DeleteDatabasesOperation(
-			_document_store->get_database(), true, {}, std::chrono::seconds(20));
-		_document_store->get_request_executor()->execute(op.get_command({}));
+		try
+		{
+			auto op = ravendb::client::serverwide::operations::DeleteDatabasesOperation(
+				_document_store->get_database(), true, {}, std::chrono::seconds(20));
+			_document_store->get_request_executor()->execute(*op.get_command({}));
+		}
+		catch (...)
+		{}
 	}
 
 	std::shared_ptr<DocumentStoreScope> DocumentStoreScope::get_document_store(
@@ -69,5 +73,4 @@ namespace ravendb::client::tests::definitions
 			std::make_shared<DocumentStoreScope>(name.str(), true, use_fiddler) :
 			std::make_shared<DocumentStoreScope>(name.str(), false, use_fiddler);
 	}
-
 }

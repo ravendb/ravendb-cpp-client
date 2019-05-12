@@ -241,32 +241,32 @@ namespace ravendb::client::tests::client::lazy
 			auto session = store->open_session();
 
 			auto emp1 = std::make_shared<infrastructure::entities::Employee>();
-			emp1->first_name = "Boris";
+			emp1->firstName = "Boris";
 			emp1->id = "employees/1";
-			session.store(emp1, "employees/1");
+			session.store(emp1);
 
 			auto emp2 = std::make_shared<infrastructure::entities::Employee>();
-			emp2->first_name = "Vitaliy";
+			emp2->firstName = "Vitaliy";
 			emp2->id = "employees/2";
-			session.store(emp2, "employees/2");
+			session.store(emp2);
 
 			auto company = std::make_shared<infrastructure::entities::Company>();
 			company->name = "Pear";
 			company->id = "companies/1";
-			company->employees_ids = { "employees/1" ,"employees/2" };
-			session.store(company, "companies/1");
+			company->employeesIds = { "employees/1" ,"employees/2" };
+			session.store(company);
 
 			auto order1 = std::make_shared<infrastructure::entities::Order>();
 			order1->id = "orders/1";
 			order1->company = "companies/1";
 			order1->employee = "employees/1";
-			session.store(order1, "orders/1");
+			session.store(order1);
 
 			auto order2 = std::make_shared<infrastructure::entities::Order>();
 			order2->id = "orders/2";
 			order2->company = "companies/1";
 			order2->employee = "employees/2";
-			session.store(order2, "orders/2");
+			session.store(order2);
 
 			session.save_changes();			
 		}
@@ -274,8 +274,8 @@ namespace ravendb::client::tests::client::lazy
 			auto session = store->open_session();
 
 			auto lazy_order = session.advanced().lazily()
-				.include("Employee")
-				.include("Company")
+				.include("employee")
+				.include("company")
 				.load<infrastructure::entities::Order>("orders/1");
 
 			ASSERT_EQ(0, session.advanced().get_number_of_requests());
@@ -300,7 +300,7 @@ namespace ravendb::client::tests::client::lazy
 			std::vector<std::string> ids = { "orders/1", "orders/2" };
 
 			auto lazy_orders = session.advanced().lazily()
-				.include("Employee")
+				.include("employee")
 				.load<infrastructure::entities::Order>(ids.begin(), ids.end());
 
 			ASSERT_EQ(0, session.advanced().get_number_of_requests());
@@ -317,7 +317,7 @@ namespace ravendb::client::tests::client::lazy
 			ASSERT_EQ(1, session.advanced().get_number_of_requests());
 
 			auto empl = session.load<infrastructure::entities::Employee>("employees/1");
-			ASSERT_EQ("Boris", empl->first_name);
+			ASSERT_EQ("Boris", empl->firstName);
 			ASSERT_EQ(1, session.advanced().get_number_of_requests());
 		}
 	}
@@ -339,7 +339,7 @@ namespace ravendb::client::tests::client::lazy
 			session.store(user2, user2->id);
 
 			auto empl = std::make_shared<infrastructure::entities::Employee>();
-			empl->first_name = "Misha";
+			empl->firstName = "Misha";
 			session.store(empl, "employees/1");
 
 			session.save_changes();
@@ -356,7 +356,7 @@ namespace ravendb::client::tests::client::lazy
 
 			auto empl = lazy_load.get_value();
 
-			ASSERT_EQ("Misha", empl->first_name);
+			ASSERT_EQ("Misha", empl->firstName);
 
 			auto names = std::set<std::string>{ lazy_query.get_value()[0]->name, lazy_query.get_value()[1]->name };
 

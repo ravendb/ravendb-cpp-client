@@ -1,7 +1,5 @@
 #pragma once
-#include "stdafx.h"
 #include "json_utils.h"
-
 
 namespace ravendb::client::documents::commands
 {

@@ -97,32 +97,38 @@ namespace ravendb::client::documents::operations::indexes
 				, _page_size(std::move(page_size))
 			{}
 
-			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const ServerNode> node,
+				std::optional<std::string>& url_ref) override
 			{
 				std::ostringstream path_builder;
-				path_builder << node.url << "/databases/" << node.database
-					<< "/indexes/terms?name=" << impl::utils::url_escape(curl, _index_name)
-					<< "&field=" << impl::utils::url_escape(curl, _field)
-					<< "&fromValue=" << impl::utils::url_escape(curl, _from_value)
+				path_builder << node->url << "/databases/" << node->database
+					<< "/indexes/terms?name=" << http::url_encode(curl_ref, _index_name)
+					<< "&field=" << http::url_encode(curl_ref, _field)
+					<< "&fromValue=" << http::url_encode(curl_ref, _from_value)
 					<< "&pageSize=";
 				if (_page_size)
 				{
 					path_builder << _page_size.value();
 				}
 
-				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+				curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPGET, 1);
+				curl_ref.method = constants::methods::GET;
 
-				url = path_builder.str();
+				url_ref.emplace(path_builder.str());
 			}
 
-			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
+			void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override
 			{
+				if(!response)
+				{
+					throw_invalid_response();
+				}
 				_result = std::make_shared<ResultType>();
-				auto res = response.get<queries::TermsQueryResult>();
+				auto res = response->get<queries::TermsQueryResult>();
 				std::copy(res.terms.begin(), res.terms.end(), std::back_inserter(*_result));
 			}
 
-			bool is_read_request() const noexcept override
+			bool is_read_request() const override
 			{
 				return true;
 			}

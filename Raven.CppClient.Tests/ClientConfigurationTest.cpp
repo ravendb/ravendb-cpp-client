@@ -2,7 +2,7 @@
 #include "RavenTestDriver.h"
 #include "raven_test_definitions.h"
 #include "GetClientConfigurationOperation.h"
-#include "Raven.CppClient/PutClientConfigurationOperation.h"
+#include "PutClientConfigurationOperation.h"
 #include "MaintenanceOperationExecutor.h"
 
 namespace ravendb::client::tests::client::documents::operations::configuration
@@ -42,7 +42,9 @@ namespace ravendb::client::tests::client::documents::operations::configuration
 		store->maintenance()->send(save_operation);
 		
 		auto operation = ravendb::client::documents::operations::configuration::GetClientConfigurationOperation();
-		auto result = store->get_request_executor()->execute(operation.get_command(store->get_conventions()));
+		auto command = operation.get_command(store->get_conventions());
+		store->get_request_executor()->execute(*command);
+		auto result = command->get_result();
 
 		ASSERT_GE(result->etag, 0);
 

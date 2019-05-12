@@ -32,6 +32,7 @@ namespace ravendb::client::impl
 		//output in ISO8061 format : YYYY-MM-DDThh:mm:ss.sssssss(Z) or YYYY-MM-DDThh:mm:ss.sssssss±hh:mm
 		std::string to_string(bool add_Z_if_zero_offset = false) const;
 
+		friend std::ostream& operator<<(std::ostream& os, const DateTimeOffset& dt);
 
 		friend bool operator<(const DateTimeOffset& lhs, const DateTimeOffset& rhs);
 
@@ -40,9 +41,6 @@ namespace ravendb::client::impl
 		friend bool operator>(const DateTimeOffset& lhs, const DateTimeOffset& rhs);
 
 		friend bool operator>=(const DateTimeOffset& lhs, const DateTimeOffset& rhs);
-
-
-		friend std::ostream& operator<<(std::ostream& os, const DateTimeOffset& dt);
 
 		friend bool operator==(const DateTimeOffset& lhs, const DateTimeOffset& rhs);
 

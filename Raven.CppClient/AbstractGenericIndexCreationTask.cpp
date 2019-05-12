@@ -16,10 +16,10 @@ namespace ravendb::client::documents::indexes
 		indexes_strings.insert_or_assign(std::move(field), indexing);
 	}
 
-	void AbstractGenericIndexCreationTask::spacial(std::string field,
+	void AbstractGenericIndexCreationTask::spatial(std::string field,
 		std::function<spatial::SpatialOptions(const spatial::SpatialOptionsFactory&)> indexing)
 	{
-		spacial_options_strings.insert_or_assign(std::move(field), indexing(spatial::SpatialOptionsFactory()));
+		spatial_options_strings.insert_or_assign(std::move(field), indexing(spatial::SpatialOptionsFactory()));
 	}
 
 	void AbstractGenericIndexCreationTask::store_all_fields(FieldStorage storage)

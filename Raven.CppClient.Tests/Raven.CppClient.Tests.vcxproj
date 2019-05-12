@@ -45,6 +45,7 @@
     <ClInclude Include="ConnectionDetailsHolder.h" />
     <ClInclude Include="Contact.h" />
     <ClInclude Include="CreateSampleDataOperation.h" />
+    <ClCompile Include="ExistsTest.cpp" />
     <ClInclude Include="raven_test_definitions.h" />
     <ClInclude Include="ds_definitions.h" />
     <ClInclude Include="Employee.h" />
@@ -66,6 +67,7 @@
     <ClCompile Include="AdvancedPatchingTests.cpp" />
     <ClCompile Include="BasicQueryTests.cpp" />
     <ClCompile Include="BasicDocumentsSessionTests.cpp" />
+    <ClCompile Include="BoundingBoxIndexTest.cpp" />
     <ClCompile Include="ClientConfigurationTest.cpp" />
     <ClCompile Include="ConnectionDetailsHolder.cpp" />
     <ClCompile Include="CreateSampleDataOperation.cpp" />
@@ -76,7 +78,9 @@
     <ClCompile Include="IndexesFromClientTest.cpp" />
     <ClCompile Include="IndexOperationsTest.cpp" />
     <ClCompile Include="JavaScriptIndexTest.cpp" />
+    <ClCompile Include="LoadAllStartingWith.cpp" />
     <ClCompile Include="PutDocumentCommandTest.cpp" />
+    <ClCompile Include="RavenDB_8761.cpp" />
     <ClCompile Include="raven_test_definitions.cpp" />
     <ClCompile Include="DeleteTest.cpp" />
     <ClCompile Include="DocumentIdPropertyTest.cpp" />
@@ -154,6 +158,7 @@
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>C:\work\raven-cpp-client\Raven.CppClient;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

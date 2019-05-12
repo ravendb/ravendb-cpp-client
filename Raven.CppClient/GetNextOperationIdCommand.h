@@ -1,44 +1,40 @@
 #pragma once
 #include "stdafx.h"
 #include "RavenCommand.h"
-#include "ServerNode.h"
-
-using 
-	ravendb::client::http::RavenCommand,
-	ravendb::client::http::ServerNode;
 
 namespace ravendb::client::documents::commands
 {
 
-	class GetNextOperationIdCommand :public RavenCommand<int64_t>
+	class GetNextOperationIdCommand :public http::RavenCommand<int64_t>
 	{
 	public:
 
 		~GetNextOperationIdCommand() override = default;
 		GetNextOperationIdCommand() = default;
 
-		void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+		void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+			std::optional<std::string>& url_ref) override
 		{
-			std::ostringstream urlBuilder;
-			urlBuilder << node.url << "/databases/" << node.database
+			std::ostringstream url_builder;
+			url_builder << node->url << "/databases/" << node->database
 				<< "/operations/next-operation-id";
 
-			curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+			curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPGET, 1);
+			curl_ref.method = constants::methods::GET;
 
-			url = urlBuilder.str();
+			url_ref.emplace(url_builder.str());
 		}
 
-		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
+		void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override
 		{
 			_result = std::make_shared<ResultType>();
-			if(! impl::utils::json_utils::get_val_from_json(response, "Id", *_result))
+			if(! impl::utils::json_utils::get_val_from_json(*response, "Id", *_result))
 			{
-				throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::INVALID_RESPONSE);
+				_result.reset();
 			}
-			
 		}
 
-		bool is_read_request() const noexcept override
+		bool is_read_request() const override
 		{
 			return false;// disable caching
 		}

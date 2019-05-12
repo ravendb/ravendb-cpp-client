@@ -35,7 +35,7 @@ namespace ravendb::client::constants
 				constexpr char ALL_FIELDS[] = "__all_fields";
 				constexpr char SPATIAL_SHAPE_FIELD_NAME[] = "spatial(shape)";
 			}
-			namespace spacial
+			namespace spatial
 			{
 				constexpr double DEFAULT_DISTANCE_ERROR_PCT = 0.025;
 			}
@@ -77,7 +77,19 @@ namespace ravendb::client::constants
 		constexpr char TRANSFER_ENCODING[] = "Transfer-Encoding";
 		constexpr char CONTENT_ENCODING[] = "Content-Encoding";
 		constexpr char CONTENT_LENGTH[] = "Content-Length";
+		constexpr char CONTENT_TYPE[] = "Content-Type";
 	}
+	namespace methods
+	{
+		constexpr char GET[] = "GET";
+		constexpr char POST[] = "POST";
+		constexpr char PUT[] = "PUT";
+		constexpr char DELETE_[] = "DELETE";
+		constexpr char PATCH[] = "PATCH";
+		constexpr char RESET[] = "RESET";
+		constexpr char HEAD[] = "HEAD";
+	}
+
 	namespace counters
 	{
 		constexpr char ALL[] = "@all_counters";

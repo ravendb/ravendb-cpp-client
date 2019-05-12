@@ -9,14 +9,16 @@ namespace ravendb::client::tests::infrastructure
 		return std::make_unique<CreateSampleDataCommand>();
 	}
 
-	void CreateSampleDataOperation::CreateSampleDataCommand::create_request(CURL* curl, const http::ServerNode& node, std::string& url)
+	void CreateSampleDataOperation::CreateSampleDataCommand::create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+		std::optional<std::string>& url_ref)
 	{
 		std::ostringstream urlBuilder;
-		urlBuilder << node.url << "/databases/" << node.database << "/studio/sample-data";
+		urlBuilder << node->url << "/databases/" << node->database << "/studio/sample-data";
 
-		curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
-		curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, "");
+		curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPPOST, 1);
+		curl_easy_setopt(curl_ref.get(), CURLOPT_COPYPOSTFIELDS, "");
+		curl_ref.method = constants::methods::POST;
 
-		url = urlBuilder.str();
+		url_ref.emplace(urlBuilder.str());
 	}
 }

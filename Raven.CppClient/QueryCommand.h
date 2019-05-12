@@ -5,41 +5,39 @@
 #include "DocumentConventions.h"
 #include "IndexQuery.h"
 
-using
-	ravendb::client::http::RavenCommand,
-	ravendb::client::documents::queries::QueryResult,
-	ravendb::client::documents::conventions::DocumentConventions,
-	ravendb::client::documents::queries::IndexQuery;
-
 namespace ravendb::client::documents::commands
 {
-	class QueryCommand : public RavenCommand<QueryResult>
+	class QueryCommand : public http::RavenCommand<queries::QueryResult>
 	{
 	private:
-		const std::shared_ptr<DocumentConventions> _conventions;
-		IndexQuery _index_query;
+		const std::shared_ptr<conventions::DocumentConventions> _conventions;
+		queries::IndexQuery _index_query;
 		bool _metadata_only = false;
 		bool _index_entries_only = false;
 
 	public:
 		~QueryCommand() override = default;
 
-		QueryCommand(std::shared_ptr<DocumentConventions> conventions, IndexQuery index_query, bool metadata_only, bool index_entries_only)
+		QueryCommand(std::shared_ptr<conventions::DocumentConventions> conventions, queries::IndexQuery index_query,
+			bool metadata_only, bool index_entries_only)
 			: _conventions(conventions)
 			, _index_query(std::move(index_query))
 			, _metadata_only(metadata_only)
 			, _index_entries_only(index_entries_only)
 		{}
 
-		void create_request(CURL* curl, const http::ServerNode& node, std::string& url) override
+		void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+			std::optional<std::string>& url_ref) override
 		{
 			_can_cache = !_index_query.disable_caching;
 
 			// we won't allow aggressive caching of queries with WaitForNonStaleResults
 			_can_cache_aggressively = _can_cache && !_index_query.wait_for_non_stale_results;
 
+			auto curl = curl_ref.get();
 			std::ostringstream path_builder;
-			path_builder << node.url << "/databases/" << node.database
+
+			path_builder << node->url << "/databases/" << node->database
 				<< "/queries?";// TODO << "queryHash=" << _index_query.get_query_hash;
 		
 			if(_metadata_only)
@@ -52,20 +50,37 @@ namespace ravendb::client::documents::commands
 			}
 
 			curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
+			curl_ref.method = constants::methods::POST;
 
 			auto&& json_str = nlohmann::json(_index_query).dump();
 
 			curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, json_str.c_str());
 
-			url = path_builder.str();
+			curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE, "application/json");
+
+			url_ref.emplace(path_builder.str());
 		}
 
-		void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
+		void  set_response(const std::optional<nlohmann::json>& response, bool from_cache) override
 		{
-			_result = std::make_shared<ResultType>(response.get<ResultType>());
+			if(!response)
+			{
+				_result.reset();
+				return;
+			}
+			_result = std::make_shared<ResultType>(response->get<ResultType>());
+			//TODO
+			//if (fromCache) {
+			//	result.setDurationInMs(-1);
+
+			//	if (result.getTimings() != null) {
+			//		result.getTimings().setDurationInMs(-1);
+			//		result.setTimings(null);
+			//	}
+			//}
 		}
 		
-		bool is_read_request() const noexcept override
+		bool is_read_request() const override
 		{
 			return true;
 		}

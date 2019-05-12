@@ -11,7 +11,7 @@ namespace ravendb::client::tests::client::documents::commands
 	protected:
 		void customise_store(std::shared_ptr<ravendb::client::documents::DocumentStore> store) override
 		{
-			//store->set_before_perform(infrastructure::set_for_fiddler);
+			store->set_before_perform(infrastructure::set_for_fiddler);
 		}
 	};
 
@@ -22,6 +22,6 @@ namespace ravendb::client::tests::client::documents::commands
 		auto command = ravendb::client::documents::commands::GetNextOperationIdCommand();
 		store->get_request_executor()->execute(command);
 
-		ASSERT_GE(*command.get_result(), 0);
+		ASSERT_TRUE(command.get_result());
 	}
 }

@@ -2,13 +2,7 @@
 #include "stdafx.h"
 #include "IMaintenanceOperation.h"
 #include "RavenCommand.h"
-#include "ServerNode.h"
 #include "json_utils.h"
-
-using
-ravendb::client::http::RavenCommand,
-ravendb::client::http::ServerNode;
-
 
 namespace ravendb::client::documents::operations::indexes
 {
@@ -26,14 +20,14 @@ namespace ravendb::client::documents::operations::indexes
 			, _page_size(page_size)
 		{}
 
-		std::unique_ptr<RavenCommand<std::vector<std::string>>> get_command(
+		std::unique_ptr<http::RavenCommand<std::vector<std::string>>> get_command(
 			std::shared_ptr<conventions::DocumentConventions> conventions) const override
 		{
 			return std::make_unique<GetIndexNamesCommand>(_start, _page_size);
 		}
 
 	private:
-		class GetIndexNamesCommand : public RavenCommand<std::vector<std::string>>
+		class GetIndexNamesCommand : public http::RavenCommand<std::vector<std::string>>
 		{
 		private:
 			const int32_t _start;
@@ -47,29 +41,35 @@ namespace ravendb::client::documents::operations::indexes
 				, _page_size(page_size)
 			{}
 
-			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+				std::optional<std::string>& url_ref) override
 			{
 				std::ostringstream path_builder;
-				path_builder << node.url << "/databases/" << node.database
+				path_builder << node->url << "/databases/" << node->database
 					<< "/indexes?start=" << _start << "&pageSize=" << _page_size
 					<< "&namesOnly=true";
 
-				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+				curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPGET, 1);
+				curl_ref.method = constants::methods::GET;
 
-				url = path_builder.str();
+				url_ref.emplace(path_builder.str());
 			}
 
-			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
+			void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override
 			{
-				_result = std::make_shared<ResultType>();
-				if(! impl::utils::json_utils::get_val_from_json(response, "Results", *_result))
+				if(!response)
 				{
-					throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::INVALID_RESPONSE);
+					throw_invalid_response();
 				}
-				
+
+				_result = std::make_shared<ResultType>();
+				if(! impl::utils::json_utils::get_val_from_json(*response, "Results", *_result))
+				{
+					throw_invalid_response();
+				}
 			}
 
-			bool is_read_request() const noexcept override
+			bool is_read_request() const override
 			{
 				return true;
 			}

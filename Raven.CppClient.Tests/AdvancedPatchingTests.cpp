@@ -60,7 +60,8 @@ namespace ravendb::client::tests::old_tests
 		void TearDown() override
 		{
 			auto  get_docs_cmd = documents::commands::GetDocumentsCommand({}, {}, {}, {}, 0, 100, true);
-			auto results = test_suite_executor->get().execute(get_docs_cmd);
+			test_suite_executor->get().execute(get_docs_cmd);
+			auto results = get_docs_cmd.get_result();
 			for (const auto& res : results->results)
 			{
 				auto del_doc_cmd = documents::commands::DeleteDocumentCommand(res["@metadata"]["@id"].get<std::string>());
@@ -74,20 +75,24 @@ namespace ravendb::client::tests::old_tests
 		using namespace adv_patching_tests;
 		auto custom_type = CustomType{ "CustomTypes/1","me" };
 		auto put_doc_cmd = documents::commands::PutDocumentCommand(custom_type.id, {}, custom_type);
-		auto&& res1 = test_suite_executor->get().execute(put_doc_cmd);
+		test_suite_executor->get().execute(put_doc_cmd);
+		auto&& res1 = put_doc_cmd.get_result();
 		ASSERT_EQ(res1->id, custom_type.id);
 
 		auto patch = documents::operations::PatchRequest("this.Owner = args.v1");
 		patch.values = { {"v1","someone else"} };
 		auto op = documents::operations::PatchOperation(custom_type.id, {}, patch);
 
-		HttpCache cache;
-		auto&& res2 = test_suite_executor->get().execute(op.get_command(documents::DocumentStore::create(), {}, cache));
+		http::HttpCache cache;
+		auto cmd = op.get_command(documents::DocumentStore::create(), {}, cache);
+		test_suite_executor->get().execute(*cmd);
+		auto&& res2 = cmd->get_result();
 
 		ASSERT_EQ(res2->status, documents::operations::PatchStatus::PATCHED);
 
 		auto get_doc_cmd = documents::commands::GetDocumentsCommand(custom_type.id, {}, false);
-		auto&& res3 = test_suite_executor->get().execute(get_doc_cmd);
+		test_suite_executor->get().execute(get_doc_cmd);
+		auto&& res3 = get_doc_cmd.get_result();
 
 		CustomType ret_custom_type = res3->results[0].get<CustomType>();
 		ASSERT_EQ(ret_custom_type.owner, "someone else");

@@ -2,28 +2,20 @@
 #include "stdafx.h"
 #include "IMaintenanceOperation.h"
 #include "RavenCommand.h"
-#include "ServerNode.h"
 #include "PutIndexResult.h"
 #include "IndexDefinition.h"
-#include "utils.h"
-
-using
-	ravendb::client::http::RavenCommand,
-	ravendb::client::http::ServerNode,
-	ravendb::client::documents::indexes::IndexDefinition,
-	ravendb::client::documents::indexes::PutIndexResult;
 
 namespace ravendb::client::documents::operations::indexes
 {
-	class PutIndexesOperation : public IMaintenanceOperation<std::vector<PutIndexResult>>
+	class PutIndexesOperation : public IMaintenanceOperation<std::vector<documents::indexes::PutIndexResult>>
 	{
 	private:
-		const std::vector<IndexDefinition> _index_to_add;
+		const std::vector<documents::indexes::IndexDefinition> _index_to_add;
 
 	public:
 		~PutIndexesOperation() override = default;
 
-		explicit PutIndexesOperation(std::vector<IndexDefinition> index_to_add)
+		explicit PutIndexesOperation(std::vector<documents::indexes::IndexDefinition> index_to_add)
 			: _index_to_add([&]()
 			{
 				if(index_to_add.size() == 0)
@@ -37,14 +29,14 @@ namespace ravendb::client::documents::operations::indexes
 			}())
 		{}
 		
-		std::unique_ptr<RavenCommand<std::vector<PutIndexResult>>> get_command(
+		std::unique_ptr<http::RavenCommand<std::vector<documents::indexes::PutIndexResult>>> get_command(
 			std::shared_ptr<conventions::DocumentConventions> conventions) const override
 		{
 			return std::make_unique<PutIndexesCommand>(_index_to_add);
 		}
 
 	private:
-		class PutIndexesCommand : public RavenCommand<std::vector<PutIndexResult>>
+		class PutIndexesCommand : public http::RavenCommand<std::vector<documents::indexes::PutIndexResult>>
 		{
 		private:
 			const std::vector<nlohmann::json> _index_to_add;
@@ -53,7 +45,7 @@ namespace ravendb::client::documents::operations::indexes
 		public:
 			~PutIndexesCommand() override = default;
 
-			explicit PutIndexesCommand(const std::vector<IndexDefinition>& indexes_to_add)
+			explicit PutIndexesCommand(const std::vector<documents::indexes::IndexDefinition>& indexes_to_add)
 				: _index_to_add([&]
 				{
 					if (indexes_to_add.size() == 0)
@@ -76,31 +68,35 @@ namespace ravendb::client::documents::operations::indexes
 				}())
 			{}
 
-			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+				std::optional<std::string>& url_ref) override
 			{
+				auto curl = curl_ref.get();
 				std::ostringstream path_builder;
-				path_builder << node.url << "/databases/" << node.database
+
+				path_builder << node->url << "/databases/" << node->database
 					<< "/admin/indexes";
 
-				curl_easy_setopt(curl, CURLOPT_READFUNCTION, ravendb::client::impl::utils::read_callback);
 				curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 				curl_easy_setopt(curl, CURLOPT_PUT, 1L);
+				curl_ref.method = constants::methods::PUT;
+				curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
 				curl_easy_setopt(curl, CURLOPT_READDATA, &_index_to_add_str);
 				curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_index_to_add_str.length());
 
-				url = path_builder.str();
+				url_ref.emplace(path_builder.str());
 			}
 
-			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
+			void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override
 			{
 				_result = std::make_shared<ResultType>();
-				if (!impl::utils::json_utils::get_val_from_json(response, "Results", *_result))
+				if (!impl::utils::json_utils::get_val_from_json(*response, "Results", *_result))
 				{
 					throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::INVALID_RESPONSE);
 				}
 			}
 
-			bool is_read_request() const noexcept override
+			bool is_read_request() const override
 			{
 				return false;
 			}

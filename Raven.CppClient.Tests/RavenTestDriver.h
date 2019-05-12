@@ -4,7 +4,6 @@
 #include "DocumentStore.h"
 #include "DatabaseRecord.h"
 
-
 namespace ravendb::client::tests::driver
 {
 	class RavenTestDriver : public ::testing::Test

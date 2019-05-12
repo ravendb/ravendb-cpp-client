@@ -175,6 +175,8 @@
     <ClInclude Include="CommandType.h" />
     <ClInclude Include="CompareStringsIgnoreCase.h" />
     <ClInclude Include="CounterIncludesToken.h" />
+    <ClInclude Include="CurlResponse.h" />
+    <ClInclude Include="CurrentIndexAndNode.h" />
     <ClInclude Include="DatabaseStatistics.h" />
     <ClInclude Include="DeclareToken.h" />
     <ClInclude Include="DistinctToken.h" />
@@ -205,6 +207,7 @@
     <ClInclude Include="GroupByMethod.h" />
     <ClInclude Include="GroupBySumToken.h" />
     <ClInclude Include="GroupByToken.h" />
+    <ClInclude Include="HeadDocumentCommand.h" />
     <ClInclude Include="HighlightingOptions.h" />
     <ClInclude Include="Highlightings.h" />
     <ClInclude Include="HighlightingToken.h" />
@@ -213,10 +216,12 @@
     <ClInclude Include="HiLoReturnCommand.h" />
     <ClInclude Include="HttpStatus.h" />
     <ClInclude Include="EagerSessionOperations.h" />
+    <ClInclude Include="HttpExtensions.h" />
     <ClInclude Include="IDocumentQuery.h" />
     <ClInclude Include="IDocumentQueryBase.h" />
     <ClInclude Include="IDocumentQueryBaseSingle.h" />
     <ClInclude Include="IEnumerableQuery.h" />
+    <ClInclude Include="IExecutorService.h" />
     <ClInclude Include="IFilterDocumentQueryBase.h" />
     <ClInclude Include="IGroupByDocumentQuery.h" />
     <ClInclude Include="ILazyOperation.h" />
@@ -235,6 +240,8 @@
     <ClInclude Include="LazyQueryOperation.h" />
     <ClInclude Include="LazySessionOperations.h" />
     <ClInclude Include="LazySessionOperationsImpl.h" />
+    <ClInclude Include="LazyStartsWithOperation.h" />
+    <ClInclude Include="LoadStartingWithOperation.h" />
     <ClInclude Include="LoadToken.h" />
     <ClInclude Include="MethodCall.h" />
     <ClInclude Include="MillisToTimespanConverter.h" />
@@ -328,6 +335,8 @@
     <ClInclude Include="MultiTypeHiLoIdGenerator.h" />
     <ClInclude Include="NegateToken.h" />
     <ClInclude Include="NextHiLoCommand.h" />
+    <ClInclude Include="NodeSelector.h" />
+    <ClInclude Include="NodeStatus.h" />
     <ClInclude Include="OpenSubclauseToken.h" />
     <ClInclude Include="OperationExecutor.h" />
     <ClInclude Include="OperationIdResult.h" />
@@ -374,6 +383,7 @@
     <ClInclude Include="ReplicationBatchOptions.h" />
     <ClInclude Include="RequestExecutor.h" />
     <ClInclude Include="ResetIndexOperation.h" />
+    <ClInclude Include="ResponseDisposeHandling.h" />
     <ClInclude Include="ResponseTimeInformation.h" />
     <ClInclude Include="ScriptResolver.h" />
     <ClInclude Include="SearchOperator.h" />
@@ -407,7 +417,10 @@
     <ClInclude Include="SuggestionWithTerms.h" />
     <ClInclude Include="SuggestToken.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TasksScheduler.h" />
     <ClInclude Include="TermsQueryResult.h" />
+    <ClInclude Include="TasksExecutor.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="TimingsToken.h" />
     <ClInclude Include="Topology.h" />
     <ClInclude Include="TransactionMode.h" />
@@ -435,14 +448,20 @@
     <ClCompile Include="CounterIncludesToken.cpp" />
     <ClCompile Include="CreateDatabaseOperation.cpp" />
     <ClCompile Include="CurlHandlesHolder.cpp" />
+    <ClCompile Include="CurlResponse.cpp" />
     <ClCompile Include="ExplanationOptions.cpp" />
     <ClCompile Include="Explanations.cpp" />
     <ClCompile Include="GroupBy.cpp" />
     <ClCompile Include="HighlightingOptions.cpp" />
     <ClCompile Include="Highlightings.cpp" />
+    <ClCompile Include="HttpExtensions.cpp" />
+    <ClCompile Include="LoadOperation.cpp" />
+    <ClCompile Include="LoadStartingWithOperation.cpp" />
     <ClCompile Include="MoreLikeThisOptions.cpp" />
     <ClCompile Include="MoreLikeThisScope.cpp" />
     <ClCompile Include="NegateToken.cpp" />
+    <ClCompile Include="NodeSelector.cpp" />
+    <ClCompile Include="NodeStatus.cpp" />
     <ClCompile Include="OrderByToken.cpp" />
     <ClCompile Include="PointField.cpp" />
     <ClCompile Include="QueryData.cpp" />
@@ -451,6 +470,7 @@
     <ClCompile Include="QueryOperatorToken.cpp" />
     <ClCompile Include="QueryStatistics.cpp" />
     <ClCompile Include="QueryTimings.cpp" />
+    <ClCompile Include="RavenCommand.cpp" />
     <ClCompile Include="ShapeToken.cpp" />
     <ClCompile Include="SpatialCriteria.cpp" />
     <ClCompile Include="SpatialCriteriaFactory.cpp" />

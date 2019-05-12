@@ -1,14 +1,8 @@
 #pragma once
-#include "stdafx.h"
-#include "RavenCommand.h"
 #include "IOperation.h"
 #include "PatchResult.h"
 #include "PatchRequest.h"
 #include "utils.h"
-
-using
-ravendb::client::http::RavenCommand,
-ravendb::client::http::ServerNode;
 
 namespace ravendb::client::documents::operations
 {
@@ -55,25 +49,25 @@ namespace ravendb::client::documents::operations
 			, _skip_patch_if_change_vector_mismatch(skip_patch_if_change_vector_mismatch)
 		{}
 
-		std::unique_ptr<RavenCommand<PatchResult>> get_command
-			(std::shared_ptr<IDocumentStore> store, std::shared_ptr<DocumentConventions> conventions, HttpCache& cache) const override
+		std::unique_ptr<http::RavenCommand<PatchResult>> get_command
+			(std::shared_ptr<IDocumentStore> store, std::shared_ptr<conventions::DocumentConventions> conventions, http::HttpCache& cache) const override
 		{
 			return std::make_unique<PatchCommand>(conventions, _id, _change_vector, _patch, _patch_if_missing,
 				_skip_patch_if_change_vector_mismatch, false, false);
 		}
 
-		std::unique_ptr<RavenCommand<PatchResult>> get_command
-			(std::shared_ptr<IDocumentStore> store, std::shared_ptr<DocumentConventions> conventions, HttpCache& cache,
+		std::unique_ptr<http::RavenCommand<PatchResult>> get_command
+			(std::shared_ptr<IDocumentStore> store, std::shared_ptr<conventions::DocumentConventions> conventions, http::HttpCache& cache,
 			 bool return_debug_information, bool test) const
 		{
 			return std::make_unique<PatchCommand>(conventions, _id, _change_vector, _patch, _patch_if_missing,
 				_skip_patch_if_change_vector_mismatch, return_debug_information, test);
 		}
 
-		class PatchCommand : public RavenCommand<PatchResult>
+		class PatchCommand : public http::RavenCommand<PatchResult>
 		{
 		private:
-			const std::shared_ptr<DocumentConventions> _conventions;//TODO currently unused, check later
+			const std::shared_ptr<conventions::DocumentConventions> _conventions;//TODO currently unused, check later
 			const std::string _id;
 			const std::optional<std::string> _change_vector;
 			const std::string _patch_str;
@@ -84,7 +78,7 @@ namespace ravendb::client::documents::operations
 		public:
 			~PatchCommand() override = default;
 
-			PatchCommand(std::shared_ptr<DocumentConventions> conventions,
+			PatchCommand(std::shared_ptr<conventions::DocumentConventions> conventions,
 				std::string id, std::optional<std::string> change_vector, const PatchRequest& patch,
 				const std::optional<PatchRequest>& patch_if_missing, bool skip_patch_if_change_vector_mismatch,
 				bool return_debug_information, bool test)
@@ -121,11 +115,14 @@ namespace ravendb::client::documents::operations
 				, _test(test)
 			{}
 
-			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+				std::optional<std::string>& url_ref) override
 			{
+				auto curl = curl_ref.get();
 				std::ostringstream path_builder;
-				path_builder << node.url << "/databases/" << node.database <<
-					"/docs?id=" << impl::utils::url_escape(curl, _id);
+
+				path_builder << node->url << "/databases/" << node->database <<
+					"/docs?id=" << http::url_encode(curl, _id);
 				if(_skip_patch_if_change_vector_mismatch)
 				{
 					path_builder << "&skipPatchIfChangeVectorMismatch=true";
@@ -139,23 +136,29 @@ namespace ravendb::client::documents::operations
 					path_builder << "&test=true";
 				}
 
-				curl_easy_setopt(curl, CURLOPT_READFUNCTION, impl::utils::read_callback);
+				curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
 				curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 				curl_easy_setopt(curl, CURLOPT_READDATA, &_patch_str);
 				curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_patch_str.length());
 				curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
+				curl_ref.method = constants::methods::PATCH;
 
-				add_change_vector_if_not_null(curl, _change_vector);
+				curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE, "application/json");
+				add_change_vector_if_not_null(curl_ref, _change_vector);
 
-				url = path_builder.str();
+				url_ref.emplace(path_builder.str());
 			}
 
-			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
+			void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override
 			{
-				_result = std::make_shared<ResultType>(response.get<ResultType>());
+				if(!response)
+				{
+					return;
+				}
+				_result = std::make_shared<ResultType>(response->get<ResultType>());
 			}
 
-			bool is_read_request() const noexcept override
+			bool is_read_request() const override
 			{
 				return false;
 			}

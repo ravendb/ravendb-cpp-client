@@ -24,7 +24,7 @@ namespace ravendb::client::http
 	{
 		std::string url{};
 		std::string database{};
-		std::string clusterTag{};
+		std::string cluster_tag{};
 		Role server_role = Role::NONE;
 
 		ServerNode() = default;
@@ -32,16 +32,73 @@ namespace ravendb::client::http
 		ServerNode(std::string url, std::string db, std::string tag, Role role = Role::NONE)
 			: url(std::move(url))
 			, database(std::move(db))
-			, clusterTag(std::move(tag))
+			, cluster_tag(std::move(tag))
 			, server_role(role)
 		{}
 
-		bool operator==(const ServerNode& other)
+		friend bool operator==(const ServerNode& lhs, const ServerNode& rhs)
 		{
-			return (&other == this)||(this->url == other.url && this->database == other.database);
+			return lhs.url == rhs.url
+				&& lhs.database == rhs.database;
 		}
 
+		friend bool operator!=(const ServerNode& lhs, const ServerNode& rhs)
+		{
+			return !(lhs == rhs);
+		}
 	};
 
 	void from_json(const nlohmann::json& j, ServerNode& sn);
+
+	struct CompareSharedPtrConstServerNode
+	{
+		bool operator()(std::shared_ptr<const ServerNode> lhs, std::shared_ptr<const ServerNode> rhs) const
+		{
+			return lhs ? (rhs ? *lhs == *rhs : false) : !rhs;
+		}
+	};
+}
+
+namespace std
+{
+	template<>
+	struct hash<ravendb::client::http::ServerNode>
+	{
+		typedef ravendb::client::http::ServerNode argument_type;
+		typedef std::size_t result_type;
+		//hash calculation as in the Java client
+		result_type operator()(argument_type const& a) const noexcept
+		{
+			const auto
+				val1 = std::hash<std::string>{}(a.url),
+				val2 = std::hash<std::string>{}(a.database);
+			return val1 * 31 + val2;
+		}
+	};
+
+	template<>
+	struct hash<std::shared_ptr<ravendb::client::http::ServerNode>>
+	{
+		typedef std::shared_ptr<ravendb::client::http::ServerNode> argument_type;
+		typedef std::size_t result_type;
+		//hash calculation as in the Java client
+		result_type operator()(argument_type const& a) const noexcept
+		{
+			return a ? std::hash<ravendb::client::http::ServerNode>{}(*a) : 0;
+		}
+	};
+
+	template<>
+	struct hash<std::shared_ptr<const ravendb::client::http::ServerNode>>
+	{
+		typedef std::shared_ptr<const ravendb::client::http::ServerNode> argument_type;
+		typedef std::size_t result_type;
+		//hash calculation as in the Java client
+		result_type operator()(argument_type const& a) const noexcept
+		{
+			return std::hash<std::shared_ptr<ravendb::client::http::ServerNode>>{}(
+				std::const_pointer_cast<ravendb::client::http::ServerNode>(
+					const_cast<std::shared_ptr<const ravendb::client::http::ServerNode>&>(a)));
+		}
+	};
 }

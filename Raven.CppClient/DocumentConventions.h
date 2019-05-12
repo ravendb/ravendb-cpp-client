@@ -125,7 +125,7 @@ namespace ravendb::client::documents::conventions
 		std::optional<std::string> get_cpp_class(const std::string& id, const nlohmann::json& document);
 		std::string get_cpp_class_name(std::type_index entity_type);
 
-		void update_from(const operations::configuration::ClientConfiguration& configuration);
+		void update_from(const std::optional<operations::configuration::ClientConfiguration>& configuration);
 
 		static std::string default_transform_collection_name_to_document_id_prefix(const std::string& collection_name);
 

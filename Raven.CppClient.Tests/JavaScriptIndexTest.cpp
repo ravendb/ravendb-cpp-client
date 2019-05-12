@@ -113,7 +113,7 @@ namespace javascript_index_test
 		~UsersByName() override = default;
 		UsersByName()
 		{
-			SET_DEFAULT_INDEX_NAME;
+			SET_DEFAULT_INDEX_NAME();
 
 			set_maps({ "map('Users', function(u) { return { name: u.name, count : 1 } })" });
 		}
@@ -125,7 +125,7 @@ namespace javascript_index_test
 		~UsersByNameWithAdditionalSources() override = default;
 		UsersByNameWithAdditionalSources()
 		{
-			SET_DEFAULT_INDEX_NAME;
+			SET_DEFAULT_INDEX_NAME();
 
 			set_maps({ "map('Users', function(u) { return { name: mr(u.name)}; })" });
 			std::unordered_map<std::string, std::string> additional_sources{};
@@ -140,7 +140,7 @@ namespace javascript_index_test
 		~FanoutByNumbersWithReduce() override = default;
 		FanoutByNumbersWithReduce()
 		{
-			SET_DEFAULT_INDEX_NAME;
+			SET_DEFAULT_INDEX_NAME();
 
 			std::string map = R"(
 				map('Fanouts', function (f)
@@ -189,7 +189,7 @@ namespace javascript_index_test
 		~UsersByNameAndAnalyzedName() override = default;
 		UsersByNameAndAnalyzedName()
 		{
-			SET_DEFAULT_INDEX_NAME;
+			SET_DEFAULT_INDEX_NAME();
 
 			std::string map = R"(
 				map('Users', function (u){
@@ -236,7 +236,7 @@ namespace javascript_index_test
 		~UsersAndProductsByName() override = default;
 		UsersAndProductsByName()
 		{
-			SET_DEFAULT_INDEX_NAME;
+			SET_DEFAULT_INDEX_NAME();
 
 			set_maps({ "map('Users', function (u){ return { name: u.name, count: 1};})", "map('Products', function (p){ return { name: p.name, count: 1};})" });
 		}
@@ -248,7 +248,7 @@ namespace javascript_index_test
 		~UsersAndProductsByNameAndCount() override = default;
 		UsersAndProductsByNameAndCount()
 		{
-			SET_DEFAULT_INDEX_NAME;
+			SET_DEFAULT_INDEX_NAME();
 
 			set_maps({ "map('Users', function (u){ return { name: u.name, count: 1};})", "map('Products', function (p){ return { name: p.name, count: 1};})" });
 			set_reduce(R"(
@@ -266,7 +266,7 @@ namespace javascript_index_test
 		~Products_ByCategory() override = default;
 		Products_ByCategory()
 		{
-			SET_DEFAULT_INDEX_NAME;
+			SET_DEFAULT_INDEX_NAME();
 
 			std::string map = R"(
 				map('products', function(p){

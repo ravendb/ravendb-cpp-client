@@ -60,7 +60,7 @@ namespace ravendb::client::tests::client
 		{
 			auto session = store->open_session();
 			auto user1 = std::make_shared<infrastructure::entities::User>();
-			user1->last_name = "user1";
+			user1->lastName = "user1";
 			session.store(user1, "users/1");
 			session.save_changes();
 		}
@@ -70,11 +70,11 @@ namespace ravendb::client::tests::client
 		auto result = documents_command.get_result();
 
 		auto user_json = result->results.at(0);
-		ASSERT_TRUE(user_json.find("LastName") != user_json.end());
+		ASSERT_TRUE(user_json.find("lastName") != user_json.end());
 
 		{
 			auto session = store->open_session();
-			auto users = session.advanced().raw_query<infrastructure::entities::User>("from Users where LastName = 'user1'")->to_list();
+			auto users = session.advanced().raw_query<infrastructure::entities::User>("from Users where lastName = 'user1'")->to_list();
 
 			ASSERT_EQ(1, users.size());
 		}
@@ -94,7 +94,7 @@ namespace ravendb::client::tests::client
 
 		auto session = store->open_session();
 		auto user1 = std::make_shared<infrastructure::entities::User>();
-		user1->last_name = "user1";
+		user1->lastName = "user1";
 		session.store(user1, "users/1");
 		
 		auto user2 = std::make_shared<infrastructure::entities::User>();
@@ -141,7 +141,7 @@ namespace ravendb::client::tests::client
 
 		auto session = store->open_session();
 		auto user1 = std::make_shared<infrastructure::entities::User>();
-		user1->last_name = "user1";
+		user1->lastName = "user1";
 		session.store(user1, "users/1");
 
 		auto user2 = std::make_shared<infrastructure::entities::User>();

@@ -19,18 +19,17 @@ namespace ravendb::client::documents::commands::multi_get
 		{
 			bool are_errors = false;
 
-			switch (status_code)
+			switch (static_cast<http::HttpStatus>(status_code))
 			{
-			case 0:
-			case (int32_t)http::HttpStatus::SC_OK:
-			case (int32_t)http::HttpStatus::SC_CREATED:
-			case (int32_t)http::HttpStatus::SC_NON_AUTHORITATIVE_INFORMATION:
-			case (int32_t)http::HttpStatus::SC_NO_CONTENT:
-			case (int32_t)http::HttpStatus::SC_NOT_MODIFIED:
-			case (int32_t)http::HttpStatus::SC_NOT_FOUND:
+			case http::HttpStatus::SC_OK:
+			case http::HttpStatus::SC_CREATED:
+			case http::HttpStatus::SC_NON_AUTHORITATIVE_INFORMATION:
+			case http::HttpStatus::SC_NO_CONTENT:
+			case http::HttpStatus::SC_NOT_MODIFIED:
+			case http::HttpStatus::SC_NOT_FOUND:
 				break;
 			default:
-				are_errors = true;
+				are_errors = status_code != 0;
 				break;
 			}
 			return are_errors;

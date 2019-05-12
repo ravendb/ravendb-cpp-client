@@ -42,15 +42,15 @@ namespace ravendb::client::tests::client::indexing
 			~Users_ByName() override = default;
 			Users_ByName()
 			{
-				SET_DEFAULT_INDEX_NAME;
+				SET_DEFAULT_INDEX_NAME();
 
-				map = "from u in docs.Users select new { u.Name }";
+				map = "from u in docs.Users select new { u.name }";
 
-				index("Name", documents::indexes::FieldIndexing::SEARCH);
+				index("name", documents::indexes::FieldIndexing::SEARCH);
 
-				index_suggestions.insert("Name");
+				index_suggestions.insert("name");
 
-				store("Name", documents::indexes::FieldStorage::YES);
+				store("name", documents::indexes::FieldStorage::YES);
 			}
 		};
 
@@ -60,7 +60,7 @@ namespace ravendb::client::tests::client::indexing
 			~UsersIndex() override = default;
 			UsersIndex()
 			{
-				SET_DEFAULT_INDEX_NAME;
+				SET_DEFAULT_INDEX_NAME();
 
 				map = "from user in docs.users select new { user.Name }";
 			}
@@ -226,7 +226,7 @@ namespace ravendb::client::tests::client::indexing
 
 			auto users = session.query<infrastructure::entities::User, Users_ByName>()
 				->wait_for_non_stale_results()
-				->where_equals("Name", "Alexey")
+				->where_equals("name", "Alexey")
 				->to_list();
 
 			ASSERT_EQ(1, users.size());
@@ -242,9 +242,9 @@ namespace ravendb::client::tests::client::indexing
 		ASSERT_EQ(documents::indexes::IndexPriority::NORMAL, stats->priority);
 
 		store->maintenance()->send(documents::operations::indexes::SetIndexesLockOperation(index.name,
-			IndexLockMode::LOCKED_IGNORE));
+			documents::indexes::IndexLockMode::LOCKED_IGNORE));
 		store->maintenance()->send(documents::operations::indexes::SetIndexesPriorityOperation(index.name,
-			IndexPriority::LOW));
+		documents::indexes::IndexPriority::LOW));
 
 		stats = store->maintenance()->send(documents::operations::indexes::GetIndexStatisticsOperation(index.name));
 
@@ -276,14 +276,14 @@ namespace ravendb::client::tests::client::indexing
 			auto users = session.query<infrastructure::entities::User>()
 				->wait_for_non_stale_results()
 				->statistics(stats_ref)
-				->where_equals("Name", "Alexey")
+				->where_equals("name", "Alexey")
 				->to_list();
 
 			index_name = stats_ref->index_name;
 		}
 
 		auto terms = store->maintenance()->send(documents::operations::indexes::GetTermsOperation(
-			index_name, "Name", {}, 128));
+			index_name, "name", {}, 128));
 
 		ASSERT_EQ(2, terms->size());
 
@@ -315,7 +315,7 @@ namespace ravendb::client::tests::client::indexing
 			auto users = session.query<infrastructure::entities::User>()
 				->wait_for_non_stale_results()
 				->statistics(stats_ref)
-				->where_equals("Name", "Alexey")
+				->where_equals("name", "Alexey")
 				->to_list();
 
 			index_name = stats_ref->index_name;

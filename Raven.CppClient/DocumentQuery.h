@@ -33,7 +33,7 @@ namespace ravendb::client::documents::session
 			std::optional<std::string> index_name,
 			std::optional<std::string> collection_name, bool is_group_by);
 
-		std::shared_ptr<DocumentConventions> get_conventions() const;
+		std::shared_ptr<conventions::DocumentConventions> get_conventions() const;
 
 		std::vector<std::shared_ptr<T>> to_list(const std::optional<DocumentInfo::FromJsonConverter>& from_json = {});
 
@@ -66,16 +66,16 @@ namespace ravendb::client::documents::session
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> wait_for_non_stale_results(const std::optional<std::chrono::milliseconds>& wait_timeout = {});
 
-		IndexQuery get_index_query() const;
+		queries::IndexQuery get_index_query() const;
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_parameter(std::string name, nlohmann::json object);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_order(const std::string& field_name,
 			bool descending, OrderingType ordering = OrderingType::STRING);
 
-		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_after_query_executed_listener(std::function<void(const QueryResult&)> action);
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_after_query_executed_listener(std::function<void(const queries::QueryResult&)> action);
 
-		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> remove_after_query_executed_listener(std::function<void(const QueryResult&)> action);
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> remove_after_query_executed_listener(std::function<void(const queries::QueryResult&)> action);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_after_stream_executed_listener(std::function<void(const nlohmann::json&)> action);
 
@@ -115,7 +115,7 @@ namespace ravendb::client::documents::session
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> skip(int32_t count);
 
-		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_Lucene(const std::string& field_name, const std::string& where_clause, bool exact = false);
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_lucene(const std::string& field_name, const std::string& where_clause, bool exact = false);
 
 		template<typename TValue>
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> where_equals(std::string field_name, const TValue& value, bool exact = false);
@@ -186,10 +186,10 @@ namespace ravendb::client::documents::session
 			OrderingType ordering = OrderingType::STRING);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_before_query_executed_listener(
-			std::function<void(const IndexQuery&)> action);
+			std::function<void(const queries::IndexQuery&)> action);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> remove_before_query_executed_listener(
-			std::function<void(const IndexQuery&)> action);
+			std::function<void(const queries::IndexQuery&)> action);
 
 		Lazy<int32_t> count_lazily();
 
@@ -210,12 +210,12 @@ namespace ravendb::client::documents::session
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> within_radius_of(
 			const std::string& field_name, double radius, double latitude, double longitude,
 			const std::optional<indexes::spatial::SpatialUnits>& radius_units = {},
-			double dist_error_percent = constants::documents::indexing::spacial::DEFAULT_DISTANCE_ERROR_PCT);
+			double dist_error_percent = constants::documents::indexing::spatial::DEFAULT_DISTANCE_ERROR_PCT);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> relates_to_shape(const std::string& field_name, const std::string& shape_wkt,
 			indexes::spatial::SpatialRelation relation,
 			const std::optional<indexes::spatial::SpatialUnits>& units = {},
-			double dist_error_percent = constants::documents::indexing::spacial::DEFAULT_DISTANCE_ERROR_PCT);
+			double dist_error_percent = constants::documents::indexing::spatial::DEFAULT_DISTANCE_ERROR_PCT);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> spatial(const std::string& field_name,
 			std::function<std::unique_ptr<queries::spatial::SpatialCriteria>(const queries::spatial::SpatialCriteriaFactory&)> clause);
@@ -254,7 +254,7 @@ namespace ravendb::client::documents::session
 
 		bool is_distinct() const;
 
-		QueryResult get_query_result();
+		queries::QueryResult get_query_result();
 
 		std::shared_ptr<IGroupByDocumentQuery<T, GroupByDocumentQuery<T>>> group_by(const std::vector<std::string>& field_names);
 
@@ -379,7 +379,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::shared_ptr<DocumentConventions> DocumentQuery<T>::get_conventions() const
+	std::shared_ptr<conventions::DocumentConventions> DocumentQuery<T>::get_conventions() const
 	{
 		return AbstractDocumentQuery<T>::get_conventions();
 	}
@@ -401,6 +401,9 @@ namespace ravendb::client::documents::session
 	template <typename TProjection>
 	std::shared_ptr<IDocumentQuery<TProjection, DocumentQuery<TProjection>>> DocumentQuery<T>::select_fields()
 	{
+		static_assert(std::is_default_constructible_v<TProjection>, "'TProjection' must be default construclible "
+			"in order for this query to work");
+
 		nlohmann::json sample = TProjection();
 
 		std::vector<std::string> fields{};
@@ -485,7 +488,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	IndexQuery DocumentQuery<T>::get_index_query() const
+	queries::IndexQuery DocumentQuery<T>::get_index_query() const
 	{
 		return AbstractDocumentQuery<T>::get_index_query();
 	}
@@ -514,7 +517,7 @@ namespace ravendb::client::documents::session
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::add_after_query_executed_listener(
-		std::function<void(const QueryResult&)> action)
+		std::function<void(const queries::QueryResult&)> action)
 	{
 		AbstractDocumentQuery<T>::_add_after_query_executed_listener(action);
 		return _weak_this.lock();
@@ -522,7 +525,7 @@ namespace ravendb::client::documents::session
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::remove_after_query_executed_listener(
-		std::function<void(const QueryResult&)> action)
+		std::function<void(const queries::QueryResult&)> action)
 	{
 		AbstractDocumentQuery<T>::_remove_after_query_executed_listener(action);
 		return _weak_this.lock();
@@ -648,10 +651,10 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_Lucene(const std::string& field_name,
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_lucene(const std::string& field_name,
 		const std::string& where_clause, bool exact)
 	{
-		AbstractDocumentQuery<T>::_where_Lucene(field_name, where_clause, exact);
+		AbstractDocumentQuery<T>::_where_lucene(field_name, where_clause, exact);
 		return _weak_this.lock();
 	}
 
@@ -862,7 +865,7 @@ namespace ravendb::client::documents::session
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::add_before_query_executed_listener(
-		std::function<void(const IndexQuery&)> action)
+		std::function<void(const queries::IndexQuery&)> action)
 	{
 		AbstractDocumentQuery<T>::_add_before_query_executed_listener(action);
 		return _weak_this.lock();
@@ -870,7 +873,7 @@ namespace ravendb::client::documents::session
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::remove_before_query_executed_listener(
-		std::function<void(const IndexQuery&)> action)
+		std::function<void(const queries::IndexQuery&)> action)
 	{
 		AbstractDocumentQuery<T>::_remove_before_query_executed_listener(action);
 		return _weak_this.lock();
@@ -950,7 +953,7 @@ namespace ravendb::client::documents::session
 		> clause)
 	{
 		auto criteria = clause(queries::spatial::SpatialCriteriaFactory::INSTANCE);
-		AbstractDocumentQuery<T>::_spatial(field_name, std::move(criteria));
+		AbstractDocumentQuery<T>::_spatial(field_name, *criteria);
 		return _weak_this.lock();
 	}
 
@@ -961,7 +964,7 @@ namespace ravendb::client::documents::session
 		)> clause)
 	{
 		auto criteria = clause(queries::spatial::SpatialCriteriaFactory::INSTANCE);
-		AbstractDocumentQuery<T>::_spatial(field_name, std::move(criteria));
+		AbstractDocumentQuery<T>::_spatial(field_name, *criteria);
 		return _weak_this.lock();
 	}
 
@@ -1076,7 +1079,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	QueryResult DocumentQuery<T>::get_query_result()
+	queries::QueryResult DocumentQuery<T>::get_query_result()
 	{
 		return AbstractDocumentQuery<T>::get_query_result();
 	}

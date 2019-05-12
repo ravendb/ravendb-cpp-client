@@ -14,7 +14,7 @@ namespace simple_multi_map_test
 		~CatsAndDogs() override = default;
 		CatsAndDogs()
 		{
-			SET_DEFAULT_INDEX_NAME;
+			SET_DEFAULT_INDEX_NAME();
 
 			add_map("from cat in docs.Cats select new { cat.name }");
 			add_map("from dog in docs.Dogs select new { dog.name }");
@@ -122,7 +122,7 @@ namespace simple_multi_map_test
 	}
 }
 
-namespace ravendb::client::tests::client
+namespace ravendb::client::tests::bugs
 {
 	class SimpleMultiMapTest : public driver::RavenTestDriver
 	{

@@ -1,8 +1,6 @@
 #pragma once
-#include "stdafx.h"
 #include "IMaintenanceOperation.h"
 #include "RavenCommand.h"
-#include "ServerNode.h"
 #include "IndexErrors.h"
 
 namespace ravendb::client::documents::operations::indexes
@@ -40,10 +38,11 @@ namespace ravendb::client::documents::operations::indexes
 				: _index_names(std::move(index_names))
 			{}
 
-			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const ServerNode> node,
+				std::optional<std::string>& url_ref) override
 			{
 				std::ostringstream path_builder;
-				path_builder << node.url << "/databases/" << node.database << "/indexes/errors";
+				path_builder << node->url << "/databases/" << node->database << "/indexes/errors";
 
 				if(!_index_names.empty())
 				{
@@ -54,21 +53,26 @@ namespace ravendb::client::documents::operations::indexes
 					}
 				}
 
-				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+				curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPGET, 1);
+				curl_ref.method = constants::methods::GET;
 
-				url = path_builder.str();
+				url_ref.emplace(path_builder.str());
 			}
 
-			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
+			void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override
 			{
-				_result = std::make_shared<ResultType>();
-				if(! impl::utils::json_utils::get_val_from_json(response,"Results", *_result))
+				if(!response)
 				{
-					throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::INVALID_RESPONSE);
+					throw_invalid_response();
+				}
+				_result = std::make_shared<ResultType>();
+				if(! impl::utils::json_utils::get_val_from_json(*response, "Results", *_result))
+				{
+					throw_invalid_response();
 				}
 			}
 
-			bool is_read_request() const noexcept override
+			bool is_read_request() const override
 			{
 				return true;
 			}

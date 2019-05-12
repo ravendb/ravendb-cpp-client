@@ -1,8 +1,5 @@
 #pragma once
-#include "stdafx.h"
 #include "IMaintenanceOperation.h"
-#include "RavenCommand.h"
-#include "ServerNode.h"
 
 namespace ravendb::client::documents::operations
 {
@@ -18,46 +15,49 @@ namespace ravendb::client::documents::operations
 			: _id(id)
 		{}
 
-		std::unique_ptr<RavenCommand<nlohmann::json>> get_command(std::shared_ptr<DocumentConventions> conventions) const override
+		std::unique_ptr<http::RavenCommand<nlohmann::json>> get_command(std::shared_ptr<conventions::DocumentConventions> conventions) const override
 		{
-			return std::make_unique<GetOperationStateCommand>(DocumentConventions::default_conventions(), _id);
+			return std::make_unique<GetOperationStateCommand>(conventions::DocumentConventions::default_conventions(), _id);
 		}
 
 	private:
-		class GetOperationStateCommand : public RavenCommand<nlohmann::json>
+		class GetOperationStateCommand : public http::RavenCommand<nlohmann::json>
 		{
 		private:
-			const std::shared_ptr<DocumentConventions> _conventions;
+			const std::shared_ptr<conventions::DocumentConventions> _conventions;
 			const int64_t _id;
 
 		public:
 			~GetOperationStateCommand() override = default;
 
-			GetOperationStateCommand(std::shared_ptr<DocumentConventions> conventions, int64_t id)
+			GetOperationStateCommand(std::shared_ptr<conventions::DocumentConventions> conventions, int64_t id)
 				: _conventions(conventions)
 				, _id(id)
 			{}
 
-			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+				std::optional<std::string>& url_ref) override
 			{
 				std::ostringstream path_builder;
-				path_builder << node.url << "/databases/" << node.database
+				path_builder << node->url << "/databases/" << node->database
 					<< "/operations/state?id=" << _id;
 
-				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+				curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPGET, 1);
+				curl_ref.method = constants::methods::GET;
 
-				url = path_builder.str();
+				url_ref.emplace(path_builder.str());
 			}
 
-			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
+			void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override
 			{
-				if(!response.is_null())
+				if(!response)
 				{
-					_result = std::make_shared<ResultType>(response.get<ResultType>());
+					return;
 				}
+				_result = std::make_shared<ResultType>(response->get<ResultType>());
 			}
 
-			bool is_read_request() const noexcept override
+			bool is_read_request() const override
 			{
 				return true;
 			}

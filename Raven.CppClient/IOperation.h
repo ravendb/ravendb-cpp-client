@@ -4,12 +4,6 @@
 #include "DocumentConventions.h"
 #include "HttpCache.h"
 
-using
-ravendb::client::http::RavenCommand,
-ravendb::client::documents::IDocumentStore,
-ravendb::client::documents::conventions::DocumentConventions,
-ravendb::client::http::HttpCache;
-
 namespace ravendb::client::documents::operations
 {
 	template<typename TResult>
@@ -18,8 +12,8 @@ namespace ravendb::client::documents::operations
 		virtual ~IOperation() = 0;
 
 		//using std::unique_ptr for polymorphism
-		virtual std::unique_ptr<RavenCommand<TResult>> get_command
-			(std::shared_ptr<IDocumentStore> store, std::shared_ptr<DocumentConventions> conventions, HttpCache& cache) const = 0;
+		virtual std::unique_ptr<http::RavenCommand<TResult>> get_command
+			(std::shared_ptr<IDocumentStore> store, std::shared_ptr<conventions::DocumentConventions> conventions, http::HttpCache& cache) const = 0;
 	};
 
 	template <typename TResult>

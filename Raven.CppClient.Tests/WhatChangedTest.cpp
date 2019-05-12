@@ -17,14 +17,14 @@ namespace what_changed_test
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		set_val_to_json(j, "Name", bn.name);
+		set_val_to_json(j, "name", bn.name);
 	}
 
 	inline void from_json(const nlohmann::json& j, BasicName& bn)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		get_val_from_json(j, "Name", bn.name);
+		get_val_from_json(j, "name", bn.name);
 	}
 
 	struct NameAndAge
@@ -37,16 +37,16 @@ namespace what_changed_test
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		set_val_to_json(j, "Name", naa.name);
-		set_val_to_json(j, "Age", naa.age);
+		set_val_to_json(j, "name", naa.name);
+		set_val_to_json(j, "age", naa.age);
 	}
 
 	inline void from_json(const nlohmann::json& j, NameAndAge& naa)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		get_val_from_json(j, "Name", naa.name);
-		get_val_from_json(j, "Age", naa.age);
+		get_val_from_json(j, "name", naa.name);
+		get_val_from_json(j, "age", naa.age);
 	}
 
 	struct BasicAge
@@ -58,14 +58,14 @@ namespace what_changed_test
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		set_val_to_json(j, "Age", ba.age);
+		set_val_to_json(j, "age", ba.age);
 	}
 
 	inline void from_json(const nlohmann::json& j, BasicAge& ba)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		get_val_from_json(j, "Age", ba.age);
+		get_val_from_json(j, "age", ba.age);
 	}
 
 	struct Integer
@@ -77,14 +77,14 @@ namespace what_changed_test
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		set_val_to_json(j, "Number", i.number);
+		set_val_to_json(j, "number", i.number);
 	}
 
 	inline void from_json(const nlohmann::json& j, Integer& i)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		get_val_from_json(j, "Number", i.number);
+		get_val_from_json(j, "number", i.number);
 	}
 
 	struct Double
@@ -96,14 +96,14 @@ namespace what_changed_test
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		set_val_to_json(j, "Number", d.number);
+		set_val_to_json(j, "number", d.number);
 	}
 
 	inline void from_json(const nlohmann::json& j, Double& d)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		get_val_from_json(j, "Number", d.number);
+		get_val_from_json(j, "number", d.number);
 	}
 
 	struct Arr
@@ -113,26 +113,26 @@ namespace what_changed_test
 
 	inline void to_json(nlohmann::json& j, const Arr& arr)
 	{
-		j["Array"] = nlohmann::json::array();
+		j["array"] = nlohmann::json::array();
 
 		for (const auto& val : arr.array)
 		{
 			if (auto val_ptr = std::any_cast<std::string>(&val);
 				nullptr != val_ptr)
 			{
-				j["Array"].push_back(*val_ptr);
+				j["array"].push_back(*val_ptr);
 				continue;
 			} 
 			if (auto val_ptr = std::any_cast<int32_t>(&val);
 				nullptr != val_ptr)
 			{
-				j["Array"].push_back(*val_ptr);
+				j["array"].push_back(*val_ptr);
 				continue;
 			}
 			if (auto val_ptr = std::any_cast<double>(&val);
 				nullptr != val_ptr)
 			{
-				j["Array"].push_back(*val_ptr);
+				j["array"].push_back(*val_ptr);
 				continue;
 			}
 			throw std::invalid_argument("Unknown type");
@@ -143,7 +143,7 @@ namespace what_changed_test
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		for (const auto& val : j.at("Array"))
+		for (const auto& val : j.at("array"))
 		{
 			if (val.is_string())
 			{

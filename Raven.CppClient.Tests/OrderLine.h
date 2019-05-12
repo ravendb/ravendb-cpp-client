@@ -6,9 +6,9 @@ namespace ravendb::client::tests::infrastructure::entities
 	struct OrderLine
 	{
 		std::string product;
-		std::string product_name;
-		double price_per_unit{};
-		uint32_t quantity{};
+		std::string productName;
+		double pricePerUnit{};
+		int32_t quantity{};
 		double discount{};
 	};
 
@@ -16,22 +16,22 @@ namespace ravendb::client::tests::infrastructure::entities
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
-		set_val_to_json(j, "Product", ol.product);
-		set_val_to_json(j, "ProductName", ol.product_name);
-		set_val_to_json(j, "PricePerUnit", ol.price_per_unit);
-		set_val_to_json(j, "Quantity", ol.quantity);
-		set_val_to_json(j, "Discount", ol.discount);
+		set_val_to_json(j, "product", ol.product);
+		set_val_to_json(j, "productName", ol.productName);
+		set_val_to_json(j, "pricePerUnit", ol.pricePerUnit);
+		set_val_to_json(j, "quantity", ol.quantity);
+		set_val_to_json(j, "discount", ol.discount);
 	}
 
 	inline void from_json(const nlohmann::json& j, OrderLine& ol)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-		get_val_from_json(j, "Product", ol.product);
-		get_val_from_json(j, "ProductName", ol.product_name);
-		get_val_from_json(j, "PricePerUnit", ol.price_per_unit);
-		get_val_from_json(j, "Quantity", ol.quantity);
-		get_val_from_json(j, "Discount", ol.discount);
+		get_val_from_json(j, "product", ol.product);
+		get_val_from_json(j, "productName", ol.productName);
+		get_val_from_json(j, "pricePerUnit", ol.pricePerUnit);
+		get_val_from_json(j, "quantity", ol.quantity);
+		get_val_from_json(j, "discount", ol.discount);
 	}
 }
 

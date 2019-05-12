@@ -6,6 +6,7 @@
 #include "LazyLoadOperation.h"
 #include "LazyMultiLoaderWithInclude.h"
 #include "LazyLoaderWithInclude.h"
+#include "LazyStartsWithOperation.h"
 
 namespace ravendb::client::documents::session::operations::lazy
 {
@@ -32,7 +33,35 @@ namespace ravendb::client::documents::session::operations::lazy
 			return lazy_loader_with_include.include(path);
 		}
 
-		//TODO use custom FromJsonConverter/ToJsonConverter
+		template<typename TResult>
+		Lazy<DocumentsByIdsMap<TResult>> load_starting_with(std::string id_prefix,
+			std::optional<std::string> matches = {},
+			int32_t start = 0,
+			int32_t page_size = 25,
+			std::optional<std::string> exclude = {},
+			std::optional<std::string> start_after = {},
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {})
+		{
+			auto lazy_start_with_operation = std::make_shared<LazyStartsWithOperation<TResult>>(_session,
+				std::move(id_prefix),
+				std::move(matches),
+				start,
+				page_size,
+				std::move(exclude),
+				std::move(start_after),
+				from_json, to_json);
+
+			auto get_operation_result = [=](std::shared_ptr<operations::lazy::ILazyOperation> operation)->DocumentsByIdsMap<TResult>
+			{
+				auto lazy_start_with_op = std::static_pointer_cast<LazyStartsWithOperation<TResult>>(operation);
+				return lazy_start_with_op->get_result();				
+			};
+
+			return _session->add_lazy_operation<DocumentsByIdsMap<TResult>>(lazy_start_with_operation,
+				get_operation_result, [](){});
+		}
+
 		template<typename TResult>
 		Lazy<std::shared_ptr<TResult>> load(const std::string& id,
 			std::optional<std::function<void(const std::shared_ptr<TResult>&)>> on_eval = {},
@@ -49,7 +78,8 @@ namespace ravendb::client::documents::session::operations::lazy
 
 			auto load_operation = std::make_unique<LoadOperation>(_session);
 			load_operation->by_id(id);
-			auto lazy_load_operation = std::make_shared<LazyLoadOperation<TResult>>(_session, std::move(load_operation));
+			auto lazy_load_operation = std::make_shared<LazyLoadOperation<TResult>>(_session, std::move(load_operation),
+				from_json, to_json);
 			lazy_load_operation->by_id(id);
 
 			auto get_operation_result = [=](std::shared_ptr<operations::lazy::ILazyOperation> operation)->std::shared_ptr<TResult>

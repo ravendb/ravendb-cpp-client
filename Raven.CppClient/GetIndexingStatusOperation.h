@@ -1,55 +1,53 @@
 #pragma once
-#include "stdafx.h"
 #include "IMaintenanceOperation.h"
-#include "RavenCommand.h"
-#include "ServerNode.h"
 #include "IndexingStatus.h"
-
-using
-ravendb::client::http::RavenCommand,
-ravendb::client::http::ServerNode,
-ravendb::client::documents::indexes::IndexingStatus;
 
 namespace ravendb::client::documents::operations::indexes
 {
-	class GetIndexingStatusOperation : public operations::IMaintenanceOperation<IndexingStatus>
+	class GetIndexingStatusOperation : public operations::IMaintenanceOperation<documents::indexes::IndexingStatus>
 	{
 	public:
 		~GetIndexingStatusOperation() override = default;
 
 		GetIndexingStatusOperation() = default;
 
-		std::unique_ptr<RavenCommand<IndexingStatus>> get_command(
+		std::unique_ptr<http::RavenCommand<documents::indexes::IndexingStatus>> get_command(
 			std::shared_ptr<conventions::DocumentConventions> conventions) const override
 		{
 			return std::make_unique<GetIndexingStatusCommand>();
 		}
 
 	private:
-		class GetIndexingStatusCommand : public RavenCommand<IndexingStatus>
+		class GetIndexingStatusCommand : public http::RavenCommand<documents::indexes::IndexingStatus>
 		{
 		public:
 			~GetIndexingStatusCommand() override = default;
 
 			GetIndexingStatusCommand() = default;
 
-			void create_request(CURL* curl, const ServerNode& node, std::string& url) override
+			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+				std::optional<std::string>& url_ref) override
 			{
 				std::ostringstream path_builder;
-				path_builder << node.url << "/databases/" << node.database
+				path_builder << node->url << "/databases/" << node->database
 					<< "/indexes/status";
 
-				curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+				curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPGET, 1);
+				curl_ref.method = constants::methods::GET;
 
-				url = path_builder.str();
+				url_ref.emplace(path_builder.str());
 			}
 
-			void set_response(CURL* curl, const nlohmann::json& response, bool from_cache) override
+			void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override
 			{
-				_result = std::make_shared<ResultType>(response.get<ResultType>());
+				if(!response)
+				{
+					throw_invalid_response();
+				}
+				_result = std::make_shared<ResultType>(response->get<ResultType>());
 			}
 
-			bool is_read_request() const noexcept override
+			bool is_read_request() const override
 			{
 				return true;
 			}

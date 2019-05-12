@@ -1,6 +1,5 @@
 #pragma once
 #include "VoidRavenCommand.h"
-#include "utils.h"
 
 namespace ravendb::client::documents::commands
 {
@@ -22,16 +21,19 @@ namespace ravendb::client::documents::commands
 			, _change_vector(std::move(change_vector))
 		{}
 
-		void create_request(CURL* curl, const http::ServerNode& node, std::string& url) override
+		void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
+			std::optional<std::string>& url_ref) override
 		{
 			std::ostringstream path_builder;
-			path_builder << node.url << "/databases/" << node.database
-				<< "/docs?id=" << impl::utils::url_escape(curl, _id);
+			path_builder << node->url << "/databases/" << node->database
+				<< "/docs?id=" << http::url_encode(curl_ref, _id);
 
-			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-			add_change_vector_if_not_null(curl, _change_vector);
+			curl_easy_setopt(curl_ref.get(), CURLOPT_CUSTOMREQUEST, "DELETE");
+			curl_ref.method = constants::methods::DELETE_;
 
-			url = path_builder.str();
+			add_change_vector_if_not_null(curl_ref, _change_vector);
+
+			url_ref.emplace(path_builder.str());
 		}
 	};
 }

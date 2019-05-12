@@ -309,18 +309,23 @@ namespace ravendb::client::documents::conventions
 		return _find_cpp_class_name(entity_type);
 	}
 
-	void DocumentConventions::update_from(const operations::configuration::ClientConfiguration& configuration)
+	void DocumentConventions::update_from(const std::optional<operations::configuration::ClientConfiguration>& configuration)
 	{
+		if(!configuration)
+		{
+			return;
+		}
+
 		static std::mutex m{};
 
 		auto lock = std::lock_guard(m);
 
-		if(configuration.disabled && !_original_configuration)
+		if(configuration->disabled && !_original_configuration)
 		{
 			return;// nothing to do
 		}
 
-		if(configuration.disabled && !_original_configuration)// need to revert to original values
+		if(configuration->disabled && !_original_configuration)// need to revert to original values
 		{
 			if (_original_configuration->max_number_of_requests_per_session)
 			{
@@ -343,17 +348,17 @@ namespace ravendb::client::documents::conventions
 			_original_configuration->read_balance_behaviour = _read_balance_behaviour;
 		}
 
-		if(configuration.max_number_of_requests_per_session)
+		if(configuration->max_number_of_requests_per_session)
 		{
-			_max_number_of_requests_per_session = configuration.max_number_of_requests_per_session.value();
+			_max_number_of_requests_per_session = configuration->max_number_of_requests_per_session.value();
 		}else if(_original_configuration->max_number_of_requests_per_session)
 		{
 			_max_number_of_requests_per_session = _original_configuration->max_number_of_requests_per_session.value();
 		}
 
-		if(configuration.read_balance_behaviour)
+		if(configuration->read_balance_behaviour)
 		{
-			_read_balance_behaviour = configuration.read_balance_behaviour.value();
+			_read_balance_behaviour = configuration->read_balance_behaviour.value();
 		}
 		else if(_original_configuration->read_balance_behaviour)
 		{

@@ -83,8 +83,21 @@ namespace ravendb::client::documents::session
 
 		const EntityToJson& get_entity_to_json() const;
 
+		//Check if document exists without loading it
+		bool exists(std::string id);
+
 		template<typename T>
 		auto raw_query(std::string query);
+
+		template<typename T>
+		std::vector<std::shared_ptr<T>> load_starting_with(std::string id_prefix,
+			std::optional<std::string> matches = {},
+			int32_t start = 0,
+			int32_t page_size = 25,
+			std::optional<std::string> exclude = {},
+			std::optional<std::string> start_after = {},
+			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
+			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {});
 
 		template<typename T, typename U>
 		void patch(std::shared_ptr<T> entity, const std::string& path_to_array,
@@ -124,9 +137,9 @@ namespace ravendb::client::documents::session
 
 		template<typename T>
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> document_query(
-			std::optional<std::string> index_name,
-			std::optional<std::string> collection_name,
-			bool is_map_reduced);
+			std::optional<std::string> index_name = {},
+			std::optional<std::string> collection_name = {},
+			bool is_map_reduced = false);
 	};
 
 	template <typename T>
@@ -176,6 +189,16 @@ namespace ravendb::client::documents::session
 	auto AdvancedSessionOperations::raw_query(std::string query)
 	{
 		return _session_impl->raw_query<T>(std::move(query));
+	}
+
+	template <typename T>
+	std::vector<std::shared_ptr<T>> AdvancedSessionOperations::load_starting_with(std::string id_prefix,
+		std::optional<std::string> matches, int32_t start, int32_t page_size, std::optional<std::string> exclude,
+		std::optional<std::string> start_after, const std::optional<DocumentInfo::FromJsonConverter>& from_json,
+		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
+	{
+		return _session_impl->load_starting_with<T>(std::move(id_prefix), std::move(matches), start, page_size,
+			std::move(exclude), std::move(start_after), from_json, to_json);
 	}
 
 	template <typename T, typename V>

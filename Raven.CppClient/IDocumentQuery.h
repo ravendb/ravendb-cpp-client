@@ -27,7 +27,7 @@ namespace ravendb::client::documents::session
 
 		bool is_distinct() const;
 
-		QueryResult get_query_result();
+		queries::QueryResult get_query_result();
 
 		template<typename TProjection>
 		auto select_fields();
@@ -75,7 +75,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T, class TThis>
-	QueryResult IDocumentQuery<T, TThis>::get_query_result()
+	queries::QueryResult IDocumentQuery<T, TThis>::get_query_result()
 	{
 		return cast_down()->get_query_result();
 	}

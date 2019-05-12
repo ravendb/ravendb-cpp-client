@@ -24,27 +24,35 @@ namespace ravendb::client::serverwide::operations
 		, _page_size(_page_size)
 	{}
 
-	void GetDatabaseNamesOperation::GetDatabaseNamesCommand::create_request(CURL * curl, const http::ServerNode & node, std::string & url)
+	void GetDatabaseNamesOperation::GetDatabaseNamesCommand::create_request(impl::CurlHandlesHolder::CurlReference& curl_ref,
+		std::shared_ptr<const http::ServerNode> node,
+		std::optional<std::string>& url_ref)
 	{
 		std::ostringstream path_builder;
-		path_builder << node.url << "/databases?start=" << _start
+		path_builder << node->url << "/databases?start=" << _start
 			<< "&pageSize=" << _page_size << "&namesOnly=true";
 
-		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+		curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPGET, 1);
+		curl_ref.method = constants::methods::GET;
 
-		url = path_builder.str();
+		url_ref.emplace(path_builder.str());
 	}
 
-	void GetDatabaseNamesOperation::GetDatabaseNamesCommand::set_response(CURL * curl, const nlohmann::json & response, bool from_cache)
+	void GetDatabaseNamesOperation::GetDatabaseNamesCommand::set_response(const std::optional<nlohmann::json>& response, bool from_cache)
 	{
-		_result = std::make_shared<ResultType>();
-		if (!impl::utils::json_utils::get_val_from_json(response, "Databases", *_result))
+		if(!response)
 		{
-			throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::INVALID_RESPONSE);
+			throw_invalid_response();
+		}
+
+		_result = std::make_shared<ResultType>();
+		if (!impl::utils::json_utils::get_val_from_json(*response, "Databases", *_result))
+		{
+			throw_invalid_response();
 		}
 	}
 
-	bool GetDatabaseNamesOperation::GetDatabaseNamesCommand::is_read_request() const noexcept
+	bool GetDatabaseNamesOperation::GetDatabaseNamesCommand::is_read_request() const
 	{
 		return true;
 	}
