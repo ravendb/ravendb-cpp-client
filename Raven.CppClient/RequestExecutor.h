@@ -14,7 +14,7 @@
 #include "NodeSelector.h"
 #include "SessionInfo.h"
 #include "CurlResponse.h"
-#include "http_extensions.h"
+#include "HttpExtensions.h"
 #include "ResponseDisposeHandling.h"
 #include "GetCppClassName.h"
 #include "HttpStatus.h"
@@ -815,10 +815,10 @@ namespace ravendb::client::http
 		}
 
 		command.status_code = response->status_code;
-		bool refresh_topology = extensions::http_extensions::get_boolean_header(*response,
+		bool refresh_topology = extensions::HttpExtensions::get_boolean_header(*response,
 			constants::headers::REFRESH_TOPOLOGY).value_or(false);
 
-		bool refresh_client_configuration = extensions::http_extensions::get_boolean_header(*response,
+		bool refresh_client_configuration = extensions::HttpExtensions::get_boolean_header(*response,
 			constants::headers::REFRESH_CLIENT_CONFIGURATION).value_or(false);
 
 		const auto finally = [&]()

@@ -56,7 +56,6 @@ namespace  ravendb::client::documents
 		virtual void execute_indexes(std::vector<std::shared_ptr<indexes::AbstractIndexCreationTaskBase>>& tasks,
 			std::optional<std::string> database = {}) = 0;
 
-
 		virtual std::shared_ptr<conventions::DocumentConventions> get_conventions() const = 0;
 
 		virtual const std::vector<std::string>& get_urls() const = 0;

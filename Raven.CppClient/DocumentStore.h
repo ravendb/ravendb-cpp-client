@@ -4,7 +4,6 @@
 #include "DocumentStoreBase.h"
 #include "CompareStringsIgnoreCase.h"
 #include "TasksScheduler.h"
-#include "TasksExecutor.h"
 
 namespace ravendb::client::documents::identity
 {
@@ -22,8 +21,8 @@ namespace ravendb::client::documents
 		};
 
 	private:
-		std::shared_ptr<impl::TasksScheduler> _scheduler = std::make_shared<impl::TasksScheduler>(
-			std::make_shared<impl::TasksExecutor>());
+		std::shared_ptr<impl::IExecutorService> _executor_service{};
+		std::shared_ptr<impl::TasksScheduler> _scheduler{};
 
 		mutable std::map<std::string, std::shared_ptr<http::RequestExecutor>, impl::utils::CompareStringsIgnoreCase> _request_executors{};
 		mutable std::shared_mutex _request_executors_mutex{};
@@ -54,6 +53,14 @@ namespace ravendb::client::documents
 		static std::shared_ptr<DocumentStore> create(std::string url, std::string database);
 
 		static std::shared_ptr<DocumentStore> create(std::vector<std::string> urls, std::string database);
+
+		std::shared_ptr<impl::IExecutorService> get_executor_service() const;
+
+		void set_executor_service(std::shared_ptr<impl::IExecutorService> executor_service);
+
+		void set_default_executor_service(uint32_t num_of_threads = 1);
+
+		std::shared_ptr<impl::TasksScheduler> get_scheduler() const;
 
 		std::string get_identifier() const override;
 

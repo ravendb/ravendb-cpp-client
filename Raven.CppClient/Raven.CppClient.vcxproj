@@ -207,6 +207,7 @@
     <ClInclude Include="GroupByMethod.h" />
     <ClInclude Include="GroupBySumToken.h" />
     <ClInclude Include="GroupByToken.h" />
+    <ClInclude Include="HeadDocumentCommand.h" />
     <ClInclude Include="HighlightingOptions.h" />
     <ClInclude Include="Highlightings.h" />
     <ClInclude Include="HighlightingToken.h" />
@@ -215,7 +216,7 @@
     <ClInclude Include="HiLoReturnCommand.h" />
     <ClInclude Include="HttpStatus.h" />
     <ClInclude Include="EagerSessionOperations.h" />
-    <ClInclude Include="http_extensions.h" />
+    <ClInclude Include="HttpExtensions.h" />
     <ClInclude Include="IDocumentQuery.h" />
     <ClInclude Include="IDocumentQueryBase.h" />
     <ClInclude Include="IDocumentQueryBaseSingle.h" />
@@ -453,7 +454,7 @@
     <ClCompile Include="GroupBy.cpp" />
     <ClCompile Include="HighlightingOptions.cpp" />
     <ClCompile Include="Highlightings.cpp" />
-    <ClCompile Include="http_extensions.cpp" />
+    <ClCompile Include="HttpExtensions.cpp" />
     <ClCompile Include="LoadOperation.cpp" />
     <ClCompile Include="LoadStartingWithOperation.cpp" />
     <ClCompile Include="MoreLikeThisOptions.cpp" />

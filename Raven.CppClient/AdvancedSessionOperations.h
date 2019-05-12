@@ -83,6 +83,9 @@ namespace ravendb::client::documents::session
 
 		const EntityToJson& get_entity_to_json() const;
 
+		//Check if document exists without loading it
+		bool exists(std::string id);
+
 		template<typename T>
 		auto raw_query(std::string query);
 

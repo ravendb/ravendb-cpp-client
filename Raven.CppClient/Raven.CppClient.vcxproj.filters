@@ -338,11 +338,11 @@
     <ClCompile Include="QueryStatistics.cpp">
       <Filter>ravendb.client\documents\session</Filter>
     </ClCompile>
-    <ClCompile Include="http_extensions.cpp">
-      <Filter>ravendb.client\extensions</Filter>
-    </ClCompile>
     <ClCompile Include="RavenCommand.cpp">
       <Filter>ravendb.client\http</Filter>
+    </ClCompile>
+    <ClCompile Include="HttpExtensions.cpp">
+      <Filter>ravendb.client\extensions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1175,11 +1175,14 @@
     <ClInclude Include="QueryStatistics.h">
       <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
-    <ClInclude Include="http_extensions.h">
-      <Filter>ravendb.client\extensions</Filter>
-    </ClInclude>
     <ClInclude Include="ResponseDisposeHandling.h">
       <Filter>ravendb.client\http</Filter>
+    </ClInclude>
+    <ClInclude Include="HeadDocumentCommand.h">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="HttpExtensions.h">
+      <Filter>ravendb.client\extensions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

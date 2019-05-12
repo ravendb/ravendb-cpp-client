@@ -13,8 +13,8 @@
 
 namespace ravendb::client::http
 {
-	std::string url_encode(CURL* curl, const std::string& value);
 	std::string url_encode(const impl::CurlHandlesHolder::CurlReference& curl_ref, const std::string& value);
+	std::string url_encode(CURL* curl, const std::string& value);
 	std::string url_encode(const std::string& value);
 
 	enum class RavenCommandResponseType
@@ -93,7 +93,7 @@ namespace ravendb::client::http
 
 		bool is_failed_with_node(std::shared_ptr<const ServerNode> node) const;
 		
-		ResponseDisposeHandling process_response(/*HttpCache*/ const impl::CurlResponse& response, const std::string& url);
+		virtual ResponseDisposeHandling process_response(/*HttpCache*/ const impl::CurlResponse& response, const std::string& url);
 
 		void on_response_failure(const impl::CurlResponse& response){}
 	};

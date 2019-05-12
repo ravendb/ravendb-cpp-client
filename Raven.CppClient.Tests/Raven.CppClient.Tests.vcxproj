@@ -45,6 +45,7 @@
     <ClInclude Include="ConnectionDetailsHolder.h" />
     <ClInclude Include="Contact.h" />
     <ClInclude Include="CreateSampleDataOperation.h" />
+    <ClCompile Include="ExistsTest.cpp" />
     <ClInclude Include="raven_test_definitions.h" />
     <ClInclude Include="ds_definitions.h" />
     <ClInclude Include="Employee.h" />

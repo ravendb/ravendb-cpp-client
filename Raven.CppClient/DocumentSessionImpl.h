@@ -131,7 +131,7 @@ namespace ravendb::client::documents::session
 			const std::optional<DocumentInfo::FromJsonConverter>& from_json = {},
 			const std::optional<DocumentInfo::ToJsonConverter>& to_json = {});
 
-		bool exists(const std::string& id);
+		bool exists(std::string id);
 
 		void save_changes();
 

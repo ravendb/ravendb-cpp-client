@@ -11,6 +11,7 @@
 #include "MultiGetOperation.h"
 #include "LazySessionOperations.h"
 #include "LoadStartingWithOperation.h"
+#include "HeadDocumentCommand.h"
 
 namespace ravendb::client::documents::session
 {
@@ -336,7 +337,7 @@ namespace ravendb::client::documents::session
 		return response_time_duration;
 	}
 
-	bool DocumentSessionImpl::exists(const std::string& id)
+	bool DocumentSessionImpl::exists(std::string id)
 	{
 		if (_known_missing_ids.find(id) != _known_missing_ids.end())
 		{
@@ -347,8 +348,10 @@ namespace ravendb::client::documents::session
 			return true;
 		}
 
-		//TODO execute HeadDocumentCommand , for now->
-		throw std::runtime_error("Not implemented");
+		auto command = commands::HeadDocumentCommand(std::move(id));
+		_request_executor->execute(command, _session_info);
+
+		return static_cast<bool>(command.get_result());
 	}
 
 	void DocumentSessionImpl::save_changes()

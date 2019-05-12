@@ -123,6 +123,9 @@
     <ClCompile Include="LoadAllStartingWith.cpp">
       <Filter>ravendb.client.tests\test\mailing_list</Filter>
     </ClCompile>
+    <ClCompile Include="ExistsTest.cpp">
+      <Filter>ravendb.client.tests\test\client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

@@ -87,6 +87,7 @@ namespace ravendb::client::constants
 		constexpr char DELETE_[] = "DELETE";
 		constexpr char PATCH[] = "PATCH";
 		constexpr char RESET[] = "RESET";
+		constexpr char HEAD[] = "HEAD";
 	}
 
 	namespace counters
