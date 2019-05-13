@@ -9,7 +9,7 @@
 #include "DocumentsById.h"
 #include "EntityToJson.h"
 #include "DocumentInfo.h"
-#include "CompareStringsIgnoreCase.h"
+#include "CompareStringsLessThanIgnoreCase.h"
 #include "DateTimeOffset.h"
 #include "OperationExecutor.h"
 #include "ILazyOperation.h"
@@ -172,7 +172,7 @@ namespace ravendb::client::documents::session
 
 		std::unordered_set<std::shared_ptr<void>> _deleted_entities{};
 
-		std::set<std::string, impl::utils::CompareStringsIgnoreCase> _known_missing_ids{};
+		std::set<std::string, impl::utils::CompareStringsLessThanIgnoreCase> _known_missing_ids{};
 
 		//Translate between an ID and its associated entity
 		DocumentsById _documents_by_id{};

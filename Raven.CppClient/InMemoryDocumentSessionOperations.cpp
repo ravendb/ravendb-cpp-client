@@ -338,7 +338,7 @@ namespace ravendb::client::documents::session
 		if (auto existing_doc_info_it = _documents_by_entity.find(info->entity);
 			existing_doc_info_it != _documents_by_entity.end())
 		{
-			if (impl::utils::CompareStringsIgnoreCase()(existing_doc_info_it->second->id, info->id))
+			if (impl::utils::CompareStringsLessThanIgnoreCase()(existing_doc_info_it->second->id, info->id))
 			{
 				return;
 			}

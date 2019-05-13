@@ -2,11 +2,11 @@
 
 namespace ravendb::client::impl::utils
 {
-	struct CompareStringsIgnoreCase;
+	struct CompareStringsLessThanIgnoreCase;
 }
 
 namespace ravendb::client::documents::session
 {
 	template<typename T>
-	using DocumentsByIdsMap = std::map < std::string, std::shared_ptr<T>, impl::utils::CompareStringsIgnoreCase>;
+	using DocumentsByIdsMap = std::map < std::string, std::shared_ptr<T>, impl::utils::CompareStringsLessThanIgnoreCase>;
 }

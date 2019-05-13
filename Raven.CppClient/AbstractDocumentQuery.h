@@ -947,7 +947,7 @@ namespace ravendb::client::documents::session
 		if(projected_name && _alias_to_group_by_field_name.find(*projected_name) != _alias_to_group_by_field_name.end())
 		{
 			auto& aliased_filed_name = _alias_to_group_by_field_name.at(*projected_name);
-			if(!field_name || impl::utils::CompareStringsIgnoreCase()(*field_name, *projected_name))
+			if(!field_name || impl::utils::CompareStringsLessThanIgnoreCase()(*field_name, *projected_name))
 			{
 				final_field_name = aliased_filed_name;
 			}

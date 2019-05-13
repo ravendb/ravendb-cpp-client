@@ -28,7 +28,8 @@ namespace ravendb::client::documents::indexes
 			return lhs.name == rhs.name
 				&& lhs.priority == rhs.priority
 				&& lhs.lock_mode == rhs.lock_mode
-				&& lhs.additional_sources == rhs.additional_sources
+				&& (lhs.additional_sources ? 
+					lhs.additional_sources == rhs.additional_sources : !rhs.additional_sources || rhs.additional_sources->empty())
 				&& lhs.maps == rhs.maps
 				&& lhs.reduce == rhs.reduce
 				&& lhs.fields == rhs.fields

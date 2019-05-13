@@ -53,7 +53,7 @@ namespace ravendb::client::documents::session::operations
 		auto comparator = [](std::reference_wrapper<const std::string> str1,
 		                     std::reference_wrapper<const std::string> str2)
 		{
-			return impl::utils::CompareStringsIgnoreCase()(str1.get(), str2.get());
+			return impl::utils::CompareStringsLessThanIgnoreCase()(str1.get(), str2.get());
 		};
 
 		std::transform(ids.cbegin(), ids.cend(), std::back_inserter(_ids),

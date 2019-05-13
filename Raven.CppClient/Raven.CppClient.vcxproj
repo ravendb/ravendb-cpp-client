@@ -173,7 +173,8 @@
     <ClInclude Include="CollectionStatistics.h" />
     <ClInclude Include="CommandDataBase.h" />
     <ClInclude Include="CommandType.h" />
-    <ClInclude Include="CompareStringsIgnoreCase.h" />
+    <ClInclude Include="CompareStringsEqualIgnoreCase.h" />
+    <ClInclude Include="CompareStringsLessThanIgnoreCase.h" />
     <ClInclude Include="CounterIncludesToken.h" />
     <ClInclude Include="CurlResponse.h" />
     <ClInclude Include="CurrentIndexAndNode.h" />

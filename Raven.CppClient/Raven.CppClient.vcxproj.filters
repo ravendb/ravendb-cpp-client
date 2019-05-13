@@ -767,9 +767,6 @@
     <ClInclude Include="MillisToTimespanConverter.h">
       <Filter>ravendb.client\impl</Filter>
     </ClInclude>
-    <ClInclude Include="CompareStringsIgnoreCase.h">
-      <Filter>ravendb.client\impl</Filter>
-    </ClInclude>
     <ClInclude Include="LazySessionOperations.h">
       <Filter>ravendb.client\documents\session\operations\lazy</Filter>
     </ClInclude>
@@ -1183,6 +1180,12 @@
     </ClInclude>
     <ClInclude Include="HttpExtensions.h">
       <Filter>ravendb.client\extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="CompareStringsEqualIgnoreCase.h">
+      <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="CompareStringsLessThanIgnoreCase.h">
+      <Filter>ravendb.client\impl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

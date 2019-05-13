@@ -71,7 +71,10 @@ namespace ravendb::client::documents
 
 		void set_certificate_details(impl::CertificateDetails certificate_details);
 
+		const impl::CurlOptionsSetter& get_before_perform() const;
 		void set_before_perform(impl::CurlOptionsSetter options_setter);
+
+		const impl::CurlOptionsSetter& get_after_perform() const;
 		void set_after_perform(impl::CurlOptionsSetter options_setter);
 	};
 

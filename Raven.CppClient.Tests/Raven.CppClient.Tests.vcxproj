@@ -92,6 +92,7 @@
     <ClCompile Include="LoadTest.cpp" />
     <ClCompile Include="LoadTests.cpp" />
     <ClCompile Include="QueryTest.cpp" />
+    <ClCompile Include="RequestExecutorTest.cpp" />
     <ClCompile Include="re_definitions.cpp" />
     <ClCompile Include="BasicDocumentCommandsTests.cpp" />
     <ClCompile Include="GetDocumentsCommandTests.cpp" />

@@ -2,7 +2,7 @@
 #include <shared_mutex>
 #include <map>
 #include "DocumentStoreBase.h"
-#include "CompareStringsIgnoreCase.h"
+#include "CompareStringsLessThanIgnoreCase.h"
 #include "TasksScheduler.h"
 
 namespace ravendb::client::documents::identity
@@ -24,7 +24,7 @@ namespace ravendb::client::documents
 		std::shared_ptr<impl::IExecutorService> _executor_service{};
 		std::shared_ptr<impl::TasksScheduler> _scheduler{};
 
-		mutable std::map<std::string, std::shared_ptr<http::RequestExecutor>, impl::utils::CompareStringsIgnoreCase> _request_executors{};
+		mutable std::map<std::string, std::shared_ptr<http::RequestExecutor>, impl::utils::CompareStringsLessThanIgnoreCase> _request_executors{};
 		mutable std::shared_mutex _request_executors_mutex{};
 
 		std::unique_ptr<identity::MultiDatabaseHiLoIdGenerator>_multi_db_hilo{};

@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "HttpExtensions.h"
-#include "CompareStringsIgnoreCase.h"
+#include "CompareStringsEqualIgnoreCase.h"
 #include "Constants.h"
-#include "../Raven.CppClient.Tests/CreateSampleDataOperation.h"
 
 namespace ravendb::client::extensions
 {
@@ -45,7 +44,7 @@ namespace ravendb::client::extensions
 		if (auto it = response.headers.find(header);
 			it != response.headers.end())
 		{
-			return impl::utils::CompareStringsIgnoreCase::to_lower_str(it->second) == "true";
+			return impl::utils::CompareStringsEqualIgnoreCase()(it->second, "true");
 		}
 		return {};
 	}

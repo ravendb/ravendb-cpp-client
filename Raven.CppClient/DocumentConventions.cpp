@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DocumentConventions.h"
 #include "Constants.h"
-#include "CompareStringsIgnoreCase.h"
+#include "CompareStringsLessThanIgnoreCase.h"
 #include "Inflector.h"
 #include "GetCppClassName.h"
 
@@ -377,7 +377,7 @@ namespace ravendb::client::documents::conventions
 
 		if(upper_count <= 1)
 		{
-			return impl::utils::CompareStringsIgnoreCase::to_lower_str(collection_name);
+			return impl::utils::to_lower_str(collection_name);
 		}
 
 		// multiple capital letters, so probably something that we want to preserve caps on.

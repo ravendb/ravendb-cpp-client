@@ -3,7 +3,7 @@
 
 namespace ravendb::client::impl::utils
 {
-	struct CompareStringsIgnoreCase;
+	struct CompareStringsLessThanIgnoreCase;
 }
 
 namespace ravendb::client::documents::commands::multi_get
@@ -11,7 +11,7 @@ namespace ravendb::client::documents::commands::multi_get
 	struct GetResponse
 	{
 		std::optional<std::string> result{};
-		std::map<std::string, std::string, impl::utils::CompareStringsIgnoreCase> headers{};
+		std::map<std::string, std::string, impl::utils::CompareStringsLessThanIgnoreCase> headers{};
 		int32_t status_code{};
 		bool force_retry = false;
 

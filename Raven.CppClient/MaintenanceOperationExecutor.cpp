@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "MaintenanceOperationExecutor.h"
 #include "DocumentStore.h"
+#include "CompareStringsEqualIgnoreCase.h"
 
 namespace ravendb::client::documents::operations
 {
@@ -54,8 +55,7 @@ namespace ravendb::client::documents::operations
 	std::shared_ptr<MaintenanceOperationExecutor> MaintenanceOperationExecutor::for_database(
 		std::string database_name) const
 	{
-		if(_database_name.has_value() &&  impl::utils::CompareStringsIgnoreCase::to_lower_str(*_database_name) == 
-			impl::utils::CompareStringsIgnoreCase::to_lower_str(database_name))
+		if(_database_name.has_value() &&  impl::utils::CompareStringsEqualIgnoreCase()(*_database_name, database_name))
 		{
 			return _weak_this.lock();
 		}

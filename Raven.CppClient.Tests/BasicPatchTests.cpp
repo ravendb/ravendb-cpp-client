@@ -1,5 +1,5 @@
 #include "pch.h"
-#define __USE_FIDDLER__
+//#define __USE_FIDDLER__
 #include "re_definitions.h"
 #include "User.h"
 #include "PatchOperation.h"

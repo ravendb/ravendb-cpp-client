@@ -1,5 +1,5 @@
 #include "pch.h"
-#define __USE_FIDDLER__
+//#define __USE_FIDDLER__
 #include "re_definitions.h"
 
 #include "User.h"
@@ -138,7 +138,7 @@ namespace ravendb::client::tests::old_tests
 			example_index.maps,{},{},{},
 			documents::indexes::IndexType::MAP,{}
 		};
-		ASSERT_EQ(*res, check_index);
+		ASSERT_TRUE(check_index == *res);
 	}
 
 	TEST_F(IndexOperationsTestOld, CanDeleteIndex)

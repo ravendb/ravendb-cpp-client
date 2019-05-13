@@ -120,9 +120,19 @@ namespace ravendb::client::documents
 		_certificate_details = std::move(certificate_details);
 	}
 
+	const impl::CurlOptionsSetter& DocumentStoreBase::get_before_perform() const
+	{
+		return _set_before_perform;
+	}
+
 	void DocumentStoreBase::set_before_perform(impl::CurlOptionsSetter options_setter)
 	{
 		_set_before_perform = std::move(options_setter);
+	}
+
+	const impl::CurlOptionsSetter& DocumentStoreBase::get_after_perform() const
+	{
+		return _set_after_perform;
 	}
 
 	void DocumentStoreBase::set_after_perform(impl::CurlOptionsSetter options_setter)

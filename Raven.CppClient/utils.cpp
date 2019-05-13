@@ -90,6 +90,14 @@ namespace ravendb::client::impl::utils
 		return std::all_of(str.begin(), str.end(),
 			[](unsigned char c)->bool {return std::isspace(c); });
 	}
+
+	std::string to_lower_str(const std::string& str)
+	{
+		std::string temp{};
+		std::transform(str.cbegin(), str.cend(), std::back_insert_iterator<std::string>(temp),
+			[](unsigned char c)->char {return std::tolower(c); });
+		return temp;
+	}
 }
 
 bool operator==(const std::tm& lhs, const std::tm& rhs)

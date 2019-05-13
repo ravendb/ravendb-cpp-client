@@ -594,7 +594,7 @@ namespace ravendb::client::http
 			}
 			auto index_and_node = choose_node_for_request(command, session_info);
 
-			if (command.get_failed_nodes().find(index_and_node.current_node) == command.get_failed_nodes().end())
+			if (command.get_failed_nodes().find(index_and_node.current_node) != command.get_failed_nodes().end())
 			{
 				// we tried all the nodes, let's try to update topology and retry one more time
 				if (!update_topology_async(chosen_node, 60 * 1000,
@@ -655,7 +655,7 @@ namespace ravendb::client::http
 		_node_selector->on_failed_request(*node_index);
 
 		auto current_node_and_index = _node_selector->get_preferred_node();
-		if(command.get_failed_nodes().find(current_node_and_index.current_node) ==
+		if(command.get_failed_nodes().find(current_node_and_index.current_node) !=
 			command.get_failed_nodes().end())
 		{
 			return false; //we tried all the nodes...nothing left to do
@@ -874,7 +874,7 @@ namespace ravendb::client::http
 						throw std::runtime_error("Received unsuccessful response and couldn't recover from it. "
 							"Also, no record of exceptions per failed nodes. This is weird and should not happen.");
 					}
-					if(command.get_failed_nodes().size() == 1)
+					if(command.get_failed_nodes().size() == 1 && command.get_failed_nodes().begin()->second)
 					{
 						std::rethrow_exception(command.get_failed_nodes().begin()->second);
 					}
