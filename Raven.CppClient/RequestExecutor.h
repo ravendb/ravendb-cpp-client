@@ -458,11 +458,11 @@ namespace ravendb::client::http
 		std::shared_ptr<const ServerNode> chosen_node, RavenCommand<TResult>& command)
 	{
 		std::atomic_int32_t number_of_failed_tasks{ 0 };
-		std::shared_ptr<std::future<IndexAndResponse>> preferred_task{};
+		std::shared_ptr<std::shared_future<IndexAndResponse>> preferred_task{};
 
 		const auto& nodes = *_node_selector->get_topology()->nodes;
 
-		auto tasks = std::vector<std::shared_ptr<std::future<IndexAndResponse>>>(nodes.size());
+		auto tasks = std::vector<std::shared_ptr<std::shared_future<IndexAndResponse>>>(nodes.size());
 
 		for(int32_t i = 0; i < nodes.size(); ++i)
 		{
@@ -487,7 +487,7 @@ namespace ravendb::client::http
 			});
 
 			_scheduler->schedule_task_immediately([pack_task]()->void {(*pack_task)(); });
-			tasks[i] = std::make_shared<std::future<IndexAndResponse>>(pack_task->get_future());
+			tasks[i] = std::make_shared<std::shared_future<IndexAndResponse>>(pack_task->get_future());
 			
 			if(nodes[i]->cluster_tag == chosen_node->cluster_tag)
 			{
@@ -728,7 +728,7 @@ namespace ravendb::client::http
 		case ReadBalanceBehavior::ROUND_ROBIN:
 			return _node_selector->get_node_by_session_id(session_info ? session_info->session_id : 0);
 		case ReadBalanceBehavior::FASTEST_NODE:
-			_node_selector->get_fastest_node();
+			return _node_selector->get_fastest_node();
 		default:
 			throw std::invalid_argument("");
 		}

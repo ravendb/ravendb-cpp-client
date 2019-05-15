@@ -1187,6 +1187,9 @@
     <ClInclude Include="CompareStringsLessThanIgnoreCase.h">
       <Filter>ravendb.client\impl</Filter>
     </ClInclude>
+    <ClInclude Include="RavenException.h">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
@@ -1284,6 +1287,9 @@
     </Filter>
     <Filter Include="ravendb.client\extensions">
       <UniqueIdentifier>{6e1c886e-3892-4ac6-8638-a48990d1667a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions">
+      <UniqueIdentifier>{6604fdf0-6008-465b-a060-b95e823401b1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

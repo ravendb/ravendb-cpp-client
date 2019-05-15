@@ -19,6 +19,8 @@ namespace ravendb::client
 		ErrorType _error_type = ErrorType::GENERIC;
 
 	public:
+		~RavenError() override = default;
+
 		RavenError(const std::string& what_arg, ErrorType error_type = ErrorType::GENERIC)
 			: std::runtime_error(what_arg)
 			, _error_type(error_type)

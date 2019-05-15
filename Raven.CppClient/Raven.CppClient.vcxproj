@@ -379,6 +379,7 @@
     <ClInclude Include="RavenCommand.h" />
     <ClInclude Include="GetDocumentsCommand.h" />
     <ClInclude Include="ravendb.h" />
+    <ClInclude Include="RavenException.h" />
     <ClInclude Include="RawDocumentQuery.h" />
     <ClInclude Include="ReadBalanceBehavior.h" />
     <ClInclude Include="ReplicationBatchOptions.h" />
