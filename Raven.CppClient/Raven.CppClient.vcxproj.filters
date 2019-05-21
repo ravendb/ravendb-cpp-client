@@ -344,12 +344,201 @@
     <ClCompile Include="HttpExtensions.cpp">
       <Filter>ravendb.client\extensions</Filter>
     </ClCompile>
+    <ClCompile Include="RavenException.cpp">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="AllTopologyNodesDownException.cpp">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="BadRequestException.cpp">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="BadResponseException.cpp">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientVersionMismatchException.cpp">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="ConflictException.cpp">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="ConcurrencyException.cpp">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="InvalidQueryException.cpp">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeoutException.cpp">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="UnsuccessfulRequestException.cpp">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="AttachmentDoesNotExistException.cpp">
+      <Filter>ravendb.client\exceptions\attachments</Filter>
+    </ClCompile>
+    <ClCompile Include="ChangeProcessingException.cpp">
+      <Filter>ravendb.client\exceptions\changes</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandExecutionException.cpp">
+      <Filter>ravendb.client\exceptions\cluster</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeIsPassiveException.cpp">
+      <Filter>ravendb.client\exceptions\cluster</Filter>
+    </ClCompile>
+    <ClCompile Include="NoLeaderException.cpp">
+      <Filter>ravendb.client\exceptions\cluster</Filter>
+    </ClCompile>
+    <ClCompile Include="LicenseActivationException.cpp">
+      <Filter>ravendb.client\exceptions\commercial</Filter>
+    </ClCompile>
+    <ClCompile Include="CompilationException.cpp">
+      <Filter>ravendb.client\exceptions\compilation</Filter>
+    </ClCompile>
+    <ClCompile Include="DatabaseConcurrentLoadTimeoutException.cpp">
+      <Filter>ravendb.client\exceptions\database</Filter>
+    </ClCompile>
+    <ClCompile Include="DatabaseDisabledException.cpp">
+      <Filter>ravendb.client\exceptions\database</Filter>
+    </ClCompile>
+    <ClCompile Include="DatabaseDoesNotExistException.cpp">
+      <Filter>ravendb.client\exceptions\database</Filter>
+    </ClCompile>
+    <ClCompile Include="DatabaseLoadFailureException.cpp">
+      <Filter>ravendb.client\exceptions\database</Filter>
+    </ClCompile>
+    <ClCompile Include="DatabaseLoadTimeoutException.cpp">
+      <Filter>ravendb.client\exceptions\database</Filter>
+    </ClCompile>
+    <ClCompile Include="DatabaseNotRelevantException.cpp">
+      <Filter>ravendb.client\exceptions\database</Filter>
+    </ClCompile>
+    <ClCompile Include="DatabaseSchemaErrorException.cpp">
+      <Filter>ravendb.client\exceptions\database</Filter>
+    </ClCompile>
+    <ClCompile Include="DocumentConflictException.cpp">
+      <Filter>ravendb.client\exceptions\documents</Filter>
+    </ClCompile>
+    <ClCompile Include="DocumentDoesNotExistException.cpp">
+      <Filter>ravendb.client\exceptions\documents</Filter>
+    </ClCompile>
+    <ClCompile Include="BulkInsertAbortedException.cpp">
+      <Filter>ravendb.client\exceptions\documents\bulkinsert</Filter>
+    </ClCompile>
+    <ClCompile Include="BulkInsertProtocolViolationException.cpp">
+      <Filter>ravendb.client\exceptions\documents\bulkinsert</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexCompilationException.cpp">
+      <Filter>ravendb.client\exceptions\documents\compilation</Filter>
+    </ClCompile>
+    <ClCompile Include="CounterOverflowException.cpp">
+      <Filter>ravendb.client\exceptions\documents\counters</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexAlreadyExistException.cpp">
+      <Filter>ravendb.client\exceptions\documents\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexCreationException.cpp">
+      <Filter>ravendb.client\exceptions\documents\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexDeletionException.cpp">
+      <Filter>ravendb.client\exceptions\documents\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexDoesNotExistException.cpp">
+      <Filter>ravendb.client\exceptions\documents\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexInvalidException.cpp">
+      <Filter>ravendb.client\exceptions\documents\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="JavaScriptException.cpp">
+      <Filter>ravendb.client\exceptions\documents\patching</Filter>
+    </ClCompile>
+    <ClCompile Include="JavaScriptParseException.cpp">
+      <Filter>ravendb.client\exceptions\documents\patching</Filter>
+    </ClCompile>
+    <ClCompile Include="RevisionsDisabledException.cpp">
+      <Filter>ravendb.client\exceptions\documents\revisions</Filter>
+    </ClCompile>
+    <ClCompile Include="NonUniqueObjectException.cpp">
+      <Filter>ravendb.client\exceptions\documents\session</Filter>
+    </ClCompile>
+    <ClCompile Include="SubscriptionException.cpp">
+      <Filter>ravendb.client\exceptions\documents\subscriptions</Filter>
+    </ClCompile>
+    <ClCompile Include="SubscriberErrorException.cpp">
+      <Filter>ravendb.client\exceptions\documents\subscriptions</Filter>
+    </ClCompile>
+    <ClCompile Include="SubscriptionChangeVectorUpdateConcurrencyException.cpp">
+      <Filter>ravendb.client\exceptions\documents\subscriptions</Filter>
+    </ClCompile>
+    <ClCompile Include="SubscriptionClosedException.cpp">
+      <Filter>ravendb.client\exceptions\documents\subscriptions</Filter>
+    </ClCompile>
+    <ClCompile Include="SubscriptionDoesNotBelongToNodeException.cpp">
+      <Filter>ravendb.client\exceptions\documents\subscriptions</Filter>
+    </ClCompile>
+    <ClCompile Include="SubscriptionDoesNotExistException.cpp">
+      <Filter>ravendb.client\exceptions\documents\subscriptions</Filter>
+    </ClCompile>
+    <ClCompile Include="SubscriptionInUseException.cpp">
+      <Filter>ravendb.client\exceptions\documents\subscriptions</Filter>
+    </ClCompile>
+    <ClCompile Include="SubscriptionInvalidStateException.cpp">
+      <Filter>ravendb.client\exceptions\documents\subscriptions</Filter>
+    </ClCompile>
+    <ClCompile Include="RouteNotFoundException.cpp">
+      <Filter>ravendb.client\exceptions\routing</Filter>
+    </ClCompile>
+    <ClCompile Include="SecurityException.cpp">
+      <Filter>ravendb.client\exceptions\security</Filter>
+    </ClCompile>
+    <ClCompile Include="AuthenticationException.cpp">
+      <Filter>ravendb.client\exceptions\security</Filter>
+    </ClCompile>
+    <ClCompile Include="AuthorizationException.cpp">
+      <Filter>ravendb.client\exceptions\security</Filter>
+    </ClCompile>
+    <ClCompile Include="CertificateNameMismatchException.cpp">
+      <Filter>ravendb.client\exceptions\security</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerLoadFailureException.cpp">
+      <Filter>ravendb.client\exceptions\server</Filter>
+    </ClCompile>
+    <ClCompile Include="ExceptionDispatcher.cpp">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="OperationExecutor.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="ClusterRequestExecutor.cpp">
+      <Filter>ravendb.client\http</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerOperationExecutor.cpp">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="PutServerWideClientConfigurationOperation.cpp">
+      <Filter>ravendb.client\serverwide\operations\configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="GetServerWideClientConfigurationOperation.cpp">
+      <Filter>ravendb.client\serverwide\operations\configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpConnectionInfo.cpp">
+      <Filter>ravendb.client\serverwide\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="GetTcpInfoCommand.cpp">
+      <Filter>ravendb.client\serverwide\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="GetClusterTopologyCommand.cpp">
+      <Filter>ravendb.client\serverwide\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="ClusterTopology.cpp">
+      <Filter>ravendb.client\http</Filter>
+    </ClCompile>
+    <ClCompile Include="ClusterTopologyResponse.cpp">
+      <Filter>ravendb.client\http</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
-      <Filter>ravendb.client</Filter>
-    </ClInclude>
-    <ClInclude Include="RavenErrors.h">
       <Filter>ravendb.client</Filter>
     </ClInclude>
     <ClInclude Include="VoidRavenCommand.h">
@@ -1190,6 +1379,201 @@
     <ClInclude Include="RavenException.h">
       <Filter>ravendb.client\exceptions</Filter>
     </ClInclude>
+    <ClInclude Include="AllTopologyNodesDownException.h">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="BadRequestException.h">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="BadResponseException.h">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientVersionMismatchException.h">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="ConflictException.h">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="ConcurrencyException.h">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="InvalidQueryException.h">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeoutException.h">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="UnsuccessfulRequestException.h">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="AttachmentDoesNotExistException.h">
+      <Filter>ravendb.client\exceptions\attachments</Filter>
+    </ClInclude>
+    <ClInclude Include="ChangeProcessingException.h">
+      <Filter>ravendb.client\exceptions\changes</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandExecutionException.h">
+      <Filter>ravendb.client\exceptions\cluster</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeIsPassiveException.h">
+      <Filter>ravendb.client\exceptions\cluster</Filter>
+    </ClInclude>
+    <ClInclude Include="NoLeaderException.h">
+      <Filter>ravendb.client\exceptions\cluster</Filter>
+    </ClInclude>
+    <ClInclude Include="LicenseActivationException.h">
+      <Filter>ravendb.client\exceptions\commercial</Filter>
+    </ClInclude>
+    <ClInclude Include="CompilationException.h">
+      <Filter>ravendb.client\exceptions\compilation</Filter>
+    </ClInclude>
+    <ClInclude Include="DatabaseConcurrentLoadTimeoutException.h">
+      <Filter>ravendb.client\exceptions\database</Filter>
+    </ClInclude>
+    <ClInclude Include="DatabaseDisabledException.h">
+      <Filter>ravendb.client\exceptions\database</Filter>
+    </ClInclude>
+    <ClInclude Include="DatabaseDoesNotExistException.h">
+      <Filter>ravendb.client\exceptions\database</Filter>
+    </ClInclude>
+    <ClInclude Include="DatabaseLoadFailureException.h">
+      <Filter>ravendb.client\exceptions\database</Filter>
+    </ClInclude>
+    <ClInclude Include="DatabaseLoadTimeoutException.h">
+      <Filter>ravendb.client\exceptions\database</Filter>
+    </ClInclude>
+    <ClInclude Include="DatabaseNotRelevantException.h">
+      <Filter>ravendb.client\exceptions\database</Filter>
+    </ClInclude>
+    <ClInclude Include="DatabaseSchemaErrorException.h">
+      <Filter>ravendb.client\exceptions\database</Filter>
+    </ClInclude>
+    <ClInclude Include="DocumentConflictException.h">
+      <Filter>ravendb.client\exceptions\documents</Filter>
+    </ClInclude>
+    <ClInclude Include="DocumentDoesNotExistException.h">
+      <Filter>ravendb.client\exceptions\documents</Filter>
+    </ClInclude>
+    <ClInclude Include="BulkInsertAbortedException.h">
+      <Filter>ravendb.client\exceptions\documents\bulkinsert</Filter>
+    </ClInclude>
+    <ClInclude Include="BulkInsertProtocolViolationException.h">
+      <Filter>ravendb.client\exceptions\documents\bulkinsert</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexCompilationException.h">
+      <Filter>ravendb.client\exceptions\documents\compilation</Filter>
+    </ClInclude>
+    <ClInclude Include="CounterOverflowException.h">
+      <Filter>ravendb.client\exceptions\documents\counters</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexAlreadyExistException.h">
+      <Filter>ravendb.client\exceptions\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexCreationException.h">
+      <Filter>ravendb.client\exceptions\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexDeletionException.h">
+      <Filter>ravendb.client\exceptions\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexDoesNotExistException.h">
+      <Filter>ravendb.client\exceptions\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexInvalidException.h">
+      <Filter>ravendb.client\exceptions\documents\indexes</Filter>
+    </ClInclude>
+    <ClInclude Include="JavaScriptException.h">
+      <Filter>ravendb.client\exceptions\documents\patching</Filter>
+    </ClInclude>
+    <ClInclude Include="JavaScriptParseException.h">
+      <Filter>ravendb.client\exceptions\documents\patching</Filter>
+    </ClInclude>
+    <ClInclude Include="RevisionsDisabledException.h">
+      <Filter>ravendb.client\exceptions\documents\revisions</Filter>
+    </ClInclude>
+    <ClInclude Include="NonUniqueObjectException.h">
+      <Filter>ravendb.client\exceptions\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="SubscriptionException.h">
+      <Filter>ravendb.client\exceptions\documents\subscriptions</Filter>
+    </ClInclude>
+    <ClInclude Include="SubscriberErrorException.h">
+      <Filter>ravendb.client\exceptions\documents\subscriptions</Filter>
+    </ClInclude>
+    <ClInclude Include="SubscriptionChangeVectorUpdateConcurrencyException.h">
+      <Filter>ravendb.client\exceptions\documents\subscriptions</Filter>
+    </ClInclude>
+    <ClInclude Include="SubscriptionClosedException.h">
+      <Filter>ravendb.client\exceptions\documents\subscriptions</Filter>
+    </ClInclude>
+    <ClInclude Include="SubscriptionDoesNotBelongToNodeException.h">
+      <Filter>ravendb.client\exceptions\documents\subscriptions</Filter>
+    </ClInclude>
+    <ClInclude Include="SubscriptionDoesNotExistException.h">
+      <Filter>ravendb.client\exceptions\documents\subscriptions</Filter>
+    </ClInclude>
+    <ClInclude Include="SubscriptionInUseException.h">
+      <Filter>ravendb.client\exceptions\documents\subscriptions</Filter>
+    </ClInclude>
+    <ClInclude Include="SubscriptionInvalidStateException.h">
+      <Filter>ravendb.client\exceptions\documents\subscriptions</Filter>
+    </ClInclude>
+    <ClInclude Include="RouteNotFoundException.h">
+      <Filter>ravendb.client\exceptions\routing</Filter>
+    </ClInclude>
+    <ClInclude Include="SecurityException.h">
+      <Filter>ravendb.client\exceptions\security</Filter>
+    </ClInclude>
+    <ClInclude Include="AuthenticationException.h">
+      <Filter>ravendb.client\exceptions\security</Filter>
+    </ClInclude>
+    <ClInclude Include="AuthorizationException.h">
+      <Filter>ravendb.client\exceptions\security</Filter>
+    </ClInclude>
+    <ClInclude Include="CertificateNameMismatchException.h">
+      <Filter>ravendb.client\exceptions\security</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerLoadFailureException.h">
+      <Filter>ravendb.client\exceptions\server</Filter>
+    </ClInclude>
+    <ClInclude Include="ExceptionDispatcher.h">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="IVoidOperation.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="ClusterRequestExecutor.h">
+      <Filter>ravendb.client\http</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerOperationExecutor.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="PutServerWideClientConfigurationOperation.h">
+      <Filter>ravendb.client\serverwide\operations\configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="GetServerWideClientConfigurationOperation.h">
+      <Filter>ravendb.client\serverwide\operations\configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpConnectionInfo.h">
+      <Filter>ravendb.client\serverwide\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="GetTcpInfoCommand.h">
+      <Filter>ravendb.client\serverwide\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="GetClusterTopologyCommand.h">
+      <Filter>ravendb.client\serverwide\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="IVoidServerOperation.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="ClusterTopology.h">
+      <Filter>ravendb.client\http</Filter>
+    </ClInclude>
+    <ClInclude Include="ClusterTopologyResponse.h">
+      <Filter>ravendb.client\http</Filter>
+    </ClInclude>
+    <ClInclude Include="CurlException.h">
+      <Filter>ravendb.client\exceptions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
@@ -1290,6 +1674,63 @@
     </Filter>
     <Filter Include="ravendb.client\exceptions">
       <UniqueIdentifier>{6604fdf0-6008-465b-a060-b95e823401b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\attachments">
+      <UniqueIdentifier>{5a9b060e-52f7-49f5-adac-265740a11d08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\changes">
+      <UniqueIdentifier>{e44ae831-f98a-4852-b2f5-c8d681758f6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\cluster">
+      <UniqueIdentifier>{c0c8edb6-eb67-406f-92f7-8f926a779b21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\commercial">
+      <UniqueIdentifier>{c6c8f7dc-f374-44b8-bd30-2c8c5c06da0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\compilation">
+      <UniqueIdentifier>{2700d560-526b-4d85-b59d-5969730c16a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\database">
+      <UniqueIdentifier>{d3760f03-8113-47ef-be43-3e4c266f969c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\documents">
+      <UniqueIdentifier>{d17a9ebe-b0bf-40e7-8406-289bb02a7fc3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\documents\bulkinsert">
+      <UniqueIdentifier>{b7ecf514-4538-4639-bac0-47139a5831b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\documents\compilation">
+      <UniqueIdentifier>{d82945fd-569b-4bf2-8d7f-f3837d862c91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\documents\counters">
+      <UniqueIdentifier>{02c29c28-e7ea-4221-95f1-cea605607486}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\documents\indexes">
+      <UniqueIdentifier>{a4406feb-165b-439c-b092-8b37f3ee4752}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\documents\patching">
+      <UniqueIdentifier>{5d90a0f3-d47f-4512-b1a6-631ebde8bfa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\documents\revisions">
+      <UniqueIdentifier>{21357fbf-36bd-4e5b-8e77-77596aaa770e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\documents\session">
+      <UniqueIdentifier>{8be1f325-decb-42db-8232-6e57c6b054fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\documents\subscriptions">
+      <UniqueIdentifier>{91db646a-a7b9-4707-9744-76795caf756d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\routing">
+      <UniqueIdentifier>{d1773fe9-3930-46d8-96eb-e78f3f308017}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\security">
+      <UniqueIdentifier>{6a8a4148-9a05-44f0-9f48-d711f3491756}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\exceptions\server">
+      <UniqueIdentifier>{b24791e3-adf3-4702-9063-3bb64c9d7955}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\serverwide\operations\configuration">
+      <UniqueIdentifier>{7ca84c34-f20d-41fa-b275-41fd8e7efe98}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

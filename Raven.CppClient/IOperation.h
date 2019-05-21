@@ -7,8 +7,9 @@
 namespace ravendb::client::documents::operations
 {
 	template<typename TResult>
-	struct IOperation
+	class IOperation
 	{
+	public:
 		virtual ~IOperation() = 0;
 
 		//using std::unique_ptr for polymorphism

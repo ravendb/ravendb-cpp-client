@@ -7,6 +7,7 @@
 #include "User.h"
 #include "EntityIdHelperUtil.h"
 #include "DeleteDocumentCommand.h"
+#include "ConcurrencyException.h"
 
 namespace ravendb::client::tests::client::documents::commands
 {
@@ -68,16 +69,7 @@ namespace ravendb::client::tests::client::documents::commands
 		}
 
 		auto command = ravendb::client::documents::commands::DeleteDocumentCommand("users/1", change_vector);
-		try
-		{
-			store->get_request_executor()->execute(command);
-		}
-		catch (std::exception& e)
-		{
-			//TODO assert that this is ConcurrencyException
-			SUCCEED();
-			return;
-		}
-		FAIL();
+
+		ASSERT_THROW(store->get_request_executor()->execute(command), exceptions::ConcurrencyException);
 	}
 }

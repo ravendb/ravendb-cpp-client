@@ -1,6 +1,7 @@
 #pragma once
 #include "RequestExecutor.h"
 #include "IVoidMaintenanceOperation.h"
+#include "ServerOperationExecutor.h"
 
 namespace ravendb::client::documents
 {
@@ -17,8 +18,8 @@ namespace ravendb::client::documents::operations
 		const std::weak_ptr<DocumentStore> _store;
 		std::optional<std::string> _database_name;
 		std::shared_ptr<http::RequestExecutor> _request_executor{};
-		//TODO implement
-		//std::shared_ptr< ServerOperationExecutor> _server_operation_executor;
+
+		std::shared_ptr<serverwide::operations::ServerOperationExecutor> _server_operation_executor;
 
 		std::shared_ptr<http::RequestExecutor> get_request_executor();
 
@@ -29,8 +30,7 @@ namespace ravendb::client::documents::operations
 		static std::shared_ptr<MaintenanceOperationExecutor> create(
 			std::shared_ptr<DocumentStore> store, std::optional<std::string> database_name = {});
 
-		//TODO implement
-		//std::shared_ptr<ServerOperationExecutor> server();
+		std::shared_ptr<serverwide::operations::ServerOperationExecutor> server();
 
 		std::shared_ptr<MaintenanceOperationExecutor> for_database(std::string database_name) const;
 

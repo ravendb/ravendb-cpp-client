@@ -2,6 +2,7 @@
 #include "NodeSelector.h"
 #include "utils.h"
 #include <algorithm>
+#include "AllTopologyNodesDownException.h"
 
 namespace ravendb::client::http
 {
@@ -25,8 +26,7 @@ namespace ravendb::client::http
 
 		if(state.nodes->empty())
 		{
-			//TODO throw new AllTopologyNodesDownException("There are no nodes in the topology at all");
-			throw std::runtime_error("There are no nodes in the topology at all");
+			throw exceptions::AllTopologyNodesDownException("There are no nodes in the topology at all");
 		}
 		return CurrentIndexAndNode(0, state.nodes->at(0));
 	}

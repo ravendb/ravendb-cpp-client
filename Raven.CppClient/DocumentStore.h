@@ -34,8 +34,7 @@ namespace ravendb::client::documents
 
 		std::string _identifier{};
 
-		void initiate_operation_executors();
-
+	private:
 		DocumentStore();
 
 		DocumentStore(std::string url, std::string database);
@@ -77,8 +76,8 @@ namespace ravendb::client::documents
 
 		std::shared_ptr<IDocumentStore> initialize() override;
 
-		std::shared_ptr<operations::MaintenanceOperationExecutor> maintenance() const override;
+		std::shared_ptr<operations::MaintenanceOperationExecutor> maintenance() override;
 
-		std::shared_ptr<operations::OperationExecutor> get_operations() const override;
+		std::shared_ptr<operations::OperationExecutor> operations() override;
 	};
 }

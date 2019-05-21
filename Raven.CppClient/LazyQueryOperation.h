@@ -22,7 +22,7 @@ namespace ravendb::client::documents::session::operations::lazy
 		queries::QueryResult _query_result{};
 		boolean _requires_retry = false;
 
-		void handle_response(const std::optional<queries::QueryResult>& query_result);
+		void handle_response(std::shared_ptr<const queries::QueryResult> query_result);
 
 	public:
 		~LazyQueryOperation() override = default;
@@ -43,13 +43,13 @@ namespace ravendb::client::documents::session::operations::lazy
 
 
 	template <typename T>
-	void LazyQueryOperation<T>::handle_response(const std::optional<queries::QueryResult>& query_result)
+	void LazyQueryOperation<T>::handle_response(std::shared_ptr<const queries::QueryResult> query_result)
 	{
 		if (!query_result)
 		{
 			return;
 		}
-		_query_operation->ensure_is_acceptable_and_save_result(*query_result);
+		_query_operation->ensure_is_acceptable_and_save_result(query_result);
 		for(const auto& event : _after_query_executed)
 		{
 			event(*query_result);
@@ -108,10 +108,10 @@ namespace ravendb::client::documents::session::operations::lazy
 			return;
 		}
 
-		std::optional<queries::QueryResult> query_result{};
+		std::shared_ptr<queries::QueryResult> query_result{};
 		if (response.result)
 		{
-			query_result = nlohmann::json::parse(*response.result).get<queries::QueryResult>();
+			query_result = std::make_shared<queries::QueryResult>(nlohmann::json::parse(*response.result).get<queries::QueryResult>());
 		}
 		handle_response(query_result);
 	}

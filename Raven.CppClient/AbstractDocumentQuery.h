@@ -486,8 +486,8 @@ namespace ravendb::client::documents::session
 		{
 			auto command = query_operation->create_request();
 			//TODO 
-			the_session.lock()->get_request_executor()->execute(command/*, the_session.lock()->_session_info*/);
-			query_operation->set_result(*command.get_result());
+			the_session.lock()->get_request_executor()->execute(command, the_session.lock()->get_session_info());
+			query_operation->set_result(command.get_result());
 		}
 
 		invoke_after_query_executed(query_operation->get_current_query_results());

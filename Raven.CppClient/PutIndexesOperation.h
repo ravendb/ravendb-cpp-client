@@ -84,16 +84,15 @@ namespace ravendb::client::documents::operations::indexes
 				curl_easy_setopt(curl, CURLOPT_READDATA, &_index_to_add_str);
 				curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_index_to_add_str.length());
 
+				curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE, "application/json");
+
 				url_ref.emplace(path_builder.str());
 			}
 
 			void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override
 			{
 				_result = std::make_shared<ResultType>();
-				if (!impl::utils::json_utils::get_val_from_json(*response, "Results", *_result))
-				{
-					throw ravendb::client::RavenError({}, ravendb::client::RavenError::ErrorType::INVALID_RESPONSE);
-				}
+				impl::utils::json_utils::get_val_from_json(*response, "Results", *_result);
 			}
 
 			bool is_read_request() const override

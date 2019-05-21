@@ -832,17 +832,8 @@ namespace ravendb::client::tests::client
 
 		ASSERT_TRUE(first);
 
-		try
-		{
-			session.query<infrastructure::entities::User>()
-				->single();
-		}
-		catch (std::runtime_error& e)
-		{
-			SUCCEED();
-			return;
-		}
-		FAIL();
+		ASSERT_THROW(session.query<infrastructure::entities::User>()->single(),
+				std::runtime_error);
 	}
 
 	TEST_F(QueryTest, QueryParameters)

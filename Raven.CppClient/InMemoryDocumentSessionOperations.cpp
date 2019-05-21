@@ -12,6 +12,7 @@
 #include "JsonOperation.h"
 #include "BatchCommandResult.h"
 #include "DocumentConventions.h"
+#include "NonUniqueObjectException.h"
 
 namespace ravendb::client::documents::session
 {
@@ -172,6 +173,11 @@ namespace ravendb::client::documents::session
 
 		//TODO get id
 		throw std::runtime_error("Not implemented");
+	}
+
+	const SessionInfo& InMemoryDocumentSessionOperations::get_session_info() const
+	{
+		return _session_info;
 	}
 
 	bool InMemoryDocumentSessionOperations::is_loaded(const std::string& id) const
@@ -573,7 +579,8 @@ namespace ravendb::client::documents::session
 		{
 			return;
 		}
-		throw std::runtime_error("Attempted to associate a different object with id '" + id + "'.");
+		throw exceptions::documents::session::NonUniqueObjectException(
+			"Attempted to associate a different object with id '" + id + "'.");
 	}
 
 	InMemoryDocumentSessionOperations::SaveChangesData InMemoryDocumentSessionOperations::prepare_for_save_changes()

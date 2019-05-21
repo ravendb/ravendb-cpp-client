@@ -52,6 +52,15 @@ namespace ravendb::client::documents::operations
 		return object;
 	}
 
+	std::shared_ptr<serverwide::operations::ServerOperationExecutor> MaintenanceOperationExecutor::server()
+	{
+		if(!_server_operation_executor)
+		{
+			_server_operation_executor = serverwide::operations::ServerOperationExecutor::create(_store.lock());
+		}
+		return _server_operation_executor;
+	}
+
 	std::shared_ptr<MaintenanceOperationExecutor> MaintenanceOperationExecutor::for_database(
 		std::string database_name) const
 	{

@@ -37,8 +37,9 @@ namespace ravendb::client
 namespace  ravendb::client::documents
 {
 	//TODO complete!
-	struct IDocumentStore
+	class IDocumentStore
 	{
+	public:
 		virtual ~IDocumentStore() = 0;
 
 		virtual std::string get_identifier() const = 0;
@@ -64,9 +65,9 @@ namespace  ravendb::client::documents
 
 		virtual std::shared_ptr<http::RequestExecutor> get_request_executor(const std::string& database = {}) const = 0;
 
-		virtual std::shared_ptr<operations::MaintenanceOperationExecutor> maintenance() const = 0;
+		virtual std::shared_ptr<operations::MaintenanceOperationExecutor> maintenance() = 0;
 
-		virtual std::shared_ptr<operations::OperationExecutor> get_operations() const = 0;			
+		virtual std::shared_ptr<operations::OperationExecutor> operations() = 0;			
 	};
 
 	inline IDocumentStore::~IDocumentStore() = default;

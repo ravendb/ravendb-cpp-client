@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "QueryOperation.h"
+#include "IndexDoesNotExistException.h"
+#include "TimeoutException.h"
 
 namespace ravendb::client::documents::session::operations
 {
@@ -43,16 +45,20 @@ namespace ravendb::client::documents::session::operations
 		return _current_query_result;
 	}
 
-	void QueryOperation::set_result(const queries::QueryResult& query_result)
+	void QueryOperation::set_result(std::shared_ptr<const queries::QueryResult> query_result)
 	{
 		ensure_is_acceptable_and_save_result(query_result);
 	}
 
-	void QueryOperation::ensure_is_acceptable_and_save_result(const queries::QueryResult& result)
+	void QueryOperation::ensure_is_acceptable_and_save_result(std::shared_ptr<const queries::QueryResult> result)
 	{
-		ensure_is_acceptable(result, _index_query.wait_for_non_stale_results, _stop_watch);
+		if(!result)
+		{
+			throw exceptions::documents::indexes::IndexDoesNotExistException("Could not find index " + *_index_name);
+		}
+		ensure_is_acceptable(*result, _index_query.wait_for_non_stale_results, _stop_watch);
 
-		_current_query_result = result;
+		_current_query_result = *result;
 
 		//TODO add the logger treatment 
 	}
@@ -68,7 +74,7 @@ namespace ravendb::client::documents::session::operations
 			msg << duration.count();
 			msg << "milliseconds for the query to return non stale result.";
 
-			throw std::out_of_range(msg.str());
+			throw exceptions::TimeoutException(msg.str());
 		}
 	}
 

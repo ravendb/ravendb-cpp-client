@@ -15,7 +15,6 @@ namespace ravendb::client::documents
 	{
 		auto object = std::shared_ptr<DocumentStore>(new DocumentStore(), Deleter());
 		object->_weak_this = object;
-		object->initiate_operation_executors();
 		return object;
 	}
 
@@ -23,7 +22,6 @@ namespace ravendb::client::documents
 	{
 		auto object = std::shared_ptr<DocumentStore>(new DocumentStore(std::move(url), std::move(database)), Deleter());
 		object->_weak_this = object;
-		object->initiate_operation_executors();
 		return object;
 	}
 
@@ -31,7 +29,6 @@ namespace ravendb::client::documents
 	{
 		auto object = std::shared_ptr<DocumentStore>(new DocumentStore(std::move(urls), std::move(database)), Deleter());
 		object->_weak_this = object;
-		object->initiate_operation_executors();
 		return object;
 	}
 
@@ -69,13 +66,6 @@ namespace ravendb::client::documents
 		{}
 
 		delete ptr;
-	}
-
-	void DocumentStore::initiate_operation_executors()
-	{
-		_maintenance_operation_executor = operations::MaintenanceOperationExecutor::create(
-			std::static_pointer_cast<DocumentStore>(_weak_this.lock()));
-		_operation_executor = operations::OperationExecutor::create(_weak_this.lock());
 	}
 
 	DocumentStore::DocumentStore() = default;
@@ -256,13 +246,26 @@ namespace ravendb::client::documents
 		return _weak_this.lock();
 	}
 
-	std::shared_ptr<operations::MaintenanceOperationExecutor> DocumentStore::maintenance() const
+	std::shared_ptr<operations::MaintenanceOperationExecutor> DocumentStore::maintenance()
 	{
+		assert_initialized();
+
+		if(!_maintenance_operation_executor)
+		{
+			_maintenance_operation_executor = operations::MaintenanceOperationExecutor::create(
+				std::static_pointer_cast<DocumentStore>(_weak_this.lock()));
+		}
+
 		return _maintenance_operation_executor;
 	}
 
-	std::shared_ptr<operations::OperationExecutor> DocumentStore::get_operations() const
+	std::shared_ptr<operations::OperationExecutor> DocumentStore::operations()
 	{
+		if(!_operation_executor)
+		{
+			_operation_executor = operations::OperationExecutor::create(_weak_this.lock());
+		}
+
 		return _operation_executor;
 	}
 

@@ -44,9 +44,8 @@ namespace ravendb::client::tests::old_tests
 			documents::commands::GetDocumentsCommand cmd("users/1-A", {}, false);
 			test_suite_executor->execute(cmd);
 		}
-		catch (RavenError& exception)
+		catch (exceptions::database::DatabaseDoesNotExistException&)
 		{
-			ASSERT_EQ(exception.get_error_type(), RavenError::ErrorType::DATABASE_DOES_NOT_EXIST);
 			SUCCEED();
 			return;
 		}

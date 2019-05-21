@@ -1,6 +1,5 @@
 #pragma once
 #include "IMaintenanceOperation.h"
-#include "RavenCommand.h"
 #include "IndexErrors.h"
 
 namespace ravendb::client::documents::operations::indexes
@@ -19,14 +18,14 @@ namespace ravendb::client::documents::operations::indexes
 			: _index_names(std::move(index_names))
 		{}
 
-		std::unique_ptr<RavenCommand<std::vector<documents::indexes::IndexErrors>>> get_command(
+		std::unique_ptr<http::RavenCommand<std::vector<documents::indexes::IndexErrors>>> get_command(
 			std::shared_ptr<conventions::DocumentConventions> conventions) const override
 		{
 			return std::make_unique<GetIndexErrorsCommand>(_index_names);
 		}
 
 	private:
-		class GetIndexErrorsCommand : public RavenCommand<std::vector<documents::indexes::IndexErrors>>
+		class GetIndexErrorsCommand : public http::RavenCommand<std::vector<documents::indexes::IndexErrors>>
 		{
 		private:
 			const std::vector<std::string> _index_names{};
@@ -38,7 +37,7 @@ namespace ravendb::client::documents::operations::indexes
 				: _index_names(std::move(index_names))
 			{}
 
-			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const ServerNode> node,
+			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
 				std::optional<std::string>& url_ref) override
 			{
 				std::ostringstream path_builder;

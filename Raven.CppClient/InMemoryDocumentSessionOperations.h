@@ -229,6 +229,8 @@ namespace ravendb::client::documents::session
 		template<typename T>
 		std::optional<impl::DateTimeOffset> get_last_modified_for(std::shared_ptr<T> entity) const;
 
+		const SessionInfo& get_session_info() const;
+
 		bool is_loaded(const std::string& id) const;
 
 		bool is_loaded_or_deleted(const std::string& id) const;

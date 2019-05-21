@@ -3,6 +3,7 @@
 #include "raven_test_definitions.h"
 #include "DocumentSession.h"
 #include "User.h"
+#include "NonUniqueObjectException.h"
 
 namespace ravendb::client::tests::client
 {
@@ -86,12 +87,14 @@ namespace ravendb::client::tests::client
 		{
 			session.store(new_user);
 		}
-		catch (std::runtime_error& e)
+		catch (exceptions::documents::session::NonUniqueObjectException& e)
 		{
 			std::string_view expected_msg_start = "Attempted to associate a different object with id 'users/1'";
 			std::string_view msg = e.what();
 			ASSERT_EQ(0, msg.substr(0, expected_msg_start.length()).compare(expected_msg_start));
+			return;
 		}
+		FAIL();
 	}
 
 }

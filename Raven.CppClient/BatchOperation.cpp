@@ -52,9 +52,9 @@ namespace ravendb::client::documents::session::operations
 		if (_session.lock()->get_transaction_mode() == TransactionMode::CLUSTER_WIDE &&
 			result.transaction_index && result.transaction_index.value() <= 0)
 		{
-			//TODO change to ClientVersionMismatchException
-			throw std::runtime_error("Cluster transaction was send to a node that is not supporting it. "
-				"So it was executed ONLY on the requested node on "/* + _session->get_request_executor()->get_url()*/);
+			throw exceptions::ClientVersionMismatchException("Cluster transaction was send to a node that is not supporting it. "
+				"So it was executed ONLY on the requested node on " + 
+				_session.lock()->get_request_executor()->get_url().value_or(""));
 		}
 
 		if (result.results.size() < _session_commands_count)

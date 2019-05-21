@@ -91,7 +91,7 @@ namespace ravendb::client::tests::old_tests
 			{
 				auto cmd = op.get_command({});
 				test_suite_executor->get().execute(*cmd);
-			}catch (RavenError&)
+			}catch (exceptions::RavenException&)
 			{
 				return false;
 			}

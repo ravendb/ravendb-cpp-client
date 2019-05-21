@@ -1,6 +1,6 @@
 #pragma once
 
-namespace  ravendb::client::serverwide
+namespace ravendb::client::serverwide
 {
 	struct LeaderStamp
 	{

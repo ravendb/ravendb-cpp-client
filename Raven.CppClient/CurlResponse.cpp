@@ -57,9 +57,9 @@ namespace ravendb::client::impl
 		return CurlResponse(curl_ref);
 	}
 
-	CurlResponse::CurlResponse()
+	bool CurlResponse::is_valid() const
 	{
-		error = error_buffer;
+		return _valid;
 	}
 
 	CurlResponse::CurlResponse(const CurlHandlesHolder::CurlReference& curl_ref)
@@ -75,7 +75,7 @@ namespace ravendb::client::impl
 		}
 		curl_easy_setopt(curl, CURLOPT_URL, curl_ref.url.c_str());
 		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers_list.get());
-		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, error_buffer);
+		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, _error_buffer);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, push_to_buffer);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output);
 		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, push_headers);
@@ -88,7 +88,7 @@ namespace ravendb::client::impl
 
 		perform_result = curl_easy_perform(curl);
 
-		error = error_buffer;
+		error = _error_buffer;
 		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &status_code);
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, nullptr);
 

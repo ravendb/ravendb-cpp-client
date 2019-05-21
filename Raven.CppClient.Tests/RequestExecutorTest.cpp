@@ -4,6 +4,7 @@
 #include "RequestExecutor.h"
 #include "GetNextOperationIdCommand.h"
 #include "GetDatabaseNamesOperation.h"
+#include "AllTopologyNodesDownException.h"
 
 namespace ravendb::client::tests::client
 {
@@ -12,7 +13,7 @@ namespace ravendb::client::tests::client
 	protected:
 		void customise_store(std::shared_ptr<documents::DocumentStore> store) override
 		{
-			store->set_before_perform(infrastructure::set_for_fiddler);
+			//store->set_before_perform(infrastructure::set_for_fiddler);
 		}
 	};
 
@@ -42,19 +43,13 @@ namespace ravendb::client::tests::client
 
 		ASSERT_EQ(40, errors_count);
 
-		try
+		ASSERT_THROW(
 		{
 			auto database_names_operation = serverwide::operations::GetDatabaseNamesOperation(0, 20);
 			auto command = database_names_operation.get_command(conventions);
 			executor->execute(*command);
-		}
-		//TODO DatabaseDoesNotExistException expected
-		catch (RavenError& e)
-		{
-			ASSERT_EQ(RavenError::ErrorType::DATABASE_DOES_NOT_EXIST, e.get_error_type());
-			return;
-		}
-		FAIL();
+		}, ravendb::client::exceptions::database::DatabaseDoesNotExistException);
+		
 	}
 
 	TEST_F(RequestExecutorTest, CanIssueManyRequests)
@@ -104,17 +99,8 @@ namespace ravendb::client::tests::client
 		server_node->url = store->get_urls()[0];
 		server_node->database = "no_such";
 
-		try
-		{
-			executor->update_topology_async(server_node, 5000).get();
-		}
-		//TODO expecting DatabaseDoesNotExistException
-		catch (RavenError& e)
-		{
-			ASSERT_EQ(RavenError::ErrorType::DATABASE_DOES_NOT_EXIST, e.get_error_type());
-			return;
-		}
-		FAIL();
+		ASSERT_THROW(executor->update_topology_async(server_node, 5000).get(),
+			exceptions::database::DatabaseDoesNotExistException);
 	}
 
 	TEST_F(RequestExecutorTest, ThrowsWhenDatabaseDoesNotExist)
@@ -128,17 +114,8 @@ namespace ravendb::client::tests::client
 
 		auto command = documents::commands::GetNextOperationIdCommand();
 
-		try
-		{
-			executor->execute(command);
-		}
-		//TODO expecting DatabaseDoesNotExistException
-		catch (RavenError& e)
-		{
-			ASSERT_EQ(RavenError::ErrorType::DATABASE_DOES_NOT_EXIST, e.get_error_type());
-			return;
-		}
-		FAIL();
+		ASSERT_THROW(executor->execute(command),
+			ravendb::client::exceptions::database::DatabaseDoesNotExistException);
 	}
 
 	TEST_F(RequestExecutorTest, CanCreateSingleNodeRequestExecutor)
@@ -202,19 +179,14 @@ namespace ravendb::client::tests::client
 
 		auto store = get_document_store(TEST_NAME);
 
-		auto executor = http::RequestExecutor::create({ "http://no_such_host:8080" },
-			"db1", {},
-			store->get_scheduler(), conventions, store->get_before_perform(), store->get_after_perform());
+		ASSERT_THROW(
+		{
+			auto executor = http::RequestExecutor::create({ "http://no_such_host:8080" }, "db1", {},
+				store->get_scheduler(), conventions, store->get_before_perform(), store->get_after_perform());
 
-		auto command = documents::commands::GetNextOperationIdCommand();
-		try
-		{
+			auto command = documents::commands::GetNextOperationIdCommand();
+
 			executor->execute(command);
-		}
-		//TODO expecting AllTopologyNodesDownException
-		catch (std::exception& e)
-		{
-			ASSERT_EQ(std::string{ "Received unsuccessful response from all servers and couldn't recover from it." }, e.what());
-		}
+		}, ravendb::client::exceptions::AllTopologyNodesDownException);
 	}
 }
