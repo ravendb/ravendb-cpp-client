@@ -16,6 +16,7 @@
 #include "DocumentConventions.h"
 #include "utils.h"
 #include "GenerateEntityIdOnTheClient.h"
+#include "EventHandler.h"
 
 namespace ravendb::client
 {
@@ -145,9 +146,14 @@ namespace ravendb::client::documents::session
 
 		static std::atomic_int32_t _instances_counter;
 
-		const int32_t _hash = _instances_counter.fetch_add(1) + 1;//unused
+		const int32_t _hash = ++_instances_counter;//unused
 
 		TransactionMode _transaction_mode;
+
+		std::vector<primitives::EventHandler> on_before_store{};
+		std::vector<primitives::EventHandler> on_after_save_changes{};
+		std::vector<primitives::EventHandler> on_before_delete{};
+		std::vector<primitives::EventHandler> on_before_query{};
 
 		int32_t _number_of_requests{};
 
@@ -192,13 +198,29 @@ namespace ravendb::client::documents::session
 	public:
 		virtual ~InMemoryDocumentSessionOperations() = 0;
 
+		void add_before_store_listener(primitives::EventHandler handler);
+
+		void remove_before_store_listener(const primitives::EventHandler& handler);
+
+		void add_after_save_changes_listener(primitives::EventHandler handler);
+
+		void remove_after_save_changes_listener(const primitives::EventHandler& handler);
+
+		void add_before_delete_listener(primitives::EventHandler handler);
+
+		void remove_before_delete_listener(const primitives::EventHandler& handler);
+
+		void add_before_query_listener(primitives::EventHandler handler);
+
+		void remove_before_query_listener(const primitives::EventHandler& handler);
+
 		std::shared_ptr<IDocumentStore> get_document_store() const;
 
 		std::shared_ptr<http::RequestExecutor> get_request_executor() const;
 
 		std::shared_ptr<documents::operations::OperationExecutor> get_operations() const;
 
-		//TODO ServerNode get_current_session_node();
+		std::shared_ptr<const http::ServerNode> get_current_session_node() const;
 
 		int32_t get_number_of_requests() const;
 

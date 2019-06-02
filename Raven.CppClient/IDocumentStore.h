@@ -1,13 +1,17 @@
 #pragma once
 #include <optional>
+#include "IDisposalNotification.h"
 
 namespace ravendb::client
 {
+	namespace impl
+	{
+		struct CertificateDetails;
+	}
 	namespace http
 	{
 		class RequestExecutor;
 	}
-
 	namespace documents
 	{
 		namespace session
@@ -15,18 +19,15 @@ namespace ravendb::client
 			struct SessionOptions;
 			class DocumentSession;
 		}
-
 		namespace indexes
 		{
 			class AbstractIndexCreationTaskBase;
 		}
-
 		namespace operations
 		{
 			class OperationExecutor;
 			class MaintenanceOperationExecutor;
 		}
-
 		namespace conventions
 		{
 			class DocumentConventions;
@@ -37,10 +38,26 @@ namespace ravendb::client
 namespace  ravendb::client::documents
 {
 	//TODO complete!
-	class IDocumentStore
+	//Interface for managing access to RavenDB and open sessions.
+	class IDocumentStore : public impl::IDisposalNotification
 	{
 	public:
 		virtual ~IDocumentStore() = 0;
+
+		virtual const std::optional<impl::CertificateDetails>& get_certificate_details() const = 0;
+
+		virtual void add_before_store_listener(primitives::EventHandler handler) = 0;
+		virtual void remove_before_store_listener(const primitives::EventHandler& handler) = 0;
+
+		virtual void add_after_save_changes_listener(primitives::EventHandler handler) = 0;
+		virtual void remove_after_save_changes_listener(const primitives::EventHandler& handler) = 0;
+
+		virtual void add_before_delete_listener(primitives::EventHandler handler) = 0;
+		virtual void remove_before_delete_listener(const primitives::EventHandler& handler) = 0;
+
+		virtual void add_before_query_listener(primitives::EventHandler handler) = 0;
+		virtual void remove_before_query_listener(const primitives::EventHandler& handler) = 0;
+
 
 		virtual std::string get_identifier() const = 0;
 

@@ -30,9 +30,54 @@ namespace ravendb::client::documents::session
 		return _session_impl->external_state;
 	}
 
+	std::shared_ptr<const http::ServerNode> AdvancedSessionOperations::get_current_session_node() const
+	{
+		return _session_impl->get_current_session_node();
+	}
+
 	std::shared_ptr<http::RequestExecutor> AdvancedSessionOperations::get_request_executor() const
 	{
 		return _session_impl->get_request_executor();
+	}
+
+	void AdvancedSessionOperations::add_before_store_listener(primitives::EventHandler handler)
+	{
+		_session_impl->add_before_store_listener(std::move(handler));
+	}
+
+	void AdvancedSessionOperations::remove_before_store_listener(const primitives::EventHandler& handler)
+	{
+		_session_impl->remove_before_store_listener(handler);
+	}
+
+	void AdvancedSessionOperations::add_after_save_changes_listener(primitives::EventHandler handler)
+	{
+		_session_impl->add_after_save_changes_listener(std::move(handler));
+	}
+
+	void AdvancedSessionOperations::remove_after_save_changes_listener(const primitives::EventHandler& handler)
+	{
+		_session_impl->remove_after_save_changes_listener(handler);
+	}
+
+	void AdvancedSessionOperations::add_before_delete_listener(primitives::EventHandler handler)
+	{
+		_session_impl->add_before_delete_listener(std::move(handler));
+	}
+
+	void AdvancedSessionOperations::remove_before_delete_listener(const primitives::EventHandler& handler)
+	{
+		_session_impl->remove_before_delete_listener(handler);
+	}
+
+	void AdvancedSessionOperations::add_before_query_listener(primitives::EventHandler handler)
+	{
+		_session_impl->add_before_query_listener(std::move(handler));
+	}
+
+	void AdvancedSessionOperations::remove_before_query_listener(const primitives::EventHandler& handler)
+	{
+		_session_impl->remove_before_query_listener(handler);
 	}
 
 	bool AdvancedSessionOperations::has_changes() const

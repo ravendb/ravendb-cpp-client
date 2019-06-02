@@ -33,7 +33,7 @@ namespace ravendb::client::documents::session
 
 		if (cmd)
 		{
-			_request_executor->execute(*cmd);
+			_request_executor->execute(*cmd, _session_info);
 			load_op.set_result(cmd->get_result());
 		}
 
@@ -61,7 +61,7 @@ namespace ravendb::client::documents::session
 		auto cmd = load_op.create_request();
 		if (cmd)
 		{
-			_request_executor->execute(*cmd);
+			_request_executor->execute(*cmd, _session_info);
 			load_op.set_result(cmd->get_result());
 		}
 
@@ -80,7 +80,7 @@ namespace ravendb::client::documents::session
 		auto cmd = load_op.create_request();
 		if (cmd)
 		{
-			_request_executor->execute(*cmd);
+			_request_executor->execute(*cmd, _session_info);
 			//TODO stream
 			load_op.set_result(cmd->get_result());
 		}
@@ -98,7 +98,7 @@ namespace ravendb::client::documents::session
 
 		if (cmd)
 		{
-			_request_executor->execute(*cmd);
+			_request_executor->execute(*cmd, _session_info);
 			operation.set_result(cmd->get_result());
 		}
 	}
@@ -219,7 +219,7 @@ namespace ravendb::client::documents::session
 	{
 		auto multi_get_operation = operations::MultiGetOperation(_weak_this.lock());
 		auto multi_get_command = multi_get_operation.create_request(requests);
-		get_request_executor()->execute(multi_get_command);
+		get_request_executor()->execute(multi_get_command, _session_info);
 
 		auto&& responses = multi_get_command.get_result();
 
@@ -368,7 +368,7 @@ namespace ravendb::client::documents::session
 			{
 				throw std::runtime_error("Cannot execute save_changes() when entity tracking is disabled in session.");
 			}
-			_request_executor->execute(*command);
+			_request_executor->execute(*command, _session_info);
 			update_session_after_changes(*command->get_result());
 			save_changes_operation.set_result(*command->get_result());
 		}

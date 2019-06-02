@@ -5,6 +5,8 @@
 #include "IndexCreation.h"
 #include "MaintenanceOperationExecutor.h"
 #include "PutIndexesOperation.h"
+#include "EventHelper.h"
+#include "SessionCreatedEventArgs.h"
 
 namespace ravendb::client::documents
 {
@@ -80,6 +82,36 @@ namespace ravendb::client::documents
 		}
 	}
 
+	void DocumentStoreBase::after_session_created(std::shared_ptr<session::InMemoryDocumentSessionOperations> session) const
+	{
+		primitives::EventHelper::invoke(on_session_created, *this, primitives::SessionCreatedEventArgs(session));
+	}
+
+	void DocumentStoreBase::register_events(session::InMemoryDocumentSessionOperations& session) const
+	{
+		for(const auto& handler : on_before_store)
+		{
+			session.add_before_store_listener(handler);
+		}
+		for (const auto& handler : on_after_save_changes)
+		{
+			session.add_after_save_changes_listener(handler);
+		}
+		for (const auto& handler : on_before_delete)
+		{
+			session.add_before_delete_listener(handler);
+		}
+		for (const auto& handler : on_before_query)
+		{
+			session.add_before_query_listener(handler);
+		}
+	}
+
+	void DocumentStoreBase::add_before_store_listener(primitives::EventHandler handler)
+	{
+		on_before_store.emplace_back(std::move(handler));
+	}
+
 	void DocumentStoreBase::assert_initialized() const
 	{
 		if(!is_initialized)
@@ -96,6 +128,57 @@ namespace ravendb::client::documents
 			std::ostringstream message{};
 			message << "You cannot set '" << property << "' after the document store has been initialized.";
 			throw std::runtime_error(message.str());
+		}
+	}
+
+	void DocumentStoreBase::remove_before_store_listener(const primitives::EventHandler& handler)
+	{
+		if (const auto it = std::find(on_before_store.cbegin(), on_before_store.cend(), handler);
+			it != on_before_store.cend())
+		{
+			on_before_store.erase(it);
+		}
+	}
+
+	void DocumentStoreBase::add_after_save_changes_listener(primitives::EventHandler handler)
+	{
+		on_after_save_changes.emplace_back(std::move(handler));
+	}
+
+	void DocumentStoreBase::remove_after_save_changes_listener(const primitives::EventHandler& handler)
+	{
+		if (const auto it = std::find(on_after_save_changes.cbegin(), on_after_save_changes.cend(), handler);
+			it != on_after_save_changes.cend())
+		{
+			on_after_save_changes.erase(it);
+		}
+	}
+
+	void DocumentStoreBase::add_before_delete_listener(primitives::EventHandler handler)
+	{
+		on_before_delete.emplace_back(std::move(handler));
+	}
+
+	void DocumentStoreBase::remove_before_delete_listener(const primitives::EventHandler& handler)
+	{
+		if (const auto it = std::find(on_before_delete.cbegin(), on_before_delete.cend(), handler);
+			it != on_before_delete.cend())
+		{
+			on_before_delete.erase(it);
+		}
+	}
+
+	void DocumentStoreBase::add_before_query_listener(primitives::EventHandler handler)
+	{
+		on_before_query.emplace_back(std::move(handler));
+	}
+
+	void DocumentStoreBase::remove_before_query_listener(const primitives::EventHandler& handler)
+	{
+		if (const auto it = std::find(on_before_query.cbegin(), on_before_query.cend(), handler);
+			it != on_before_query.cend())
+		{
+			on_before_query.erase(it);
 		}
 	}
 

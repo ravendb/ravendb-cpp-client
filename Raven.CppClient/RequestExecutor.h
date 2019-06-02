@@ -726,26 +726,24 @@ namespace ravendb::client::http
 	{
 		auto&& topology_update = _first_topology_update;
 		bool execute_unlikely = true;
-		do
+
+		if (_disable_topology_updates)
 		{
-			if (_disable_topology_updates)
+			execute_unlikely = false;
+		}
+		else if(topology_update && topology_update->valid() && 
+			topology_update->wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
+		{
+			execute_unlikely = false;
+			try
 			{
-				execute_unlikely = false;
+				topology_update->get();
 			}
-			else if(topology_update && topology_update->valid() && 
-				topology_update->wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
+			catch (...)
 			{
-				try
-				{
-					topology_update->get();
-				}
-				catch (...)
-				{
-					break;
-				}
-				execute_unlikely = false;
+				execute_unlikely = true;
 			}
-		} while(false);
+		}
 
 		if(execute_unlikely)
 		{

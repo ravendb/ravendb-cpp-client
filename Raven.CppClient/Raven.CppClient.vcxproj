@@ -215,6 +215,8 @@
     <ClInclude Include="EntityIdHelper.h" />
     <ClInclude Include="DocumentQuery.h" />
     <ClInclude Include="EntityIdHelperUtil.h" />
+    <ClInclude Include="EventArgs.h" />
+    <ClInclude Include="EventHandler.h" />
     <ClInclude Include="EventHelper.h" />
     <ClInclude Include="ExceptionDispatcher.h" />
     <ClInclude Include="ExplanationOptions.h" />
@@ -251,6 +253,7 @@
     <ClInclude Include="HttpStatus.h" />
     <ClInclude Include="EagerSessionOperations.h" />
     <ClInclude Include="HttpExtensions.h" />
+    <ClInclude Include="IDisposalNotification.h" />
     <ClInclude Include="IDocumentQuery.h" />
     <ClInclude Include="IDocumentQueryBase.h" />
     <ClInclude Include="IDocumentQueryBaseSingle.h" />
@@ -443,6 +446,7 @@
     <ClInclude Include="ServerLoadFailureException.h" />
     <ClInclude Include="ServerNode.h" />
     <ClInclude Include="ServerOperationExecutor.h" />
+    <ClInclude Include="SessionCreatedEventArgs.h" />
     <ClInclude Include="SessionInfo.h" />
     <ClInclude Include="SessionOperationExecutor.h" />
     <ClInclude Include="SessionOptions.h" />
@@ -543,6 +547,7 @@
     <ClCompile Include="DatabaseSchemaErrorException.cpp" />
     <ClCompile Include="DocumentConflictException.cpp" />
     <ClCompile Include="DocumentDoesNotExistException.cpp" />
+    <ClCompile Include="EventArgs.cpp" />
     <ClCompile Include="ExceptionDispatcher.cpp" />
     <ClCompile Include="ExplanationOptions.cpp" />
     <ClCompile Include="Explanations.cpp" />

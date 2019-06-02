@@ -6,6 +6,7 @@
 #include "MaintenanceOperationExecutor.h"
 #include "MultiDatabaseHiLoIdGenerator.h"
 #include "GetCppClassName.h"
+#include "EventArgs.h"
 
 namespace ravendb::client::documents
 {
@@ -32,13 +33,16 @@ namespace ravendb::client::documents
 		return object;
 	}
 
-	std::shared_ptr<impl::IExecutorService> DocumentStore::get_executor_service() const
+	std::shared_ptr<primitives::IExecutorService> DocumentStore::get_executor_service() const
 	{
+		assert_initialized();
 		return _executor_service;
 	}
 
-	void DocumentStore::set_executor_service(std::shared_ptr<impl::IExecutorService> executor_service)
+	void DocumentStore::set_executor_service(std::shared_ptr<primitives::IExecutorService> executor_service)
 	{
+		assert_not_initialized("executor-service");
+
 		if(!executor_service)
 		{
 			throw std::invalid_argument("'executor_service' shouldn't be empty");
@@ -48,11 +52,14 @@ namespace ravendb::client::documents
 
 	void DocumentStore::set_default_executor_service(uint32_t num_of_threads)
 	{
+		assert_not_initialized("executor-service");
+
 		_executor_service = std::make_shared<impl::TasksExecutor>(num_of_threads);
 	}
 
 	std::shared_ptr<impl::TasksScheduler> DocumentStore::get_scheduler() const
 	{
+		assert_initialized();
 		return _scheduler;
 	}
 
@@ -109,6 +116,8 @@ namespace ravendb::client::documents
 			return;
 		}
 
+		primitives::EventHelper::invoke(before_close, *this, primitives::EventArgs::EMPTY);
+
 		//TODO implement the rest
 
 		try
@@ -121,6 +130,16 @@ namespace ravendb::client::documents
 		{}// ignore
 
 		disposed = true;
+
+		primitives::EventHelper::invoke(after_close, *this, primitives::EventArgs::EMPTY);
+
+		for(auto& [db, re] : _request_executors)
+		{
+			re->close();
+		}
+
+		_scheduler.reset();
+		_executor_service.reset();
 	}
 
 	session::DocumentSession DocumentStore::open_session()
@@ -137,9 +156,10 @@ namespace ravendb::client::documents
 		ensure_not_closed();
 
 		auto session_impl = session::DocumentSessionImpl::create(_weak_this.lock(), options);
-		//TODO
-		//register_events(session_impl);
-		//after_session_created(session_impl);
+
+		register_events(*session_impl);
+		after_session_created(session_impl);
+
 		return session::DocumentSession(session_impl);
 	}
 
@@ -244,6 +264,34 @@ namespace ravendb::client::documents
 		}
 
 		return _weak_this.lock();
+	}
+
+	void DocumentStore::add_before_close_listener(primitives::EventHandler handler)
+	{
+		before_close.emplace_back(std::move(handler));
+	}
+
+	void DocumentStore::remove_before_close_listener(const primitives::EventHandler& handler)
+	{
+		if(const auto it = std::find(before_close.cbegin(), before_close.cend(), handler);
+			it != before_close.cend())
+		{
+			before_close.erase(it);
+		}
+	}
+
+	void DocumentStore::add_after_close_listener(primitives::EventHandler handler)
+	{
+		after_close.emplace_back(std::move(handler));
+	}
+
+	void DocumentStore::remove_after_close_listener(const primitives::EventHandler& handler)
+	{
+		if(const auto it = std::find(after_close.cbegin(), after_close.cend(), handler);
+			it != after_close.cend())
+		{
+			after_close.erase(it);
+		}
 	}
 
 	std::shared_ptr<operations::MaintenanceOperationExecutor> DocumentStore::maintenance()

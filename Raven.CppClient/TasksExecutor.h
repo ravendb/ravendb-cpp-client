@@ -5,7 +5,7 @@
 
 namespace ravendb::client::impl
 {
-	class TasksExecutor : public IExecutorService
+	class TasksExecutor : public primitives::IExecutorService
 	{
 	public:
 		static constexpr size_t DEFAULT_NUMBER_OF_EXECUTION_THREADS = 1;

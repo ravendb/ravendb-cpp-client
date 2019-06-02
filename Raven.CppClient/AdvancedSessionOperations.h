@@ -18,19 +18,35 @@ namespace ravendb::client::documents::session
 	public:
 		~AdvancedSessionOperations();
 
-		operations::lazy::LazySessionOperations lazily();
-
-		operations::lazy::EagerSessionOperations eagerly();
-
 		std::shared_ptr<IDocumentStore> get_document_store() const;
 
 		std::unordered_map<std::string, std::shared_ptr<void>>& get_external_state() const;
 
-		//TODO ServerNode get_current_session_node() const;
+		std::shared_ptr<const http::ServerNode> get_current_session_node() const;
 
 		std::shared_ptr<http::RequestExecutor> get_request_executor() const;
 
+		void add_before_store_listener(primitives::EventHandler handler);
+
+		void remove_before_store_listener(const primitives::EventHandler& handler);
+
+		void add_after_save_changes_listener(primitives::EventHandler handler);
+
+		void remove_after_save_changes_listener(const primitives::EventHandler& handler);
+
+		void add_before_delete_listener(primitives::EventHandler handler);
+
+		void remove_before_delete_listener(const primitives::EventHandler& handler);
+
+		void add_before_query_listener(primitives::EventHandler handler);
+
+		void remove_before_query_listener(const primitives::EventHandler& handler);
+
 		bool has_changes() const;
+
+		operations::lazy::LazySessionOperations lazily();
+
+		operations::lazy::EagerSessionOperations eagerly();
 
 		int32_t get_max_number_of_requests_per_session() const;
 

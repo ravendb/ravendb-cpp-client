@@ -144,6 +144,12 @@ namespace ravendb::client::http
 				}
 				catch (std::exception& e)
 				{
+					if(initial_urls.size() == 1)
+					{
+						re->_last_known_urls = std::move(initial_urls);
+						std::throw_with_nested(std::runtime_error("Cannot get topology from server: " + url));
+					}
+
 					list_of_errors.insert_or_assign(url, e.what());
 				}
 			}
@@ -170,11 +176,13 @@ namespace ravendb::client::http
 
 			re->_node_selector.emplace(topology, re->_scheduler);
 
-			if(initial_urls.size() > 0)
-			{
-				re->initialize_update_topology_timer();
-				return;
-			}
+			//TODO exists in Java but not in C# -> check
+			//if(initial_urls.size() > 0)
+			//{
+			//	re->initialize_update_topology_timer();
+			//	return;
+			//}
+
 			re->_last_known_urls = std::move(initial_urls);
 
 			std::ostringstream msg{};

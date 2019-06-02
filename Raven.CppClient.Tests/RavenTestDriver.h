@@ -17,7 +17,7 @@ namespace ravendb::client::tests::driver
 		static std::shared_ptr<documents::IDocumentStore> global_secured_server;
 
 		static std::mutex documents_stores_guard;
-		static std::unordered_map<std::string, std::shared_ptr<documents::DocumentStore>> document_stores;
+		static std::unordered_set<std::shared_ptr<documents::DocumentStore>> document_stores;
 
 		static std::atomic_uint64_t index;
 

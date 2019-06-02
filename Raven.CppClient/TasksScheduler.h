@@ -9,21 +9,21 @@ namespace ravendb::client::impl
 	class TasksScheduler
 	{
 	private:
-		std::multimap<std::chrono::steady_clock::time_point, IExecutorService::Task> _tasks{};
+		std::multimap<std::chrono::steady_clock::time_point, primitives::IExecutorService::Task> _tasks{};
 
 		std::condition_variable _cv{};
 		std::mutex _mutex{};
 
 		std::atomic_bool _stop{ false };
 
-		const std::shared_ptr<IExecutorService> _executor_service;
+		const std::shared_ptr<primitives::IExecutorService> _executor_service;
 		std::thread _scheduler;
 
 		void work()
 		{
 			while (!_stop)
 			{
-				IExecutorService::Task task{};
+				primitives::IExecutorService::Task task{};
 				{
 					auto lock = std::unique_lock(_mutex);
 
@@ -51,12 +51,12 @@ namespace ravendb::client::impl
 		}
 
 	public:
-		explicit TasksScheduler(std::shared_ptr<IExecutorService> executor)
+		explicit TasksScheduler(std::shared_ptr<primitives::IExecutorService> executor)
 			: _executor_service(executor)
 			, _scheduler([this]() {work(); })
 		{}
 
-		void schedule_task(IExecutorService::Task&& task, std::chrono::milliseconds delay)
+		void schedule_task(primitives::IExecutorService::Task&& task, std::chrono::milliseconds delay)
 		{
 			{
 				auto lock = std::lock_guard(_mutex);
@@ -65,7 +65,7 @@ namespace ravendb::client::impl
 			_cv.notify_one();
 		}
 
-		void schedule_task_immediately(IExecutorService::Task&& task)
+		void schedule_task_immediately(primitives::IExecutorService::Task&& task)
 		{
 			_executor_service->add_task(std::move(task));
 		}

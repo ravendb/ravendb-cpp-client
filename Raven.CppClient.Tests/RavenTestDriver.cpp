@@ -28,7 +28,7 @@ namespace ravendb::client::tests::driver
 	std::shared_ptr<documents::IDocumentStore> RavenTestDriver::global_secured_server{};
 
 	std::mutex RavenTestDriver::documents_stores_guard{};
-	std::unordered_map<std::string, std::shared_ptr<documents::DocumentStore>> RavenTestDriver::document_stores{};
+	std::unordered_set<std::shared_ptr<documents::DocumentStore>> RavenTestDriver::document_stores{};
 
 	std::atomic_uint64_t RavenTestDriver::index = 1;
 
@@ -44,25 +44,12 @@ namespace ravendb::client::tests::driver
 
 	void RavenTestDriver::TearDown()
 	{
-		//TODO this is until listeners are implemented
+		try
 		{
-			auto guard = std::lock_guard(documents_stores_guard);
-
-			for (auto&[identifier, store] : document_stores)
-			{
-				try
-				{
-					store->maintenance()->server()->send(
-						serverwide::operations::DeleteDatabasesOperation(store->get_database(), true));
-				}
-				catch (exceptions::database::DatabaseDoesNotExistException&)
-				{}
-				catch (exceptions::cluster::NoLeaderException&)
-				{ }
-			}
+			this->close();
 		}
-		//TODO ---------------------------------------
-		this->close();
+		catch (...)
+		{}
 	}
 
 	RavenTestDriver::~RavenTestDriver() = default;
@@ -144,7 +131,23 @@ namespace ravendb::client::tests::driver
 
 		store->initialize();
 
-		//TODO  store.addAfterCloseListener(((sender, event)
+		store->add_after_close_listener(std::function<void(const int&, const primitives::VoidArgs&)>(
+			[store](const int&, const primitives::EventArgs&)
+		{
+			if(document_stores.find(store) == document_stores.end())
+			{
+				return;
+			}
+			try
+			{
+				store->maintenance()->server()->send(
+					serverwide::operations::DeleteDatabasesOperation(store->get_database(), true));
+			}
+			catch (exceptions::database::DatabaseDoesNotExistException&)
+			{}
+			catch (exceptions::cluster::NoLeaderException&)
+			{}
+		}));
 
 		set_up_database(store);
 
@@ -155,7 +158,7 @@ namespace ravendb::client::tests::driver
 
 		{
 			auto guard = std::lock_guard(documents_stores_guard);
-			document_stores.insert_or_assign(store->get_identifier(), store);
+			document_stores.insert(store);
 		}
 
 		return store;
@@ -247,10 +250,10 @@ namespace ravendb::client::tests::driver
 			return;
 		}
 
-		std::vector<std::string_view> exceptions{};
+		std::vector<std::string> exceptions{};
 		{
 			auto guard = std::lock_guard(documents_stores_guard);
-			for(auto& [identifier, store] : document_stores)
+			for(auto& store : document_stores)
 			{
 				try
 				{
@@ -265,11 +268,8 @@ namespace ravendb::client::tests::driver
 		disposed = true;
 
 		std::ostringstream msgs{};
-		std::transform(exceptions.cbegin(), exceptions.cend(), 
-			std::ostream_iterator<std::string_view>(msgs, ", "), [](auto& str)
-		{
-			return str;
-		});
+		std::copy(exceptions.cbegin(), exceptions.cend(), 
+			std::ostream_iterator<std::string>(msgs, ", "));
 
 		if(!exceptions.empty())
 		{

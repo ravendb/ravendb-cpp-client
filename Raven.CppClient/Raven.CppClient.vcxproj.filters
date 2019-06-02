@@ -536,6 +536,9 @@
     <ClCompile Include="ClusterTopologyResponse.cpp">
       <Filter>ravendb.client\http</Filter>
     </ClCompile>
+    <ClCompile Include="EventArgs.cpp">
+      <Filter>ravendb.client\primitives</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -1573,6 +1576,18 @@
     </ClInclude>
     <ClInclude Include="CurlException.h">
       <Filter>ravendb.client\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="EventHandler.h">
+      <Filter>ravendb.client\primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="EventArgs.h">
+      <Filter>ravendb.client\primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="IDisposalNotification.h">
+      <Filter>ravendb.client\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionCreatedEventArgs.h">
+      <Filter>ravendb.client\primitives</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
