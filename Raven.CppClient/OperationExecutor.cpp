@@ -45,10 +45,7 @@ namespace ravendb::client::documents::operations
 
 	 void OperationExecutor::send(IVoidOperation& operation, const std::optional<session::SessionInfo>& session_info)
 	{
-		http::HttpCache temp_cache{};
-		//TODO use real HttpCache
-		auto command = operation.get_command(_store.lock(), _request_executor->get_conventions(), temp_cache
-			/*_request_executor->get_cache()*/);
+		auto command = operation.get_command(_store.lock(), _request_executor->get_conventions(),_request_executor->get_cache());
 		_request_executor->execute(static_cast<http::VoidRavenCommand&>(*command), session_info);
 	}
 
@@ -68,9 +65,7 @@ namespace ravendb::client::documents::operations
 	PatchStatus OperationExecutor::send(const PatchOperation& operation,
 		const std::optional<session::SessionInfo>& session_info)
 	{
-		http::HttpCache temp_cache{};
-		//TODO use real HttpCache
-		auto command = operation.get_command(_store.lock(), _request_executor->get_conventions(), temp_cache);
+		auto command = operation.get_command(_store.lock(), _request_executor->get_conventions(), _request_executor->get_cache());
 		_request_executor->execute(*command, session_info);
 		
 		if(command->status_code == static_cast<int32_t>(http::HttpStatus::SC_NOT_MODIFIED))

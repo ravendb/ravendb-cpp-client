@@ -49,9 +49,7 @@ namespace ravendb::client::documents::operations
 		template<typename TResult>
 		std::shared_ptr<TResult> send(IOperation<TResult>& operation, const std::optional<session::SessionInfo>& session_info = {})
 		{
-			http::HttpCache temp{};
-			//TODO use real HttpCache
-			auto command = operation.get_command(_store.lock(), _request_executor->get_conventions(), temp);
+			auto command = operation.get_command(_store.lock(), _request_executor->get_conventions(), _request_executor->get_cache());
 			_request_executor->execute(*command, session_info);
 
 			return command->get_result();
@@ -65,9 +63,7 @@ namespace ravendb::client::documents::operations
 		template<typename TEntity>
 		PatchOperation::Result<TEntity> send(const PatchOperation& operation, const std::optional<session::SessionInfo>& session_info = {})
 		{
-			http::HttpCache temp{};
-			//TODO use real HttpCache
-			auto command = operation.get_command(_store.lock(), _request_executor->get_conventions(), temp);
+			auto command = operation.get_command(_store.lock(), _request_executor->get_conventions(), _request_executor->get_cache());
 			_request_executor->execute(*command, session_info);
 
 			auto result = PatchOperation::Result<TEntity>{};

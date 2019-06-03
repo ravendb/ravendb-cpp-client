@@ -59,7 +59,7 @@ namespace ravendb::client::http
 
 		std::chrono::steady_clock::time_point _last_returned_response;
 
-		HttpCache cache{};//TODO implement it!
+		const std::shared_ptr<HttpCache> _cache{};
 
 		std::shared_ptr<const ServerNode> _topology_taken_from_node{};
 
@@ -121,6 +121,12 @@ namespace ravendb::client::http
 		//TODO old version for checks
 		template<typename TResult>
 		std::shared_ptr<TResult> execute_internal(ServerNode& node, RavenCommand<TResult>& command);
+		//-------------------------
+
+		template<typename TResult>
+		HttpCache::ReleaseCacheItem get_from_cache(RavenCommand<TResult>& command, bool use_cache,
+			const std::string& url, std::optional<std::string>& cached_change_vector,
+			std::optional<std::string>& cached_value) const;
 
 		template<typename TResult>
 		void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, 
@@ -226,6 +232,8 @@ namespace ravendb::client::http
 			std::shared_ptr<documents::conventions::DocumentConventions> conventions,
 			impl::CurlOptionsSetter set_before_perform = {},
 			impl::CurlOptionsSetter set_after_perform = {});
+
+		std::shared_ptr<HttpCache> get_cache() const;
 
 		std::shared_ptr<const Topology> get_topology() const;
 
@@ -386,6 +394,22 @@ namespace ravendb::client::http
 
 	//	return command.get_result();
 	//}
+
+	template <typename TResult>
+	HttpCache::ReleaseCacheItem RequestExecutor::get_from_cache(RavenCommand<TResult>& command, bool use_cache,
+		const std::string& url, std::optional<std::string>& cached_change_vector,
+		std::optional<std::string>& cached_value) const
+	{
+		if(use_cache && command.can_cache() && command.is_read_request() && 
+			command.get_response_type() == RavenCommandResponseType::OBJECT)
+		{
+			return _cache->get(url, cached_change_vector, cached_value);
+		}
+
+		cached_change_vector.reset();
+		cached_value.reset();
+		return HttpCache::ReleaseCacheItem({});
+	}
 
 	template <typename TResult>
 	void RequestExecutor::create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, 
@@ -554,8 +578,7 @@ namespace ravendb::client::http
 		switch (static_cast<HttpStatus>(response.status_code))
 		{
 		case HttpStatus::SC_NOT_FOUND:
-			//TODO
-			//cache.setNotFound(url);
+			_cache->set_not_found(url);
 			switch (command.get_response_type())
 			{
 			case RavenCommandResponseType::EMPTY:
@@ -786,8 +809,20 @@ namespace ravendb::client::http
 		std::optional<std::string> url_ref{};
 
 		create_request(curl_ref, chosen_node, command, url_ref);
+		bool no_caching = session_info ? session_info->no_caching : false;
 
-		//TODO implement caching 
+		auto cached_change_vector = std::optional<std::string>();
+		auto cached_value = std::optional<std::string>();
+
+		auto cached_item = get_from_cache(command, !no_caching, url_ref.value(), cached_change_vector, cached_value);
+		if(cached_change_vector.has_value())
+		{
+			//TODO use aggressive caching
+
+			std::ostringstream cached_change_vector_str{};
+			cached_change_vector_str << '"' << *cached_change_vector << '"';
+			curl_ref.headers.insert_or_assign("If-None-Match", cached_change_vector_str.str());
+		}
 
 		if(!_disable_client_configuration_updates)
 		{
@@ -889,21 +924,17 @@ namespace ravendb::client::http
 		};
 		try
 		{
-			//TODO
-			//if (response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_MODIFIED) {
-			//	cachedItem.notModified();
+			if (response->status_code == static_cast<long>(HttpStatus::SC_NOT_MODIFIED))
+			{
+				cached_item.not_modified();
 
-			//	try {
-			//		if (command.getResponseType() == RavenCommandResponseType.OBJECT) {
-			//			command.setResponse(cachedValue.value, true);
-			//		}
-			//	}
-			//	catch (IOException e) {
-			//		throw ExceptionsUtils.unwrapException(e);
-			//	}
+				if(command.get_response_type() == RavenCommandResponseType::OBJECT)
+				{
+					command.set_response(nlohmann::json::parse(*cached_value), true);
+				}
 
-			//	return;
-			//}
+				return;
+			}
 
 			if(response->status_code >= 400)
 			{
@@ -929,7 +960,7 @@ namespace ravendb::client::http
 				finally();
 				return;// we either handled this already in the unsuccessful response or we are throwing
 			}
-			response_dispose = command.process_response(/*cache,*/ *response, *url_ref);
+			response_dispose = command.process_response(_cache, *response, *url_ref);
 			_last_returned_response = std::chrono::steady_clock::now();
 		}
 		catch (...)

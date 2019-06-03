@@ -12,7 +12,7 @@ namespace ravendb::client::documents::operations
 		std::unique_ptr<http::RavenCommand<void>> get_command(
 			std::shared_ptr<IDocumentStore> store,
 			std::shared_ptr<conventions::DocumentConventions> conventions,
-			http::HttpCache& cache) const override = 0;
+			std::shared_ptr<http::HttpCache> cache) const override = 0;
 	};
 
 	inline IVoidOperation::~IVoidOperation() = default;

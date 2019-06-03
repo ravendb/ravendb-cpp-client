@@ -115,8 +115,7 @@ namespace ravendb::client::tests::old_tests
 
 		documents::queries::QueryOperationOptions query_op_options({}, false, std::chrono::seconds(1), false);
 		auto op3 = documents::operations::DeleteByQueryOperation(custom_index_query, query_op_options);
-		http::HttpCache cache;
-		auto cmd3 = op3.get_command(documents::DocumentStore::create(), {}, cache);
+		auto cmd3 = op3.get_command(documents::DocumentStore::create(), {}, {});
 		test_suite_executor->get().execute(*cmd3);
 		auto&& res3 = cmd3->get_result();
 		ASSERT_GT(res3->operation_id, 0);

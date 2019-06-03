@@ -16,9 +16,7 @@ namespace ravendb::client::documents::session::operations
 
 		commands::multi_get::MultiGetCommand create_request(const std::vector<commands::multi_get::GetRequest>& requests)
 		{
-			//TODO use real cache
-			http::HttpCache cache{};//temporal
-			return commands::multi_get::MultiGetCommand(cache/*_session->get_request_executor().get_cache()*/, requests);
+			return commands::multi_get::MultiGetCommand(_session->get_request_executor()->get_cache(), requests);
 		}
 	};
 }

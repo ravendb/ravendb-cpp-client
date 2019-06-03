@@ -539,6 +539,9 @@
     <ClCompile Include="EventArgs.cpp">
       <Filter>ravendb.client\primitives</Filter>
     </ClCompile>
+    <ClCompile Include="HttpCache.cpp">
+      <Filter>ravendb.client\http</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -1588,6 +1591,9 @@
     </ClInclude>
     <ClInclude Include="SessionCreatedEventArgs.h">
       <Filter>ravendb.client\primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="HttpCacheItem.h">
+      <Filter>ravendb.client\http</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

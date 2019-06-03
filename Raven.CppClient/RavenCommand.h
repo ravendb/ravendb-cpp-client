@@ -10,6 +10,8 @@
 #include "ResponseDisposeHandling.h"
 #include "HttpStatus.h"
 #include "constants.h"
+#include "HttpCache.h"
+#include "HttpExtensions.h"
 
 namespace ravendb::client::http
 {
@@ -48,8 +50,7 @@ namespace ravendb::client::http
 	protected:
 		RavenCommand() = default;
 
-		//TODO
-		//void cacheResponse(HttpCache cache, String url, CloseableHttpResponse response, String responseJson)
+		void cache_response(std::shared_ptr<HttpCache> cache, std::string url, const impl::CurlResponse& response, std::string response_json) const;
 
 		static void throw_invalid_response();
 
@@ -93,11 +94,29 @@ namespace ravendb::client::http
 
 		bool is_failed_with_node(std::shared_ptr<const ServerNode> node) const;
 		
-		virtual ResponseDisposeHandling process_response(/*HttpCache*/ const impl::CurlResponse& response, const std::string& url);
+		virtual ResponseDisposeHandling process_response(std::shared_ptr<HttpCache> cache, const impl::CurlResponse& response, const std::string& url);
 
 		void on_response_failure(const impl::CurlResponse& response){}
 	};
 
+
+	template <typename TResult>
+	void RavenCommand<TResult>::cache_response(std::shared_ptr<HttpCache> cache, std::string url,
+		const impl::CurlResponse& response, std::string response_json) const
+	{
+		if(!can_cache())
+		{
+			return;
+		}
+
+		auto change_vector = extensions::HttpExtensions::get_etag_header(response);
+		if(!change_vector)
+		{
+			return;
+		}
+
+		cache->set(std::move(url), *std::move(change_vector), std::move(response_json));
+	}
 
 	template <typename TResult>
 	void RavenCommand<TResult>::throw_invalid_response()
@@ -225,7 +244,8 @@ namespace ravendb::client::http
 	}
 
 	template <typename TResult>
-	ResponseDisposeHandling RavenCommand<TResult>::process_response(const impl::CurlResponse& response,
+	ResponseDisposeHandling RavenCommand<TResult>::process_response(std::shared_ptr<HttpCache> cache, 
+		const impl::CurlResponse& response,
 		const std::string& url)
 	{
 		if(response.output.empty())
@@ -242,11 +262,10 @@ namespace ravendb::client::http
 		{
 
 			auto json = nlohmann::json::parse(response.output);
-			//TODO
-			//if (cache != null) //precaution
-			//{
-			//	cacheResponse(cache, url, response, json);
-			//}
+			if (cache) //precaution
+			{
+				cache_response(cache, url, response, response.output);
+			}
 			set_response(std::move(json), false);
 			return ResponseDisposeHandling::AUTOMATIC;
 

@@ -394,6 +394,7 @@ namespace ravendb::client::http
 		, _certificate_details(std::move(certificate_details))
 		, _database_name(std::move(database_name))
 		, _last_returned_response(std::chrono::steady_clock::now())
+		, _cache(HttpCache::create(conventions->get_max_http_cache_size()))
 		, _conventions(documents::conventions::DocumentConventions::clone(conventions))
 		, _scheduler(scheduler)
 		, set_before_perform(set_before_perform)
@@ -757,5 +758,10 @@ namespace ravendb::client::http
 		executor->_disable_client_configuration_updates = true;
 
 		return executor;
+	}
+
+	std::shared_ptr<HttpCache> RequestExecutor::get_cache() const
+	{
+		return _cache;
 	}
 }

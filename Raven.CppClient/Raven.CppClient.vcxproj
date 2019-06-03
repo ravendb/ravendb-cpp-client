@@ -250,6 +250,7 @@
     <ClInclude Include="HiLoIdGenerator.h" />
     <ClInclude Include="HiLoResult.h" />
     <ClInclude Include="HiLoReturnCommand.h" />
+    <ClInclude Include="HttpCacheItem.h" />
     <ClInclude Include="HttpStatus.h" />
     <ClInclude Include="EagerSessionOperations.h" />
     <ClInclude Include="HttpExtensions.h" />
@@ -557,6 +558,7 @@
     <ClCompile Include="GroupBy.cpp" />
     <ClCompile Include="HighlightingOptions.cpp" />
     <ClCompile Include="Highlightings.cpp" />
+    <ClCompile Include="HttpCache.cpp" />
     <ClCompile Include="HttpExtensions.cpp" />
     <ClCompile Include="IndexAlreadyExistException.cpp" />
     <ClCompile Include="IndexCompilationException.cpp" />

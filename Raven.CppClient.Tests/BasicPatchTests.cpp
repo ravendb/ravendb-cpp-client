@@ -54,8 +54,7 @@ namespace ravendb::client::tests::old_tests
 		auto op = documents::operations::PatchOperation(user.id, {},
 			documents::operations::PatchRequest(R"(this.lastName = "The Great")"));
 
-		http::HttpCache cache;
-		auto cmd = op.get_command(documents::DocumentStore::create(), {}, cache);
+		auto cmd = op.get_command(documents::DocumentStore::create(), {}, {});
 		test_suite_executor->get().execute(*cmd);
 		auto&& res2 = cmd->get_result();
 
@@ -106,8 +105,7 @@ namespace ravendb::client::tests::old_tests
 		auto op = documents::operations::PatchByQueryOperation(update_index_query);
 
 		{
-			http::HttpCache cache;
-			auto cmd = op.get_command(documents::DocumentStore::create(), {}, cache);
+			auto cmd = op.get_command(documents::DocumentStore::create(), {}, {});
 			test_suite_executor->get().execute(*cmd);
 			auto&& res = cmd->get_result();
 			EXPECT_GT(res->operation_id, 0);
@@ -143,8 +141,7 @@ namespace ravendb::client::tests::old_tests
 				throw "Error"
 			})";
 		auto op2 = documents::operations::PatchByQueryOperation(update_query);
-		http::HttpCache cache;
-		auto cmd2 = op2.get_command(documents::DocumentStore::create(), {}, cache);
+		auto cmd2 = op2.get_command(documents::DocumentStore::create(), {}, {});
 		test_suite_executor->get().execute(*cmd2);
 		auto&& res2 = cmd2->get_result();
 

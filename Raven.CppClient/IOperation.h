@@ -14,7 +14,7 @@ namespace ravendb::client::documents::operations
 
 		//using std::unique_ptr for polymorphism
 		virtual std::unique_ptr<http::RavenCommand<TResult>> get_command
-			(std::shared_ptr<IDocumentStore> store, std::shared_ptr<conventions::DocumentConventions> conventions, http::HttpCache& cache) const = 0;
+			(std::shared_ptr<IDocumentStore> store, std::shared_ptr<conventions::DocumentConventions> conventions, std::shared_ptr<http::HttpCache> cache) const = 0;
 	};
 
 	template <typename TResult>

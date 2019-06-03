@@ -50,14 +50,14 @@ namespace ravendb::client::documents::operations
 		{}
 
 		std::unique_ptr<http::RavenCommand<PatchResult>> get_command
-			(std::shared_ptr<IDocumentStore> store, std::shared_ptr<conventions::DocumentConventions> conventions, http::HttpCache& cache) const override
+			(std::shared_ptr<IDocumentStore> store, std::shared_ptr<conventions::DocumentConventions> conventions, std::shared_ptr<http::HttpCache> cache) const override
 		{
 			return std::make_unique<PatchCommand>(conventions, _id, _change_vector, _patch, _patch_if_missing,
 				_skip_patch_if_change_vector_mismatch, false, false);
 		}
 
 		std::unique_ptr<http::RavenCommand<PatchResult>> get_command
-			(std::shared_ptr<IDocumentStore> store, std::shared_ptr<conventions::DocumentConventions> conventions, http::HttpCache& cache,
+			(std::shared_ptr<IDocumentStore> store, std::shared_ptr<conventions::DocumentConventions> conventions, std::shared_ptr<http::HttpCache> cache,
 			 bool return_debug_information, bool test) const
 		{
 			return std::make_unique<PatchCommand>(conventions, _id, _change_vector, _patch, _patch_if_missing,

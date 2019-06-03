@@ -42,7 +42,7 @@ namespace ravendb::client::documents::conventions
 		int32_t _max_number_of_requests_per_session{};
 
 		http::ReadBalanceBehavior _read_balance_behaviour{};
-		int32_t _max_http_cache_size{};
+		uint64_t _max_http_cache_size{};
 		std::optional<bool> _use_compression{};
 
 		std::weak_ptr<DocumentConventions> _weak_this;
@@ -73,8 +73,8 @@ namespace ravendb::client::documents::conventions
 		http::ReadBalanceBehavior get_read_balance_behavior() const;
 		void set_read_balance_behavior(http::ReadBalanceBehavior read_balance_behaviour);
 
-		int32_t get_max_http_cache_size() const;
-		void set_max_http_cache_size(int32_t max_http_cache_size);
+		uint64_t get_max_http_cache_size() const;
+		void set_max_http_cache_size(uint64_t max_http_cache_size);
 
 		int32_t get_max_number_of_requests_per_session() const;
 		void set_max_number_of_requests_per_session(int32_t max_number_of_requests_per_session);

@@ -190,9 +190,12 @@ namespace ravendb::client::tests::client
 
 			executor->execute(command);
 		}
-		catch (std::exception& e)
+		catch (std::runtime_error& e)
 		{
-			std::cout << "";
+			const std::string_view error_msg = "Failed to retrieve database topology from all known nodes";
+			ASSERT_EQ(std::string_view(e.what()).substr(0, error_msg.length()), error_msg);
+			return;
 		}
+		FAIL();
 	}
 }
