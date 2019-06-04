@@ -54,42 +54,43 @@ namespace ravendb::client::http
 			}
 		} clear_flag{ *this };
 
-		auto lock = std::unique_lock(_items_mutex);
+		auto cleaner_lock = std::lock_guard(_cleaner_mutex);
 
-		if(_items.empty())
+		std::size_t size_to_clear{};
+		std::size_t number_of_cleared_items{ 0 };//for log/debugging
+		uint64_t size_cleared{ 0 };
+		std::multimap<std::chrono::steady_clock::time_point, decltype(_items)::iterator> items_its{};
+		
 		{
-			return;
+			auto gl = std::shared_lock(_global_mutex);
+
+			if (_items.empty())
+			{
+				return;
+			}
+
+			for(auto it = _items.begin(); it != _items.end(); ++it)
+			{
+				items_its.emplace(it->second->last_access, it);
+				size_to_clear += it->second->payload.size() * sizeof(std::string::value_type);
+			}
+			size_to_clear /= 2;
 		}
 
-		auto size_to_clear = _total_size / 2;
-		std::size_t number_of_cleared_items{ 0 };
-		uint64_t size_cleared{ 0 };
-		auto start = std::chrono::steady_clock::now();
+		auto gl = std::unique_lock(_global_mutex);
+		const auto start = std::chrono::steady_clock::now();
 
-		auto current_it = _items.begin();
-		while(current_it != _items.end())
+		for(const auto& [timestamp, iterator] : items_its)
 		{
-			auto& last_server_update = current_it->second->last_sever_update;
-
-			if(last_server_update > start)
+			if (size_cleared > size_to_clear &&
+				std::chrono::duration_cast<std::chrono::minutes>(start - iterator->second->last_sever_update).count() <= 1)
 			{
 				continue;
 			}
 
-			if(size_cleared > size_to_clear)
-			{
-				if(std::chrono::duration_cast<std::chrono::minutes>(start - last_server_update).count() <= 1)
-				{
-					continue;
-				}
-			}
-
 			++number_of_cleared_items;
-			size_cleared += current_it->second->payload.size() * sizeof(std::string::value_type);
-
-			auto next_it = std::next(current_it);
-			_items.erase(current_it);
-			current_it = next_it;
+			size_cleared += iterator->second->payload.size() * sizeof(std::string::value_type);
+			_items.erase(iterator);
 		}
 	}
 
@@ -100,20 +101,9 @@ namespace ravendb::client::http
 		return object;
 	}
 
-	HttpCache::~HttpCache()
-	{
-		try
-		{
-			auto lock = std::unique_lock(_items_mutex);
-			_items.clear();
-		}
-		catch (...)
-		{}
-	}
-
 	std::size_t HttpCache::get_number_of_items() const
 	{
-		auto lock = std::shared_lock(_items_mutex);
+		auto lock = std::shared_lock(_global_mutex);
 		return _items.size();
 	}
 
@@ -137,8 +127,11 @@ namespace ravendb::client::http
 		http_cache_item->generation = generation.load();
 
 		{
-			auto lock = std::unique_lock(_items_mutex);
-			_items.insert_or_assign(std::move(url), http_cache_item);	
+			auto gl = std::unique_lock(_global_mutex, std::defer_lock);
+			auto lock = std::scoped_lock(_cleaner_mutex, gl);
+
+			_items.insert_or_assign(std::move(url), http_cache_item);
+			http_cache_item->last_access = std::chrono::steady_clock::now();
 		}
 	}
 
@@ -150,22 +143,28 @@ namespace ravendb::client::http
 		http_cache_item->generation = generation.load();
 
 		{
-			auto lock = std::unique_lock(_items_mutex);
+			auto gl = std::unique_lock(_global_mutex, std::defer_lock);
+			auto lock = std::scoped_lock(_cleaner_mutex, gl);
+
 			_items.insert_or_assign(std::move(url), http_cache_item);
+			http_cache_item->last_access = std::chrono::steady_clock::now();
 		}
 	}
 
 	HttpCache::ReleaseCacheItem HttpCache::get(const std::string& url, std::optional<std::string>& change_vector_ref,
 		std::optional<std::string>& response_ref) const
 	{
-		auto lock = std::shared_lock(_items_mutex);
-
-		if(auto it = _items.find(url);
-			it != _items.end())
 		{
-			change_vector_ref.emplace(it->second->change_vector);
-			response_ref.emplace(it->second->payload);
-			return ReleaseCacheItem(it->second);
+			auto lock = std::shared_lock(_global_mutex);
+
+			if (auto it = _items.find(url);
+				it != _items.end())
+			{
+				change_vector_ref.emplace(it->second->change_vector);
+				response_ref.emplace(it->second->payload);
+				it->second->last_access = std::chrono::steady_clock::now();
+				return ReleaseCacheItem(it->second);
+			}
 		}
 
 		change_vector_ref.reset();

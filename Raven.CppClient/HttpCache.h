@@ -27,8 +27,10 @@ namespace ravendb::client::http
 		std::weak_ptr<HttpCache> _weak_this{};
 
 		const uint64_t _max_size{};
+
 		std::unordered_map<std::string, std::shared_ptr<HttpCacheItem>> _items{};
-		mutable std::shared_mutex _items_mutex{};
+		mutable std::shared_mutex _global_mutex{};
+		std::mutex _cleaner_mutex{};
 
 		std::atomic_uint64_t _total_size{};
 
@@ -43,10 +45,8 @@ namespace ravendb::client::http
 		void free_space();
 
 	public:
-		//max_size is the maximum size of cached *responses(strings)*
+		//max_size is the maximum size of cached responses(strings), not cached items
 		static std::shared_ptr<HttpCache> create(uint64_t max_size);
-
-		~HttpCache();
 
 		std::size_t get_number_of_items() const;
 
