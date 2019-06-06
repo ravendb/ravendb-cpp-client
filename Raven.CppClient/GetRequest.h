@@ -2,7 +2,7 @@
 
 namespace ravendb::client::impl::utils
 {
-	struct CompareStringsIgnoreCase;
+	struct CompareStringsLessThanIgnoreCase;
 }
 
 namespace ravendb::client::documents::commands::multi_get
@@ -17,7 +17,7 @@ namespace ravendb::client::documents::commands::multi_get
 		};
 
 		std::string url{};
-		std::map<std::string, std::string, impl::utils::CompareStringsIgnoreCase> headers{};
+		std::map<std::string, std::string, impl::utils::CompareStringsLessThanIgnoreCase> headers{};
 		std::optional<std::string> query{};
 		std::string method{};
 		std::unique_ptr<IContent> content{};

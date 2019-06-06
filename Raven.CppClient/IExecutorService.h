@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ravendb::client::impl
+namespace ravendb::client::primitives
 {
 	class IExecutorService
 	{

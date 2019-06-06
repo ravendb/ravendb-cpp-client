@@ -3,13 +3,13 @@
 
 namespace ravendb::client::impl::utils
 {
-	struct CompareStringsIgnoreCase;
+	struct CompareStringsLessThanIgnoreCase;
 }
 
 namespace ravendb::client::documents::session
 {
 	struct DocumentInfo;
 
-	using DocumentsById = std::map<std::string, std::shared_ptr<DocumentInfo>, impl::utils::CompareStringsIgnoreCase>;
+	using DocumentsById = std::map<std::string, std::shared_ptr<DocumentInfo>, impl::utils::CompareStringsLessThanIgnoreCase>;
 	
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "CurlResponse.h"
+#include "CompareStringsLessThanIgnoreCase.h"
 
 namespace ravendb::client::extensions
 {
@@ -14,6 +15,11 @@ namespace ravendb::client::extensions
 
 	public:
 		static std::string get_required_etag_header(const impl::CurlResponse& response);
+
+		static std::optional<std::string> get_etag_header(const impl::CurlResponse& response);
+
+		static std::optional<std::string> get_etag_header(const std::map<std::string, std::string,
+			impl::utils::CompareStringsLessThanIgnoreCase>& headers);
 
 		static std::optional<bool> get_boolean_header(const impl::CurlResponse& response, const std::string& header);
 

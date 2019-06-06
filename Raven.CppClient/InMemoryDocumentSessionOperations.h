@@ -9,13 +9,14 @@
 #include "DocumentsById.h"
 #include "EntityToJson.h"
 #include "DocumentInfo.h"
-#include "CompareStringsIgnoreCase.h"
+#include "CompareStringsLessThanIgnoreCase.h"
 #include "DateTimeOffset.h"
 #include "OperationExecutor.h"
 #include "ILazyOperation.h"
 #include "DocumentConventions.h"
 #include "utils.h"
 #include "GenerateEntityIdOnTheClient.h"
+#include "EventHandler.h"
 
 namespace ravendb::client
 {
@@ -145,9 +146,14 @@ namespace ravendb::client::documents::session
 
 		static std::atomic_int32_t _instances_counter;
 
-		const int32_t _hash = _instances_counter.fetch_add(1) + 1;//unused
+		const int32_t _hash = ++_instances_counter;//unused
 
 		TransactionMode _transaction_mode;
+
+		std::vector<primitives::EventHandler> on_before_store{};
+		std::vector<primitives::EventHandler> on_after_save_changes{};
+		std::vector<primitives::EventHandler> on_before_delete{};
+		std::vector<primitives::EventHandler> on_before_query{};
 
 		int32_t _number_of_requests{};
 
@@ -172,7 +178,7 @@ namespace ravendb::client::documents::session
 
 		std::unordered_set<std::shared_ptr<void>> _deleted_entities{};
 
-		std::set<std::string, impl::utils::CompareStringsIgnoreCase> _known_missing_ids{};
+		std::set<std::string, impl::utils::CompareStringsLessThanIgnoreCase> _known_missing_ids{};
 
 		//Translate between an ID and its associated entity
 		DocumentsById _documents_by_id{};
@@ -192,13 +198,29 @@ namespace ravendb::client::documents::session
 	public:
 		virtual ~InMemoryDocumentSessionOperations() = 0;
 
+		void add_before_store_listener(primitives::EventHandler handler);
+
+		void remove_before_store_listener(const primitives::EventHandler& handler);
+
+		void add_after_save_changes_listener(primitives::EventHandler handler);
+
+		void remove_after_save_changes_listener(const primitives::EventHandler& handler);
+
+		void add_before_delete_listener(primitives::EventHandler handler);
+
+		void remove_before_delete_listener(const primitives::EventHandler& handler);
+
+		void add_before_query_listener(primitives::EventHandler handler);
+
+		void remove_before_query_listener(const primitives::EventHandler& handler);
+
 		std::shared_ptr<IDocumentStore> get_document_store() const;
 
 		std::shared_ptr<http::RequestExecutor> get_request_executor() const;
 
 		std::shared_ptr<documents::operations::OperationExecutor> get_operations() const;
 
-		//TODO ServerNode get_current_session_node();
+		std::shared_ptr<const http::ServerNode> get_current_session_node() const;
 
 		int32_t get_number_of_requests() const;
 
@@ -228,6 +250,8 @@ namespace ravendb::client::documents::session
 
 		template<typename T>
 		std::optional<impl::DateTimeOffset> get_last_modified_for(std::shared_ptr<T> entity) const;
+
+		const SessionInfo& get_session_info() const;
 
 		bool is_loaded(const std::string& id) const;
 

@@ -8,6 +8,10 @@
 #include "SimpleStopWatch.h"
 #include "GetStatisticsOperation.h"
 #include "MaintenanceOperationExecutor.h"
+#include "DatabaseDoesNotExistException.h"
+#include "NoLeaderException.h"
+#include "GetIndexErrorsOperation.h"
+#include "TimeoutException.h"
 
 namespace ravendb::client::tests::driver
 {
@@ -24,7 +28,7 @@ namespace ravendb::client::tests::driver
 	std::shared_ptr<documents::IDocumentStore> RavenTestDriver::global_secured_server{};
 
 	std::mutex RavenTestDriver::documents_stores_guard{};
-	std::unordered_map<std::string, std::shared_ptr<documents::DocumentStore>> RavenTestDriver::document_stores{};
+	std::unordered_set<std::shared_ptr<documents::DocumentStore>> RavenTestDriver::document_stores{};
 
 	std::atomic_uint64_t RavenTestDriver::index = 1;
 
@@ -40,18 +44,12 @@ namespace ravendb::client::tests::driver
 
 	void RavenTestDriver::TearDown()
 	{
-		//TODO this is until listeners are implemented
+		try
 		{
-			auto guard = std::lock_guard(documents_stores_guard);
-
-			for (auto&[identifier, store] : document_stores)
-			{
-				auto delete_database_operation = serverwide::operations::DeleteDatabasesOperation(store->get_database(), true);
-				store->get_request_executor()->execute(*delete_database_operation.get_command(store->get_conventions()));
-			}
+			this->close();
 		}
-		//TODO ---------------------------------------
-		this->close();
+		catch (...)
+		{}
 	}
 
 	RavenTestDriver::~RavenTestDriver() = default;
@@ -119,10 +117,7 @@ namespace ravendb::client::tests::driver
 
 		customise_db_record(database_record);
 
-		auto create_database_operation = serverwide::operations::CreateDatabaseOperation(database_record);
-		//TODO implement using documentStore.maintenance().server().send(createDatabaseOperation);
-		document_store->get_request_executor()->execute(
-			*create_database_operation.get_command(document_store->get_conventions()));
+		document_store->maintenance()->server()->send(serverwide::operations::CreateDatabaseOperation(database_record));
 
 		auto store = documents::DocumentStore::create(document_store->get_urls(), database_name);
 		if(secured)
@@ -136,7 +131,23 @@ namespace ravendb::client::tests::driver
 
 		store->initialize();
 
-		//TODO  store.addAfterCloseListener(((sender, event)
+		store->add_after_close_listener(std::function<void(const int&, const primitives::VoidArgs&)>(
+			[store](const int&, const primitives::EventArgs&)
+		{
+			if(document_stores.find(store) == document_stores.end())
+			{
+				return;
+			}
+			try
+			{
+				store->maintenance()->server()->send(
+					serverwide::operations::DeleteDatabasesOperation(store->get_database(), true));
+			}
+			catch (exceptions::database::DatabaseDoesNotExistException&)
+			{}
+			catch (exceptions::cluster::NoLeaderException&)
+			{}
+		}));
 
 		set_up_database(store);
 
@@ -147,37 +158,38 @@ namespace ravendb::client::tests::driver
 
 		{
 			auto guard = std::lock_guard(documents_stores_guard);
-			document_stores.insert_or_assign(store->get_identifier(), store);
+			document_stores.insert(store);
 		}
 
 		return store;
-
 	}
 
 	void RavenTestDriver::wait_for_indexing(std::shared_ptr<documents::IDocumentStore> store,
 		const std::optional<std::string>& database, const std::optional<std::chrono::milliseconds>& timeout)
 	{
+		auto admin = store->maintenance()->for_database(database.value_or(""));
+
 		std::chrono::milliseconds wait_timeout = timeout ? *timeout : std::chrono::minutes(1);
 
 		impl::SimpleStopWatch sp{};
 
-		while(sp.millis_elapsed() < wait_timeout)
+		while (sp.millis_elapsed() < wait_timeout)
 		{
-			auto cmd = documents::operations::GetStatisticsOperation().get_command(store->get_conventions());
-			store->get_request_executor(store->get_database())->execute(*cmd);
-			auto database_statistics = cmd->get_result();
+			auto op = documents::operations::GetStatisticsOperation();
+
+			auto database_statistics = admin->send(op);
 
 			std::vector<std::reference_wrapper<documents::operations::IndexInformation>> indexes{};
 
-			for(auto& index : database_statistics->indexes)
+			for (auto& index : database_statistics->indexes)
 			{
-				if(index.state != documents::indexes::IndexState::DISABLED)
+				if (index.state != documents::indexes::IndexState::DISABLED)
 				{
 					indexes.emplace_back(std::ref(index));
 				}
 			}
 
-			if(std::all_of(indexes.cbegin(), indexes.cend(),
+			if (std::all_of(indexes.cbegin(), indexes.cend(),
 				[](const std::reference_wrapper<documents::operations::IndexInformation>& index_ref)
 			{
 				auto prefix = std::string_view(constants::documents::indexing::SIDE_BY_SIDE_INDEX_NAME_PREFIX);
@@ -188,7 +200,7 @@ namespace ravendb::client::tests::driver
 				return;
 			}
 
-			if(std::any_of(indexes.cbegin(), indexes.cend(),
+			if (std::any_of(indexes.cbegin(), indexes.cend(),
 				[](const std::reference_wrapper<documents::operations::IndexInformation>& index_ref)
 			{
 				return index_ref.get().state == documents::indexes::IndexState::ERRONEOUS;
@@ -199,6 +211,36 @@ namespace ravendb::client::tests::driver
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
+
+		auto errors = admin->send(documents::operations::indexes::GetIndexErrorsOperation());
+
+		auto format_index_errors = [](const documents::indexes::IndexErrors& index_errors)->std::string
+		{
+			std::ostringstream errors_list_text{};
+			for(const auto& error : index_errors.errors)
+			{
+				errors_list_text << "-" << error.to_string() << "\r\n";
+			}
+			std::ostringstream res{};
+			res << "Index " << index_errors.name << " (" << 
+				index_errors.errors.size() << " errors): " << "\r\n" << errors_list_text.str();
+			return res.str();
+		};
+
+		std::ostringstream all_index_errors_text{};
+		if(errors && !errors->empty())
+		{
+			for(const auto& error : *errors)
+			{
+				all_index_errors_text << format_index_errors(error) << "\r\n";
+			}
+		}
+
+		std::ostringstream msg{};
+		msg << "The indexes stayed stale for more than " << impl::utils::MillisToTimeSpanConverter(wait_timeout) << "." <<
+			all_index_errors_text.str();
+
+		throw exceptions::TimeoutException(msg.str());
 	}
 
 	void RavenTestDriver::close()
@@ -208,10 +250,10 @@ namespace ravendb::client::tests::driver
 			return;
 		}
 
-		std::vector<std::string_view> exceptions{};
+		std::vector<std::string> exceptions{};
 		{
 			auto guard = std::lock_guard(documents_stores_guard);
-			for(auto& [identifier, store] : document_stores)
+			for(auto& store : document_stores)
 			{
 				try
 				{
@@ -226,11 +268,8 @@ namespace ravendb::client::tests::driver
 		disposed = true;
 
 		std::ostringstream msgs{};
-		std::transform(exceptions.cbegin(), exceptions.cend(), 
-			std::ostream_iterator<std::string_view>(msgs, ", "), [](auto& str)
-		{
-			return str;
-		});
+		std::copy(exceptions.cbegin(), exceptions.cend(), 
+			std::ostream_iterator<std::string>(msgs, ", "));
 
 		if(!exceptions.empty())
 		{

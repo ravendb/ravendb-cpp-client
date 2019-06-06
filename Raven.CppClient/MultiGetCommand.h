@@ -9,13 +9,61 @@ namespace ravendb::client::documents::commands::multi_get
 	class MultiGetCommand : public http::RavenCommand<std::vector<GetResponse>>
 	{
 	private:
-		const std::reference_wrapper <http::HttpCache> _cache;
+		const std::shared_ptr<http::HttpCache> _cache;
 		const std::reference_wrapper<const std::vector<GetRequest>> _commands;
 
 		std::string _base_url{};
 
+	private:
+		std::string get_cached_key(const GetRequest& command, std::optional<std::string>& request_url) const
+		{
+			request_url.emplace(_base_url + command.get_url_and_query());
+			std::ostringstream res{};
+			res << command.method << "-" << *request_url;
+			return res.str();
+		}
+
+		void maybe_read_from_cache(GetResponse& get_response, const GetRequest& command) const
+		{
+			if(get_response.status_code != static_cast<int32_t>(http::HttpStatus::SC_NOT_MODIFIED))
+			{
+				return;
+			}
+
+			std::optional<std::string> dummy{};
+			auto cache_key = get_cached_key(command, dummy);
+			auto cached_response = std::optional<std::string>{};
+
+			auto cache_item = _cache->get(cache_key, dummy, cached_response);
+			get_response.result = std::move(cached_response);
+		}
+
+		void maybe_set_cache(const GetResponse& get_response, const GetRequest& command) const
+		{
+			if(get_response.status_code != static_cast<int32_t>(http::HttpStatus::SC_NOT_MODIFIED))
+			{
+				return;
+			}
+
+			std::optional<std::string> dummy{};
+			auto cache_key = get_cached_key(command, dummy);
+			auto&& result = get_response.result;
+			if(!result)
+			{
+				return;
+			}
+
+			auto change_vector = extensions::HttpExtensions::get_etag_header(get_response.headers);
+			if(!change_vector)
+			{
+				return;
+			}
+
+			_cache->set(cache_key, *change_vector, *result);
+		}
+
 	public:
-		MultiGetCommand(http::HttpCache& cache, const std::vector<GetRequest>& commands)
+		MultiGetCommand(std::shared_ptr<http::HttpCache> cache, const std::vector<GetRequest>& commands)
 			: _cache(cache)
 			, _commands(commands)
 		{
@@ -34,8 +82,6 @@ namespace ravendb::client::documents::commands::multi_get
 			curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPPOST, 1);
 			curl_ref.method = constants::methods::POST;
 
-			//TODO use the cache
-
 			nlohmann::json object = nlohmann::json::object();
 			nlohmann::json array = nlohmann::json::array();
 
@@ -43,14 +89,27 @@ namespace ravendb::client::documents::commands::multi_get
 
 			for(const auto& command : _commands.get())
 			{
+				std::optional<std::string> dummy{};
+				auto cached_key = get_cached_key(command, dummy);
+				auto cached_change_vector = std::optional<std::string>{};
+				auto item = _cache->get(cached_key, cached_change_vector, dummy);
+				auto headers = std::unordered_map<std::string, std::string>{};
+				if(cached_change_vector)
+				{
+					std::ostringstream cached_change_vector_header{};
+					cached_change_vector_header << '"' << *cached_change_vector << '"';
+					headers.insert_or_assign("If-None-Match", cached_change_vector_header.str());
+				}
+				std::copy(command.headers.cbegin(), command.headers.cend(), std::inserter(headers, headers.end()));
+
 				nlohmann::json temp_object = nlohmann::json::object();
 
 				std::ostringstream temp_url{};
-				temp_url << "/databases/" << node->database + command.url;
+				temp_url << "/databases/" << node->database << command.url;
 				set_val_to_json(temp_object, "Url", temp_url.str());
 				set_val_to_json(temp_object, "Query", command.query);
 				set_val_to_json(temp_object, "Method", command.method);
-				set_val_to_json(temp_object, "Headers", command.headers);
+				set_val_to_json(temp_object, "Headers", headers);
 
 				nlohmann::json content = nullptr;
 				if(command.content)
@@ -89,10 +148,19 @@ namespace ravendb::client::documents::commands::multi_get
 				throw_invalid_response();
 			}
 			_result = std::make_shared<ResultType>();
+			std::size_t i = 0;
 			for(const auto& result : *it)
 			{
-				_result->push_back(result.get<GetResponse>());
+				auto get_response = result.get<GetResponse>();
+				auto&& command = _commands.get().at(i);
+				maybe_set_cache(get_response, command);
+				maybe_read_from_cache(get_response, command);
+
+				_result->push_back(std::move(get_response));
+				++i;
 			}
 		}
+
+
 	};
 }

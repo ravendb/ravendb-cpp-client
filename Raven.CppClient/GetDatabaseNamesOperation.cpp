@@ -12,7 +12,7 @@ namespace ravendb::client::serverwide::operations
 	{}
 
 	std::unique_ptr<http::RavenCommand<std::vector<std::string>>> GetDatabaseNamesOperation::get_command(
-		std::shared_ptr<documents::conventions::DocumentConventions> conventions)
+		std::shared_ptr<documents::conventions::DocumentConventions> conventions) const
 	{
 		return std::make_unique<GetDatabaseNamesCommand>(_start, _page_size);
 	}

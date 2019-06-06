@@ -4,6 +4,8 @@
 #include "GetDatabaseTopologyCommand.h"
 #include "GetClientConfigurationOperation.h"
 #include <regex>
+#include "AuthorizationException.h"
+#include "ExceptionDispatcher.h"
 
 namespace ravendb::client::http
 {
@@ -126,32 +128,28 @@ namespace ravendb::client::http
 					re->_topology_taken_from_node = const_server_node;
 					return;
 				}
-				//TODO
-				//catch (AuthorizationException& e)
-				//{
-				//	// auth exceptions will always happen, on all nodes
-				//	// so errors immediately
-				//	_last_known_urls = std::move(initial_urls);
-				//	throw;
-				//}
-				//catch (DatabaseDoesNotExistException& e)
-				//{
-				//	// Will happen on all node in the cluster,
-				//	// so errors immediately
-				//	_last_known_urls = std::move(initial_urls);
-				//	throw;
-				//}
-				catch (RavenError& e)
+				catch (exceptions::security::AuthorizationException&)
 				{
-					if(e.get_error_type() == RavenError::ErrorType::DATABASE_DOES_NOT_EXIST)
-					{
-						re->_last_known_urls = std::move(initial_urls);
-						throw;
-					}
-					list_of_errors.insert_or_assign(url, e.what());
+					// auth exceptions will always happen, on all nodes
+					// so errors immediately
+					re->_last_known_urls = std::move(initial_urls);
+					throw;
+				}
+				catch (exceptions::database::DatabaseDoesNotExistException&)
+				{
+					// Will happen on all node in the cluster,
+					// so errors immediately
+					re->_last_known_urls = std::move(initial_urls);
+					throw;
 				}
 				catch (std::exception& e)
 				{
+					if(initial_urls.size() == 1)
+					{
+						re->_last_known_urls = std::move(initial_urls);
+						std::throw_with_nested(std::runtime_error("Cannot get topology from server: " + url));
+					}
+
 					list_of_errors.insert_or_assign(url, e.what());
 				}
 			}
@@ -178,11 +176,13 @@ namespace ravendb::client::http
 
 			re->_node_selector.emplace(topology, re->_scheduler);
 
-			if(initial_urls.size() > 0)
-			{
-				re->initialize_update_topology_timer();
-				return;
-			}
+			//TODO exists in Java but not in C# -> check
+			//if(initial_urls.size() > 0)
+			//{
+			//	re->initialize_update_topology_timer();
+			//	return;
+			//}
+
 			re->_last_known_urls = std::move(initial_urls);
 
 			std::ostringstream msg{};
@@ -245,7 +245,7 @@ namespace ravendb::client::http
 	void RequestExecutor::throw_exceptions(std::string details) const
 	{
 		std::ostringstream msg{};
-		msg << "Failed to retrieve database topology from all known nodes" << "\n\r" << std::move(details);
+		msg << "Failed to retrieve database topology from all known nodes" << "\r\n" << std::move(details);
 		throw std::runtime_error(msg.str());
 	}
 
@@ -266,19 +266,19 @@ namespace ravendb::client::http
 			curl_easy_setopt(curl, CURLOPT_SSL_CTX_DATA, &_certificate_details);
 		}
 
-		curl_ref.set_before_perform.emplace(set_before_perform);
-
-		curl_ref.set_after_perform.emplace(set_after_perform);
+		if (set_before_perform)
+		{
+			curl_ref.set_before_perform.emplace(set_before_perform);
+		}
+		if (set_after_perform)
+		{
+			curl_ref.set_after_perform.emplace(set_after_perform);
+		}
 	}
 
 	void RequestExecutor::handle_conflict(const impl::CurlResponse& response)
 	{
-		//TODO
-		//ExceptionDispatcher.throwException(response);
-		std::ostringstream msg{};
-		msg << "Returned code: " << response.status_code << " with error: " << response.error <<
-			"and body :" << response.output;
-		throw std::runtime_error(msg.str());
+		exceptions::ExceptionDispatcher::throw_exception(response);
 	}
 
 	void RequestExecutor::spawn_health_check(std::shared_ptr<const ServerNode> chosen_node, int32_t node_index)
@@ -394,6 +394,7 @@ namespace ravendb::client::http
 		, _certificate_details(std::move(certificate_details))
 		, _database_name(std::move(database_name))
 		, _last_returned_response(std::chrono::steady_clock::now())
+		, _cache(HttpCache::create(conventions->get_max_http_cache_size()))
 		, _conventions(documents::conventions::DocumentConventions::clone(conventions))
 		, _scheduler(scheduler)
 		, set_before_perform(set_before_perform)
@@ -470,9 +471,6 @@ namespace ravendb::client::http
 		clean_urls.reserve(initial_urls.size());
 		const bool require_https = certificate.has_value();
 
-		if (initial_urls.empty())
-			throw RavenError("No urls have been defined", RavenError::ErrorType::BAD_URL);
-
 		//checking urls according to :
 		//https://tools.ietf.org/html/rfc3986#page-50
 
@@ -492,21 +490,21 @@ namespace ravendb::client::http
 					{
 						std::ostringstream msg{};
 						msg << "Unable to use url '" << url << "', a certificate was specified, so 'https' must be used as the url scheme";
-						throw RavenError(msg.str(), RavenError::ErrorType::BAD_URL);
+						throw std::invalid_argument(msg.str());
 					}
 				}
 				else if (scheme != "http")// not a match
 				{
 					std::ostringstream msg{};
 					msg << "Unable to use url '" << url << "', a certificate was NOT specified, so 'http' must be used as the url scheme";
-					throw RavenError(msg.str(), RavenError::ErrorType::BAD_URL);
+					throw std::invalid_argument(msg.str());
 				}
 			}
 			else
 			{
 				std::ostringstream msg{};
 				msg << "The url: '" << url << "' is malformed";
-				throw RavenError(msg.str(), RavenError::ErrorType::BAD_URL);
+				throw std::invalid_argument(msg.str());
 			}
 
 			clean_urls.emplace_back(url.begin(), (url.back() == '/') ? --url.end() : url.end());
@@ -608,7 +606,7 @@ namespace ravendb::client::http
 
 				re->topology_etag = re->_node_selector->get_topology()->etag.value_or(-1);
 			}
-			catch (std::exception& e)
+			catch (...)
 			{
 				if(!re->_disposed)
 				{
@@ -760,5 +758,10 @@ namespace ravendb::client::http
 		executor->_disable_client_configuration_updates = true;
 
 		return executor;
+	}
+
+	std::shared_ptr<HttpCache> RequestExecutor::get_cache() const
+	{
+		return _cache;
 	}
 }

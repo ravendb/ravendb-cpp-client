@@ -16,7 +16,7 @@ namespace ravendb::client::serverwide::operations
 		GetDatabaseRecordOperation(std::string database);
 
 		std::unique_ptr<http::RavenCommand<DatabaseRecord>> get_command(
-			std::shared_ptr<documents::conventions::DocumentConventions> conventions) override;
+			std::shared_ptr<documents::conventions::DocumentConventions> conventions) const override;
 
 	private:
 		class GetDatabaseRecordCommand : public http::RavenCommand<DatabaseRecord>

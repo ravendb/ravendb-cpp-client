@@ -23,7 +23,7 @@ namespace ravendb::client::documents::operations
 		{}
 
 		std::unique_ptr<http::RavenCommand<OperationIdResult>> get_command
-		(std::shared_ptr<IDocumentStore> store, std::shared_ptr<conventions::DocumentConventions> conventions, http::HttpCache& cache) const override
+		(std::shared_ptr<IDocumentStore> store, std::shared_ptr<conventions::DocumentConventions> conventions, std::shared_ptr<http::HttpCache> cache) const override
 		{
 			return std::make_unique<DeleteByQueryCommand>(conventions, _query_to_delete, _options);
 		}

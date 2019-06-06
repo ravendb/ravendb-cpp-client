@@ -486,8 +486,8 @@ namespace ravendb::client::documents::session
 		{
 			auto command = query_operation->create_request();
 			//TODO 
-			the_session.lock()->get_request_executor()->execute(command/*, the_session.lock()->_session_info*/);
-			query_operation->set_result(*command.get_result());
+			the_session.lock()->get_request_executor()->execute(command, the_session.lock()->get_session_info());
+			query_operation->set_result(command.get_result());
 		}
 
 		invoke_after_query_executed(query_operation->get_current_query_results());
@@ -947,7 +947,7 @@ namespace ravendb::client::documents::session
 		if(projected_name && _alias_to_group_by_field_name.find(*projected_name) != _alias_to_group_by_field_name.end())
 		{
 			auto& aliased_filed_name = _alias_to_group_by_field_name.at(*projected_name);
-			if(!field_name || impl::utils::CompareStringsIgnoreCase()(*field_name, *projected_name))
+			if(!field_name || impl::utils::CompareStringsLessThanIgnoreCase()(*field_name, *projected_name))
 			{
 				final_field_name = aliased_filed_name;
 			}

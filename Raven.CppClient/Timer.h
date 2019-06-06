@@ -11,7 +11,7 @@ namespace ravendb::client::primitives
 		std::weak_ptr<Timer> _weak_this{};
 
 		const std::shared_ptr<impl::TasksScheduler> _scheduler;
-		const impl::IExecutorService::Task _action;
+		const IExecutorService::Task _action;
 		std::optional<std::chrono::milliseconds> _period{};
 		std::shared_mutex _lock{};
 
@@ -34,7 +34,7 @@ namespace ravendb::client::primitives
 		}
 
 		Timer(std::shared_ptr<impl::TasksScheduler> scheduler,
-			impl::IExecutorService::Task&& action,
+			IExecutorService::Task&& action,
 			std::optional<std::chrono::milliseconds> period = {})
 			: _scheduler(scheduler)
 			, _action(std::move(action))
@@ -43,7 +43,7 @@ namespace ravendb::client::primitives
 
 	public:
 		static std::shared_ptr<Timer> create(std::shared_ptr<impl::TasksScheduler> scheduler,
-			impl::IExecutorService::Task&& action,
+			IExecutorService::Task&& action,
 			std::chrono::milliseconds delay,
 			std::optional<std::chrono::milliseconds> period = {})
 		{

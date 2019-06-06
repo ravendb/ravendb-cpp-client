@@ -11,6 +11,9 @@ namespace ravendb::client::impl::utils
 	//Useful for validating string arguments
 	bool is_blank(const std::string& str);
 
+	//transform string to lower case
+	std::string to_lower_str(const std::string& str);
+
 	template<typename T>
 	std::shared_ptr<T> default_value()
 	{

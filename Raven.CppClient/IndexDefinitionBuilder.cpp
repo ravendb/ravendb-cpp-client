@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "IndexDefinitionBuilder.h"
 #include "GetCppClassName.h"
+#include "IndexCompilationException.h"
 
 namespace ravendb::client::documents::indexes
 {
@@ -82,10 +83,10 @@ namespace ravendb::client::documents::indexes
 
 			return std::move(index_definition);
 		}
-		catch (std::exception& e)
+		catch (std::exception&)
 		{
-			//TODO throw new IndexCompilationException("Failed to create index " + _indexName, e);
-			throw;
+			std::throw_with_nested(exceptions::documents::compilation::IndexCompilationException(
+				"Failed to create index " + _index_name));
 		}
 	}
 }

@@ -47,7 +47,7 @@ namespace ravendb::client::serverwide::operations
 	}
 
 	std::unique_ptr<http::RavenCommand<DeleteDatabaseResult>> DeleteDatabasesOperation::get_command(
-		std::shared_ptr<documents::conventions::DocumentConventions> conventions)
+		std::shared_ptr<documents::conventions::DocumentConventions> conventions) const
 	{
 		return std::make_unique<DeleteDatabaseCommand>(conventions, _parameters);
 	}

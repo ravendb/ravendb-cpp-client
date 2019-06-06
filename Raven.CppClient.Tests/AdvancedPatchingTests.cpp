@@ -83,8 +83,7 @@ namespace ravendb::client::tests::old_tests
 		patch.values = { {"v1","someone else"} };
 		auto op = documents::operations::PatchOperation(custom_type.id, {}, patch);
 
-		http::HttpCache cache;
-		auto cmd = op.get_command(documents::DocumentStore::create(), {}, cache);
+		auto cmd = op.get_command(documents::DocumentStore::create(), {}, {});
 		test_suite_executor->get().execute(*cmd);
 		auto&& res2 = cmd->get_result();
 

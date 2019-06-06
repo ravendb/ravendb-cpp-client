@@ -12,10 +12,67 @@
 #include "JsonOperation.h"
 #include "BatchCommandResult.h"
 #include "DocumentConventions.h"
+#include "NonUniqueObjectException.h"
 
 namespace ravendb::client::documents::session
 {
 	InMemoryDocumentSessionOperations::~InMemoryDocumentSessionOperations() = default;
+
+	void InMemoryDocumentSessionOperations::add_before_store_listener(primitives::EventHandler handler)
+	{
+		on_before_store.emplace_back(std::move(handler));
+	}
+
+	void InMemoryDocumentSessionOperations::remove_before_store_listener(const primitives::EventHandler& handler)
+	{
+		if(const auto it = std::find(on_before_store.cbegin(), on_before_store.cend(), handler);
+			it != on_before_store.cend())
+		{
+			on_before_store.erase(it);
+		}
+	}
+
+	void InMemoryDocumentSessionOperations::add_after_save_changes_listener(primitives::EventHandler handler)
+	{
+		on_after_save_changes.emplace_back(std::move(handler));
+	}
+
+	void InMemoryDocumentSessionOperations::remove_after_save_changes_listener(const primitives::EventHandler& handler)
+	{
+		if(const auto it = std::find(on_after_save_changes.cbegin(), on_after_save_changes.cend(), handler);
+			it != on_after_save_changes.cend())
+		{
+			on_after_save_changes.erase(it);
+		}
+	}
+
+	void InMemoryDocumentSessionOperations::add_before_delete_listener(primitives::EventHandler handler)
+	{
+		on_before_delete.emplace_back(std::move(handler));
+	}
+
+	void InMemoryDocumentSessionOperations::remove_before_delete_listener(const primitives::EventHandler& handler)
+	{
+		if(const auto it = std::find(on_before_delete.cbegin(), on_before_delete.cend(), handler);
+			it != on_before_delete.cend())
+		{
+			on_before_delete.erase(it);
+		}
+	}
+
+	void InMemoryDocumentSessionOperations::add_before_query_listener(primitives::EventHandler handler)
+	{
+		on_before_query.emplace_back(std::move(handler));
+	}
+
+	void InMemoryDocumentSessionOperations::remove_before_query_listener(const primitives::EventHandler& handler)
+	{
+		if(const auto it = std::find(on_before_query.cbegin(), on_before_query.cend(), handler);
+			it != on_before_query.cend())
+		{
+			on_before_query.erase(it);
+		}
+	}
 
 	std::atomic_int32_t InMemoryDocumentSessionOperations::_client_session_id_counter{};
 	std::atomic_int32_t InMemoryDocumentSessionOperations::_instances_counter{};
@@ -33,6 +90,27 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<documents::operations::OperationExecutor> InMemoryDocumentSessionOperations::get_operations() const
 	{
 		return _operation_executor;
+	}
+
+	std::shared_ptr<const http::ServerNode> InMemoryDocumentSessionOperations::get_current_session_node() const
+	{
+		std::optional<http::CurrentIndexAndNode> result{};
+		switch (_document_store.lock()->get_conventions()->get_read_balance_behavior())
+		{
+		case http::ReadBalanceBehavior::NONE:
+			result.emplace(_request_executor->get_preferred_node());
+			break;
+		case http::ReadBalanceBehavior::ROUND_ROBIN:
+			result.emplace(_request_executor->get_node_by_session_id(_client_session_id));
+			break;
+		case http::ReadBalanceBehavior::FASTEST_NODE:
+			result.emplace(_request_executor->get_fastest_node());
+			break;
+		default:
+			throw std::invalid_argument("Unknown ReadBalanceBehavior");
+		}
+
+		return result->current_node;
 	}
 
 	int32_t InMemoryDocumentSessionOperations::get_number_of_requests() const
@@ -106,7 +184,7 @@ namespace ravendb::client::documents::session
 	}())
 		, no_tracking(options.no_tracking)
 		, _transaction_mode(options.transaction_mode)
-		, _client_session_id(_client_session_id_counter.fetch_add(1) + 1)
+		, _client_session_id(++_client_session_id_counter)
 		, _request_executor(options.request_executor ? options.request_executor : 
 			document_store->get_request_executor(database_name))
 		, _session_info(_client_session_id, /*document_store->get_last_transaction_index(database_name)*/{}, options.no_caching)
@@ -172,6 +250,11 @@ namespace ravendb::client::documents::session
 
 		//TODO get id
 		throw std::runtime_error("Not implemented");
+	}
+
+	const SessionInfo& InMemoryDocumentSessionOperations::get_session_info() const
+	{
+		return _session_info;
 	}
 
 	bool InMemoryDocumentSessionOperations::is_loaded(const std::string& id) const
@@ -338,7 +421,7 @@ namespace ravendb::client::documents::session
 		if (auto existing_doc_info_it = _documents_by_entity.find(info->entity);
 			existing_doc_info_it != _documents_by_entity.end())
 		{
-			if (impl::utils::CompareStringsIgnoreCase()(existing_doc_info_it->second->id, info->id))
+			if (impl::utils::CompareStringsLessThanIgnoreCase()(existing_doc_info_it->second->id, info->id))
 			{
 				return;
 			}
@@ -573,7 +656,8 @@ namespace ravendb::client::documents::session
 		{
 			return;
 		}
-		throw std::runtime_error("Attempted to associate a different object with id '" + id + "'.");
+		throw exceptions::documents::session::NonUniqueObjectException(
+			"Attempted to associate a different object with id '" + id + "'.");
 	}
 
 	InMemoryDocumentSessionOperations::SaveChangesData InMemoryDocumentSessionOperations::prepare_for_save_changes()

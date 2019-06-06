@@ -2,7 +2,7 @@
 #include <shared_mutex>
 #include <map>
 #include "DocumentStoreBase.h"
-#include "CompareStringsIgnoreCase.h"
+#include "CompareStringsLessThanIgnoreCase.h"
 #include "TasksScheduler.h"
 
 namespace ravendb::client::documents::identity
@@ -12,6 +12,7 @@ namespace ravendb::client::documents::identity
 
 namespace ravendb::client::documents
 {
+	//Manages access to RavenDB and open sessions to work with RavenDB.
 	class DocumentStore : public DocumentStoreBase
 	{
 	private:
@@ -21,21 +22,24 @@ namespace ravendb::client::documents
 		};
 
 	private:
-		std::shared_ptr<impl::IExecutorService> _executor_service{};
+		std::shared_ptr<primitives::IExecutorService> _executor_service{};
 		std::shared_ptr<impl::TasksScheduler> _scheduler{};
 
-		mutable std::map<std::string, std::shared_ptr<http::RequestExecutor>, impl::utils::CompareStringsIgnoreCase> _request_executors{};
+		mutable std::map<std::string, std::shared_ptr<http::RequestExecutor>, impl::utils::CompareStringsLessThanIgnoreCase>
+			_request_executors{};
 		mutable std::shared_mutex _request_executors_mutex{};
 
-		std::unique_ptr<identity::MultiDatabaseHiLoIdGenerator>_multi_db_hilo{};
+		std::unique_ptr<identity::MultiDatabaseHiLoIdGenerator> _multi_db_hilo{};
 
 		std::shared_ptr<operations::MaintenanceOperationExecutor> _maintenance_operation_executor{};	
 		std::shared_ptr<operations::OperationExecutor> _operation_executor{};			
 
 		std::string _identifier{};
 
-		void initiate_operation_executors();
+		std::vector<primitives::EventHandler> after_close{};
+		std::vector<primitives::EventHandler> before_close{};
 
+	private:
 		DocumentStore();
 
 		DocumentStore(std::string url, std::string database);
@@ -54,9 +58,9 @@ namespace ravendb::client::documents
 
 		static std::shared_ptr<DocumentStore> create(std::vector<std::string> urls, std::string database);
 
-		std::shared_ptr<impl::IExecutorService> get_executor_service() const;
+		std::shared_ptr<primitives::IExecutorService> get_executor_service() const;
 
-		void set_executor_service(std::shared_ptr<impl::IExecutorService> executor_service);
+		void set_executor_service(std::shared_ptr<primitives::IExecutorService> executor_service);
 
 		void set_default_executor_service(uint32_t num_of_threads = 1);
 
@@ -66,7 +70,7 @@ namespace ravendb::client::documents
 
 		void set_identifier(std::string identifier) override;
 
-		void close();
+		void close() override;
 
 		session::DocumentSession open_session() override;
 		session::DocumentSession open_session(const std::string& database) override;
@@ -75,10 +79,19 @@ namespace ravendb::client::documents
 		//can be called with empty database param
 		std::shared_ptr<http::RequestExecutor> get_request_executor(const std::string& database = {}) const override;
 
+		//Initializes this instance.
 		std::shared_ptr<IDocumentStore> initialize() override;
 
-		std::shared_ptr<operations::MaintenanceOperationExecutor> maintenance() const override;
+		void add_before_close_listener(primitives::EventHandler handler) override;
 
-		std::shared_ptr<operations::OperationExecutor> get_operations() const override;
+		void remove_before_close_listener(const primitives::EventHandler& handler) override;
+
+		void add_after_close_listener(primitives::EventHandler handler) override;
+
+		void remove_after_close_listener(const primitives::EventHandler& handler) override;
+
+		std::shared_ptr<operations::MaintenanceOperationExecutor> maintenance() override;
+
+		std::shared_ptr<operations::OperationExecutor> operations() override;
 	};
 }

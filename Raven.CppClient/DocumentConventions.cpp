@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DocumentConventions.h"
 #include "Constants.h"
-#include "CompareStringsIgnoreCase.h"
+#include "CompareStringsLessThanIgnoreCase.h"
 #include "Inflector.h"
 #include "GetCppClassName.h"
 
@@ -120,12 +120,12 @@ namespace ravendb::client::documents::conventions
 		_read_balance_behaviour = read_balance_behaviour;
 	}
 
-	int32_t DocumentConventions::get_max_http_cache_size() const
+	uint64_t DocumentConventions::get_max_http_cache_size() const
 	{
 		return _max_http_cache_size;
 	}
 
-	void DocumentConventions::set_max_http_cache_size(int32_t max_http_cache_size)
+	void DocumentConventions::set_max_http_cache_size(uint64_t max_http_cache_size)
 	{
 		assert_not_frozen();
 		_max_http_cache_size = max_http_cache_size;
@@ -377,7 +377,7 @@ namespace ravendb::client::documents::conventions
 
 		if(upper_count <= 1)
 		{
-			return impl::utils::CompareStringsIgnoreCase::to_lower_str(collection_name);
+			return impl::utils::to_lower_str(collection_name);
 		}
 
 		// multiple capital letters, so probably something that we want to preserve caps on.

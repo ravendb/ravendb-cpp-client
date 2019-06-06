@@ -17,7 +17,7 @@ namespace ravendb::client::serverwide::commands
 	public:
 		~GetDatabaseTopologyCommand() override;
 
-		explicit GetDatabaseTopologyCommand(std::optional<std::string> debug_tag);
+		explicit GetDatabaseTopologyCommand(std::optional<std::string> debug_tag = {});
 
 		void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
 			std::optional<std::string>& url_ref) override;

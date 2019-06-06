@@ -39,7 +39,7 @@ namespace ravendb::client::documents::commands
 			url_ref.emplace(path_builder.str());
 		}
 
-		http::ResponseDisposeHandling process_response(const impl::CurlResponse& response, const std::string& url) override
+		http::ResponseDisposeHandling process_response(std::shared_ptr<http::HttpCache> , const impl::CurlResponse& response, const std::string& url) override
 		{
 			const auto status_code = static_cast<http::HttpStatus>(response.status_code);
 

@@ -3,6 +3,7 @@
 
 namespace ravendb::client::documents::operations
 {
+	//The result of a OperationIdResult operation
 	struct OperationIdResult
 	{
 		int64_t operation_id{};

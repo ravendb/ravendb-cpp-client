@@ -20,7 +20,7 @@ namespace ravendb::client::serverwide::operations
 	{}
 
 	std::unique_ptr<http::RavenCommand<DatabaseRecord>> GetDatabaseRecordOperation::get_command(
-		std::shared_ptr<documents::conventions::DocumentConventions> conventions)
+		std::shared_ptr<documents::conventions::DocumentConventions> conventions) const
 	{
 		return std::make_unique<GetDatabaseRecordCommand>(conventions, _database);
 	}

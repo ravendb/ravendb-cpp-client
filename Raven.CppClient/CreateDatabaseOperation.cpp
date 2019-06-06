@@ -12,7 +12,7 @@ namespace ravendb::client::serverwide::operations
 	{}
 
 	std::unique_ptr<http::RavenCommand<DatabasePutResult>> CreateDatabaseOperation::get_command(
-		const std::shared_ptr<documents::conventions::DocumentConventions> conventions)
+		const std::shared_ptr<documents::conventions::DocumentConventions> conventions) const
 	{
 		return std::make_unique<CreateDatabaseCommand>(conventions, _database_record, _replication_factor);
 	}

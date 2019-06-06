@@ -16,7 +16,7 @@ namespace ravendb::client::serverwide::operations
 		GetDatabaseNamesOperation(int32_t _start, int32_t _page_size);
 
 		std::unique_ptr<http::RavenCommand<std::vector<std::string>>> get_command(
-			std::shared_ptr<documents::conventions::DocumentConventions> conventions) override;
+			std::shared_ptr<documents::conventions::DocumentConventions> conventions) const override;
 
 	private:
 		class GetDatabaseNamesCommand : public http::RavenCommand<std::vector<std::string>>
