@@ -41,7 +41,7 @@ namespace ravendb::client::documents::indexes
 			auto&& indexes_to_add = create_indexes_to_add(tasks, conventions);
 			store->maintenance()->send(operations::indexes::PutIndexesOperation(std::move(indexes_to_add)));
 		}
-		catch (std::exception& e)
+		catch (std::exception& )
 		{
 			//TODO logger.info("Could not create indexes in one shot (maybe using older version of RavenDB ?)", e);
 

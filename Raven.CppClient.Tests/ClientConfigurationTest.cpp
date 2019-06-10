@@ -18,27 +18,27 @@ namespace ravendb::client::tests::client::documents::operations::configuration
 		}
 	};
 
-	TEST_F(ClientConfigurationTest, CanSaveAndReadServerWideClientConfiguration)
+	TEST_F(ClientConfigurationTest, DISABLED_CanSaveAndReadServerWideClientConfiguration)
 	{
 		//TODO test is OK , yet it changes global definitions -> waiting for embedded
-		//auto store = get_document_store(TEST_NAME);
+		auto store = get_document_store(TEST_NAME);
 
-		//auto configuration_to_save = ravendb::client::documents::operations::configuration::ClientConfiguration();
-		//configuration_to_save.max_number_of_requests_per_session = 80;
-		//configuration_to_save.read_balance_behaviour = http::ReadBalanceBehavior::FASTEST_NODE;
-		//configuration_to_save.disabled = true;
+		auto configuration_to_save = ravendb::client::documents::operations::configuration::ClientConfiguration();
+		configuration_to_save.max_number_of_requests_per_session = 80;
+		configuration_to_save.read_balance_behaviour = http::ReadBalanceBehavior::FASTEST_NODE;
+		configuration_to_save.disabled = true;
 
-		//auto save_operation = serverwide::operations::configuration::
-		//	PutServerWideClientConfigurationOperation(std::move(configuration_to_save));
-		//store->maintenance()->server()->send(save_operation);
+		auto save_operation = serverwide::operations::configuration::
+			PutServerWideClientConfigurationOperation(std::move(configuration_to_save));
+		store->maintenance()->server()->send(save_operation);
 
-		//auto get_operation = serverwide::operations::configuration::GetServerWideClientConfigurationOperation();
-		//auto new_configuration = store->maintenance()->server()->send(get_operation);
+		auto get_operation = serverwide::operations::configuration::GetServerWideClientConfigurationOperation();
+		auto new_configuration = store->maintenance()->server()->send(get_operation);
 
-		//ASSERT_TRUE(new_configuration);
-		//ASSERT_TRUE(new_configuration->disabled);
-		//ASSERT_EQ(80, new_configuration->max_number_of_requests_per_session);
-		//ASSERT_EQ(http::ReadBalanceBehavior::FASTEST_NODE, new_configuration->read_balance_behaviour);
+		ASSERT_TRUE(new_configuration);
+		ASSERT_TRUE(new_configuration->disabled);
+		ASSERT_EQ(80, new_configuration->max_number_of_requests_per_session);
+		ASSERT_EQ(http::ReadBalanceBehavior::FASTEST_NODE, new_configuration->read_balance_behaviour);
 	}
 
 	TEST_F(ClientConfigurationTest, CanHandleNoConfiguration)

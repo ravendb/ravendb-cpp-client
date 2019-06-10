@@ -38,7 +38,11 @@ namespace ravendb::client::documents::commands
 			std::ostringstream path_builder;
 
 			path_builder << node->url << "/databases/" << node->database
-				<< "/queries?";// TODO << "queryHash=" << _index_query.get_query_hash;
+				<< "/queries?"
+				// we need to add a query hash because we are using POST queries
+				// so we need to unique parameter per query so the query cache will
+				// work properly
+				<< "queryHash=" << _index_query.get_query_hash();
 		
 			if(_metadata_only)
 			{

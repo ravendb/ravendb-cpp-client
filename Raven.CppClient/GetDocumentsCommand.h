@@ -2,8 +2,7 @@
 #include "stdafx.h"
 #include "RavenCommand.h"
 #include "GetDocumentsResult.h"
-//TODO put in final project
-#include "C:\work\xxhash_cpp\xxhash\xxhash.hpp"
+#include "xxhash.hpp"
 
 namespace ravendb::client::documents::commands
 {
