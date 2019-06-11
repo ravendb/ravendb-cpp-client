@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "HiloReturnCommand.h"
+#include "HiLoReturnCommand.h"
 
 namespace ravendb::client::documents::commands
 {

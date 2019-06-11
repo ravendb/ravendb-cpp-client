@@ -8,7 +8,7 @@
 
 namespace ravendb::client::impl::utils
 {
-	CURLcode utils::sslctx_function(CURL* , void *sslctx_void, void *cert_details_void)
+	CURLcode sslctx_function(CURL* , void *sslctx_void, void *cert_details_void)
 	{
 		static const auto my_BIO_free = [&](BIO* bio) {if (bio != nullptr) BIO_vfree(bio); };
 		static const auto my_X509_free = [&](X509* cert) {if (cert != nullptr) X509_free(cert); };

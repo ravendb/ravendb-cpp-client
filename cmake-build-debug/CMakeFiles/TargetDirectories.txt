@@ -1,0 +1,15 @@
+/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/CMakeFiles/rebuild_cache.dir
+/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/CMakeFiles/Raven_CppClient.dir
+/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/CMakeFiles/edit_cache.dir
+/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Tryouts/CMakeFiles/rebuild_cache.dir
+/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Tryouts/CMakeFiles/Raven_CppClient_Tryouts.dir
+/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Tryouts/CMakeFiles/edit_cache.dir
+/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/CMakeFiles/rebuild_cache.dir
+/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/CMakeFiles/Raven_CppClient_Tests.dir
+/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/CMakeFiles/edit_cache.dir
+/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/CMakeFiles/rebuild_cache.dir
+/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/CMakeFiles/gtest.dir
+/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/CMakeFiles/edit_cache.dir
+/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/CMakeFiles/gtest_main.dir

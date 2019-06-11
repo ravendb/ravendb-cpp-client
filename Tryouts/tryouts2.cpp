@@ -91,7 +91,7 @@ namespace
 		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 	}
 
-	class FakeStore : public IDocumentStore
+	class FakeStore : public ravendb::client::documents::IDocumentStore
 	{};
 
 	struct MyQueryResult

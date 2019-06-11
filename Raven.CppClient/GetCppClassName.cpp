@@ -27,7 +27,6 @@ namespace ravendb::client::impl::utils
 #endif
 
 #ifdef  __unix__
-#define _GNU_SOURCE
 #include <cxxabi.h>
 
 	std::string GetCppClassName::_get_class_name_impl(std::type_index type)

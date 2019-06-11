@@ -1,6 +1,7 @@
 #pragma once
 #include <any>
 #include <set>
+#include <list>
 #include <unordered_set>
 #include <typeinfo>
 #include <atomic>
@@ -102,7 +103,8 @@ namespace ravendb::client::documents::session
 	public:
 		friend operations::LoadOperation;
 		friend operations::LoadStartingWithOperation;
-		friend operations::lazy::LazyStartsWithOperation;
+		template <typename T>
+		friend class operations::lazy::LazyStartsWithOperation;
 		friend operations::BatchOperation;
 
 		static const int32_t DEFAULT_MAX_NUMBER_OF_REQUESTS_PER_SESSION = 30;

@@ -17,14 +17,14 @@ namespace ravendb::client::documents::operations::indexes
 			: _index_definition(std::move(definition))
 		{}
 
-		std::unique_ptr<RavenCommand<bool>> get_command(
+		std::unique_ptr<http::RavenCommand<bool>> get_command(
 			std::shared_ptr<conventions::DocumentConventions> conventions) const override
 		{
 			return std::make_unique<IndexHasChangedCommand>(conventions, _index_definition);
 		}
 
 	private:
-		class IndexHasChangedCommand : public RavenCommand<bool>
+		class IndexHasChangedCommand : public http::RavenCommand<bool>
 		{
 		private:
 			nlohmann::json _definition;

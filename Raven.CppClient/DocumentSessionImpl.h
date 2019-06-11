@@ -10,6 +10,7 @@
 #include "LazyLoadOperation.h"
 #include "DocumentQuery.h"
 #include "Query.h"
+#include "AbstractIndexCreationTask.h"
 
 namespace ravendb::client::documents
 {

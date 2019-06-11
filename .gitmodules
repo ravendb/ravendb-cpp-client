@@ -1,0 +1,3 @@
+[submodule "Raven.CppClient.Tests/lib/googletest"]
+	path = Raven.CppClient.Tests/lib/googletest
+	url = https://github.com/google/googletest.git

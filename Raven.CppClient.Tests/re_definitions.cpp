@@ -75,7 +75,7 @@ namespace ravendb::client::tests::definitions
 	std::shared_ptr<RequestExecutorScope> RequestExecutorScope::get_request_executor_with_db(
 		const std::string& file, int line, int counter, bool is_secured, bool use_fiddler)
 	{
-		std::filesystem::path path(file);
+		std::experimental::filesystem::path path(file);
 		std::ostringstream name;
 		name << path.filename().replace_extension().string() << "_" << line << "_" << counter;
 		return is_secured ?

@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="Raven_CppClient_Tests"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\Raven.CppClient\;CMake Files\Raven.CppClient.Tests\;CMake Files\Raven.CppClient.Tests\lib\;CMake Files\Raven.CppClient.Tests\lib\googletest\;CMake Files\Raven.CppClient.Tests\lib\googletest\googletest\;CMake Files\Raven.CppClient.Tests\lib\googletest\googletest\cmake\;CMake Files\Tryouts\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Raven_CppClient_Tests">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Raven_CppClient_Tests" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/.."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/../Raven.CppClient"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/include"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 Raven_CppClient_Tests"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Raven_CppClient_Tests/fast">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Raven_CppClient_Tests" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/.."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/../Raven.CppClient"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/include"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 Raven_CppClient_Tests/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/lib/libgtestd.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/include"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 gtest"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest/fast">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/lib/libgtestd.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/include"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 gtest/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest_main">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/lib/libgtest_maind.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/include"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 gtest_main"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest_main/fast">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/lib/libgtest_maind.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/include"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 gtest_main/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Address.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/AdvancedPatchingTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Arr.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/BasicDocumentCommandsTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/BasicDocumentsSessionTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/BasicPatchTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/BasicQueryTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/BoundingBoxIndexTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/ClientConfigurationTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Company.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/CompanyType.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/ConnectionDetailsHolder.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/ConnectionDetailsHolder.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Contact.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/CreateSampleDataOperation.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/CreateSampleDataOperation.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/CrudTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/DeleteDocumentCommandTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/DeleteTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/DocumentIdPropertyTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Employee.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/ExistsTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Family.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/FirstClassPatchTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/GeekPerson.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/GetDocumentsCommandTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/GetNextOperationIdCommandTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/GetStatisticsCommandTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/HiLoTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/HttpsTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/IndexOperationsTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/IndexOperationsTestsOld.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/IndexesFromClientTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/JavaScriptIndexTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/LazyTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/LoadAllStartingWith.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/LoadTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/LoadTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/NullableUser.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Order.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/OrderLine.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Person.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Poc.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Post.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/PutDocumentCommandTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/QueryTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/RavenDB_8761.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/RavenTestDriver.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/RavenTestDriver.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/RequestExecutorAndDBsTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/RequestExecutorTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/SecuredRequestExecutorTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/SimpleMultiMapTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/TrackEntityTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/User.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/WhatChangedTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/ds_definitions.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/ds_definitions.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/src/gtest-all.cc">
+			<Option target="gtest"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/src/gtest_main.cc">
+			<Option target="gtest_main"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/main.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/pch.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/pch.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/raven_test_definitions.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/raven_test_definitions.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/re_definitions.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/re_definitions.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/test_utils.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/test_utils.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Raven.CppClient\"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Raven.CppClient.Tests\"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Raven.CppClient.Tests\lib\googletest\googletest\"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/cmake/internal_utils.cmake">
+			<Option virtualFolder="CMake Files\Raven.CppClient.Tests\lib\googletest\googletest\cmake\"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Tryouts/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Tryouts\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "MillisToTimeSpanConverter.h"
+#include "MillisToTimespanConverter.h"
 #include <iomanip>
 
 namespace ravendb::client::impl::utils

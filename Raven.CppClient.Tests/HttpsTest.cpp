@@ -16,7 +16,7 @@ namespace ravendb::client::tests::client
 		}
 	};
 
-	TEST_F(HttpsTest, CanConnectWithCertificate)
+	TEST_F(HttpsTest, DISABLED_CanConnectWithCertificate)
 	{
 		auto store = get_secured_document_store(TEST_NAME);
 

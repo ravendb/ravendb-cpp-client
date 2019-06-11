@@ -12,7 +12,7 @@ namespace ravendb::client::documents::session::operations::lazy
 	class EagerSessionOperations
 	{
 	public:
-		friend class AdvancedSessionOperations;
+		friend AdvancedSessionOperations;
 
 	private:
 		std::shared_ptr<DocumentSessionImpl> _session_impl;

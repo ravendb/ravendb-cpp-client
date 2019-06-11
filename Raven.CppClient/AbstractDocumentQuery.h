@@ -995,7 +995,7 @@ namespace ravendb::client::documents::session
 	{
 		append_operator_if_needed(where_tokens);
 
-		where_tokens.push_back(tokens::MoreLikeThisToken::create());
+		where_tokens.push_back(std::static_pointer_cast<tokens::QueryToken>(tokens::MoreLikeThisToken::create()));
 		return queries::more_like_this::MoreLikeThisScope(where_tokens.back(), 
 			[this](nlohmann::json value)->std::string
 		{
@@ -2277,7 +2277,7 @@ namespace ravendb::client::documents::session
 			return lazy_query_op->get_result();
 		};
 
-		return get_session()->add_lazy_operation<std::vector<std::shared_ptr<T>>>(lazy_query_operation,
+		return get_session()->template add_lazy_operation<std::vector<std::shared_ptr<T>>>(lazy_query_operation,
 			get_operation_result, [=]()
 		{
 			if (on_eval)
