@@ -1,5 +1,5 @@
-https://a.sashatim125.development.run:8085
-c:\work\PowerUser\PowerUser.crt
-c:\work\PowerUser\PowerUser.key
+https://a.sashatim125test.development.run:8085
+c:\work\User\User.crt
+c:\work\User\User.key
 
-PowerUser
+User

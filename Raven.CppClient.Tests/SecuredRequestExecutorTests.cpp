@@ -43,14 +43,14 @@ namespace ravendb::client::tests::old_tests
 			test_suite_executor->get().execute(cmd);
 			auto res = cmd.get_result();
 
-			return !res->results.empty() && !res->results[0].is_null();
+			return res && !res->results.empty() && !res->results[0].is_null();
 		}
 	};
 
 	const infrastructure::entities::User SecuredRequestExecutorTests::example_user{ "users/1", "Alexander", "Timoshenko", "Israel", 0, 38 };
 
 
-	TEST_F(SecuredRequestExecutorTests, DISABLED_CanGetDocument)
+	TEST_F(SecuredRequestExecutorTests, CanGetDocument)
 	{
 		ASSERT_TRUE(does_document_exist(example_user.id));
 
@@ -62,7 +62,7 @@ namespace ravendb::client::tests::old_tests
 		ASSERT_EQ(example_user, check_user);
 	}
 
-	TEST_F(SecuredRequestExecutorTests, DISABLED_CanDeleteDocument)
+	TEST_F(SecuredRequestExecutorTests, CanDeleteDocument)
 	{
 		ASSERT_TRUE(does_document_exist(example_user.id));
 
