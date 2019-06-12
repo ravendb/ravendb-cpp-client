@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "DateTimeOffset.h"
 
-#define __STDC_WANT_LIB_EXT1__ 1
 #include <iomanip>
+#define __STDC_WANT_LIB_EXT1__ 1
 #include <stdio.h>
 
 namespace ravendb::client::impl
@@ -32,9 +32,13 @@ namespace ravendb::client::impl
 		//expecting ISO8061 format : YYYY-MM-DDThh:mm:ss.sssssss(Z) or YYYY-MM-DDThh:mm:ss.sssssss�hh:mm
 		int res =
 #ifdef __STDC_LIB_EXT1__
-		    std::sscanf_s
+			std::sscanf_s
+#else
+#ifdef _MSC_VER 
+			sscanf_s
 #else
             std::sscanf
+#endif
 #endif
 		                (input_str, "%04d-%02d-%02dT%02d:%02d:%02d.%07ld",
 			&_date_time.tm_year, &_date_time.tm_mon, &_date_time.tm_mday,
@@ -91,9 +95,13 @@ namespace ravendb::client::impl
 				// _offset is in format +(-)hh:mm
 				res =
 #ifdef __STDC_LIB_EXT1__
-                    std::sscanf_s
+					std::sscanf_s
 #else
-                    std::sscanf
+#ifdef _MSC_VER 
+					sscanf_s
+#else
+					std::sscanf
+#endif
 #endif
                     (input_str, "%02d:%02d", &hour, &min);
 				if (

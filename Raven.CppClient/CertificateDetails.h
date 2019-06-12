@@ -1,9 +1,8 @@
 #pragma once
 
-#ifdef _WIN32
+#ifdef _MSC_VER 
 #include <filesystem>
-#endif
-#ifdef  __unix__
+#else
 #include <experimental/filesystem>
 #endif
 
@@ -19,10 +18,9 @@ namespace ravendb::client::impl
 
 		//full path including the filename
 		//optional , may be empty
-#ifdef _WIN32
+#ifdef __MSC_VER 
 		std::filesystem::path ca_path{};
-#endif
-#ifdef  __unix__
+#else
         std::experimental::filesystem::path ca_path{};
 #endif
 	};
