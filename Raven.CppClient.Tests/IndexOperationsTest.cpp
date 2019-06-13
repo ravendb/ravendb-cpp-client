@@ -280,6 +280,8 @@ namespace ravendb::client::tests::client::documents::operations::indexes
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
+		//just in case ...
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
 
 		auto index_errors = store->maintenance()->send(
 			ravendb::client::documents::operations::indexes::GetIndexErrorsOperation());

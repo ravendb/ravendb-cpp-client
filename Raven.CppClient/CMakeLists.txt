@@ -538,4 +538,5 @@ add_library(Raven_CppClient SHARED
         WktField.cpp
         WktField.h)
 
-target_include_directories(Raven_CppClient PUBLIC . ..)
+target_include_directories(Raven_CppClient PUBLIC . .. ../external)
+target_compile_definitions(Raven_CppClient PUBLIC DEFAULT_CA_BUNDLE_PATH="../../ca_bundle/ca-bundle.crt")

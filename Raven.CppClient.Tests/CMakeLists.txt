@@ -71,11 +71,9 @@ add_executable(Raven_CppClient_Tests
         User.h
         WhatChangedTest.cpp)
 
-target_include_directories(Raven_CppClient_Tests PRIVATE . .. ../Raven.CppClient)
+target_include_directories(Raven_CppClient_Tests PRIVATE . .. ../Raven.CppClient ../external)
 
-find_library(RAVEN_CPPCLIENT Raven_CppClient ../cmake-build-debug/Raven.CppClient)
-
+target_link_libraries(Raven_CppClient_Tests Raven_CppClient)
 target_link_libraries(Raven_CppClient_Tests stdc++fs)
 target_link_libraries(Raven_CppClient_Tests gtest gtest_main)
 target_link_libraries(Raven_CppClient_Tests curl ssl crypto pthread)
-target_link_libraries(Raven_CppClient_Tests ${RAVEN_CPPCLIENT})

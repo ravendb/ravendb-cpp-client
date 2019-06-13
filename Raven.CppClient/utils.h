@@ -3,8 +3,17 @@
 
 namespace ravendb::client::impl::utils
 {
-	constexpr char DEFAULT_CA_BUNDLE_PATH[] = "../ca-bundle.crt";
+    //TODO think of a better solution
+    //TODO do not forget to UPDATE the ca_bundle
+#ifndef DEFAULT_CA_BUNDLE_PATH
 
+	constexpr char DEFAULT_CA_BUNDLE_PATH_VALUE[] = "../ca_bundle/ca-bundle.crt";
+
+#else
+
+    constexpr char DEFAULT_CA_BUNDLE_PATH_VALUE[] = DEFAULT_CA_BUNDLE_PATH;
+
+#endif
 	//expects SSL_CTX* in sslctx_void and const CertificateDetails* in cert_details_void
 	CURLcode sslctx_function(CURL*, void *sslctx_void, void *cert_details_void);
 

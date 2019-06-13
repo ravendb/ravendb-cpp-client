@@ -72,7 +72,7 @@ namespace ravendb::client::impl::utils
 			throw std::runtime_error(std::string("Use Key failed") + error_buffer);
 		}
 
-		const char* ca_path = cert_details.ca_path.empty() ? DEFAULT_CA_BUNDLE_PATH :
+		const char* ca_path = cert_details.ca_path.empty() ? DEFAULT_CA_BUNDLE_PATH_VALUE :
 			reinterpret_cast<const char*>(cert_details.ca_path.c_str());
 		//tell SSL to use CA certificate (if provided)
 		if(SSL_CTX_load_verify_locations(sslctx, ca_path, nullptr) != 1)
