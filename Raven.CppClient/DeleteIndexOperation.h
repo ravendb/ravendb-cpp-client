@@ -1,7 +1,6 @@
 #pragma once
 #include "stdafx.h"
 #include "IVoidMaintenanceOperation.h"
-#include "Raven.CppClient.Tests/re_definitions.h"
 
 namespace ravendb::client::documents::operations::indexes
 {

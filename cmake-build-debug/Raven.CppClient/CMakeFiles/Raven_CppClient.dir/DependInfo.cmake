@@ -190,13 +190,14 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # Preprocessor definitions for this target.
 set(CMAKE_TARGET_DEFINITIONS_CXX
-  "Raven_CppClient_EXPORTS"
+  "DEFAULT_CA_BUNDLE_PATH=\"../../ca_bundle/ca-bundle.crt\""
   )
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "../Raven.CppClient/."
   "../Raven.CppClient/.."
+  "../Raven.CppClient/../external"
   )
 
 # Targets to which this target links.

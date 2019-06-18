@@ -24,11 +24,14 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
+					<Add option="-DDEFAULT_CA_BUNDLE_PATH=&quot;../../ca_bundle/ca-bundle.crt&quot;"/>
 					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Tryouts/."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Tryouts/../external"/>
 					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Tryouts/../Raven.CppClient"/>
 					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Tryouts/../Raven.CppClient.Tests"/>
 					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/."/>
 					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/.."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/../external"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -52,11 +55,14 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
+					<Add option="-DDEFAULT_CA_BUNDLE_PATH=&quot;../../ca_bundle/ca-bundle.crt&quot;"/>
 					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Tryouts/."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Tryouts/../external"/>
 					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Tryouts/../Raven.CppClient"/>
 					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Tryouts/../Raven.CppClient.Tests"/>
 					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/."/>
 					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/.."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/../external"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>

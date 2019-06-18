@@ -2,7 +2,7 @@
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/usr/local")
+  set(CMAKE_INSTALL_PREFIX "~/RavenDBCppClient")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -35,5 +35,29 @@ endif()
 # Is this installation the result of a crosscompile?
 if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  if(EXISTS "$ENV{DESTDIR}/home/alexander/RavenDBCppClient/lib/libRaven_CppClient.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/home/alexander/RavenDBCppClient/lib/libRaven_CppClient.so")
+    file(RPATH_CHECK
+         FILE "$ENV{DESTDIR}/home/alexander/RavenDBCppClient/lib/libRaven_CppClient.so"
+         RPATH "")
+  endif()
+  list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
+   "/home/alexander/RavenDBCppClient/lib/libRaven_CppClient.so")
+  if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
+    message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+  endif()
+  if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
+    message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+  endif()
+file(INSTALL DESTINATION "/home/alexander/RavenDBCppClient/lib" TYPE SHARED_LIBRARY FILES "/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/libRaven_CppClient.so")
+  if(EXISTS "$ENV{DESTDIR}/home/alexander/RavenDBCppClient/lib/libRaven_CppClient.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/home/alexander/RavenDBCppClient/lib/libRaven_CppClient.so")
+    if(CMAKE_INSTALL_DO_STRIP)
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}/home/alexander/RavenDBCppClient/lib/libRaven_CppClient.so")
+    endif()
+  endif()
 endif()
 

@@ -881,7 +881,7 @@ namespace ravendb::client::http
 				}
 			}
 		}
-		catch (std::runtime_error& e)//(...)
+		catch (...)
 		{
 			if(!should_retry)
 			{

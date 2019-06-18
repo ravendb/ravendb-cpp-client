@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.14)
 project(Raven_CppClient)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -426,6 +425,7 @@ add_library(Raven_CppClient SHARED
         RavenCommand.cpp
         RavenCommand.h
         ravendb.h
+        raven_cpp_client.h
         RavenException.cpp
         RavenException.h
         RawDocumentQuery.h
@@ -540,3 +540,8 @@ add_library(Raven_CppClient SHARED
 
 target_include_directories(Raven_CppClient PUBLIC . .. ../external)
 target_compile_definitions(Raven_CppClient PUBLIC DEFAULT_CA_BUNDLE_PATH="../../ca_bundle/ca-bundle.crt")
+
+#for compatibility with 3.10
+set(CMAKE_INSTALL_PREFIX ~/RavenDBCppClient)
+set(CMAKE_INSTALL_PREFIX ~/RavenDBCppClient PARENT_SCOPE)
+install(TARGETS Raven_CppClient LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

@@ -51,17 +51,27 @@ set(CMAKE_DEPENDS_CHECK_CXX
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
+# Preprocessor definitions for this target.
+set(CMAKE_TARGET_DEFINITIONS_CXX
+  "DEFAULT_CA_BUNDLE_PATH=\"../../ca_bundle/ca-bundle.crt\""
+  )
+
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "../Raven.CppClient.Tests/."
   "../Raven.CppClient.Tests/.."
   "../Raven.CppClient.Tests/../Raven.CppClient"
+  "../Raven.CppClient.Tests/../external"
+  "../Raven.CppClient/."
+  "../Raven.CppClient/.."
+  "../Raven.CppClient/../external"
   "../Raven.CppClient.Tests/lib/googletest/googletest/include"
   "../Raven.CppClient.Tests/lib/googletest/googletest"
   )
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
+  "/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/CMakeFiles/Raven_CppClient.dir/DependInfo.cmake"
   "/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/CMakeFiles/gtest.dir/DependInfo.cmake"
   "/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/CMakeFiles/gtest_main.dir/DependInfo.cmake"
   )
