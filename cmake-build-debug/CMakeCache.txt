@@ -14,6 +14,12 @@
 # EXTERNAL cache entries
 ########################
 
+//Build the Goodle Tests
+BUILD_TESTS:BOOL=OFF
+
+//Build the tryouts
+BUILD_TRYOUTS:BOOL=OFF
+
 //Path to a program.
 CMAKE_AR:FILEPATH=/usr/bin/ar
 
@@ -404,7 +410,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=5
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=2
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

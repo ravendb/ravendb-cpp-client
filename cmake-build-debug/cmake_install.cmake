@@ -460,11 +460,21 @@ file(INSTALL DESTINATION "/home/alexander/RavenDBCppClient/ca_bundle" TYPE FILE 
     )
 endif()
 
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
+   "/home/alexander/RavenDBCppClient/hello_world.cpp")
+  if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
+    message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+  endif()
+  if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
+    message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+  endif()
+file(INSTALL DESTINATION "/home/alexander/RavenDBCppClient" TYPE FILE FILES "/home/alexander/RavenDB_Client/raven-cpp-client/./hello_world.cpp")
+endif()
+
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/cmake_install.cmake")
-  include("/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Tryouts/cmake_install.cmake")
-  include("/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/cmake_install.cmake")
 
 endif()
 

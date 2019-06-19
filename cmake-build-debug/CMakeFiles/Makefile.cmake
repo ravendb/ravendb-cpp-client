@@ -8,11 +8,7 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
   "../CMakeLists.txt"
-  "../Raven.CppClient.Tests/CMakeLists.txt"
-  "../Raven.CppClient.Tests/lib/googletest/googletest/CMakeLists.txt"
-  "../Raven.CppClient.Tests/lib/googletest/googletest/cmake/internal_utils.cmake"
   "../Raven.CppClient/CMakeLists.txt"
-  "../Tryouts/CMakeLists.txt"
   "CMakeFiles/3.14.3/CMakeCCompiler.cmake"
   "CMakeFiles/3.14.3/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.14.3/CMakeSystem.cmake"
@@ -27,17 +23,10 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/CMakeLanguageInformation.cmake"
   "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/CMakeSystemSpecificInformation.cmake"
   "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/CMakeSystemSpecificInitialize.cmake"
-  "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/CheckIncludeFile.cmake"
-  "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/CheckLibraryExists.cmake"
-  "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/CheckSymbolExists.cmake"
   "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
   "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/Compiler/GNU-C.cmake"
   "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/Compiler/GNU-CXX.cmake"
   "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/Compiler/GNU.cmake"
-  "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/FindPackageHandleStandardArgs.cmake"
-  "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/FindPackageMessage.cmake"
-  "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/FindPythonInterp.cmake"
-  "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/FindThreads.cmake"
   "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/Internal/CMakeCheckCompilerFlag.cmake"
   "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/Platform/Linux-GNU-C.cmake"
   "/opt/clion-2019.1.4/bin/cmake/linux/share/cmake-3.14/Modules/Platform/Linux-GNU-CXX.cmake"
@@ -57,16 +46,9 @@ set(CMAKE_MAKEFILE_OUTPUTS
 set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   "Raven.CppClient/CMakeFiles/CMakeDirectoryInformation.cmake"
-  "Tryouts/CMakeFiles/CMakeDirectoryInformation.cmake"
-  "Raven.CppClient.Tests/CMakeFiles/CMakeDirectoryInformation.cmake"
-  "Raven.CppClient.Tests/lib/googletest/googletest/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "Raven.CppClient/CMakeFiles/Raven_CppClient.dir/DependInfo.cmake"
-  "Tryouts/CMakeFiles/Raven_CppClient_Tryouts.dir/DependInfo.cmake"
-  "Raven.CppClient.Tests/CMakeFiles/Raven_CppClient_Tests.dir/DependInfo.cmake"
-  "Raven.CppClient.Tests/lib/googletest/googletest/CMakeFiles/gtest_main.dir/DependInfo.cmake"
-  "Raven.CppClient.Tests/lib/googletest/googletest/CMakeFiles/gtest.dir/DependInfo.cmake"
   )

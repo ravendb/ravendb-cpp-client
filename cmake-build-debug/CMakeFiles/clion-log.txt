@@ -1,9 +1,4 @@
 /opt/clion-2019.1.4/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/alexander/RavenDB_Client/raven-cpp-client
-CMake Warning at Raven.CppClient.Tests/lib/googletest/googletest/CMakeLists.txt:54 (project):
-  VERSION keyword not followed by a value or was followed by a value that
-  expanded to nothing.
-
-
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug

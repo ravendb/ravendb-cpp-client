@@ -169,58 +169,6 @@ Raven_CppClient/fast:
 	$(MAKE) -f Raven.CppClient/CMakeFiles/Raven_CppClient.dir/build.make Raven.CppClient/CMakeFiles/Raven_CppClient.dir/build
 .PHONY : Raven_CppClient/fast
 
-#=============================================================================
-# Target rules for targets named Raven_CppClient_Tryouts
-
-# Build rule for target.
-Raven_CppClient_Tryouts: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Raven_CppClient_Tryouts
-.PHONY : Raven_CppClient_Tryouts
-
-# fast build rule for target.
-Raven_CppClient_Tryouts/fast:
-	$(MAKE) -f Tryouts/CMakeFiles/Raven_CppClient_Tryouts.dir/build.make Tryouts/CMakeFiles/Raven_CppClient_Tryouts.dir/build
-.PHONY : Raven_CppClient_Tryouts/fast
-
-#=============================================================================
-# Target rules for targets named Raven_CppClient_Tests
-
-# Build rule for target.
-Raven_CppClient_Tests: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Raven_CppClient_Tests
-.PHONY : Raven_CppClient_Tests
-
-# fast build rule for target.
-Raven_CppClient_Tests/fast:
-	$(MAKE) -f Raven.CppClient.Tests/CMakeFiles/Raven_CppClient_Tests.dir/build.make Raven.CppClient.Tests/CMakeFiles/Raven_CppClient_Tests.dir/build
-.PHONY : Raven_CppClient_Tests/fast
-
-#=============================================================================
-# Target rules for targets named gtest_main
-
-# Build rule for target.
-gtest_main: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 gtest_main
-.PHONY : gtest_main
-
-# fast build rule for target.
-gtest_main/fast:
-	$(MAKE) -f Raven.CppClient.Tests/lib/googletest/googletest/CMakeFiles/gtest_main.dir/build.make Raven.CppClient.Tests/lib/googletest/googletest/CMakeFiles/gtest_main.dir/build
-.PHONY : gtest_main/fast
-
-#=============================================================================
-# Target rules for targets named gtest
-
-# Build rule for target.
-gtest: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 gtest
-.PHONY : gtest
-
-# fast build rule for target.
-gtest/fast:
-	$(MAKE) -f Raven.CppClient.Tests/lib/googletest/googletest/CMakeFiles/gtest.dir/build.make Raven.CppClient.Tests/lib/googletest/googletest/CMakeFiles/gtest.dir/build
-.PHONY : gtest/fast
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -234,10 +182,6 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... Raven_CppClient"
-	@echo "... Raven_CppClient_Tryouts"
-	@echo "... Raven_CppClient_Tests"
-	@echo "... gtest_main"
-	@echo "... gtest"
 .PHONY : help
 
 
