@@ -1,8 +1,14 @@
+cmake_minimum_required(VERSION 3.13)
 project(Raven_CppClient)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(Raven_CppClient SHARED
+FILE(GLOB RAVEN_HEADERS ./*.h)
+FILE(GLOB RAVEN_CPPS ./*.cpp)
+
+add_library(Raven_CppClient SHARED ${RAVEN_HEADERS} ${RAVEN_CPPS})
+
+#[[add_library(Raven_CppClient SHARED
         AbstractDocumentQuery.h
         AbstractGenericIndexCreationTask.cpp
         AbstractGenericIndexCreationTask.h
@@ -537,11 +543,13 @@ add_library(Raven_CppClient SHARED
         WktCriteria.h
         WktField.cpp
         WktField.h)
+]]
+
 
 target_include_directories(Raven_CppClient PUBLIC . .. ../external)
+
 target_compile_definitions(Raven_CppClient PUBLIC DEFAULT_CA_BUNDLE_PATH="../../ca_bundle/ca-bundle.crt")
 
-#for compatibility with 3.10
-set(CMAKE_INSTALL_PREFIX ~/RavenDBCppClient)
-set(CMAKE_INSTALL_PREFIX ~/RavenDBCppClient PARENT_SCOPE)
-install(TARGETS Raven_CppClient LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+
+
+

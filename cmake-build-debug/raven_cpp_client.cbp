@@ -17,21 +17,21 @@
 					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="rebuild_cache">
-				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug"/>
-				<Option type="4"/>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
 			<Target title="install/strip">
 				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
 					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 install/strip"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install">
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 install"/>
 					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
 					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
@@ -47,16 +47,6 @@
 					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="edit_cache">
-				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug"/>
-				<Option type="4"/>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
 			<Target title="list_install_components">
 				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug"/>
 				<Option type="4"/>
@@ -67,11 +57,21 @@
 					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="install">
+			<Target title="edit_cache">
 				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 install"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
 					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
 					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
