@@ -7,7 +7,7 @@ add_subdirectory(Raven.CppClient)
 add_subdirectory(Tryouts)
 add_subdirectory(Raven.CppClient.Tests)
 
-if(NOT DEFINED CMAKE_INSTALL_PREFIX)
+if(NOT CMAKE_INSTALL_PREFIX EQUAL "")
 
     set(CMAKE_INSTALL_PREFIX ~/RavenDBCppClient CACHE PATH "destination directory" FORCE)
 
