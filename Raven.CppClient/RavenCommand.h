@@ -59,7 +59,9 @@ namespace ravendb::client::http
 		static void add_change_vector_if_not_null(impl::CurlHandlesHolder::CurlReference& curl_ref,
 			const std::optional<std::string>& change_vector);
 
-		//expects (const) std::string* in stream
+		//Container is any ContiguousContainer , like std::string or std::vector, with size() and data() member functions
+        //expects (const) Container* in stream
+		template <typename Container>
 		static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
 
 	public:
@@ -169,12 +171,13 @@ namespace ravendb::client::http
 	}
 
 	template <typename TResult>
+    template <typename Container>
 	size_t RavenCommand<TResult>::read_callback(void* ptr, size_t size, size_t nmemb, void* stream)
 	{
-		const auto str = static_cast<const std::string*>(stream);
-		const size_t length = str->length();
+		const auto p_container = static_cast<const Container*>(stream);
+		const std::size_t length = p_container->size();
 
-		std::memcpy(ptr, str->data(), length);
+		std::memcpy(ptr, p_container->data(), length);
 		return length;
 	}
 

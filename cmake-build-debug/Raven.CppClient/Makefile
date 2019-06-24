@@ -68,6 +68,18 @@ install/strip/fast: preinstall/fast
 	/opt/clion-2019.1.4/bin/cmake/linux/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
 .PHONY : install/strip/fast
 
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/opt/clion-2019.1.4/bin/cmake/linux/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/opt/clion-2019.1.4/bin/cmake/linux/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
@@ -112,18 +124,6 @@ list_install_components/fast: list_install_components
 
 .PHONY : list_install_components/fast
 
-# Special rule for the target install/local
-install/local: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/opt/clion-2019.1.4/bin/cmake/linux/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local
-
-# Special rule for the target install/local
-install/local/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/opt/clion-2019.1.4/bin/cmake/linux/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local/fast
-
 # The main all target
 all: cmake_check_build_system
 	cd /home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_progress_start /home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/CMakeFiles /home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/CMakeFiles/progress.marks
@@ -155,6 +155,21 @@ preinstall/fast:
 depend:
 	cd /home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
+
+# Convenience name for target.
+Raven.CppClient/CMakeFiles/PrepareOneHeader.dir/rule:
+	cd /home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 Raven.CppClient/CMakeFiles/PrepareOneHeader.dir/rule
+.PHONY : Raven.CppClient/CMakeFiles/PrepareOneHeader.dir/rule
+
+# Convenience name for target.
+PrepareOneHeader: Raven.CppClient/CMakeFiles/PrepareOneHeader.dir/rule
+
+.PHONY : PrepareOneHeader
+
+# fast build rule for target.
+PrepareOneHeader/fast:
+	cd /home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug && $(MAKE) -f Raven.CppClient/CMakeFiles/PrepareOneHeader.dir/build.make Raven.CppClient/CMakeFiles/PrepareOneHeader.dir/build
+.PHONY : PrepareOneHeader/fast
 
 # Convenience name for target.
 Raven.CppClient/CMakeFiles/Raven_CppClient.dir/rule:
@@ -5004,6 +5019,36 @@ json_utils.cpp.s:
 	cd /home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug && $(MAKE) -f Raven.CppClient/CMakeFiles/Raven_CppClient.dir/build.make Raven.CppClient/CMakeFiles/Raven_CppClient.dir/json_utils.cpp.s
 .PHONY : json_utils.cpp.s
 
+prepare_one_header.o: prepare_one_header.cpp.o
+
+.PHONY : prepare_one_header.o
+
+# target to build an object file
+prepare_one_header.cpp.o:
+	cd /home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug && $(MAKE) -f Raven.CppClient/CMakeFiles/PrepareOneHeader.dir/build.make Raven.CppClient/CMakeFiles/PrepareOneHeader.dir/prepare_one_header.cpp.o
+	cd /home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug && $(MAKE) -f Raven.CppClient/CMakeFiles/Raven_CppClient.dir/build.make Raven.CppClient/CMakeFiles/Raven_CppClient.dir/prepare_one_header.cpp.o
+.PHONY : prepare_one_header.cpp.o
+
+prepare_one_header.i: prepare_one_header.cpp.i
+
+.PHONY : prepare_one_header.i
+
+# target to preprocess a source file
+prepare_one_header.cpp.i:
+	cd /home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug && $(MAKE) -f Raven.CppClient/CMakeFiles/PrepareOneHeader.dir/build.make Raven.CppClient/CMakeFiles/PrepareOneHeader.dir/prepare_one_header.cpp.i
+	cd /home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug && $(MAKE) -f Raven.CppClient/CMakeFiles/Raven_CppClient.dir/build.make Raven.CppClient/CMakeFiles/Raven_CppClient.dir/prepare_one_header.cpp.i
+.PHONY : prepare_one_header.cpp.i
+
+prepare_one_header.s: prepare_one_header.cpp.s
+
+.PHONY : prepare_one_header.s
+
+# target to generate assembly for a file
+prepare_one_header.cpp.s:
+	cd /home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug && $(MAKE) -f Raven.CppClient/CMakeFiles/PrepareOneHeader.dir/build.make Raven.CppClient/CMakeFiles/PrepareOneHeader.dir/prepare_one_header.cpp.s
+	cd /home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug && $(MAKE) -f Raven.CppClient/CMakeFiles/Raven_CppClient.dir/build.make Raven.CppClient/CMakeFiles/Raven_CppClient.dir/prepare_one_header.cpp.s
+.PHONY : prepare_one_header.cpp.s
+
 stdafx.o: stdafx.cpp.o
 
 .PHONY : stdafx.o
@@ -5065,12 +5110,13 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... install/strip"
+	@echo "... install/local"
+	@echo "... PrepareOneHeader"
 	@echo "... edit_cache"
 	@echo "... install"
 	@echo "... rebuild_cache"
 	@echo "... Raven_CppClient"
 	@echo "... list_install_components"
-	@echo "... install/local"
 	@echo "... AbstractGenericIndexCreationTask.o"
 	@echo "... AbstractGenericIndexCreationTask.i"
 	@echo "... AbstractGenericIndexCreationTask.s"
@@ -5608,6 +5654,9 @@ help:
 	@echo "... json_utils.o"
 	@echo "... json_utils.i"
 	@echo "... json_utils.s"
+	@echo "... prepare_one_header.o"
+	@echo "... prepare_one_header.i"
+	@echo "... prepare_one_header.s"
 	@echo "... stdafx.o"
 	@echo "... stdafx.i"
 	@echo "... stdafx.s"

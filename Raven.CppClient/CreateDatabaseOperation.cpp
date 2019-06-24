@@ -51,7 +51,7 @@ namespace ravendb::client::serverwide::operations
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 		curl_easy_setopt(curl, CURLOPT_PUT, 1L);
 		curl_ref.method = constants::methods::PUT;
-		curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
+		curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback<std::string>);
 		curl_easy_setopt(curl, CURLOPT_READDATA, &_database_document);
 		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_database_document.length());
 		curl_ref.headers.emplace(constants::headers::CONTENT_TYPE, "application/json");

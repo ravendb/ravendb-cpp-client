@@ -77,6 +77,52 @@
 					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
+			<Target title="PrepareOneHeader">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/PrepareOneHeader" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 PrepareOneHeader"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PrepareOneHeader/fast">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/PrepareOneHeader" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 PrepareOneHeader/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
 			<Target title="Raven_CppClient">
 				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/libRaven_CppClient.so" prefix_auto="0" extension_auto="0"/>
 				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient"/>
@@ -1713,10 +1759,11 @@
 		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/json_utils.h">
 			<Option target="Raven_CppClient"/>
 		</Unit>
-		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/raven_cpp_client.h">
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/prepare_one_header.cpp">
+			<Option target="PrepareOneHeader"/>
 			<Option target="Raven_CppClient"/>
 		</Unit>
-		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ravendb.h">
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/raven_cpp_client.h">
 			<Option target="Raven_CppClient"/>
 		</Unit>
 		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/stdafx.cpp">

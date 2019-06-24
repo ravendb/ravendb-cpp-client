@@ -80,7 +80,7 @@ namespace ravendb::client::documents::operations::indexes
 				curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 				curl_easy_setopt(curl, CURLOPT_PUT, 1L);
 				curl_ref.method = constants::methods::PUT;
-				curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
+				curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback<std::string>);
 				curl_easy_setopt(curl, CURLOPT_READDATA, &_index_to_add_str);
 				curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_index_to_add_str.length());
 

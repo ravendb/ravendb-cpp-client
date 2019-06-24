@@ -15,6 +15,6 @@ int main()
     auto name = ravendb::client::impl::utils::GetCppClassName::get_simple_class_name(
             typeid(ravendb::client::exceptions::AllTopologyNodesDownException));
 
-    std::cout << (name == "AllTopologyNodesDownException" ? "Test2 = OK" : "Something wrong...") << std::endl;
+    std::cout << (name == "AllTopologyNodesDownException" ? "Test2 - OK" : "Something wrong...") << std::endl;
 }
 

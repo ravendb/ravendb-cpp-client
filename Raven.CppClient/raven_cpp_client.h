@@ -56,7 +56,6 @@
 #include "PatchOperation.h"
 #include "EntityToJson.h"
 #include "TimeoutException.h"
-#include "ravendb.h"
 #include "FieldTermVector.h"
 #include "MetadataAsDictionary.h"
 #include "PutClientConfigurationOperation.h"

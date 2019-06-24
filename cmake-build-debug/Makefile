@@ -157,6 +157,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named PrepareOneHeader
+
+# Build rule for target.
+PrepareOneHeader: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 PrepareOneHeader
+.PHONY : PrepareOneHeader
+
+# fast build rule for target.
+PrepareOneHeader/fast:
+	$(MAKE) -f Raven.CppClient/CMakeFiles/PrepareOneHeader.dir/build.make Raven.CppClient/CMakeFiles/PrepareOneHeader.dir/build
+.PHONY : PrepareOneHeader/fast
+
+#=============================================================================
 # Target rules for targets named Raven_CppClient
 
 # Build rule for target.
@@ -181,6 +194,7 @@ help:
 	@echo "... list_install_components"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... PrepareOneHeader"
 	@echo "... Raven_CppClient"
 .PHONY : help
 

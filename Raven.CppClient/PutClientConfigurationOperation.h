@@ -43,7 +43,7 @@ namespace ravendb::client::documents::operations::configuration
 				std::ostringstream path_builder;
 				path_builder << node->url << "/databases/" << node->database << "/admin/configuration/client";
 
-				curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
+				curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback<std::string>);
 				curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 				curl_easy_setopt(curl, CURLOPT_READDATA, &_configuration_json_str);
 				curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_configuration_json_str.length());

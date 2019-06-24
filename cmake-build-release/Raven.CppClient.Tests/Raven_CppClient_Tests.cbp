@@ -5,7 +5,7 @@
 		<Option title="Raven_CppClient_Tests"/>
 		<Option makefile_is_custom="1"/>
 		<Option compiler="gcc"/>
-		<Option virtualFolders="CMake Files\;CMake Files\Raven.CppClient\;CMake Files\Raven.CppClient.Tests\;CMake Files\Raven.CppClient.Tests\lib\;CMake Files\Raven.CppClient.Tests\lib\googletest\;CMake Files\Raven.CppClient.Tests\lib\googletest\googletest\;CMake Files\Raven.CppClient.Tests\lib\googletest\googletest\cmake\;CMake Files\Tryouts\;"/>
+		<Option virtualFolders="CMake Files\;CMake Files\Raven.CppClient\;CMake Files\Raven.CppClient.Tests\;CMake Files\Raven.CppClient.Tests\lib\;CMake Files\Raven.CppClient.Tests\lib\googletest\;CMake Files\Raven.CppClient.Tests\lib\googletest\googletest\;CMake Files\Raven.CppClient.Tests\lib\googletest\googletest\cmake\;"/>
 		<Build>
 			<Target title="all">
 				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-release/Raven.CppClient.Tests"/>
@@ -405,9 +405,6 @@
 		</Unit>
 		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/cmake/internal_utils.cmake">
 			<Option virtualFolder="CMake Files\Raven.CppClient.Tests\lib\googletest\googletest\cmake\"/>
-		</Unit>
-		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Tryouts/CMakeLists.txt">
-			<Option virtualFolder="CMake Files\Tryouts\"/>
 		</Unit>
 	</Project>
 </CodeBlocks_project_file>
