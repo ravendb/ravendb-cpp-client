@@ -11,12 +11,13 @@ if(BUILD_TRYOUTS)
     add_subdirectory(Tryouts)
 endif()
 
-#choose if building tests
+add_subdirectory(Raven.CppClient.Tests)
+#[[choose if building tests
 option(BUILD_TESTS "Build the Tests" OFF)
 if(BUILD_TESTS)
     add_subdirectory(Raven.CppClient.Tests)
 endif()
-
+]]
 #set user home directory for installation
 if(WINN32)
     set(USER_HOME_DIRECTORY $ENV{HOMEPATH})

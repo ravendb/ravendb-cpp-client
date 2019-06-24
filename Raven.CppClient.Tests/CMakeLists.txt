@@ -6,10 +6,10 @@ add_subdirectory(lib/googletest/googletest)
 FILE(GLOB RAVEN_TEST_HEADERS ./*.h)
 FILE(GLOB RAVEN_TEST_CPPS ./*.cpp)
 
-#add_executable(Raven_CppClient_Tests ${RAVEN_TEST_HEADERS} ${RAVEN_TEST_CPPS})
+add_executable(Raven_CppClient_Tests ${RAVEN_TEST_HEADERS} ${RAVEN_TEST_CPPS})
 
 
-add_executable(Raven_CppClient_Tests
+#[[add_executable(Raven_CppClient_Tests
         Address.h
         AdvancedPatchingTests.cpp
         Arr.h
@@ -77,7 +77,7 @@ add_executable(Raven_CppClient_Tests
         TrackEntityTest.cpp
         User.h
         WhatChangedTest.cpp)
-
+]]
 target_include_directories(Raven_CppClient_Tests PRIVATE . .. ../Raven.CppClient ../external)
 
 target_link_libraries(Raven_CppClient_Tests Raven_CppClient)
