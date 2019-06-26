@@ -43,7 +43,7 @@ namespace ravendb::client::documents::operations
 		{
 		private:
 			const std::shared_ptr<conventions::DocumentConventions> _conventions;//TODO currently unused, check later
-			const std::string _query_to_update_str;
+			std::istringstream _query_to_update_stream;
 			const queries::QueryOperationOptions _options;
 
 		public:
@@ -52,7 +52,7 @@ namespace ravendb::client::documents::operations
 			PatchByQueryCommand(std::shared_ptr<conventions::DocumentConventions> conventions,
 				const queries::IndexQuery& query_to_update, queries::QueryOperationOptions options)
 				: _conventions(conventions)
-				, _query_to_update_str([&]
+				, _query_to_update_stream([&]
 			{
 				return nlohmann::json{ {"Query",query_to_update} }.dump();
 			}())
@@ -77,15 +77,18 @@ namespace ravendb::client::documents::operations
 				{
 					path_builder << "&staleTimeout=" << impl::utils::MillisToTimeSpanConverter(*_options.stale_timeout);
 				}
-				
-				curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback<std::string>);
-				curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-				curl_easy_setopt(curl, CURLOPT_READDATA, &_query_to_update_str);
-				curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_query_to_update_str.length());
-				curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
-				curl_ref.method = constants::methods::PATCH;
 
-				curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE, "application/json");
+				curl_ref.method = constants::methods::PATCH;
+				curl_ref.headers.insert_or_assign("Transfer-Encoding", "chunked");
+				curl_ref.headers.emplace(constants::headers::CONTENT_TYPE, "application/json");
+
+				curl_easy_setopt(curl, CURLOPT_READFUNCTION, stream_read_callback);
+				curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+				curl_easy_setopt(curl, CURLOPT_READDATA, &_query_to_update_stream);
+				curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
+
+				_query_to_update_stream.clear();
+				_query_to_update_stream.seekg(0);
 
 				url_ref.emplace(path_builder.str());
 			}

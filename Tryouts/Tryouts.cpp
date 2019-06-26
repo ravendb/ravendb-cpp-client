@@ -15,6 +15,12 @@
 #include "RavenException.h"
 #include "ConnectionDetailsHolder.h"
 #include "MaintenanceOperationExecutor.h"
+#include "PutAttachmentOperation.h"
+#include "CompareStringsEqualIgnoreCase.h"
+#include "HeadAttachmentCommand.h"
+#include "DeleteAttachmentOperation.h"
+#include "PutDocumentCommand.h"
+#include "GetAttachmentOperation.h"
 
 namespace
 {
@@ -69,11 +75,11 @@ int main()
 
 	REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
 
-//	auto store = documents::DocumentStore::create();
-//	store->set_urls({ "http://127.0.0.1:8080" });
-	//store->set_before_perform(set_for_fiddler);
-//	store->set_database("Test");
-	//store->initialize();
+	auto store = documents::DocumentStore::create();
+	store->set_urls({ "http://127.0.0.1:8080" });
+	store->set_before_perform(set_for_fiddler);
+	store->set_database("Test111");
+	store->initialize();
 
 	//auto conventions = documents::conventions::DocumentConventions::create();
 	//conventions->set_read_balance_behavior(http::ReadBalanceBehavior::NONE);
@@ -126,4 +132,53 @@ int main()
 
 
 
+
+	auto file1 = std::make_shared<std::vector<std::byte>>(impl::utils::transform_string_to_bytes_array("Alexander"));
+
+	std::stringstream str{};
+	for (auto i = 0; i < 20000; ++i)
+	{
+		str << "ab Cd$" << 123;
+	}
+
+	nlohmann::json j;
+	j["str"] = str.str();
+
+	auto cmd = documents::commands::PutDocumentCommand("user2/1", {}, j);
+	store->get_request_executor()->execute(cmd);
+
+
+	auto cmd1 = documents::operations::attachments::PutAttachmentOperation("users/1", "file1.txt",
+		str, "ASCII").get_command(
+			store, store->get_conventions(), store->get_request_executor()->get_cache());
+
+	store->get_request_executor()->execute(*cmd1);
+
+	//auto command = documents::operations::attachments::PutAttachmentOperation("users/1", "file1.txt",
+	//	file1, nullptr, "ASCII").get_command(
+	//		store, store->get_conventions(), store->get_request_executor()->get_cache());
+
+	//store->get_request_executor()->execute(*command);
+
+	auto cmd2 = documents::commands::HeadAttachmentCommand("users/1", "file.txt");
+	store->get_request_executor()->execute(cmd2);
+
+
+	auto cmd3 = documents::operations::attachments::GetAttachmentOperation("users/1", "file1.txt",
+		documents::attachments::AttachmentType::DOCUMENT).get_command(store,
+			store->get_conventions(), store->get_request_executor()->get_cache());
+	store->get_request_executor()->execute(*cmd3);
+
+	std::ostringstream res{};
+
+	res << cmd3->get_result()->get_data().rdbuf();
+
+	std::cout << (res.str() == str.str() ? "----OK----" : "There is a problem ...") << std::endl;
+
+	auto cmd4 = documents::operations::attachments::DeleteAttachmentOperation("users/1", "file1.txt")
+		.get_command(store, store->get_conventions(), store->get_request_executor()->get_cache());
+	store->get_request_executor()->execute(*cmd4);
+
+
+	std::cout << "Bye" << std::endl;
 }

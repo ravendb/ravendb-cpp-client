@@ -32,14 +32,14 @@ namespace ravendb::client::documents::commands
 		url_builder << node->url << "/databases/" << node->database
 			<< "/hilo/return?tag=" << _tag << "&end=" << _end << "&last=" << _last;
 
-		std::string dummy{};
+		std::stringstream dummy{};
+
+		curl_ref.method = constants::methods::PUT;
 
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-		curl_easy_setopt(curl, CURLOPT_PUT, 1L);
-		curl_ref.method = constants::methods::PUT;
 		curl_easy_setopt(curl, CURLOPT_READDATA, &dummy);
-		curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback<std::string>);
-		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)dummy.length());
+		curl_easy_setopt(curl, CURLOPT_READFUNCTION, stream_read_callback);
+		curl_easy_setopt(curl, CURLOPT_INFILESIZE, curl_off_t(0));
 
 		url_ref.emplace(url_builder.str());
 	}

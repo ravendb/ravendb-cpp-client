@@ -203,9 +203,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="configurations">
-      <UniqueIdentifier>{f5a6f89b-6952-4958-ac46-82e28099fa9f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ravendb.client.tests">
       <UniqueIdentifier>{c51acc5f-7362-496b-ae4d-8a61ddf03933}</UniqueIdentifier>
     </Filter>
@@ -278,13 +275,5 @@
     <Filter Include="ravendb.client.tests\test\client\executor">
       <UniqueIdentifier>{27323337-f93a-4846-a074-32aa112bf800}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\secured_re.txt">
-      <Filter>configurations</Filter>
-    </Text>
-    <Text Include="..\unsecured_re.txt">
-      <Filter>configurations</Filter>
-    </Text>
   </ItemGroup>
 </Project>

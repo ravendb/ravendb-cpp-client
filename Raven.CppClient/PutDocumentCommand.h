@@ -9,20 +9,22 @@ namespace ravendb::client::documents::commands
 	private:
 		std::string _id;
 		std::optional<std::string> _change_vector;
-		std::string _document;
+		std::istringstream _document_stream;
 
 	public:
 
 		~PutDocumentCommand() override = default;
 
 		PutDocumentCommand(std::string id, std::optional<std::string> change_vector, nlohmann::json document)
-			: PutDocumentCommand(std::move(id), std::move(change_vector), document.dump())
+			: _id(std::move(id))
+			, _change_vector(std::move(change_vector))
+			, _document_stream(document.dump())
 		{}
 		
 		PutDocumentCommand(std::string id, std::optional<std::string> change_vector, std::string document)
 			: _id(std::move(id))
 			, _change_vector(std::move(change_vector))
-			, _document(std::move(document))
+			, _document_stream(document)
 		{}
 
 		void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
@@ -34,16 +36,18 @@ namespace ravendb::client::documents::commands
 			path_builder << node->url << "/databases/" << node->database
 				<< "/docs?id=" << http::url_encode(curl_ref, _id);
 
-			curl_easy_setopt(curl, CURLOPT_PUT, 1L);
 			curl_ref.method = constants::methods::PUT;
+			curl_ref.headers.insert_or_assign("Transfer-Encoding", "chunked");
+			curl_ref.headers.emplace(constants::headers::CONTENT_TYPE, "application/json");
 
 			curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-			curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback<std::string>);
-			curl_easy_setopt(curl, CURLOPT_READDATA, &_document);
-			curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_document.length());
+			curl_easy_setopt(curl, CURLOPT_READFUNCTION, stream_read_callback);
+			curl_easy_setopt(curl, CURLOPT_READDATA, &_document_stream);
 
-			curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE, "application/json");
 			add_change_vector_if_not_null(curl_ref, _change_vector);
+
+			_document_stream.clear();
+			_document_stream.seekg(0);
 
 			url_ref.emplace(path_builder.str());
 		}

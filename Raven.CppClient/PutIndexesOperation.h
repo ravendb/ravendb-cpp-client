@@ -40,7 +40,7 @@ namespace ravendb::client::documents::operations::indexes
 		{
 		private:
 			const std::vector<nlohmann::json> _index_to_add;
-			const std::string _index_to_add_str;
+			std::istringstream _index_to_add_stream;
 
 		public:
 			~PutIndexesCommand() override = default;
@@ -58,9 +58,9 @@ namespace ravendb::client::documents::operations::indexes
 						nlohmann::json index_json = index;
 						temp_index_to_add.emplace_back(std::move(index_json));
 					}
-					return std::move(temp_index_to_add);
+					return temp_index_to_add;
 				}())
-				, _index_to_add_str([this]
+				, _index_to_add_stream([this]()
 				{
 						nlohmann::json json_to_put;
 						json_to_put.emplace("Indexes",_index_to_add);
@@ -77,14 +77,16 @@ namespace ravendb::client::documents::operations::indexes
 				path_builder << node->url << "/databases/" << node->database
 					<< "/admin/indexes";
 
-				curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-				curl_easy_setopt(curl, CURLOPT_PUT, 1L);
 				curl_ref.method = constants::methods::PUT;
-				curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback<std::string>);
-				curl_easy_setopt(curl, CURLOPT_READDATA, &_index_to_add_str);
-				curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_index_to_add_str.length());
+				curl_ref.headers.insert_or_assign("Transfer-Encoding", "chunked");
+				curl_ref.headers.emplace(constants::headers::CONTENT_TYPE, "application/json");
 
-				curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE, "application/json");
+				curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+				curl_easy_setopt(curl, CURLOPT_READFUNCTION, stream_read_callback);
+				curl_easy_setopt(curl, CURLOPT_READDATA, &_index_to_add_stream);
+
+				_index_to_add_stream.clear();
+				_index_to_add_stream.seekg(0);
 
 				url_ref.emplace(path_builder.str());
 			}

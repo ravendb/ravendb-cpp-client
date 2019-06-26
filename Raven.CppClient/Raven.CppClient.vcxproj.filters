@@ -542,6 +542,15 @@
     <ClCompile Include="HttpCache.cpp">
       <Filter>ravendb.client\http</Filter>
     </ClCompile>
+    <ClCompile Include="AttachmentDetails.cpp">
+      <Filter>ravendb.client\documents\operations\attachments</Filter>
+    </ClCompile>
+    <ClCompile Include="AttachmentName.cpp">
+      <Filter>ravendb.client\documents\operations\attachments</Filter>
+    </ClCompile>
+    <ClCompile Include="AttachmentResult.cpp">
+      <Filter>ravendb.client\documents\operations\attachments</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -612,7 +621,6 @@
     <ClInclude Include="DatabasePromotionStatus.h">
       <Filter>ravendb.client\serverwide\operations</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xxhash_cpp\xxhash\xxhash.hpp" />
     <ClInclude Include="json_utils.h">
       <Filter>ravendb.client\impl</Filter>
     </ClInclude>
@@ -958,7 +966,6 @@
     <ClInclude Include="CurlSListHolder.h">
       <Filter>ravendb.client\impl</Filter>
     </ClInclude>
-    <ClInclude Include="..\json.hpp" />
     <ClInclude Include="MillisToTimespanConverter.h">
       <Filter>ravendb.client\impl</Filter>
     </ClInclude>
@@ -1595,6 +1602,36 @@
     <ClInclude Include="HttpCacheItem.h">
       <Filter>ravendb.client\http</Filter>
     </ClInclude>
+    <ClInclude Include="AttachmentDetails.h">
+      <Filter>ravendb.client\documents\operations\attachments</Filter>
+    </ClInclude>
+    <ClInclude Include="AttachmentName.h">
+      <Filter>ravendb.client\documents\operations\attachments</Filter>
+    </ClInclude>
+    <ClInclude Include="AttachmentType.h">
+      <Filter>ravendb.client\documents\operations\attachments</Filter>
+    </ClInclude>
+    <ClInclude Include="AttachmentResult.h">
+      <Filter>ravendb.client\documents\operations\attachments</Filter>
+    </ClInclude>
+    <ClInclude Include="HeadAttachmentCommand.h">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="DeleteAttachmentCommandData.h">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClInclude>
+    <ClInclude Include="PutAttachmentCommandData.h">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClInclude>
+    <ClInclude Include="PutAttachmentOperation.h">
+      <Filter>ravendb.client\documents\operations\attachments</Filter>
+    </ClInclude>
+    <ClInclude Include="DeleteAttachmentOperation.h">
+      <Filter>ravendb.client\documents\operations\attachments</Filter>
+    </ClInclude>
+    <ClInclude Include="GetAttachmentOperation.h">
+      <Filter>ravendb.client\documents\operations\attachments</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">
@@ -1752,6 +1789,9 @@
     </Filter>
     <Filter Include="ravendb.client\serverwide\operations\configuration">
       <UniqueIdentifier>{7ca84c34-f20d-41fa-b275-41fd8e7efe98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client\documents\operations\attachments">
+      <UniqueIdentifier>{d0185c47-e4dc-4153-994a-6a3e67161cac}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

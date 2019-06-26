@@ -40,7 +40,7 @@ namespace ravendb::client::serverwide::operations
 		class DeleteDatabaseCommand : public http::RavenCommand<DeleteDatabaseResult>
 		{
 		private:
-			std::string _parameters_str{};
+			std::istringstream _parameters_stream;
 
 		public:
 			~DeleteDatabaseCommand() override;

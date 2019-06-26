@@ -383,7 +383,7 @@ namespace ravendb::client::exceptions
 	{
 		try
 		{
-			const auto& json = response.output;
+			const auto& json = response.output.str();
 			auto json_node = nlohmann::json::parse(json);
 			auto schema = json_node.get<ExceptionSchema>();
 

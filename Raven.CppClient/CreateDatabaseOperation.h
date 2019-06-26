@@ -40,7 +40,7 @@ namespace ravendb::client::serverwide::operations
 			const DatabaseRecord _database_record;
 			const int32_t _replication_factor;
 			const std::string _database_name;
-			const std::string _database_document;
+			std::istringstream _database_document_stream;
 
 		public:
 			~CreateDatabaseCommand() override;

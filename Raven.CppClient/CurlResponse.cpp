@@ -21,7 +21,7 @@ namespace
 	size_t push_headers(char *buffer, size_t size, size_t nitems, void *userdata)
 	{
 		const auto real_size = size * nitems;
-		auto headers = static_cast<std::unordered_map<std::string, std::string>*>(userdata);
+		auto& headers = *static_cast<std::unordered_map<std::string, std::string>*>(userdata);
 		auto delimiter = static_cast<char*>(memchr(buffer, ':', real_size));
 		if (delimiter == nullptr) // doesn't have ':', probably not a header line, not interesting
 			return real_size;
@@ -35,19 +35,27 @@ namespace
 		left_trim(header_val);
 		right_trim(header_val);
 
-		headers->emplace(header_name, header_val);
+		headers.emplace(header_name, header_val);
 
 		return real_size;
 	}
 
-	size_t push_to_buffer(char* contents, size_t size, size_t nmemb, void* output_buffer_void)
+	size_t push_to_stream(char* contents, size_t size, size_t nmemb, void* output_stream_ptr)
 	{
-		auto real_size = size * nmemb;
-		auto& output_buffer = *static_cast<std::string*>(output_buffer_void);
-		output_buffer.append(contents, real_size);
-		return real_size;
-	}
+		const auto real_size = size * nmemb;
+		auto& output_stream = *static_cast<std::ostringstream*>(output_stream_ptr);
+		auto prev_pros = output_stream.tellp();
 
+		output_stream.write(contents, real_size);
+
+		auto curr_pos = output_stream.tellp();
+		if(curr_pos == std::ostringstream::pos_type(-1))
+		{
+			return 0;
+		}
+
+		return size_t(curr_pos - prev_pros);
+	}
 }
 
 namespace ravendb::client::impl
@@ -55,6 +63,74 @@ namespace ravendb::client::impl
 	CurlResponse CurlResponse::run_curl_perform(const CurlHandlesHolder::CurlReference& curl_ref)
 	{
 		return CurlResponse(curl_ref);
+	}
+
+	CurlResponse::CurlResponse(const CurlResponse& other)\
+		: _valid(other._valid)
+		, output(other.output.str())
+		, headers(other.headers)
+		, status_code(other.status_code)
+		, perform_result(other.perform_result)
+	{
+#ifdef _MSC_VER
+		strcpy_s(_error_buffer, other._error_buffer);
+#else
+		std::strcpy(_error_buffer, other._error_buffer);
+#endif
+		error = _error_buffer;
+	}
+
+	CurlResponse::CurlResponse(CurlResponse&& other) noexcept
+		: _valid(other._valid)
+		, output(std::move(other.output))
+		, headers(std::move(other.headers))
+		, status_code(other.status_code)
+		, perform_result(other.perform_result)
+	{
+#ifdef _MSC_VER
+		strcpy_s(_error_buffer, other._error_buffer);
+#else
+		std::strcpy(_error_buffer, other._error_buffer);
+#endif
+		error = _error_buffer;
+	}
+
+	CurlResponse& CurlResponse::operator=(const CurlResponse& other)
+	{
+		if (this == &other)
+			return *this;
+
+		_valid = other._valid;
+#ifdef _MSC_VER
+		strcpy_s(_error_buffer, other._error_buffer);
+#else
+		std::strcpy(_error_buffer, other._error_buffer);
+#endif
+		error = _error_buffer;
+		output << other.output.rdbuf();
+		headers = other.headers;
+		status_code = other.status_code;
+
+		return *this;
+	}
+
+	CurlResponse& CurlResponse::operator=(CurlResponse&& other) noexcept
+	{
+		if (this == &other)
+			return *this;
+
+		_valid = other._valid;
+#ifdef _MSC_VER
+		strcpy_s(_error_buffer, other._error_buffer);
+#else
+		std::strcpy(_error_buffer, other._error_buffer);
+#endif
+		error = _error_buffer;
+		output = std::move(other.output);
+		headers = std::move(other.headers);
+		status_code = other.status_code;
+
+		return *this;
 	}
 
 	bool CurlResponse::is_valid() const
@@ -76,7 +152,7 @@ namespace ravendb::client::impl
 		curl_easy_setopt(curl, CURLOPT_URL, curl_ref.url.c_str());
 		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers_list.get());
 		curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, _error_buffer);
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, push_to_buffer);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, push_to_stream);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &output);
 		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, push_headers);
 		curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headers);

@@ -70,7 +70,7 @@ namespace ravendb::client::documents::operations
 			const std::shared_ptr<conventions::DocumentConventions> _conventions;//TODO currently unused, check later
 			const std::string _id;
 			const std::optional<std::string> _change_vector;
-			const std::string _patch_str;
+			std::istringstream _patch_stream;
 			const bool _skip_patch_if_change_vector_mismatch;
 			const bool _return_debug_information;
 			const bool _test;
@@ -91,7 +91,7 @@ namespace ravendb::client::documents::operations
 					return std::move(id);
 			}())
 				, _change_vector(std::move(change_vector))
-				, _patch_str([&]
+				, _patch_stream([&]
 			{
 				if (impl::utils::is_blank(patch.script))
 					throw std::invalid_argument("Patch script must have a non empty value");
@@ -122,7 +122,7 @@ namespace ravendb::client::documents::operations
 				std::ostringstream path_builder;
 
 				path_builder << node->url << "/databases/" << node->database <<
-					"/docs?id=" << http::url_encode(curl, _id);
+					"/docs?id=" << http::url_encode(curl_ref, _id);
 				if(_skip_patch_if_change_vector_mismatch)
 				{
 					path_builder << "&skipPatchIfChangeVectorMismatch=true";
@@ -136,15 +136,19 @@ namespace ravendb::client::documents::operations
 					path_builder << "&test=true";
 				}
 
-				curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback<std::string>);
-				curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-				curl_easy_setopt(curl, CURLOPT_READDATA, &_patch_str);
-				curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_patch_str.length());
-				curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
 				curl_ref.method = constants::methods::PATCH;
+				curl_ref.headers.insert_or_assign("Transfer-Encoding", "chunked");
+				curl_ref.headers.emplace(constants::headers::CONTENT_TYPE, "application/json");
 
-				curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE, "application/json");
+				curl_easy_setopt(curl, CURLOPT_READFUNCTION, stream_read_callback);
+				curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+				curl_easy_setopt(curl, CURLOPT_READDATA, &_patch_stream);
+				curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PATCH");
+				
 				add_change_vector_if_not_null(curl_ref, _change_vector);
+
+				_patch_stream.clear();
+				_patch_stream.seekg(0);
 
 				url_ref.emplace(path_builder.str());
 			}

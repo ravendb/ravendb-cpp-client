@@ -27,7 +27,7 @@ namespace ravendb::client::serverwide::operations::configuration
 		class PutServerWideClientConfigurationCommand : public http::VoidRavenCommand
 		{
 		private:
-			const std::string _configuration_document;
+			std::istringstream _configuration_document_stream;
 
 		public:
 			~PutServerWideClientConfigurationCommand() override;

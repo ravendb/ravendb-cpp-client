@@ -6,18 +6,17 @@ set(CMAKE_CXX_STANDARD 17)
 add_subdirectory(Raven.CppClient)
 
 #choose if buildings tryouts
-option(BUILD_TRYOUTS "Build the tryouts" OFF)
+option(BUILD_TRYOUTS "Build the Tryouts" OFF)
 if(BUILD_TRYOUTS)
     add_subdirectory(Tryouts)
 endif()
 
-add_subdirectory(Raven.CppClient.Tests)
-#[[choose if building tests
+choose if building tests
 option(BUILD_TESTS "Build the Tests" OFF)
 if(BUILD_TESTS)
     add_subdirectory(Raven.CppClient.Tests)
 endif()
-]]
+
 #set user home directory for installation
 if(WINN32)
     set(USER_HOME_DIRECTORY $ENV{HOMEPATH})
@@ -27,7 +26,7 @@ if(UNIX)
 endif()
 
 
-if(NOT CMAKE_INSTALL_PREFIX EQUAL "")
+if(CMAKE_INSTALL_PREFIX EQUAL "")
     set(CMAKE_INSTALL_PREFIX ${USER_HOME_DIRECTORY}/RavenDBCppClient CACHE PATH "destination directory" FORCE)
 endif()
 

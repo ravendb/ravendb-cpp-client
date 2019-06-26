@@ -76,7 +76,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <CodeAnalysisRuleSet>NativeMinimumRules.ruleset</CodeAnalysisRuleSet>
-    <IncludePath>C:\work\raven-cpp-client;$(IncludePath)</IncludePath>
+    <IncludePath>C:\work\raven-cpp-client\external;C:\work\raven-cpp-client;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -151,8 +151,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\xxhash_cpp\xxhash\xxhash.hpp" />
-    <ClInclude Include="..\json.hpp" />
     <ClInclude Include="AbstractDocumentQuery.h" />
     <ClInclude Include="AbstractGenericIndexCreationTask.h" />
     <ClInclude Include="AbstractIndexCreationTask.h" />
@@ -160,7 +158,11 @@
     <ClInclude Include="AbstractJavaScriptIndexCreationTask.h" />
     <ClInclude Include="AbstractMultiMapIndexCreationTask.h" />
     <ClInclude Include="AllTopologyNodesDownException.h" />
+    <ClInclude Include="AttachmentDetails.h" />
     <ClInclude Include="AttachmentDoesNotExistException.h" />
+    <ClInclude Include="AttachmentName.h" />
+    <ClInclude Include="AttachmentResult.h" />
+    <ClInclude Include="AttachmentType.h" />
     <ClInclude Include="AuthenticationException.h" />
     <ClInclude Include="AuthorizationException.h" />
     <ClInclude Include="AutoSpatialMethodType.h" />
@@ -207,6 +209,8 @@
     <ClInclude Include="DatabaseSchemaErrorException.h" />
     <ClInclude Include="DatabaseStatistics.h" />
     <ClInclude Include="DeclareToken.h" />
+    <ClInclude Include="DeleteAttachmentCommandData.h" />
+    <ClInclude Include="DeleteAttachmentOperation.h" />
     <ClInclude Include="DistinctToken.h" />
     <ClInclude Include="DocumentConflictException.h" />
     <ClInclude Include="DocumentDoesNotExistException.h" />
@@ -225,6 +229,7 @@
     <ClInclude Include="FacetToken.h" />
     <ClInclude Include="FromToken.h" />
     <ClInclude Include="GenerateEntityIdOnTheClient.h" />
+    <ClInclude Include="GetAttachmentOperation.h" />
     <ClInclude Include="GetClientConfigurationOperation.h" />
     <ClInclude Include="GetClusterTopologyCommand.h" />
     <ClInclude Include="GetCollectionStatisticsOperation.h" />
@@ -243,6 +248,7 @@
     <ClInclude Include="GroupByMethod.h" />
     <ClInclude Include="GroupBySumToken.h" />
     <ClInclude Include="GroupByToken.h" />
+    <ClInclude Include="HeadAttachmentCommand.h" />
     <ClInclude Include="HeadDocumentCommand.h" />
     <ClInclude Include="HighlightingOptions.h" />
     <ClInclude Include="Highlightings.h" />
@@ -403,6 +409,8 @@
     <ClInclude Include="PatchResult.h" />
     <ClInclude Include="PatchStatus.h" />
     <ClInclude Include="PointField.h" />
+    <ClInclude Include="PutAttachmentCommandData.h" />
+    <ClInclude Include="PutAttachmentOperation.h" />
     <ClInclude Include="PutClientConfigurationOperation.h" />
     <ClInclude Include="PutCommandData.h" />
     <ClInclude Include="PutIndexesOperation.h" />
@@ -512,7 +520,10 @@
     <ClCompile Include="AbstractMultiMapIndexCreationTask.cpp" />
     <ClCompile Include="AdvancedSessionOperations.cpp" />
     <ClCompile Include="AllTopologyNodesDownException.cpp" />
+    <ClCompile Include="AttachmentDetails.cpp" />
     <ClCompile Include="AttachmentDoesNotExistException.cpp" />
+    <ClCompile Include="AttachmentName.cpp" />
+    <ClCompile Include="AttachmentResult.cpp" />
     <ClCompile Include="AuthenticationException.cpp" />
     <ClCompile Include="AuthorizationException.cpp" />
     <ClCompile Include="BadRequestException.cpp" />

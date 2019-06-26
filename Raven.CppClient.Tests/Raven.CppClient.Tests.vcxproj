@@ -35,7 +35,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Microsoft-googletest-v140-windesktop-msvcstl-static-rt-dyn-Disable-gtest_main>
     </Microsoft-googletest-v140-windesktop-msvcstl-static-rt-dyn-Disable-gtest_main>
-    <IncludePath>C:\work\raven-cpp-client;$(IncludePath)</IncludePath>
+    <IncludePath>C:\work\raven-cpp-client\external;C:\work\raven-cpp-client;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="Address.h" />
@@ -120,10 +120,6 @@
     <ProjectReference Include="..\Raven.CppClient\Raven.CppClient.vcxproj">
       <Project>{5e8f32b4-d233-4c66-97fb-380b1b52ff64}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\secured_re.txt" />
-    <Text Include="..\unsecured_re.txt" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

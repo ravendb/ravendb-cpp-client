@@ -33,7 +33,7 @@ namespace ravendb::client::documents::operations
 		{
 		private:
 			const std::shared_ptr<conventions::DocumentConventions> _conventions;//TODO currently unused, check later
-			const std::string _query_to_delete_str;
+			std::istringstream _query_to_delete_stream;
 			const std::optional<queries::QueryOperationOptions> _options;
 
 		public:
@@ -42,7 +42,7 @@ namespace ravendb::client::documents::operations
 			DeleteByQueryCommand(std::shared_ptr<conventions::DocumentConventions> conventions,
 				const queries::IndexQuery& query_to_delete, std::optional<queries::QueryOperationOptions> options)
 				: _conventions(conventions)
-				, _query_to_delete_str(nlohmann::json(query_to_delete).dump())
+				, _query_to_delete_stream(nlohmann::json(query_to_delete).dump())
 				, _options(std::move(options))
 			{}
 
@@ -75,15 +75,18 @@ namespace ravendb::client::documents::operations
 				{
 					path_builder << "&staleTimeout=" << impl::utils::MillisToTimeSpanConverter(*_options->stale_timeout);
 				}
-				
-				curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback<std::string>);
-				curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-				curl_easy_setopt(curl, CURLOPT_READDATA, &_query_to_delete_str);
-				curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_query_to_delete_str.length());
-				curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-				curl_ref.method = constants::methods::DELETE_;
 
-				curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE, "application/json");
+				curl_ref.method = constants::methods::DELETE_;
+				curl_ref.headers.insert_or_assign("Transfer-Encoding", "chunked");
+				curl_ref.headers.emplace(constants::headers::CONTENT_TYPE, "application/json");
+
+				curl_easy_setopt(curl, CURLOPT_READFUNCTION, stream_read_callback);
+				curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+				curl_easy_setopt(curl, CURLOPT_READDATA, &_query_to_delete_stream);
+				curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+
+				_query_to_delete_stream.clear();
+				_query_to_delete_stream.seekg(0);
 
 				url_ref.emplace(path_builder.str());
 			}
