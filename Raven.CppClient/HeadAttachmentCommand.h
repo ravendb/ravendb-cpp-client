@@ -1,8 +1,7 @@
 #pragma once
 #include "RavenCommand.h"
 #include "HttpExtensions.h"
-#include "Raven.CppClient.Tests/Order.h"
-#include "Raven.CppClient.Tests/test_utils.h"
+#include "utils.h"
 
 namespace ravendb::client::documents::commands
 {

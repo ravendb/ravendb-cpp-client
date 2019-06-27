@@ -1,5 +1,8 @@
 #pragma once
 #include "CompareStringsLessThanIgnoreCase.h"
+#include <map>
+#include <vector>
+#include "json.hpp"
 
 namespace ravendb::client
 {

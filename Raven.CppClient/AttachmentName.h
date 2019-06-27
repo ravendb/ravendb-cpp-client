@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "json.hpp"
 
 namespace ravendb::client::documents::operations::attachments
 {

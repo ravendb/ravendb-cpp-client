@@ -551,6 +551,12 @@
     <ClCompile Include="AttachmentResult.cpp">
       <Filter>ravendb.client\documents\operations\attachments</Filter>
     </ClCompile>
+    <ClCompile Include="DocumentSessionAttachments.cpp">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClCompile>
+    <ClCompile Include="DocumentSessionAttachmentsBase.cpp">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -1631,6 +1637,27 @@
     </ClInclude>
     <ClInclude Include="GetAttachmentOperation.h">
       <Filter>ravendb.client\documents\operations\attachments</Filter>
+    </ClInclude>
+    <ClInclude Include="IAttachmentsSessionOperationsBase.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="IAttachmentsSessionOperations.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="DocumentSessionAttachments.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="AdvancedSessionExtentionBase.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="DocumentSessionAttachmentsBase.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveAttachmentCommandData.h">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClInclude>
+    <ClInclude Include="CopyAttachmentCommandData.h">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,8 @@
 #pragma once
 #include <curl/curl.h>
+#include <string>
+#include <memory>
+#include <ctime>
 
 namespace ravendb::client::impl::utils
 {

@@ -6,21 +6,36 @@
 
 namespace ravendb::client::documents::commands::batches
 {
-	class PutAttachmentCommandData : public CommandDataBase
+	class MoveAttachmentCommandData : public CommandDataBase
 	{
 	private:
-		std::istream& _data;
-		const std::optional<std::string> _content_type;
+		const std::string destination_id;
+		const std::string destination_name;
 
 	public:
-		PutAttachmentCommandData(std::string document_id, std::string name, std::istream& data, 
-			std::optional<std::string> content_type, std::string change_vector = "")
+		MoveAttachmentCommandData(std::string document_id, std::string name,
+			std::string destination_document_id, std::string destination_name, 
+			std::string change_vector = "")
 			: CommandDataBase(std::move(document_id), std::move(name), std::move(change_vector),
-				CommandType::ATTACHMENT_PUT)
-			, _data(data)
-			, _content_type(std::move(content_type))
+				CommandType::ATTACHMENT_MOVE)
+			, destination_id([&]
 		{
-			if(impl::utils::is_blank(get_id()))
+			if (impl::utils::is_blank(destination_id))
+			{
+				throw std::invalid_argument("'destination_id' cannot be empty");
+			}
+			return std::move(destination_id);
+		}())
+			, destination_name([&]
+		{
+			if (impl::utils::is_blank(destination_name))
+			{
+				throw std::invalid_argument("'destination_name' cannot be empty");
+			}
+			return std::move(destination_name);
+		}())
+		{
+			if (impl::utils::is_blank(get_id()))
 			{
 				throw std::invalid_argument("'document_id' cannot be empty");
 			}
@@ -30,6 +45,15 @@ namespace ravendb::client::documents::commands::batches
 			}
 		}
 
+		const std::string& get_destination_id() const
+		{
+			return destination_id;
+		}
+		const std::string& get_destination_name() const
+		{
+			return destination_name;
+		}
+
 		nlohmann::json serialize() const override
 		{
 			using ravendb::client::impl::utils::json_utils::set_val_to_json;
@@ -37,7 +61,8 @@ namespace ravendb::client::documents::commands::batches
 
 			set_val_to_json(j, "Id", get_id());
 			set_val_to_json(j, "Name", get_name());
-			set_val_to_json(j, "ContentType", _content_type);
+			set_val_to_json(j, "DestinationId", get_destination_id());
+			set_val_to_json(j, "DestinationName", get_destination_name());
 			if (!impl::utils::is_blank(get_change_vector()))
 			{
 				set_val_to_json(j, "ChangeVector", get_change_vector());

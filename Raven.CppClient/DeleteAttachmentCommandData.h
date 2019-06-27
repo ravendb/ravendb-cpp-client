@@ -1,14 +1,15 @@
 #pragma once
 #include "CommandDataBase.h"
 #include "json_utils.h"
-#include "Raven.CppClient.Tests/Order.h"
+#include "utils.h"
+#include "json.hpp"
 
 namespace ravendb::client::documents::commands::batches
 {
 	class DeleteAttachmentCommandData : public CommandDataBase
 	{
 	public:
-		DeleteAttachmentCommandData(std::string document_id, std::string name, std::string change_vector)
+		DeleteAttachmentCommandData(std::string document_id, std::string name, std::string change_vector = "")
 			: CommandDataBase(std::move(document_id), std::move(name), std::move(change_vector),
 				CommandType::ATTACHMENT_DELETE)
 		{
@@ -37,7 +38,7 @@ namespace ravendb::client::documents::commands::batches
 			{
 				set_val_to_json(j, "ChangeVector", nullptr);
 			}
-			set_val_to_json(j, "Type", "AttachmentDELETE");
+			set_val_to_json(j, "Type", get_type());
 
 			return j;
 		}

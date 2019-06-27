@@ -11,7 +11,7 @@ if(BUILD_TRYOUTS)
     add_subdirectory(Tryouts)
 endif()
 
-choose if building tests
+#choose if building tests
 option(BUILD_TESTS "Build the Tests" OFF)
 if(BUILD_TESTS)
     add_subdirectory(Raven.CppClient.Tests)

@@ -157,6 +157,7 @@
     <ClInclude Include="AbstractIndexCreationTaskBase.h" />
     <ClInclude Include="AbstractJavaScriptIndexCreationTask.h" />
     <ClInclude Include="AbstractMultiMapIndexCreationTask.h" />
+    <ClInclude Include="AdvancedSessionExtentionBase.h" />
     <ClInclude Include="AllTopologyNodesDownException.h" />
     <ClInclude Include="AttachmentDetails.h" />
     <ClInclude Include="AttachmentDoesNotExistException.h" />
@@ -195,6 +196,7 @@
     <ClInclude Include="CompilationException.h" />
     <ClInclude Include="ConcurrencyException.h" />
     <ClInclude Include="ConflictException.h" />
+    <ClInclude Include="CopyAttachmentCommandData.h" />
     <ClInclude Include="CounterIncludesToken.h" />
     <ClInclude Include="CounterOverflowException.h" />
     <ClInclude Include="CurlException.h" />
@@ -215,6 +217,8 @@
     <ClInclude Include="DocumentConflictException.h" />
     <ClInclude Include="DocumentDoesNotExistException.h" />
     <ClInclude Include="DocumentQueryHelper.h" />
+    <ClInclude Include="DocumentSessionAttachments.h" />
+    <ClInclude Include="DocumentSessionAttachmentsBase.h" />
     <ClInclude Include="DynamicSpatialField.h" />
     <ClInclude Include="EntityIdHelper.h" />
     <ClInclude Include="DocumentQuery.h" />
@@ -260,6 +264,8 @@
     <ClInclude Include="HttpStatus.h" />
     <ClInclude Include="EagerSessionOperations.h" />
     <ClInclude Include="HttpExtensions.h" />
+    <ClInclude Include="IAttachmentsSessionOperations.h" />
+    <ClInclude Include="IAttachmentsSessionOperationsBase.h" />
     <ClInclude Include="IDisposalNotification.h" />
     <ClInclude Include="IDocumentQuery.h" />
     <ClInclude Include="IDocumentQueryBase.h" />
@@ -384,6 +390,7 @@
     <ClInclude Include="MoreLikeThisUsingAnyDocument.h" />
     <ClInclude Include="MoreLikeThisUsingDocument.h" />
     <ClInclude Include="MoreLikeThisUsingDocumentForDocumentQuery.h" />
+    <ClInclude Include="MoveAttachmentCommandData.h" />
     <ClInclude Include="MultiDatabaseHiLoIdGenerator.h" />
     <ClInclude Include="MultiGetCommand.h" />
     <ClInclude Include="MultiGetOperation.h" />
@@ -559,6 +566,8 @@
     <ClCompile Include="DatabaseSchemaErrorException.cpp" />
     <ClCompile Include="DocumentConflictException.cpp" />
     <ClCompile Include="DocumentDoesNotExistException.cpp" />
+    <ClCompile Include="DocumentSessionAttachments.cpp" />
+    <ClCompile Include="DocumentSessionAttachmentsBase.cpp" />
     <ClCompile Include="EventArgs.cpp" />
     <ClCompile Include="ExceptionDispatcher.cpp" />
     <ClCompile Include="ExplanationOptions.cpp" />

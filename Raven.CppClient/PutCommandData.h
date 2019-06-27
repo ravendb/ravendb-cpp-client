@@ -30,7 +30,7 @@ namespace ravendb::client::documents::commands::batches
 				set_val_to_json(j, "ChangeVector", nullptr);
 			}
 			set_val_to_json(j, "Document", _document);
-			set_val_to_json(j, "Type", "PUT");
+			set_val_to_json(j, "Type", get_type());
 			
 			return j;
 		}

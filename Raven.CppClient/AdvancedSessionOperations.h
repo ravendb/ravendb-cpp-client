@@ -48,6 +48,8 @@ namespace ravendb::client::documents::session
 
 		operations::lazy::EagerSessionOperations eagerly();
 
+		std::shared_ptr<IAttachmentsSessionOperations> attachments();
+
 		int32_t get_max_number_of_requests_per_session() const;
 
 		void set_max_number_of_requests_per_session(int32_t max_requests);

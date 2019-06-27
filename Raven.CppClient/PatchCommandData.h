@@ -46,7 +46,7 @@ namespace ravendb::client::documents::commands::batches
 				set_val_to_json(j, "ChangeVector", nullptr);
 			}
 			set_val_to_json(j, "Patch", _patch);
-			set_val_to_json(j, "Type", "PATCH");
+			set_val_to_json(j, "Type", get_type());
 			set_val_to_json(j, "PatchIfMissing", _patch_if_missing, false);
 
 			if(return_document)

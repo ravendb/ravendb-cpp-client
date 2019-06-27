@@ -20,6 +20,11 @@ namespace ravendb::client::documents::session
 		return operations::lazy::EagerSessionOperations(_session_impl);
 	}
 
+	std::shared_ptr<IAttachmentsSessionOperations> AdvancedSessionOperations::attachments()
+	{
+		return _session_impl->attachments();
+	}
+
 	std::shared_ptr<IDocumentStore> AdvancedSessionOperations::get_document_store() const
 	{
 		return _session_impl->get_document_store();

@@ -21,6 +21,7 @@
 #include "DeleteAttachmentOperation.h"
 #include "PutDocumentCommand.h"
 #include "GetAttachmentOperation.h"
+#include "AdvancedSessionOperations.h"
 
 namespace
 {
@@ -130,23 +131,11 @@ int main()
 //	}
 
 
-
-
-
-	auto file1 = std::make_shared<std::vector<std::byte>>(impl::utils::transform_string_to_bytes_array("Alexander"));
-
 	std::stringstream str{};
 	for (auto i = 0; i < 20000; ++i)
 	{
 		str << "ab Cd$" << 123;
 	}
-
-	nlohmann::json j;
-	j["str"] = str.str();
-
-	auto cmd = documents::commands::PutDocumentCommand("user2/1", {}, j);
-	store->get_request_executor()->execute(cmd);
-
 
 	auto cmd1 = documents::operations::attachments::PutAttachmentOperation("users/1", "file1.txt",
 		str, "ASCII").get_command(
@@ -175,9 +164,17 @@ int main()
 
 	std::cout << (res.str() == str.str() ? "----OK----" : "There is a problem ...") << std::endl;
 
-	auto cmd4 = documents::operations::attachments::DeleteAttachmentOperation("users/1", "file1.txt")
-		.get_command(store, store->get_conventions(), store->get_request_executor()->get_cache());
-	store->get_request_executor()->execute(*cmd4);
+	//auto cmd4 = documents::operations::attachments::DeleteAttachmentOperation("users/1", "file1.txt")
+	//	.get_command(store, store->get_conventions(), store->get_request_executor()->get_cache());
+	//store->get_request_executor()->execute(*cmd4);
+
+
+	auto session = store->open_session();
+	auto user = session.load<tests::infrastructure::entities::User>("users/1");
+
+	auto has_attachment = session.advanced().attachments()->exists("users/1", "file1.txt");
+
+	auto att = session.advanced().attachments()->get("users/1", "file1.txt");
 
 
 	std::cout << "Bye" << std::endl;
