@@ -16,9 +16,11 @@ namespace ravendb::client::documents::session
 
 		virtual bool exists(const std::string& document_id, const std::string& name) = 0;
 
-		virtual std::shared_ptr<documents::operations::attachments::AttachmentResult> get(const std::string& document_id, const std::string& name) = 0;
+		virtual std::shared_ptr<documents::operations::attachments::AttachmentResult> get_attachment(
+			const std::string& document_id, const std::string& name) = 0;
 
-		virtual std::shared_ptr<documents::operations::attachments::AttachmentResult> get(std::shared_ptr<void> entity, const std::string& name) = 0;
+		virtual std::shared_ptr<documents::operations::attachments::AttachmentResult> get_attachment(
+			std::shared_ptr<void> entity, const std::string& name) = 0;
 
 		//TODO
 		//virtual operations::attachments::AttachmentResult get_revision(const std::string& document_id, const std::string& name) = 0;

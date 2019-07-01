@@ -84,8 +84,11 @@ namespace ravendb::client::documents::operations::indexes
 
 				curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE, "application/json");
 
-				curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPPOST, 1);
-				curl_easy_setopt(curl_ref.get(), CURLOPT_COPYPOSTFIELDS, _parameters_json.dump().c_str());
+				auto&& json_str = _parameters_json.dump();
+
+				curl_easy_setopt(curl_ref.get(), CURLOPT_POST, 1);
+				curl_easy_setopt(curl_ref.get(), CURLOPT_POSTFIELDSIZE_LARGE, curl_off_t(json_str.size()));
+				curl_easy_setopt(curl_ref.get(), CURLOPT_COPYPOSTFIELDS, json_str.c_str());
 				curl_ref.method = constants::methods::POST;
 
 				url_ref.emplace(path_builder.str());

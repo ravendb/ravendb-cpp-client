@@ -64,13 +64,15 @@ namespace ravendb::client::documents::commands
 			}
 			else // ids too big, must use POST
 			{
-				curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPPOST, 1);
+				curl_easy_setopt(curl_ref.get(), CURLOPT_POST, 1);
 				curl_ref.method = constants::methods::POST;
 
 				uint64_t hash = calculate_docs_ids_hash(unique_ids.cbegin(), unique_ids.cend());
 				path_builder << "&loadHash=" << hash;				
 
 				auto&& json_str = nlohmann::json({ {"Ids", unique_ids} }).dump();
+
+				curl_easy_setopt(curl_ref.get(), CURLOPT_POSTFIELDSIZE_LARGE, curl_off_t(json_str.size()));
 				curl_easy_setopt(curl_ref.get(), CURLOPT_COPYPOSTFIELDS, json_str.c_str());
 
 				curl_ref.headers.emplace(constants::headers::CONTENT_TYPE, "application/json");

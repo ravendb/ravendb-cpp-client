@@ -312,7 +312,7 @@ namespace ravendb::client::documents::session
 
 		SaveChangesData prepare_for_save_changes();
 
-		void validateClusterTransaction(const SaveChangesData& result) const;
+		void validate_cluster_transaction(const SaveChangesData& result) const;
 
 		std::unordered_map<std::string, std::vector<DocumentsChanges>> what_changed();
 

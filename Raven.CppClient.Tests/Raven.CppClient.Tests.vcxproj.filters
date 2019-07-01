@@ -129,6 +129,9 @@
     <ClCompile Include="RequestExecutorTest.cpp">
       <Filter>ravendb.client.tests\test\client\executor</Filter>
     </ClCompile>
+    <ClCompile Include="AttachmentsSessionTest.cpp">
+      <Filter>ravendb.client.tests\test\client\attachments</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -274,6 +277,9 @@
     </Filter>
     <Filter Include="ravendb.client.tests\test\client\executor">
       <UniqueIdentifier>{27323337-f93a-4846-a074-32aa112bf800}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\client\attachments">
+      <UniqueIdentifier>{21e4969e-9228-4d37-a3f1-4740b38068d0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

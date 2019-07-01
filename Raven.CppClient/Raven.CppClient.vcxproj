@@ -417,6 +417,7 @@
     <ClInclude Include="PatchStatus.h" />
     <ClInclude Include="PointField.h" />
     <ClInclude Include="PutAttachmentCommandData.h" />
+    <ClInclude Include="PutAttachmentCommandHelper.h" />
     <ClInclude Include="PutAttachmentOperation.h" />
     <ClInclude Include="PutClientConfigurationOperation.h" />
     <ClInclude Include="PutCommandData.h" />

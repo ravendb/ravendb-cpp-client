@@ -1659,6 +1659,9 @@
     <ClInclude Include="CopyAttachmentCommandData.h">
       <Filter>ravendb.client\documents\commands\batches</Filter>
     </ClInclude>
+    <ClInclude Include="PutAttachmentCommandHelper.h">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">

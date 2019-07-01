@@ -15,8 +15,8 @@ namespace ravendb::client::tests::infrastructure
 		std::ostringstream urlBuilder;
 		urlBuilder << node->url << "/databases/" << node->database << "/studio/sample-data";
 
-		curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPPOST, 1);
-		curl_easy_setopt(curl_ref.get(), CURLOPT_COPYPOSTFIELDS, "");
+		curl_easy_setopt(curl_ref.get(), CURLOPT_POST, 1);
+		curl_easy_setopt(curl_ref.get(), CURLOPT_POSTFIELDSIZE, 0);
 		curl_ref.method = constants::methods::POST;
 
 		url_ref.emplace(urlBuilder.str());

@@ -88,7 +88,7 @@ namespace ravendb::client::documents::operations::attachments
 					curl_ref.headers.insert_or_assign("Transfer-Encoding", "chunked");
 					curl_ref.headers.emplace(constants::headers::CONTENT_TYPE, "application/json");
 
-					curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPPOST, 1);
+					curl_easy_setopt(curl_ref.get(), CURLOPT_POST, 1);
 
 					nlohmann::json entity = nlohmann::json::object_t();
 					impl::utils::json_utils::set_val_to_json(entity, "Type", "Revision");
@@ -96,6 +96,7 @@ namespace ravendb::client::documents::operations::attachments
 
 					auto&& json_str = entity.dump();
 
+					curl_easy_setopt(curl_ref.get(), CURLOPT_POSTFIELDSIZE_LARGE, curl_off_t(json_str.size()));
 					curl_easy_setopt(curl_ref.get(), CURLOPT_COPYPOSTFIELDS, json_str.c_str());
 				}
 				else

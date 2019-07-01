@@ -174,7 +174,7 @@ int main()
 
 	auto has_attachment = session.advanced().attachments()->exists("users/1", "file1.txt");
 
-	auto att = session.advanced().attachments()->get("users/1", "file1.txt");
+	auto att = session.advanced().attachments()->get_attachment("users/1", "file1.txt");
 
 
 	std::cout << "Bye" << std::endl;

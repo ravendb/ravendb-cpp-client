@@ -6,18 +6,33 @@
 #include "BatchCommandResult.h"
 #include "CommandDataBase.h"
 #include "BatchOptions.h"
+#include "PutAttachmentCommandData.h"
+#include "PutAttachmentCommandHelper.h"
+#include "CurlSListHolder.h"
 
 namespace ravendb::client::documents::commands::batches
 {
 	class BatchCommand : public http::RavenCommand<json::BatchCommandResult>
 	{
 	private:
+		class CurlMimeDeleter
+		{
+		public:
+			void operator()(curl_mime* mime) const
+			{
+				curl_mime_free(mime);
+			}
+		};
+
+	private:
 		const std::shared_ptr<conventions::DocumentConventions> _conventions;
 		const std::vector<std::shared_ptr<CommandDataBase>> _commands;
-		//TODO add std::unordered_set<std::istream> _attachment_streams{};
+		std::vector<std::shared_ptr<PutAttachmentCommandData>> _put_attachments_commands{};
 		const std::optional<BatchOptions> _options;
 		const session::TransactionMode _mode;
 		const std::string _request_entity_str;
+		std::unique_ptr<curl_mime, CurlMimeDeleter> _curl_multipart{};
+		impl::CurlSListHolder _mime_part_headers{};
 
 		void append_options(std::ostringstream& path_builder) const
 		{
@@ -67,7 +82,6 @@ namespace ravendb::client::documents::commands::batches
 			std::optional<BatchOptions> options = {}, session::TransactionMode mode = session::TransactionMode::SINGLE_NODE)
 			: _conventions(conventions)
 			, _commands(commands.cbegin(), commands.cend())
-			//, _attachment_streams()
 			, _options(std::move(options))
 			, _mode(mode)
 			, _request_entity_str([this]()
@@ -87,7 +101,26 @@ namespace ravendb::client::documents::commands::batches
 			return request_entity.dump();
 		}())
 		{
-			//TODO populate _attachment_streams
+			std::unordered_set<std::istream*> attachment_streams{};
+
+			for(const auto& command : _commands)
+			{
+				if(auto command_data = std::dynamic_pointer_cast<PutAttachmentCommandData>(command))
+				{
+					bool is_stream_unique{};
+					std::tie(std::ignore, is_stream_unique) = attachment_streams.insert(&command_data->get_stream());
+					if(is_stream_unique)
+					{
+						_put_attachments_commands.emplace_back(command_data);
+					}
+					else
+					{
+						PutAttachmentCommandHelper::throw_stream_was_already_used();
+					}
+				}
+			}
+
+			_mime_part_headers.append("Command-Type: AttachmentStream");
 		}
 
 		
@@ -100,12 +133,46 @@ namespace ravendb::client::documents::commands::batches
 			path_builder << node->url << "/databases/" << node->database << "/bulk_docs";
 			append_options(path_builder);
 
-			curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE,"application/json");
-			curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
+			curl_ref.headers.insert_or_assign("Transfer-Encoding", "chunked");
 			curl_ref.method = constants::methods::POST;
-			curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, _request_entity_str.c_str());
 
-			url = path_builder.str();
+			if (_put_attachments_commands.empty())
+			{
+				curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE, "application/json");
+
+				curl_easy_setopt(curl, CURLOPT_POST, 1L);
+				curl_easy_setopt(curl_ref.get(), CURLOPT_POSTFIELDSIZE_LARGE, curl_off_t(_request_entity_str.size()));
+				curl_easy_setopt(curl_ref.get(), CURLOPT_POSTFIELDS, _request_entity_str.c_str());
+			}
+			else
+			{
+				_curl_multipart.reset(curl_mime_init(curl));
+
+				//setting main json(serialized commands)
+				auto part = curl_mime_addpart(_curl_multipart.get());
+				curl_mime_name(part, "main");
+				curl_mime_type(part, "application/json");
+				curl_mime_data(part, _request_entity_str.c_str(), _request_entity_str.size());
+
+				//setting attachments
+				size_t counter{0};
+				for(auto& command : _put_attachments_commands)
+				{
+					part = curl_mime_addpart(_curl_multipart.get());
+					std::ostringstream name{};
+					name << "attachment" << ++counter;
+					curl_mime_name(part, name.str().c_str());
+					if (const auto& content_type =/*assignment*/ command->get_content_type())
+					{
+						curl_mime_type(part, content_type->c_str());
+					}
+					curl_mime_headers(part, _mime_part_headers.get(), 0);
+					curl_mime_data_cb(part, 0, stream_read_callback, nullptr, nullptr, &command->get_stream());
+				}
+				curl_easy_setopt(curl, CURLOPT_MIMEPOST, _curl_multipart.get());
+			}
+
+			url.emplace(path_builder.str());
 		}
 
 		void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override

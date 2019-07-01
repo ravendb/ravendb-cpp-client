@@ -30,6 +30,16 @@ namespace ravendb::client::documents::commands::batches
 			}
 		}
 
+		std::istream& get_stream() const
+		{
+			return _data;
+		}
+
+		const std::optional<std::string>& get_content_type() const
+		{
+			return _content_type;
+		}
+
 		nlohmann::json serialize() const override
 		{
 			using ravendb::client::impl::utils::json_utils::set_val_to_json;

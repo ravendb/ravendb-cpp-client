@@ -13,27 +13,33 @@ namespace ravendb::client::documents::session::operations
 {
 	std::optional<commands::batches::BatchCommand> BatchOperation::create_request()
 	{
-		auto result = _session.lock()->prepare_for_save_changes();
+		auto session = _session.lock();
+		auto result = session->prepare_for_save_changes();
+		//TODO
+		//_onSuccessfulRequest = result.getOnSuccess();
 		_session_commands_count = result.session_commands.size();
 		result.session_commands.insert(result.session_commands.end(),
 			result.deferred_commands.cbegin(), result.deferred_commands.cend());
 
-		//TODO _session.validate_cluster_transaction(result);
+		session->validate_cluster_transaction(result);
+
 		_all_commands_count = result.session_commands.size();
 		if (_all_commands_count == 0)
 		{
 			return {};
 		}
 
-		_session.lock()->increment_request_count();
+		session->increment_request_count();
 		_entities = result.entities;
 
-		return std::optional<commands::batches::BatchCommand>(std::in_place, _session.lock()->get_conventions(),
-			result.session_commands, result.options, _session.lock()->get_transaction_mode());
+		return std::optional<commands::batches::BatchCommand>(std::in_place, session->get_conventions(),
+			result.session_commands, result.options, session->get_transaction_mode());
 	}
 
 	void BatchOperation::set_result(const json::BatchCommandResult& result)
 	{
+		auto session = _session.lock();
+
 		static const auto get_command_type = [](const nlohmann::json::object_t& batch_result)
 		{
 			auto type_it = batch_result.find("Type");
@@ -49,12 +55,12 @@ namespace ravendb::client::documents::session::operations
 			throw_on_empty_results();
 		}
 
-		if (_session.lock()->get_transaction_mode() == TransactionMode::CLUSTER_WIDE &&
+		if (session->get_transaction_mode() == TransactionMode::CLUSTER_WIDE &&
 			result.transaction_index && result.transaction_index.value() <= 0)
 		{
 			throw exceptions::ClientVersionMismatchException("Cluster transaction was send to a node that is not supporting it. "
 				"So it was executed ONLY on the requested node on " + 
-				_session.lock()->get_request_executor()->get_url().value_or(""));
+				session->get_request_executor()->get_url().value_or(""));
 		}
 
 		if (result.results.size() < _session_commands_count)
@@ -116,19 +122,16 @@ namespace ravendb::client::documents::session::operations
 				handle_patch(batch_result);
 				break;
 			case commands::batches::CommandType::ATTACHMENT_PUT:
-				//TODO handle_attachment_put(batch_result);
+				handle_attachment_put(batch_result);
 				break;
 			case commands::batches::CommandType::ATTACHMENT_DELETE:
-				//TODO handle_attachment_delete(batch_result);
-				throw std::runtime_error("not implemented");
+				handle_attachment_delete(batch_result);
 				break;
 			case commands::batches::CommandType::ATTACHMENT_MOVE:
-				//TODO handle_attachment_move(batch_result);
-				throw std::runtime_error("not implemented");
+				handle_attachment_move(batch_result);
 				break;
 			case commands::batches::CommandType::ATTACHMENT_COPY:
-				//TODO handle_attachment_copy(batch_result);
-				throw std::runtime_error("not implemented");
+				handle_attachment_copy(batch_result);
 				break;
 			case commands::batches::CommandType::COMPARE_EXCHANGE_PUT:
 			case commands::batches::CommandType::COMPARE_EXCHANGE_DELETE:
@@ -147,15 +150,117 @@ namespace ravendb::client::documents::session::operations
 		finalize_result();
 	}
 
+	void BatchOperation::handle_attachment_put(const nlohmann::json& batch_result)
+	{
+		handle_attachment_put_internal(batch_result, commands::batches::CommandType::ATTACHMENT_PUT,
+			"Id", "Name");
+	}
+
+	void BatchOperation::handle_attachment_put_internal(const nlohmann::json& batch_result,
+		commands::batches::CommandType type, const std::string& id_field_name, const std::string& attachment_name_field_name)
+	{
+		auto&& id = get_string_field(batch_result, type, id_field_name);
+
+		std::shared_ptr<DocumentInfo> session_document_info{};
+		auto session = _session.lock();
+		if(auto it = session->_documents_by_id.find(id);
+			it != session->_documents_by_id.end())
+		{
+			session_document_info = it->second;
+		}
+		else
+		{
+			return;
+		}
+
+		auto document_info = get_or_add_modifications(id, session_document_info, false);
+		auto& attachments = document_info->metadata[constants::documents::metadata::ATTACHMENTS];
+
+		nlohmann::json dynamic_node = nlohmann::json::object();
+
+		using ravendb::client::impl::utils::json_utils::set_val_to_json;
+
+		set_val_to_json(dynamic_node, "ChangeVector", get_string_field(batch_result, type, "ChangeVector"));
+		set_val_to_json(dynamic_node, "ContentType", get_string_field(batch_result, type, "ContentType"));
+		set_val_to_json(dynamic_node, "Hash", get_string_field(batch_result, type, "Hash"));
+		set_val_to_json(dynamic_node, "Name", get_string_field(batch_result, type, "Name"));
+		set_val_to_json(dynamic_node, "Size", get_long_field(batch_result, type, "Size"));
+
+		attachments.push_back(std::move(dynamic_node));
+	}
+
+	void BatchOperation::handle_attachment_delete(const nlohmann::json& batch_result)
+	{
+		handle_attachment_delete_internal(batch_result, commands::batches::CommandType::ATTACHMENT_DELETE,
+			constants::documents::metadata::ID, "Name");
+	}
+
+	void BatchOperation::handle_attachment_delete_internal(const nlohmann::json& batch_result,
+		commands::batches::CommandType type, const std::string& id_field_name,
+		const std::string& attachment_name_field_name)
+	{
+		auto&& id = get_string_field(batch_result, type, id_field_name);
+
+		std::shared_ptr<DocumentInfo> session_document_info{};
+		auto session = _session.lock();
+		if (auto it = session->_documents_by_id.find(id);
+			it != session->_documents_by_id.end())
+		{
+			session_document_info = it->second;
+		}
+		else
+		{
+			return;
+		}
+
+		auto document_info = get_or_add_modifications(id, session_document_info, false);
+
+		if(auto it = document_info->metadata.find(constants::documents::metadata::ATTACHMENTS);
+			it == document_info->metadata.end() || it->is_null() || it->empty() )
+		{
+			return;
+		}
+
+		auto& attachments_json = document_info->metadata.at(constants::documents::metadata::ATTACHMENTS);
+		auto&& name = get_string_field(batch_result, type, attachment_name_field_name);
+
+		nlohmann::json new_attachments_json = nlohmann::json::array();
+
+		for(const auto& attachment : attachments_json)
+		{
+			if(name == get_string_field(attachment, type, "Name"))
+			{
+				continue;
+			}
+			new_attachments_json.push_back(attachment);
+		}
+		attachments_json = std::move(new_attachments_json);
+	}
+
+	void BatchOperation::handle_attachment_move(const nlohmann::json& batch_result)
+	{
+		handle_attachment_delete_internal(batch_result, commands::batches::CommandType::ATTACHMENT_MOVE,
+			"Id", "Name");
+		handle_attachment_put_internal(batch_result, commands::batches::CommandType::ATTACHMENT_MOVE,
+			"DestinationId", "DestinationName");
+	}
+
+	void BatchOperation::handle_attachment_copy(const nlohmann::json& batch_result)
+	{
+		handle_attachment_put_internal(batch_result, commands::batches::CommandType::ATTACHMENT_COPY,
+			"Id", "Name");
+	}
+
 	void BatchOperation::handle_put(size_t index, const nlohmann::json& batch_result, bool is_deferred)
 	{
+		auto session = _session.lock();
 		std::shared_ptr<void> entity{};
 		std::shared_ptr<DocumentInfo> doc_info{};
 		if (!is_deferred)
 		{
 			entity = _entities.at(index);
-			if (const auto doc_info_it = _session.lock()->_documents_by_entity.find(entity);
-				doc_info_it == _session.lock()->_documents_by_entity.end())
+			if (const auto doc_info_it = session->_documents_by_entity.find(entity);
+				doc_info_it == session->_documents_by_entity.end())
 			{
 				return;
 			}
@@ -172,8 +277,8 @@ namespace ravendb::client::documents::session::operations
 
 		if (is_deferred)
 		{
-			const auto session_document_info_it = _session.lock()->_documents_by_id.find(id);
-			if (session_document_info_it == _session.lock()->_documents_by_id.end())
+			const auto session_document_info_it = session->_documents_by_id.find(id);
+			if (session_document_info_it == session->_documents_by_id.end())
 			{
 				return;
 			}
@@ -196,11 +301,11 @@ namespace ravendb::client::documents::session::operations
 		doc_info->change_vector = change_vector;
 
 		apply_metadata_modifications(id, doc_info);
-		_session.lock()->_documents_by_id.insert_or_assign(doc_info->id, doc_info);
+		session->_documents_by_id.insert_or_assign(doc_info->id, doc_info);
 
 		if (entity && doc_info->stored_type)
 		{
-			_session.lock()->get_generate_entity_id_on_the_client().try_set_identity(*doc_info->stored_type, entity, id);
+			session->get_generate_entity_id_on_the_client().try_set_identity(*doc_info->stored_type, entity, id);
 		}
 
 		//TODO
@@ -210,6 +315,8 @@ namespace ravendb::client::documents::session::operations
 
 	void BatchOperation::handle_patch(const nlohmann::json& batch_result)
 	{
+		auto session = _session.lock();
+
 		documents::operations::PatchStatus status = documents::operations::PatchStatus::UNSET;
 		if(auto patch_status_it = batch_result.find("PatchStatus");
 			patch_status_it == batch_result.end() || patch_status_it->is_null())
@@ -238,8 +345,8 @@ namespace ravendb::client::documents::session::operations
 			auto id = get_string_field(batch_result, commands::batches::CommandType::PUT, "Id");
 			std::shared_ptr<DocumentInfo> document_info{};
 
-			if (auto session_document_info_it = _session.lock()->_documents_by_id.find(id);
-				session_document_info_it == _session.lock()->_documents_by_id.end())
+			if (auto session_document_info_it = session->_documents_by_id.find(id);
+				session_document_info_it == session->_documents_by_id.end())
 			{
 				return;
 			}
@@ -262,7 +369,7 @@ namespace ravendb::client::documents::session::operations
 
 			if (document_info->entity)
 			{
-				_session.lock()->get_entity_to_json().populate_entity(document_info->entity, id, document_info->document,
+				session->get_entity_to_json().populate_entity(document_info->entity, id, document_info->document,
 					document_info->update_from_json);
 			}
 		}
@@ -281,19 +388,21 @@ namespace ravendb::client::documents::session::operations
 
 	void BatchOperation::handle_delete_internal(const nlohmann::json& batch_result, commands::batches::CommandType type)
 	{
+		auto session = _session.lock();
+
 		auto&& id = get_string_field(batch_result, type, "Id");
-		const auto doc_info_it = _session.lock()->_documents_by_id.find(id);
-		if (doc_info_it == _session.lock()->_documents_by_id.end())
+		const auto doc_info_it = session->_documents_by_id.find(id);
+		if (doc_info_it == session->_documents_by_id.end())
 		{
 			return;
 		}
 
 		const auto entity = doc_info_it->second->entity;
-		_session.lock()->_documents_by_id.erase(id);
+		session->_documents_by_id.erase(id);
 		if (entity)
 		{
-			_session.lock()->_deleted_entities.erase(entity);
-			_session.lock()->_deleted_entities.erase(entity);
+			session->_deleted_entities.erase(entity);
+			session->_deleted_entities.erase(entity);
 		}
 	}
 
@@ -344,7 +453,19 @@ namespace ravendb::client::documents::session::operations
 			return field;
 		}
 		throw_missing_field(type, field_name);
-		return {};//shouldn't get here
+		return {};//disabling warning : shouldn't get here
+	}
+
+	int64_t BatchOperation::get_long_field(const nlohmann::json& j, commands::batches::CommandType type,
+		const std::string& field_name)
+	{
+		int64_t field{};
+		if (impl::utils::json_utils::get_val_from_json(j, field_name, field))
+		{
+			return field;
+		}
+		throw_missing_field(type, field_name);
+		return {};//disabling warning : shouldn't get here
 	}
 
 	void BatchOperation::throw_missing_field(commands::batches::CommandType type, const std::string& field_name)

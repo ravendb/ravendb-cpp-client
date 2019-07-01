@@ -84,7 +84,7 @@ namespace ravendb::client::documents::session
 		return command.get_result().operator bool();
 	}
 
-	std::shared_ptr<documents::operations::attachments::AttachmentResult> DocumentSessionAttachments::get(const std::string& document_id,
+	std::shared_ptr<documents::operations::attachments::AttachmentResult> DocumentSessionAttachments::get_attachment(const std::string& document_id,
 		const std::string& name)
 	{
 		auto operation = documents::operations::attachments::GetAttachmentOperation(
@@ -92,7 +92,7 @@ namespace ravendb::client::documents::session
 		return session->get_operations()->send(operation, session_info);
 	}
 
-	std::shared_ptr<documents::operations::attachments::AttachmentResult> DocumentSessionAttachments::get(std::shared_ptr<void> entity,
+	std::shared_ptr<documents::operations::attachments::AttachmentResult> DocumentSessionAttachments::get_attachment(std::shared_ptr<void> entity,
 		const std::string& name)
 	{
 		if(auto it = documents_by_entity.find(entity);
@@ -100,7 +100,7 @@ namespace ravendb::client::documents::session
 		{
 			throw_entity_not_in_session();
 			//just to disable a warning - shouldn't get here...
-			throw std::runtime_error("");
+			throw std::runtime_error("Shouldn't get her -> a bug.");
 		}
 		else
 		{

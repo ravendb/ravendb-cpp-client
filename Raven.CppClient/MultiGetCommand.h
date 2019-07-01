@@ -79,7 +79,7 @@ namespace ravendb::client::documents::commands::multi_get
 
 			_base_url = url_builder.str();
 
-			curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPPOST, 1);
+			curl_easy_setopt(curl_ref.get(), CURLOPT_POST, 1);
 			curl_ref.method = constants::methods::POST;
 
 			nlohmann::json object = nlohmann::json::object();
@@ -121,7 +121,10 @@ namespace ravendb::client::documents::commands::multi_get
 				array.push_back(std::move(temp_object));
 			}
 			set_val_to_json(object, "Requests", std::move(array));
-			curl_easy_setopt(curl_ref.get(), CURLOPT_COPYPOSTFIELDS, object.dump().c_str());
+
+			auto&& json_str = object.dump();
+			curl_easy_setopt(curl_ref.get(), CURLOPT_POSTFIELDSIZE_LARGE, curl_off_t(json_str.size()));
+			curl_easy_setopt(curl_ref.get(), CURLOPT_COPYPOSTFIELDS, json_str.c_str());
 
 			curl_ref.headers.emplace(constants::headers::CONTENT_TYPE, "application/json");
 
