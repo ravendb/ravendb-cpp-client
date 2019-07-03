@@ -174,6 +174,7 @@
     <ClInclude Include="BatchCommandResult.h" />
     <ClInclude Include="BatchOperation.h" />
     <ClInclude Include="BatchOptions.h" />
+    <ClInclude Include="BuildNumber.h" />
     <ClInclude Include="BulkInsertAbortedException.h" />
     <ClInclude Include="BulkInsertProtocolViolationException.h" />
     <ClInclude Include="CertificateDetails.h" />
@@ -234,6 +235,7 @@
     <ClInclude Include="FromToken.h" />
     <ClInclude Include="GenerateEntityIdOnTheClient.h" />
     <ClInclude Include="GetAttachmentOperation.h" />
+    <ClInclude Include="GetBuildNumberOperation.h" />
     <ClInclude Include="GetClientConfigurationOperation.h" />
     <ClInclude Include="GetClusterTopologyCommand.h" />
     <ClInclude Include="GetCollectionStatisticsOperation.h" />
@@ -242,6 +244,7 @@
     <ClInclude Include="GetRequest.h" />
     <ClInclude Include="GetResponse.h" />
     <ClInclude Include="GetServerWideClientConfigurationOperation.h" />
+    <ClInclude Include="GetServerWideOperationStateOperation.h" />
     <ClInclude Include="GetStatisticsOperation.h" />
     <ClInclude Include="GetTcpInfoCommand.h" />
     <ClInclude Include="GroupBy.h" />
@@ -275,6 +278,7 @@
     <ClInclude Include="IFilterDocumentQueryBase.h" />
     <ClInclude Include="IGroupByDocumentQuery.h" />
     <ClInclude Include="ILazyOperation.h" />
+    <ClInclude Include="IncludeBuilderBase.h" />
     <ClInclude Include="IndexAlreadyExistException.h" />
     <ClInclude Include="IndexCompilationException.h" />
     <ClInclude Include="IndexCreation.h" />
@@ -289,6 +293,7 @@
     <ClInclude Include="Inflector.h" />
     <ClInclude Include="IntersectMarkerToken.h" />
     <ClInclude Include="InvalidQueryException.h" />
+    <ClInclude Include="IQueryIncludeBuilder.h" />
     <ClInclude Include="IRawDocumentQuery.h" />
     <ClInclude Include="IVoidOperation.h" />
     <ClInclude Include="IVoidServerOperation.h" />
@@ -404,6 +409,9 @@
     <ClInclude Include="NoLeaderException.h" />
     <ClInclude Include="NonUniqueObjectException.h" />
     <ClInclude Include="OpenSubclauseToken.h" />
+    <ClInclude Include="Operation.h" />
+    <ClInclude Include="OperationCancelledException.h" />
+    <ClInclude Include="OperationExceptionResult.h" />
     <ClInclude Include="OperationExecutor.h" />
     <ClInclude Include="OperationIdResult.h" />
     <ClInclude Include="OrderByToken.h" />
@@ -432,6 +440,7 @@
     <ClInclude Include="QueryData.h" />
     <ClInclude Include="QueryFieldUtil.h" />
     <ClInclude Include="QueryHighlightings.h" />
+    <ClInclude Include="QueryIncludeBuilder.h" />
     <ClInclude Include="QueryOperation.h" />
     <ClInclude Include="QueryOperationOptions.h" />
     <ClInclude Include="QueryOperator.h" />
@@ -450,6 +459,7 @@
     <ClInclude Include="RavenException.h" />
     <ClInclude Include="RawDocumentQuery.h" />
     <ClInclude Include="ReadBalanceBehavior.h" />
+    <ClInclude Include="ReorderDatabaseMembersOperation.h" />
     <ClInclude Include="ReplicationBatchOptions.h" />
     <ClInclude Include="RequestExecutor.h" />
     <ClInclude Include="ResetIndexOperation.h" />
@@ -463,6 +473,7 @@
     <ClInclude Include="ServerLoadFailureException.h" />
     <ClInclude Include="ServerNode.h" />
     <ClInclude Include="ServerOperationExecutor.h" />
+    <ClInclude Include="ServerWideOperation.h" />
     <ClInclude Include="SessionCreatedEventArgs.h" />
     <ClInclude Include="SessionInfo.h" />
     <ClInclude Include="SessionOperationExecutor.h" />
@@ -536,6 +547,7 @@
     <ClCompile Include="AuthorizationException.cpp" />
     <ClCompile Include="BadRequestException.cpp" />
     <ClCompile Include="BadResponseException.cpp" />
+    <ClCompile Include="BatchCommand.cpp" />
     <ClCompile Include="BatchCommandResult.cpp" />
     <ClCompile Include="BatchOperation.cpp" />
     <ClCompile Include="BulkInsertAbortedException.cpp" />
@@ -575,15 +587,18 @@
     <ClCompile Include="Explanations.cpp" />
     <ClCompile Include="GetClusterTopologyCommand.cpp" />
     <ClCompile Include="GetServerWideClientConfigurationOperation.cpp" />
+    <ClCompile Include="GetServerWideOperationStateOperation.cpp" />
     <ClCompile Include="GetTcpInfoCommand.cpp" />
     <ClCompile Include="GroupBy.cpp" />
     <ClCompile Include="HighlightingOptions.cpp" />
     <ClCompile Include="Highlightings.cpp" />
     <ClCompile Include="HttpCache.cpp" />
     <ClCompile Include="HttpExtensions.cpp" />
+    <ClCompile Include="IncludeBuilderBase.cpp" />
     <ClCompile Include="IndexAlreadyExistException.cpp" />
     <ClCompile Include="IndexCompilationException.cpp" />
     <ClCompile Include="IndexCreationException.cpp" />
+    <ClCompile Include="IndexDefinition.cpp" />
     <ClCompile Include="IndexDeletionException.cpp" />
     <ClCompile Include="IndexDoesNotExistException.cpp" />
     <ClCompile Include="IndexInvalidException.cpp" />
@@ -601,6 +616,8 @@
     <ClCompile Include="NodeStatus.cpp" />
     <ClCompile Include="NoLeaderException.cpp" />
     <ClCompile Include="NonUniqueObjectException.cpp" />
+    <ClCompile Include="Operation.cpp" />
+    <ClCompile Include="OperationExceptionResult.cpp" />
     <ClCompile Include="OperationExecutor.cpp" />
     <ClCompile Include="OrderByToken.cpp" />
     <ClCompile Include="PointField.cpp" />
@@ -608,11 +625,13 @@
     <ClCompile Include="QueryData.cpp" />
     <ClCompile Include="QueryFieldUtil.cpp" />
     <ClCompile Include="QueryHighlightings.cpp" />
+    <ClCompile Include="QueryIncludeBuilder.cpp" />
     <ClCompile Include="QueryOperatorToken.cpp" />
     <ClCompile Include="QueryStatistics.cpp" />
     <ClCompile Include="QueryTimings.cpp" />
     <ClCompile Include="RavenCommand.cpp" />
     <ClCompile Include="RavenException.cpp" />
+    <ClCompile Include="ReorderDatabaseMembersOperation.cpp" />
     <ClCompile Include="RevisionsDisabledException.cpp" />
     <ClCompile Include="RouteNotFoundException.cpp" />
     <ClCompile Include="SecurityException.cpp" />

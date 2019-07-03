@@ -10,7 +10,7 @@
 
 namespace ravendb::client::tests::old_tests
 {
-	namespace adv_patching_tests
+	namespace adv_patching_tests_old
 	{
 		struct CustomType
 		{
@@ -29,7 +29,6 @@ namespace ravendb::client::tests::old_tests
 			set_val_to_json(j, "Owner", ct.owner);
 			set_val_to_json(j, "Comments", ct.comments);
 			set_val_to_json(j, "Date", ct.date);
-			//j["@metadata"]["@collection"] = "CustomTypes";
 		}
 
 		inline void from_json(const nlohmann::json& j, CustomType& ct)
@@ -43,7 +42,7 @@ namespace ravendb::client::tests::old_tests
 		}
 	}
 
-	class AdvancedPatchingTests : public ::testing::Test
+	class AdvancedPatchingTestsOld : public ::testing::Test
 	{
 	protected:
 		inline static std::shared_ptr<definitions::RequestExecutorScope> test_suite_executor{};
@@ -70,9 +69,9 @@ namespace ravendb::client::tests::old_tests
 		}
 	};
 
-	TEST_F(AdvancedPatchingTests, TestWithVariables)
+	TEST_F(AdvancedPatchingTestsOld, TestWithVariables)
 	{
-		using namespace adv_patching_tests;
+		using namespace adv_patching_tests_old;
 		auto custom_type = CustomType{ "CustomTypes/1","me" };
 		auto put_doc_cmd = documents::commands::PutDocumentCommand(custom_type.id, {}, custom_type);
 		test_suite_executor->get().execute(put_doc_cmd);

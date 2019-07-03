@@ -46,6 +46,11 @@
     <ClInclude Include="Contact.h" />
     <ClInclude Include="CreateSampleDataOperation.h" />
     <ClCompile Include="AttachmentsSessionTest.cpp" />
+    <ClCompile Include="BasicDocumentsTest.cpp" />
+    <ClCompile Include="CachingOfDocumentInclude.cpp" />
+    <ClCompile Include="CanGetBuildNumberTest.cpp" />
+    <ClCompile Include="DeleteByQueryTest.cpp" />
+    <ClCompile Include="DetectIndexTypeTest.cpp" />
     <ClCompile Include="ExistsTest.cpp" />
     <ClInclude Include="raven_test_definitions.h" />
     <ClInclude Include="ds_definitions.h" />
@@ -65,7 +70,7 @@
     <ClInclude Include="test_utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AdvancedPatchingTests.cpp" />
+    <ClCompile Include="AdvancedPatchingTestsOld.cpp" />
     <ClCompile Include="BasicQueryTests.cpp" />
     <ClCompile Include="BasicDocumentsSessionTests.cpp" />
     <ClCompile Include="BoundingBoxIndexTest.cpp" />
@@ -74,6 +79,8 @@
     <ClCompile Include="CreateSampleDataOperation.cpp" />
     <ClCompile Include="CrudTest.cpp" />
     <ClCompile Include="DeleteDocumentCommandTest.cpp" />
+    <ClCompile Include="GetClusterTopologyTest.cpp" />
+    <ClCompile Include="GetDatabaseRecordTest.cpp" />
     <ClCompile Include="GetNextOperationIdCommandTest.cpp" />
     <ClCompile Include="GetStatisticsCommandTest.cpp" />
     <ClCompile Include="IndexesFromClientTest.cpp" />
@@ -93,6 +100,7 @@
     <ClCompile Include="LoadTest.cpp" />
     <ClCompile Include="LoadTests.cpp" />
     <ClCompile Include="QueryTest.cpp" />
+    <ClCompile Include="ReorderDatabaseMembersTest.cpp" />
     <ClCompile Include="RequestExecutorTest.cpp" />
     <ClCompile Include="re_definitions.cpp" />
     <ClCompile Include="BasicDocumentCommandsTests.cpp" />

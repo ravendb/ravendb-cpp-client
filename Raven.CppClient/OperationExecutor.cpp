@@ -49,18 +49,16 @@ namespace ravendb::client::documents::operations
 		_request_executor->execute(static_cast<http::VoidRavenCommand&>(*command), session_info);
 	}
 
-	 //TODO wait for Operation implementation
-	//Operation OperationExecutor::send_async(IOperation<OperationIdResult>& operation,
-	//	 const std::optional<session::SessionInfo>& session_info = {})
-	//{
-	//	 http::HttpCache temp_cache{};
-	//	 //TODO use real HttpCache
-	//	 auto command = operation.get_command(_store.lock(), _request_executor->get_conventions(), temp_cache);
-	//	 _request_executor->execute(*command, session_info);
+	std::unique_ptr<Operation> OperationExecutor::send_async(const IOperation<OperationIdResult>& operation,
+		const std::optional<session::SessionInfo>& session_info)
+	{
+		auto command = operation.get_command(_store.lock(), _request_executor->get_conventions(), _request_executor->get_cache());
 
-	//	 return Operation(_request_executor, []() {_store.lock()->changes()}, _request_executor->get_conventions(),
-	//		 command->get_result()->operation_id);
-	//}
+		_request_executor->execute(*command);
+
+		return std::make_unique<Operation>(_request_executor, _request_executor->get_conventions(),
+			command->get_result()->operation_id);
+	}
 
 	PatchStatus OperationExecutor::send(const PatchOperation& operation,
 		const std::optional<session::SessionInfo>& session_info)

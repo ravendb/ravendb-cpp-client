@@ -20,10 +20,12 @@ namespace ravendb::client::serverwide::operations
 	CreateDatabaseOperation::CreateDatabaseCommand::~CreateDatabaseCommand() = default;
 
 	CreateDatabaseOperation::CreateDatabaseCommand::CreateDatabaseCommand(
-		std::shared_ptr<documents::conventions::DocumentConventions> conventions, DatabaseRecord database_record, int32_t replication_factor)
+		std::shared_ptr<documents::conventions::DocumentConventions> conventions,
+		DatabaseRecord database_record, int32_t replication_factor, std::optional<int64_t> etag)
 		: _conventions(conventions)
 		, _database_record(std::move(database_record))
 		, _replication_factor(replication_factor)
+		, _etag(etag)
 		, _database_name([this]()-> const std::string&
 	{
 		if (_database_record.database_name.empty())
@@ -47,6 +49,13 @@ namespace ravendb::client::serverwide::operations
 
 		path_builder << node->url << "/admin/databases?name=" << _database_name
 			<< "&replicationFactor=" << _replication_factor;
+
+		if(_etag)
+		{
+			std::ostringstream etag{};
+			etag << '"' << *_etag << '"';
+			curl_ref.headers.emplace(constants::headers::ETAG, etag.str());
+		}
 
 		curl_ref.method = constants::methods::PUT;
 		curl_ref.headers.insert_or_assign("Transfer-Encoding", "chunked");

@@ -51,6 +51,7 @@
 #include "GetCppClassName.h"
 #include "ExplanationOptions.h"
 #include "EventHelper.h"
+#include "IncludeBuilderBase.h"
 
 namespace ravendb::client::documents::session
 {
@@ -285,8 +286,7 @@ namespace ravendb::client::documents::session
 
 		void _include(std::string path);
 
-		//TODO
-		//public void _include(IncludeBuilderBase includes)
+		void _include(std::shared_ptr<loaders::IncludeBuilderBase> includes);
 
 		void _take(int32_t count);
 
@@ -1011,6 +1011,26 @@ namespace ravendb::client::documents::session
 	void AbstractDocumentQuery<T>::_include(std::string path)
 	{
 		document_includes.insert(std::move(path));
+	}
+
+	template <typename T>
+	void AbstractDocumentQuery<T>::_include(std::shared_ptr<loaders::IncludeBuilderBase> includes)
+	{
+		if(!includes)
+		{
+			return;
+		}
+
+		if(!includes->documents_to_include.empty())
+		{
+			for(const auto& doc : includes->documents_to_include)
+			{
+				document_includes.insert(doc);
+			}
+		}
+
+		//TODO
+		//_includeCounters(includes.alias, includes.countersToIncludeBySourcePath);
 	}
 
 	template <typename T>
@@ -2020,11 +2040,10 @@ namespace ravendb::client::documents::session
 			if(required_quotes)
 			{
 				writer << "'";
-				std::transform(include.cbegin(), include.cend(), std::ostream_iterator<const char*>(writer),
-					[](auto c)->const char*
+				std::transform(include.cbegin(), include.cend(), std::ostream_iterator<std::string>(writer),
+					[](auto c)->std::string
 				{
-					char char_as_str[2] = { c, '\0' };
-					return c == '\'' ? "\\'" : char_as_str;
+					return c == '\'' ? "\\'" : std::string{ c };
 				});
 				writer << "'";
 			}

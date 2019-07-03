@@ -15,9 +15,6 @@
     <ClCompile Include="ds_definitions.cpp">
       <Filter>ravendb.client.tests\definitions%28for old test%29</Filter>
     </ClCompile>
-    <ClCompile Include="AdvancedPatchingTests.cpp">
-      <Filter>ravendb.client.tests\old C++ client tests</Filter>
-    </ClCompile>
     <ClCompile Include="BasicDocumentCommandsTests.cpp">
       <Filter>ravendb.client.tests\old C++ client tests</Filter>
     </ClCompile>
@@ -131,6 +128,33 @@
     </ClCompile>
     <ClCompile Include="AttachmentsSessionTest.cpp">
       <Filter>ravendb.client.tests\test\client\attachments</Filter>
+    </ClCompile>
+    <ClCompile Include="AdvancedPatchingTestsOld.cpp">
+      <Filter>ravendb.client.tests\old C++ client tests</Filter>
+    </ClCompile>
+    <ClCompile Include="CachingOfDocumentInclude.cpp">
+      <Filter>ravendb.client.tests\test\bugs\caching</Filter>
+    </ClCompile>
+    <ClCompile Include="CanGetBuildNumberTest.cpp">
+      <Filter>ravendb.client.tests\test\client\documents\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="ReorderDatabaseMembersTest.cpp">
+      <Filter>ravendb.client.tests\test\client\documents\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="DeleteByQueryTest.cpp">
+      <Filter>ravendb.client.tests\test\client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="GetClusterTopologyTest.cpp">
+      <Filter>ravendb.client.tests\test\serverwide.commands</Filter>
+    </ClCompile>
+    <ClCompile Include="GetDatabaseRecordTest.cpp">
+      <Filter>ravendb.client.tests\test\serverwide.commands</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicDocumentsTest.cpp">
+      <Filter>ravendb.client.tests\test\client\documents</Filter>
+    </ClCompile>
+    <ClCompile Include="DetectIndexTypeTest.cpp">
+      <Filter>ravendb.client.tests\test\client\indexing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -280,6 +304,12 @@
     </Filter>
     <Filter Include="ravendb.client.tests\test\client\attachments">
       <UniqueIdentifier>{21e4969e-9228-4d37-a3f1-4740b38068d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\bugs\caching">
+      <UniqueIdentifier>{75da632d-471a-4ec2-8bd2-f48f8ecd73be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\serverwide.commands">
+      <UniqueIdentifier>{55f8c5f7-2ad5-4f1c-8c07-6c75a8bb2f67}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

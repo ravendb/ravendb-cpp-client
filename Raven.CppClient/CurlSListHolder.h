@@ -38,7 +38,7 @@ namespace ravendb::client::impl
 	template<typename InputIt>
 	CurlSListHolder::CurlSListHolder(InputIt first, InputIt last)
 	{
-		static_assert(std::is_same_v<std::remove_cv<typename std::iterator_traits<InputIt>::value_type>, std::string>, "invalid iterator type");
+		static_assert(std::is_same_v<std::remove_cv_t<typename std::iterator_traits<InputIt>::value_type>, std::string>, "invalid iterator type");
 
 		std::for_each(first, last, [this](const std::string& str) {this->append(str); });
 	}

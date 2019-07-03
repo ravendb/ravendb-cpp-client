@@ -37,7 +37,10 @@ namespace ravendb::client::documents::session::operations
 
 	commands::QueryCommand QueryOperation::create_request() const
 	{
-		return commands::QueryCommand(_session.lock()->get_conventions(), _index_query, _metadata_only, _index_entries_only);
+		auto session = _session.lock();
+		session->increment_request_count();
+
+		return commands::QueryCommand(session->get_conventions(), _index_query, _metadata_only, _index_entries_only);
 	}
 
 	const queries::QueryResult& QueryOperation::get_current_query_results() const

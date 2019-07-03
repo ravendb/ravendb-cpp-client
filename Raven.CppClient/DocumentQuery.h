@@ -106,8 +106,8 @@ namespace ravendb::client::documents::session
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> include(std::string path);
 
-		//TODO
-		//public IDocumentQuery<T> include(Consumer<IQueryIncludeBuilder> includes)
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> include(const std::function<
+			void(std::shared_ptr<loaders::IQueryIncludeBuilder<loaders::QueryIncludeBuilder>>)>& includes);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> not_next();
 
@@ -626,6 +626,17 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::include(std::string path)
 	{
 		AbstractDocumentQuery<T>::_include(std::move(path));
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::include(
+		const std::function<void(std::shared_ptr<loaders::IQueryIncludeBuilder<loaders::QueryIncludeBuilder>>)>&
+		includes)
+	{
+		auto include_builder = loaders::QueryIncludeBuilder::create(get_conventions());
+		includes(include_builder);
+		AbstractDocumentQuery<T>::_include(include_builder);
 		return _weak_this.lock();
 	}
 

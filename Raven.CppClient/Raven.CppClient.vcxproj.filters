@@ -557,6 +557,30 @@
     <ClCompile Include="DocumentSessionAttachmentsBase.cpp">
       <Filter>ravendb.client\documents\session</Filter>
     </ClCompile>
+    <ClCompile Include="Operation.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="OperationExceptionResult.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="GetServerWideOperationStateOperation.cpp">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="IncludeBuilderBase.cpp">
+      <Filter>ravendb.client\documents\session\loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryIncludeBuilder.cpp">
+      <Filter>ravendb.client\documents\session\loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="ReorderDatabaseMembersOperation.cpp">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="BatchCommand.cpp">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexDefinition.cpp">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -1661,6 +1685,39 @@
     </ClInclude>
     <ClInclude Include="PutAttachmentCommandHelper.h">
       <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClInclude>
+    <ClInclude Include="Operation.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="OperationCancelledException.h">
+      <Filter>ravendb.client\primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="OperationExceptionResult.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerWideOperation.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="GetServerWideOperationStateOperation.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="IQueryIncludeBuilder.h">
+      <Filter>ravendb.client\documents\session\loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="IncludeBuilderBase.h">
+      <Filter>ravendb.client\documents\session\loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryIncludeBuilder.h">
+      <Filter>ravendb.client\documents\session\loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="BuildNumber.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="GetBuildNumberOperation.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="ReorderDatabaseMembersOperation.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

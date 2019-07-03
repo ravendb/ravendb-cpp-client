@@ -26,6 +26,10 @@ namespace ravendb::client::impl::utils
 	//transform string to lower case
 	std::string to_lower_str(const std::string& str);
 
+	void left_trim(std::string &s);
+
+	void right_trim(std::string &s);
+
 	template<typename T>
 	std::shared_ptr<T> default_value()
 	{

@@ -4,7 +4,7 @@
 #include "DocumentConventions.h"
 #include <optional>
 
-//ID_FIELD_NAME should be of type std::string or std::optional<std::string>
+//The Id field named 'ID_FIELD_NAME' should be of the type std::string or std::optional<std::string>
 #define REGISTER_ID_PROPERTY_FOR(TYPE, ID_FIELD_NAME)\
 do\
 {\

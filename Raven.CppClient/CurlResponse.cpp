@@ -1,23 +1,10 @@
 #include "stdafx.h"
 #include "CurlResponse.h"
 #include "CurlSListHolder.h"
+#include "utils.h"
 
 namespace
 {
-	void left_trim(std::string &s)
-	{
-		s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
-			return !std::isspace(ch);
-		}));
-	}
-
-	void right_trim(std::string &s)
-	{
-		s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
-			return !std::isspace(ch);
-		}).base(), s.end());
-	}
-
 	size_t push_headers(char *buffer, size_t size, size_t nitems, void *userdata)
 	{
 		const auto real_size = size * nitems;
@@ -32,8 +19,8 @@ namespace
 
 		auto header_val = std::string(delimiter + 1, real_size - header_name_size - 1);
 		// remove starting space and \r\n at end
-		left_trim(header_val);
-		right_trim(header_val);
+		ravendb::client::impl::utils::left_trim(header_val);
+		ravendb::client::impl::utils::right_trim(header_val);
 
 		headers.emplace(header_name, header_val);
 

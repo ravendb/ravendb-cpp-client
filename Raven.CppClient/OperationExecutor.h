@@ -5,6 +5,7 @@
 #include "OperationIdResult.h"
 #include "PatchStatus.h"
 #include "PatchOperation.h"
+#include "Operation.h"
 
 namespace ravendb::client
 {
@@ -55,8 +56,8 @@ namespace ravendb::client::documents::operations
 			return command->get_result();
 		}
 
-		//TODO wait for Operation implementation
-		//Operation send_async(IOperation<OperationIdResult>& operation, const std::optional<session::SessionInfo>& session_info = {});
+		std::unique_ptr<Operation> send_async(const IOperation<OperationIdResult>& operation, 
+			const std::optional<session::SessionInfo>& session_info = {});
 
 		PatchStatus send(const PatchOperation& operation, const std::optional<session::SessionInfo>& session_info = {});
 
