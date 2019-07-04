@@ -312,7 +312,7 @@ namespace ravendb::client::documents::session
 		const std::string& shape_wkt, indexes::spatial::SpatialRelation relation,
 		const std::optional<indexes::spatial::SpatialUnits>& units, double dist_error_percent)
 	{
-		return cast_down()->relates_to_shape(field_name, relation, units, dist_error_percent);
+		return cast_down()->relates_to_shape(field_name, shape_wkt, relation, units, dist_error_percent);
 	}
 
 	template <typename T, class TThis>

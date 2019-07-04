@@ -159,9 +159,6 @@ namespace ravendb::client::documents::session
 			std::optional<std::string> collection_name = {},
 			bool is_map_reduced = false);
 
-		template <typename T>
-		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> document_query();
-
 		template <typename T, typename TIndex>
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> document_query();
 	};
@@ -324,11 +321,5 @@ namespace ravendb::client::documents::session
 		bool is_map_reduced)
 	{
 		return _session_impl->document_query<T>(std::move(index_name), std::move(collection_name), is_map_reduced);
-	}
-
-	template <typename T>
-	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> AdvancedSessionOperations::document_query()
-	{
-		return _session_impl->document_query<T>();
 	}
 }

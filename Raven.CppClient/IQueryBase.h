@@ -61,7 +61,7 @@ namespace ravendb::client::documents::session
 
 		auto wait_for_non_stale_results(const std::optional<std::chrono::milliseconds>& timeout = {});
 
-		queries::IndexQuery get_index_query() const;
+		queries::IndexQuery get_index_query();
 
 		auto add_parameter(std::string name, nlohmann::json value);
 	};
@@ -175,7 +175,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T, class TThis>
-	queries::IndexQuery IQueryBase<T, TThis>::get_index_query() const
+	queries::IndexQuery IQueryBase<T, TThis>::get_index_query()
 	{
 		return cast_down()->get_index_query();
 	}

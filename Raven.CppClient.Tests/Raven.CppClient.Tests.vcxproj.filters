@@ -159,6 +159,18 @@
     <ClCompile Include="RavenDB903Test.cpp">
       <Filter>ravendb.client.tests\test\client\issues</Filter>
     </ClCompile>
+    <ClCompile Include="RavenDB_5669Test.cpp">
+      <Filter>ravendb.client.tests\test\client\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexQueryTest.cpp">
+      <Filter>ravendb.client.tests\test\client\queries</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_9676Test.cpp">
+      <Filter>ravendb.client.tests\test\spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="SimonBartlettTest.cpp">
+      <Filter>ravendb.client.tests\test\spatial</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -316,6 +328,9 @@
     </Filter>
     <Filter Include="ravendb.client.tests\test\client\issues">
       <UniqueIdentifier>{cb1e7d33-3204-4ef0-be3b-54700d6bf95e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\client\queries">
+      <UniqueIdentifier>{c1b467e8-dd31-447e-94b6-c813916d6f4e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

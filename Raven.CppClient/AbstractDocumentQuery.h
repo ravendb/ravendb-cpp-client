@@ -859,7 +859,7 @@ namespace ravendb::client::documents::session
 			{
 				return ensure_valid_field_name(field_name, is_nested_path);
 			})
-				<< "' cannot be used when static index '" << from_token->get_index_name()
+				<< "' cannot be used when static index '" << from_token->get_index_name().value_or("")
 				<< "' is queried. Dynamic spatial fields can only be used with dynamic queries, "
 				<< "for static index queries please use valid spatial fields defined in index definition.";
 
