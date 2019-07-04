@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "DateTimeOffset.h"
+
 #include <iomanip>
+#define __STDC_WANT_LIB_EXT1__ 1
+#include <stdio.h>
 
 namespace ravendb::client::impl
 {
@@ -26,8 +29,18 @@ namespace ravendb::client::impl
 
 		const char* input_str = str.c_str();
 
-		//expecting ISO8061 format : YYYY-MM-DDThh:mm:ss.sssssss(Z) or YYYY-MM-DDThh:mm:ss.sssssss±hh:mm
-		int res = sscanf_s(input_str, "%04d-%02d-%02dT%02d:%02d:%02d.%07d",
+		//expecting ISO8061 format : YYYY-MM-DDThh:mm:ss.sssssss(Z) or YYYY-MM-DDThh:mm:ss.sssssssï¿½hh:mm
+		int res =
+#ifdef __STDC_LIB_EXT1__
+			std::sscanf_s
+#else
+#ifdef _MSC_VER 
+			sscanf_s
+#else
+            std::sscanf
+#endif
+#endif
+		                (input_str, "%04d-%02d-%02dT%02d:%02d:%02d.%07ld",
 			&_date_time.tm_year, &_date_time.tm_mon, &_date_time.tm_mday,
 			&_date_time.tm_hour, &_date_time.tm_min, &_date_time.tm_sec, &_nsec);
 
@@ -80,7 +93,17 @@ namespace ravendb::client::impl
 				input_str += 1;
 				int hour = 0, min = 0;
 				// _offset is in format +(-)hh:mm
-				res = sscanf_s(input_str, "%02d:%02d", &hour, &min);
+				res =
+#ifdef __STDC_LIB_EXT1__
+					std::sscanf_s
+#else
+#ifdef _MSC_VER 
+					sscanf_s
+#else
+					std::sscanf
+#endif
+#endif
+                    (input_str, "%02d:%02d", &hour, &min);
 				if (
 					res < 2 ||
 					hour < 0 || hour > 12 ||

@@ -19,7 +19,7 @@ namespace ravendb::client::serverwide::operations::configuration
 	public:
 		~PutServerWideClientConfigurationOperation() override;
 
-		PutServerWideClientConfigurationOperation(documents::operations::configuration::ClientConfiguration configuration);
+		explicit PutServerWideClientConfigurationOperation(documents::operations::configuration::ClientConfiguration configuration);
 
 		std::unique_ptr<http::RavenCommand<void>> get_command(std::shared_ptr<documents::conventions::DocumentConventions> conventions) const override;
 
@@ -27,7 +27,7 @@ namespace ravendb::client::serverwide::operations::configuration
 		class PutServerWideClientConfigurationCommand : public http::VoidRavenCommand
 		{
 		private:
-			const std::string _configuration_document;
+			std::istringstream _configuration_document_stream;
 
 		public:
 			~PutServerWideClientConfigurationCommand() override;

@@ -48,6 +48,8 @@ namespace ravendb::client::documents::session
 
 		operations::lazy::EagerSessionOperations eagerly();
 
+		std::shared_ptr<IAttachmentsSessionOperations> attachments();
+
 		int32_t get_max_number_of_requests_per_session() const;
 
 		void set_max_number_of_requests_per_session(int32_t max_requests);
@@ -156,6 +158,9 @@ namespace ravendb::client::documents::session
 			std::optional<std::string> index_name = {},
 			std::optional<std::string> collection_name = {},
 			bool is_map_reduced = false);
+
+		template <typename T, typename TIndex>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> document_query();
 	};
 
 	template <typename T>
@@ -299,6 +304,14 @@ namespace ravendb::client::documents::session
 			throw std::invalid_argument("'update_from_json' should have a target");
 		}
 		_session_impl->increment(id, path, value_to_add, update_from_json);
+	}
+
+	template <typename T, typename TIndex>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> AdvancedSessionOperations::document_query()
+	{
+		static_assert(std::is_base_of_v<indexes::AbstractIndexCreationTask, TIndex>, "'TIndex' must be derived from AbstractIndexCreationTask");
+
+		return _session_impl->document_query<T, TIndex>();
 	}
 
 	template <typename T>

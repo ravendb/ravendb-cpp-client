@@ -61,8 +61,8 @@ namespace ravendb::client::documents::operations::indexes
 				path_builder << node->url << "/databases/" << node->database
 					<< "/admin/indexes/disable?name=" << http::url_encode(curl_ref, _index_name);
 
-				curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPPOST, 1);
-				curl_easy_setopt(curl_ref.get(), CURLOPT_COPYPOSTFIELDS, "");
+				curl_easy_setopt(curl_ref.get(), CURLOPT_POST, 1);
+				curl_easy_setopt(curl_ref.get(), CURLOPT_POSTFIELDSIZE, 0);
 				curl_ref.method = constants::methods::POST;
 
 				url_ref.emplace(path_builder.str());

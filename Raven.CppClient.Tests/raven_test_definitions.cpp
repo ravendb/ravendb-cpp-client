@@ -13,6 +13,6 @@ namespace ravendb::client::tests::infrastructure
 	{
 
 		curl_easy_setopt(curl, CURLOPT_NOPROXY, "*");
-		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+		//curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 	}
 }

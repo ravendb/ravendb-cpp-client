@@ -268,7 +268,7 @@ namespace ravendb::client::tests::client::documents::operations::indexes
 		wait_for_indexing(store);
 
 		//Spin wait for index to change it's state
-		const std::chrono::milliseconds wait_timeout = std::chrono::seconds(15);
+		const std::chrono::milliseconds wait_timeout = std::chrono::seconds(20);
 		impl::SimpleStopWatch sp{};
 		while (sp.millis_elapsed() < wait_timeout)
 		{
@@ -280,6 +280,8 @@ namespace ravendb::client::tests::client::documents::operations::indexes
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
+		//just in case ...
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
 
 		auto index_errors = store->maintenance()->send(
 			ravendb::client::documents::operations::indexes::GetIndexErrorsOperation());

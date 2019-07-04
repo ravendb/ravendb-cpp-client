@@ -2,6 +2,7 @@
 #include "ClusterRequestExecutor.h"
 #include "DocumentStore.h"
 #include "IVoidServerOperation.h"
+#include "Operation.h"
 
 namespace ravendb::client::serverwide::operations
 {
@@ -25,13 +26,8 @@ namespace ravendb::client::serverwide::operations
 		template<typename TResult>
 		std::shared_ptr<TResult> send(const IServerOperation<TResult>& operation);
 
-		//TODO
-		//public Operation sendAsync(IServerOperation<OperationIdResult> operation) {
-		//	RavenCommand<OperationIdResult> command = operation.getCommand(requestExecutor.getConventions());
+		std::unique_ptr<documents::operations::Operation> send_async(const IServerOperation<documents::operations::OperationIdResult>& operation);
 
-		//	requestExecutor.execute(command);
-		//	return new ServerWideOperation(requestExecutor, requestExecutor.getConventions(), command.getResult().getOperationId());
-		//}
 		void close();
 	};
 

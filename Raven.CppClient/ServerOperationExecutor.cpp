@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "ServerOperationExecutor.h"
+#include "ServerWideOperation.h"
 
 namespace ravendb::client::serverwide::operations
 {
@@ -41,6 +42,16 @@ namespace ravendb::client::serverwide::operations
 	{
 		auto command = operation.get_command(_request_executor->get_conventions());
 		_request_executor->execute(*command);
+	}
+
+	std::unique_ptr<documents::operations::Operation> ServerOperationExecutor::send_async(
+		const IServerOperation<documents::operations::OperationIdResult>& operation)
+	{
+		auto command = operation.get_command(_request_executor->get_conventions());
+		_request_executor->execute(*command);
+
+		return std::make_unique<ServerWideOperation>(_request_executor, _request_executor->get_conventions(),
+			command->get_result()->operation_id);
 	}
 
 	void ServerOperationExecutor::close()

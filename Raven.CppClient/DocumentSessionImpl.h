@@ -3,13 +3,15 @@
 #include "DocumentsByIdsMap.h"
 #include "LoadOperation.h"
 #include "LoadStartingWithOperation.h"
+#include "DocumentQuery.h"
 #include "RawDocumentQuery.h"
 #include "JavaScriptArray.h"
 #include "ResponseTimeInformation.h"
 #include "Lazy.h"
 #include "LazyLoadOperation.h"
-#include "DocumentQuery.h"
 #include "Query.h"
+#include "AbstractIndexCreationTask.h"
+#include "IAttachmentsSessionOperations.h"
 
 namespace ravendb::client::documents
 {
@@ -35,6 +37,8 @@ namespace ravendb::client::documents::session
 	private:
 		int32_t _vals_count{};
 		int32_t _custom_count{};
+
+		std::shared_ptr<IAttachmentsSessionOperations> _attachments{};
 
 		operations::LoadOperation load_impl(const std::string& id);
 
@@ -83,6 +87,8 @@ namespace ravendb::client::documents::session
 			SessionOptions options);
 
 		operations::lazy::LazySessionOperations lazily();
+
+		std::shared_ptr<IAttachmentsSessionOperations> attachments();
 
 		loaders::LoaderWithInclude include(const std::string& path);
 

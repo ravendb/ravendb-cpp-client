@@ -1,4 +1,5 @@
 #pragma once
+#include <set>
 
 namespace ravendb::client::documents::session::tokens
 {

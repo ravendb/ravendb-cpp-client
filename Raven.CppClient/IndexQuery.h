@@ -1,7 +1,7 @@
 #pragma once
 #include "IndexQueryBase.h"
 #include "Parameters.h"
-#include "C:\work\xxhash_cpp\xxhash\xxhash.hpp"
+#include "xxhash.hpp"
 
 namespace ravendb::client::documents::queries
 {
@@ -22,6 +22,7 @@ namespace ravendb::client::documents::queries
 			query = std::move(query_str);
 		}
 
+		//using xxhash_cpp from https://github.com/RedSpah/xxhash_cpp
 		std::string get_query_hash() const
 		{
 			xxh::hash_state_t<64> hash_stream;

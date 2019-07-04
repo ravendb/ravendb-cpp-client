@@ -1,6 +1,7 @@
 #pragma once
 #include <any>
 #include <set>
+#include <list>
 #include <unordered_set>
 #include <typeinfo>
 #include <atomic>
@@ -44,6 +45,7 @@ namespace ravendb::client
 			struct SessionOptions;
 			struct IMetadataDictionary;
 			struct DocumentsChanges;
+			class AdvancedSessionExtensionBase;
 
 			namespace operations
 			{
@@ -102,8 +104,10 @@ namespace ravendb::client::documents::session
 	public:
 		friend operations::LoadOperation;
 		friend operations::LoadStartingWithOperation;
-		friend operations::lazy::LazyStartsWithOperation;
+		template <typename T>
+		friend class operations::lazy::LazyStartsWithOperation;
 		friend operations::BatchOperation;
+		friend AdvancedSessionExtensionBase;
 
 		static const int32_t DEFAULT_MAX_NUMBER_OF_REQUESTS_PER_SESSION = 30;
 
@@ -308,7 +312,7 @@ namespace ravendb::client::documents::session
 
 		SaveChangesData prepare_for_save_changes();
 
-		void validateClusterTransaction(const SaveChangesData& result) const;
+		void validate_cluster_transaction(const SaveChangesData& result) const;
 
 		std::unordered_map<std::string, std::vector<DocumentsChanges>> what_changed();
 

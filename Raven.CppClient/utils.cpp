@@ -8,7 +8,7 @@
 
 namespace ravendb::client::impl::utils
 {
-	CURLcode utils::sslctx_function(CURL* , void *sslctx_void, void *cert_details_void)
+	CURLcode sslctx_function(CURL* , void *sslctx_void, void *cert_details_void)
 	{
 		static const auto my_BIO_free = [&](BIO* bio) {if (bio != nullptr) BIO_vfree(bio); };
 		static const auto my_X509_free = [&](X509* cert) {if (cert != nullptr) X509_free(cert); };
@@ -72,7 +72,7 @@ namespace ravendb::client::impl::utils
 			throw std::runtime_error(std::string("Use Key failed") + error_buffer);
 		}
 
-		const char* ca_path = cert_details.ca_path.empty() ? DEFAULT_CA_BUNDLE_PATH :
+		const char* ca_path = cert_details.ca_path.empty() ? DEFAULT_CA_BUNDLE_PATH_VALUE :
 			reinterpret_cast<const char*>(cert_details.ca_path.c_str());
 		//tell SSL to use CA certificate (if provided)
 		if(SSL_CTX_load_verify_locations(sslctx, ca_path, nullptr) != 1)
@@ -97,6 +97,20 @@ namespace ravendb::client::impl::utils
 		std::transform(str.cbegin(), str.cend(), std::back_insert_iterator<std::string>(temp),
 			[](unsigned char c)->char {return std::tolower(c); });
 		return temp;
+	}
+
+	void left_trim(std::string& s)
+	{
+		s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
+			return !std::isspace(ch);
+		}));
+	}
+
+	void right_trim(std::string& s)
+	{
+		s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
+			return !std::isspace(ch);
+		}).base(), s.end());
 	}
 }
 

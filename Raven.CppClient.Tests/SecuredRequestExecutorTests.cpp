@@ -43,7 +43,7 @@ namespace ravendb::client::tests::old_tests
 			test_suite_executor->get().execute(cmd);
 			auto res = cmd.get_result();
 
-			return !res->results.empty() && !res->results[0].is_null();
+			return res && !res->results.empty() && !res->results[0].is_null();
 		}
 	};
 

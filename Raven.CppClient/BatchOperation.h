@@ -1,5 +1,8 @@
 #pragma once
 #include "CompareStringsLessThanIgnoreCase.h"
+#include <map>
+#include <vector>
+#include "json.hpp"
 
 namespace ravendb::client
 {
@@ -32,7 +35,24 @@ namespace ravendb::client::documents::session::operations
 		std::vector<std::shared_ptr<void>> _entities{};
 		size_t _session_commands_count{};
 		size_t _all_commands_count{};
+		//TODO add
+		//InMemoryDocumentSessionOperations.SaveChangesData.ActionsToRunOnSuccess _onSuccessfulRequest;
 		std::map<std::string, std::shared_ptr<DocumentInfo>, impl::utils::CompareStringsLessThanIgnoreCase> _modifications{};
+
+	private:
+		void handle_attachment_put(const nlohmann::json& batch_result);
+
+		void handle_attachment_put_internal(const nlohmann::json& batch_result, commands::batches::CommandType type,
+			const std::string& id_field_name, const std::string& attachment_name_field_name);
+
+		void handle_attachment_delete(const nlohmann::json& batch_result);
+
+		void handle_attachment_delete_internal(const nlohmann::json& batch_result, commands::batches::CommandType type,
+			const std::string& id_field_name, const std::string& attachment_name_field_name);
+
+		void handle_attachment_move(const nlohmann::json& batch_result);
+
+		void handle_attachment_copy(const nlohmann::json& batch_result);
 
 		void handle_put(size_t index, const nlohmann::json& batch_result, bool is_deferred);
 
@@ -50,6 +70,8 @@ namespace ravendb::client::documents::session::operations
 			std::shared_ptr<DocumentInfo> doc_info, bool apply_modifications);
 
 		static std::string get_string_field(const nlohmann::json& j, commands::batches::CommandType type, const std::string& field_name);
+
+		static int64_t get_long_field(const nlohmann::json& j, commands::batches::CommandType type, const std::string& field_name);
 
 		static void throw_missing_field(commands::batches::CommandType type, const std::string& field_name);
 

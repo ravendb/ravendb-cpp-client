@@ -38,7 +38,11 @@ namespace ravendb::client::documents::commands
 			std::ostringstream path_builder;
 
 			path_builder << node->url << "/databases/" << node->database
-				<< "/queries?";// TODO << "queryHash=" << _index_query.get_query_hash;
+				<< "/queries?"
+				// we need to add a query hash because we are using POST queries
+				// so we need to unique parameter per query so the query cache will
+				// work properly
+				<< "queryHash=" << _index_query.get_query_hash();
 		
 			if(_metadata_only)
 			{
@@ -49,11 +53,12 @@ namespace ravendb::client::documents::commands
 				path_builder << "&debug=entries";
 			}
 
-			curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
+			curl_easy_setopt(curl, CURLOPT_POST, 1);
 			curl_ref.method = constants::methods::POST;
 
 			auto&& json_str = nlohmann::json(_index_query).dump();
 
+			curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, curl_off_t(json_str.size()));
 			curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, json_str.c_str());
 
 			curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE, "application/json");

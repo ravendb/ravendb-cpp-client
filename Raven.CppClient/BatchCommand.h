@@ -6,121 +6,49 @@
 #include "BatchCommandResult.h"
 #include "CommandDataBase.h"
 #include "BatchOptions.h"
+#include "PutAttachmentCommandData.h"
+#include "PutAttachmentCommandHelper.h"
+#include "CurlSListHolder.h"
 
 namespace ravendb::client::documents::commands::batches
 {
 	class BatchCommand : public http::RavenCommand<json::BatchCommandResult>
 	{
 	private:
+		class CurlMimeDeleter
+		{
+		public:
+			void operator()(curl_mime* mime) const
+			{
+				curl_mime_free(mime);
+			}
+		};
+
+	private:
 		const std::shared_ptr<conventions::DocumentConventions> _conventions;
 		const std::vector<std::shared_ptr<CommandDataBase>> _commands;
-		//TODO add std::unordered_set<std::istream> _attachment_streams{};
+		std::vector<std::shared_ptr<PutAttachmentCommandData>> _put_attachments_commands{};
 		const std::optional<BatchOptions> _options;
 		const session::TransactionMode _mode;
 		const std::string _request_entity_str;
+		std::unique_ptr<curl_mime, CurlMimeDeleter> _curl_multipart{};
+		impl::CurlSListHolder _mime_part_headers{};
 
-		void append_options(std::ostringstream& path_builder) const
-		{
-			if(!_options)
-			{
-				return;
-			}
-
-			path_builder << "?";
-			if(_options->replication_options)
-			{
-				path_builder << "&waitForReplicasTimeout=" <<
-					impl::utils::MillisToTimeSpanConverter(_options->replication_options->wait_for_replicas_timeout);
-				if(_options->replication_options->throw_on_timeout_in_wait_for_replicas)
-				{
-					path_builder << "&throwOnTimeoutInWaitForReplicas=true";
-				}
-				path_builder << "&numberOfReplicasToWaitFor=" <<
-					(_options->replication_options->majority ? "majority" :
-						std::to_string(_options->replication_options->number_of_replicas_to_wait_for));
-			}
-			if (_options->index_options)
-			{
-				path_builder << "&waitForIndexesTimeout=" <<
-					impl::utils::MillisToTimeSpanConverter(_options->index_options->wait_for_indexes_timeout);
-				if (_options->index_options->throw_on_timeout_in_wait_for_indexes)
-				{
-					path_builder << "&waitForIndexThrow=true";
-				}else
-				{
-					path_builder << "&waitForIndexThrow=false";
-				}
-				if(!_options->index_options->wait_for_specific_indexes.empty())
-				{
-					for (const auto& specific_index : _options->index_options->wait_for_specific_indexes)
-					{
-						path_builder << "&waitForSpecificIndex=" << specific_index;
-					}
-				}
-			}
-		}
+	private:
+		void append_options(std::ostringstream& path_builder) const;
 
 	public:
 		~BatchCommand() override = default;
 
 		BatchCommand(std::shared_ptr<conventions::DocumentConventions> conventions, const std::list<std::shared_ptr<CommandDataBase>>& commands,
-			std::optional<BatchOptions> options = {}, session::TransactionMode mode = session::TransactionMode::SINGLE_NODE)
-			: _conventions(conventions)
-			, _commands(commands.cbegin(), commands.cend())
-			//, _attachment_streams()
-			, _options(std::move(options))
-			, _mode(mode)
-			, _request_entity_str([this]()
-		{
-			std::vector<nlohmann::json> serialized_commands{};
-			serialized_commands.reserve(_commands.size());
-			for (auto& command : _commands)
-			{
-				serialized_commands.emplace_back(command->serialize());
-			}
-			nlohmann::json request_entity{};
-			impl::utils::json_utils::set_val_to_json(request_entity, "Commands", serialized_commands);
-			if (_mode == session::TransactionMode::CLUSTER_WIDE)
-			{
-				impl::utils::json_utils::set_val_to_json(request_entity, "TransactionMode", "ClusterWide");
-			}
-			return request_entity.dump();
-		}())
-		{
-			//TODO populate _attachment_streams
-		}
-
+			std::optional<BatchOptions> options = {}, session::TransactionMode mode = session::TransactionMode::SINGLE_NODE);
 		
-		void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
-			std::optional<std::string>& url) override
-		{
-			auto curl = curl_ref.get();
-			std::ostringstream path_builder;
+		void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref,
+			std::shared_ptr<const http::ServerNode> node,
+			std::optional<std::string>& url_ref) override;
 
-			path_builder << node->url << "/databases/" << node->database << "/bulk_docs";
-			append_options(path_builder);
+		void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override;
 
-			curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE,"application/json");
-			curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
-			curl_ref.method = constants::methods::POST;
-			curl_easy_setopt(curl, CURLOPT_COPYPOSTFIELDS, _request_entity_str.c_str());
-
-			url = path_builder.str();
-		}
-
-		void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override
-		{
-			if(!response)
-			{
-				throw std::runtime_error("Got null response from the server after doing a batch,"
-					" something is very wrong. Probably a garbled response.");
-			}
-			_result = std::make_shared<ResultType>(response->get<ResultType>());
-		}
-
-		bool is_read_request() const override
-		{
-			return false;
-		}
+		bool is_read_request() const override;
 	};
 }

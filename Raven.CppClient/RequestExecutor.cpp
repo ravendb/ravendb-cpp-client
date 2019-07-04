@@ -45,7 +45,7 @@ namespace ravendb::client::http
 		{
 			update_topology_async(server_node, 0, false, "timer-callback", false).get();
 		}
-		catch (std::exception& e)
+		catch (std::exception& )
 		{
 			//TODO
 			//if (logger.isInfoEnabled()) {
@@ -318,7 +318,7 @@ namespace ravendb::client::http
 			{
 				perform_health_check(server_node, node_status.node_index);
 			}
-			catch (std::exception& e)
+			catch (std::exception& )
 			{
 				//TODO
 				//if (logger.isInfoEnabled()) {
@@ -351,7 +351,7 @@ namespace ravendb::client::http
 				_node_selector->restore_node_index(node_status.node_index);
 			}
 		}
-		catch (std::exception& e)
+		catch (std::exception& )
 		{
 			//TODO
 			// if (logger.isInfoEnabled()) {

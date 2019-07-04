@@ -76,7 +76,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <CodeAnalysisRuleSet>NativeMinimumRules.ruleset</CodeAnalysisRuleSet>
-    <IncludePath>C:\work\json\single_include\nlohmann;C:\work\xxhash_cpp\xxhash;$(IncludePath)</IncludePath>
+    <IncludePath>C:\work\raven-cpp-client\external;C:\work\raven-cpp-client;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -151,16 +151,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\xxhash_cpp\xxhash\xxhash.hpp" />
-    <ClInclude Include="..\json.hpp" />
     <ClInclude Include="AbstractDocumentQuery.h" />
     <ClInclude Include="AbstractGenericIndexCreationTask.h" />
     <ClInclude Include="AbstractIndexCreationTask.h" />
     <ClInclude Include="AbstractIndexCreationTaskBase.h" />
     <ClInclude Include="AbstractJavaScriptIndexCreationTask.h" />
     <ClInclude Include="AbstractMultiMapIndexCreationTask.h" />
+    <ClInclude Include="AdvancedSessionExtentionBase.h" />
     <ClInclude Include="AllTopologyNodesDownException.h" />
+    <ClInclude Include="AttachmentDetails.h" />
     <ClInclude Include="AttachmentDoesNotExistException.h" />
+    <ClInclude Include="AttachmentName.h" />
+    <ClInclude Include="AttachmentResult.h" />
+    <ClInclude Include="AttachmentType.h" />
     <ClInclude Include="AuthenticationException.h" />
     <ClInclude Include="AuthorizationException.h" />
     <ClInclude Include="AutoSpatialMethodType.h" />
@@ -171,6 +174,7 @@
     <ClInclude Include="BatchCommandResult.h" />
     <ClInclude Include="BatchOperation.h" />
     <ClInclude Include="BatchOptions.h" />
+    <ClInclude Include="BuildNumber.h" />
     <ClInclude Include="BulkInsertAbortedException.h" />
     <ClInclude Include="BulkInsertProtocolViolationException.h" />
     <ClInclude Include="CertificateDetails.h" />
@@ -193,6 +197,7 @@
     <ClInclude Include="CompilationException.h" />
     <ClInclude Include="ConcurrencyException.h" />
     <ClInclude Include="ConflictException.h" />
+    <ClInclude Include="CopyAttachmentCommandData.h" />
     <ClInclude Include="CounterIncludesToken.h" />
     <ClInclude Include="CounterOverflowException.h" />
     <ClInclude Include="CurlException.h" />
@@ -207,10 +212,14 @@
     <ClInclude Include="DatabaseSchemaErrorException.h" />
     <ClInclude Include="DatabaseStatistics.h" />
     <ClInclude Include="DeclareToken.h" />
+    <ClInclude Include="DeleteAttachmentCommandData.h" />
+    <ClInclude Include="DeleteAttachmentOperation.h" />
     <ClInclude Include="DistinctToken.h" />
     <ClInclude Include="DocumentConflictException.h" />
     <ClInclude Include="DocumentDoesNotExistException.h" />
     <ClInclude Include="DocumentQueryHelper.h" />
+    <ClInclude Include="DocumentSessionAttachments.h" />
+    <ClInclude Include="DocumentSessionAttachmentsBase.h" />
     <ClInclude Include="DynamicSpatialField.h" />
     <ClInclude Include="EntityIdHelper.h" />
     <ClInclude Include="DocumentQuery.h" />
@@ -225,6 +234,8 @@
     <ClInclude Include="FacetToken.h" />
     <ClInclude Include="FromToken.h" />
     <ClInclude Include="GenerateEntityIdOnTheClient.h" />
+    <ClInclude Include="GetAttachmentOperation.h" />
+    <ClInclude Include="GetBuildNumberOperation.h" />
     <ClInclude Include="GetClientConfigurationOperation.h" />
     <ClInclude Include="GetClusterTopologyCommand.h" />
     <ClInclude Include="GetCollectionStatisticsOperation.h" />
@@ -233,6 +244,7 @@
     <ClInclude Include="GetRequest.h" />
     <ClInclude Include="GetResponse.h" />
     <ClInclude Include="GetServerWideClientConfigurationOperation.h" />
+    <ClInclude Include="GetServerWideOperationStateOperation.h" />
     <ClInclude Include="GetStatisticsOperation.h" />
     <ClInclude Include="GetTcpInfoCommand.h" />
     <ClInclude Include="GroupBy.h" />
@@ -243,6 +255,7 @@
     <ClInclude Include="GroupByMethod.h" />
     <ClInclude Include="GroupBySumToken.h" />
     <ClInclude Include="GroupByToken.h" />
+    <ClInclude Include="HeadAttachmentCommand.h" />
     <ClInclude Include="HeadDocumentCommand.h" />
     <ClInclude Include="HighlightingOptions.h" />
     <ClInclude Include="Highlightings.h" />
@@ -254,6 +267,8 @@
     <ClInclude Include="HttpStatus.h" />
     <ClInclude Include="EagerSessionOperations.h" />
     <ClInclude Include="HttpExtensions.h" />
+    <ClInclude Include="IAttachmentsSessionOperations.h" />
+    <ClInclude Include="IAttachmentsSessionOperationsBase.h" />
     <ClInclude Include="IDisposalNotification.h" />
     <ClInclude Include="IDocumentQuery.h" />
     <ClInclude Include="IDocumentQueryBase.h" />
@@ -263,6 +278,7 @@
     <ClInclude Include="IFilterDocumentQueryBase.h" />
     <ClInclude Include="IGroupByDocumentQuery.h" />
     <ClInclude Include="ILazyOperation.h" />
+    <ClInclude Include="IncludeBuilderBase.h" />
     <ClInclude Include="IndexAlreadyExistException.h" />
     <ClInclude Include="IndexCompilationException.h" />
     <ClInclude Include="IndexCreation.h" />
@@ -277,6 +293,7 @@
     <ClInclude Include="Inflector.h" />
     <ClInclude Include="IntersectMarkerToken.h" />
     <ClInclude Include="InvalidQueryException.h" />
+    <ClInclude Include="IQueryIncludeBuilder.h" />
     <ClInclude Include="IRawDocumentQuery.h" />
     <ClInclude Include="IVoidOperation.h" />
     <ClInclude Include="IVoidServerOperation.h" />
@@ -378,6 +395,7 @@
     <ClInclude Include="MoreLikeThisUsingAnyDocument.h" />
     <ClInclude Include="MoreLikeThisUsingDocument.h" />
     <ClInclude Include="MoreLikeThisUsingDocumentForDocumentQuery.h" />
+    <ClInclude Include="MoveAttachmentCommandData.h" />
     <ClInclude Include="MultiDatabaseHiLoIdGenerator.h" />
     <ClInclude Include="MultiGetCommand.h" />
     <ClInclude Include="MultiGetOperation.h" />
@@ -391,6 +409,9 @@
     <ClInclude Include="NoLeaderException.h" />
     <ClInclude Include="NonUniqueObjectException.h" />
     <ClInclude Include="OpenSubclauseToken.h" />
+    <ClInclude Include="Operation.h" />
+    <ClInclude Include="OperationCancelledException.h" />
+    <ClInclude Include="OperationExceptionResult.h" />
     <ClInclude Include="OperationExecutor.h" />
     <ClInclude Include="OperationIdResult.h" />
     <ClInclude Include="OrderByToken.h" />
@@ -403,6 +424,9 @@
     <ClInclude Include="PatchResult.h" />
     <ClInclude Include="PatchStatus.h" />
     <ClInclude Include="PointField.h" />
+    <ClInclude Include="PutAttachmentCommandData.h" />
+    <ClInclude Include="PutAttachmentCommandHelper.h" />
+    <ClInclude Include="PutAttachmentOperation.h" />
     <ClInclude Include="PutClientConfigurationOperation.h" />
     <ClInclude Include="PutCommandData.h" />
     <ClInclude Include="PutIndexesOperation.h" />
@@ -416,6 +440,7 @@
     <ClInclude Include="QueryData.h" />
     <ClInclude Include="QueryFieldUtil.h" />
     <ClInclude Include="QueryHighlightings.h" />
+    <ClInclude Include="QueryIncludeBuilder.h" />
     <ClInclude Include="QueryOperation.h" />
     <ClInclude Include="QueryOperationOptions.h" />
     <ClInclude Include="QueryOperator.h" />
@@ -434,6 +459,7 @@
     <ClInclude Include="RavenException.h" />
     <ClInclude Include="RawDocumentQuery.h" />
     <ClInclude Include="ReadBalanceBehavior.h" />
+    <ClInclude Include="ReorderDatabaseMembersOperation.h" />
     <ClInclude Include="ReplicationBatchOptions.h" />
     <ClInclude Include="RequestExecutor.h" />
     <ClInclude Include="ResetIndexOperation.h" />
@@ -447,6 +473,7 @@
     <ClInclude Include="ServerLoadFailureException.h" />
     <ClInclude Include="ServerNode.h" />
     <ClInclude Include="ServerOperationExecutor.h" />
+    <ClInclude Include="ServerWideOperation.h" />
     <ClInclude Include="SessionCreatedEventArgs.h" />
     <ClInclude Include="SessionInfo.h" />
     <ClInclude Include="SessionOperationExecutor.h" />
@@ -512,11 +539,15 @@
     <ClCompile Include="AbstractMultiMapIndexCreationTask.cpp" />
     <ClCompile Include="AdvancedSessionOperations.cpp" />
     <ClCompile Include="AllTopologyNodesDownException.cpp" />
+    <ClCompile Include="AttachmentDetails.cpp" />
     <ClCompile Include="AttachmentDoesNotExistException.cpp" />
+    <ClCompile Include="AttachmentName.cpp" />
+    <ClCompile Include="AttachmentResult.cpp" />
     <ClCompile Include="AuthenticationException.cpp" />
     <ClCompile Include="AuthorizationException.cpp" />
     <ClCompile Include="BadRequestException.cpp" />
     <ClCompile Include="BadResponseException.cpp" />
+    <ClCompile Include="BatchCommand.cpp" />
     <ClCompile Include="BatchCommandResult.cpp" />
     <ClCompile Include="BatchOperation.cpp" />
     <ClCompile Include="BulkInsertAbortedException.cpp" />
@@ -548,21 +579,26 @@
     <ClCompile Include="DatabaseSchemaErrorException.cpp" />
     <ClCompile Include="DocumentConflictException.cpp" />
     <ClCompile Include="DocumentDoesNotExistException.cpp" />
+    <ClCompile Include="DocumentSessionAttachments.cpp" />
+    <ClCompile Include="DocumentSessionAttachmentsBase.cpp" />
     <ClCompile Include="EventArgs.cpp" />
     <ClCompile Include="ExceptionDispatcher.cpp" />
     <ClCompile Include="ExplanationOptions.cpp" />
     <ClCompile Include="Explanations.cpp" />
     <ClCompile Include="GetClusterTopologyCommand.cpp" />
     <ClCompile Include="GetServerWideClientConfigurationOperation.cpp" />
+    <ClCompile Include="GetServerWideOperationStateOperation.cpp" />
     <ClCompile Include="GetTcpInfoCommand.cpp" />
     <ClCompile Include="GroupBy.cpp" />
     <ClCompile Include="HighlightingOptions.cpp" />
     <ClCompile Include="Highlightings.cpp" />
     <ClCompile Include="HttpCache.cpp" />
     <ClCompile Include="HttpExtensions.cpp" />
+    <ClCompile Include="IncludeBuilderBase.cpp" />
     <ClCompile Include="IndexAlreadyExistException.cpp" />
     <ClCompile Include="IndexCompilationException.cpp" />
     <ClCompile Include="IndexCreationException.cpp" />
+    <ClCompile Include="IndexDefinition.cpp" />
     <ClCompile Include="IndexDeletionException.cpp" />
     <ClCompile Include="IndexDoesNotExistException.cpp" />
     <ClCompile Include="IndexInvalidException.cpp" />
@@ -580,6 +616,8 @@
     <ClCompile Include="NodeStatus.cpp" />
     <ClCompile Include="NoLeaderException.cpp" />
     <ClCompile Include="NonUniqueObjectException.cpp" />
+    <ClCompile Include="Operation.cpp" />
+    <ClCompile Include="OperationExceptionResult.cpp" />
     <ClCompile Include="OperationExecutor.cpp" />
     <ClCompile Include="OrderByToken.cpp" />
     <ClCompile Include="PointField.cpp" />
@@ -587,11 +625,13 @@
     <ClCompile Include="QueryData.cpp" />
     <ClCompile Include="QueryFieldUtil.cpp" />
     <ClCompile Include="QueryHighlightings.cpp" />
+    <ClCompile Include="QueryIncludeBuilder.cpp" />
     <ClCompile Include="QueryOperatorToken.cpp" />
     <ClCompile Include="QueryStatistics.cpp" />
     <ClCompile Include="QueryTimings.cpp" />
     <ClCompile Include="RavenCommand.cpp" />
     <ClCompile Include="RavenException.cpp" />
+    <ClCompile Include="ReorderDatabaseMembersOperation.cpp" />
     <ClCompile Include="RevisionsDisabledException.cpp" />
     <ClCompile Include="RouteNotFoundException.cpp" />
     <ClCompile Include="SecurityException.cpp" />

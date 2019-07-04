@@ -9,7 +9,7 @@
 #include "GetCppClassName.h"
 #include "ResponseDisposeHandling.h"
 #include "HttpStatus.h"
-#include "constants.h"
+#include "Constants.h"
 #include "HttpCache.h"
 #include "HttpExtensions.h"
 
@@ -59,8 +59,8 @@ namespace ravendb::client::http
 		static void add_change_vector_if_not_null(impl::CurlHandlesHolder::CurlReference& curl_ref,
 			const std::optional<std::string>& change_vector);
 
-		//expects (const) std::string* in stream
-		static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
+		//std::istream* is expected in 'stream_ptr'
+		static size_t stream_read_callback(char *buffer, size_t size, size_t nitems, void *stream_ptr);
 
 	public:
 		virtual ~RavenCommand() = 0;
@@ -169,13 +169,13 @@ namespace ravendb::client::http
 	}
 
 	template <typename TResult>
-	size_t RavenCommand<TResult>::read_callback(void* ptr, size_t size, size_t nmemb, void* stream)
+	size_t RavenCommand<TResult>::stream_read_callback(char *buffer, size_t size, size_t nitems, void *stream_ptr)
 	{
-		const auto str = static_cast<const std::string*>(stream);
-		const size_t length = str->length();
+		auto& stream = *static_cast<std::istream*>(stream_ptr);
 
-		std::memcpy(ptr, str->data(), length);
-		return length;
+		stream.read(buffer, size * nitems);
+
+		return stream.gcount();
 	}
 
 	template<typename TResult>
@@ -248,7 +248,8 @@ namespace ravendb::client::http
 		const impl::CurlResponse& response,
 		const std::string& url)
 	{
-		if(response.output.empty())
+		const auto& response_str = response.output.str();
+		if(response_str.empty())
 		{
 			return ResponseDisposeHandling::AUTOMATIC;
 		}
@@ -261,10 +262,10 @@ namespace ravendb::client::http
 		if (_response_type == RavenCommandResponseType::OBJECT)
 		{
 
-			auto json = nlohmann::json::parse(response.output);
+			auto json = nlohmann::json::parse(response_str);
 			if (cache) //precaution
 			{
-				cache_response(cache, url, response, response.output);
+				cache_response(cache, url, response, response_str);
 			}
 			set_response(std::move(json), false);
 			return ResponseDisposeHandling::AUTOMATIC;

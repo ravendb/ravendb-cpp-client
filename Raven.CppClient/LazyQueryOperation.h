@@ -20,7 +20,7 @@ namespace ravendb::client::documents::session::operations::lazy
 
 		ResultType _result{};
 		queries::QueryResult _query_result{};
-		boolean _requires_retry = false;
+		bool _requires_retry = false;
 
 		void handle_response(std::shared_ptr<const queries::QueryResult> query_result);
 

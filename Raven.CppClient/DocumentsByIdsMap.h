@@ -1,9 +1,6 @@
 #pragma once
+#include "CompareStringsLessThanIgnoreCase.h"
 
-namespace ravendb::client::impl::utils
-{
-	struct CompareStringsLessThanIgnoreCase;
-}
 
 namespace ravendb::client::documents::session
 {

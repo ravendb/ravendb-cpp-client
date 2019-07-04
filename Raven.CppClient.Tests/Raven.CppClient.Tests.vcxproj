@@ -35,7 +35,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Microsoft-googletest-v140-windesktop-msvcstl-static-rt-dyn-Disable-gtest_main>
     </Microsoft-googletest-v140-windesktop-msvcstl-static-rt-dyn-Disable-gtest_main>
-    <IncludePath>C:\work\raven-cpp-client;$(IncludePath)</IncludePath>
+    <IncludePath>C:\work\raven-cpp-client\external;C:\work\raven-cpp-client;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="Address.h" />
@@ -45,6 +45,12 @@
     <ClInclude Include="ConnectionDetailsHolder.h" />
     <ClInclude Include="Contact.h" />
     <ClInclude Include="CreateSampleDataOperation.h" />
+    <ClCompile Include="AttachmentsSessionTest.cpp" />
+    <ClCompile Include="BasicDocumentsTest.cpp" />
+    <ClCompile Include="CachingOfDocumentInclude.cpp" />
+    <ClCompile Include="CanGetBuildNumberTest.cpp" />
+    <ClCompile Include="DeleteByQueryTest.cpp" />
+    <ClCompile Include="DetectIndexTypeTest.cpp" />
     <ClCompile Include="ExistsTest.cpp" />
     <ClInclude Include="raven_test_definitions.h" />
     <ClInclude Include="ds_definitions.h" />
@@ -64,7 +70,7 @@
     <ClInclude Include="test_utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AdvancedPatchingTests.cpp" />
+    <ClCompile Include="AdvancedPatchingTestsOld.cpp" />
     <ClCompile Include="BasicQueryTests.cpp" />
     <ClCompile Include="BasicDocumentsSessionTests.cpp" />
     <ClCompile Include="BoundingBoxIndexTest.cpp" />
@@ -73,6 +79,8 @@
     <ClCompile Include="CreateSampleDataOperation.cpp" />
     <ClCompile Include="CrudTest.cpp" />
     <ClCompile Include="DeleteDocumentCommandTest.cpp" />
+    <ClCompile Include="GetClusterTopologyTest.cpp" />
+    <ClCompile Include="GetDatabaseRecordTest.cpp" />
     <ClCompile Include="GetNextOperationIdCommandTest.cpp" />
     <ClCompile Include="GetStatisticsCommandTest.cpp" />
     <ClCompile Include="IndexesFromClientTest.cpp" />
@@ -80,7 +88,10 @@
     <ClCompile Include="JavaScriptIndexTest.cpp" />
     <ClCompile Include="LoadAllStartingWith.cpp" />
     <ClCompile Include="PutDocumentCommandTest.cpp" />
+    <ClCompile Include="RavenDB903Test.cpp" />
+    <ClCompile Include="RavenDB_5669Test.cpp" />
     <ClCompile Include="RavenDB_8761.cpp" />
+    <ClCompile Include="RavenDB_9676Test.cpp" />
     <ClCompile Include="raven_test_definitions.cpp" />
     <ClCompile Include="DeleteTest.cpp" />
     <ClCompile Include="DocumentIdPropertyTest.cpp" />
@@ -92,6 +103,8 @@
     <ClCompile Include="LoadTest.cpp" />
     <ClCompile Include="LoadTests.cpp" />
     <ClCompile Include="QueryTest.cpp" />
+    <ClCompile Include="RegexQueryTest.cpp" />
+    <ClCompile Include="ReorderDatabaseMembersTest.cpp" />
     <ClCompile Include="RequestExecutorTest.cpp" />
     <ClCompile Include="re_definitions.cpp" />
     <ClCompile Include="BasicDocumentCommandsTests.cpp" />
@@ -108,6 +121,7 @@
     <ClCompile Include="RequestExecutorAndDBsTests.cpp" />
     <ClCompile Include="SecuredRequestExecutorTests.cpp" />
     <ClCompile Include="RavenTestDriver.cpp" />
+    <ClCompile Include="SimonBartlettTest.cpp" />
     <ClCompile Include="SimpleMultiMapTest.cpp" />
     <ClCompile Include="test_utils.cpp" />
     <ClCompile Include="TrackEntityTest.cpp" />
@@ -120,10 +134,6 @@
     <ProjectReference Include="..\Raven.CppClient\Raven.CppClient.vcxproj">
       <Project>{5e8f32b4-d233-4c66-97fb-380b1b52ff64}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\secured_re.txt" />
-    <Text Include="..\unsecured_re.txt" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
@@ -164,6 +174,8 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\work\raven-cpp-client\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

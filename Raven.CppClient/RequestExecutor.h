@@ -32,7 +32,11 @@ namespace ravendb::client::http
 	public:
 		friend class NodeStatus;
 
-		using IndexAndResponse = std::pair<int32_t, impl::CurlResponse>;
+		struct IndexAndResponse
+		{
+			int32_t index;
+			impl::CurlResponse response;
+		};
 
 	private:
 		std::mutex _common_mutex{};
@@ -63,17 +67,12 @@ namespace ravendb::client::http
 
 		std::shared_ptr<const ServerNode> _topology_taken_from_node{};
 
-		//TODO think of an alternative
+		//TODO 
 		//public final ThreadLocal<AggressiveCacheOptions> aggressiveCaching = new ThreadLocal<>();
 
 		std::shared_ptr<primitives::Timer> _update_topology_timer{};
 
 		const std::shared_ptr<documents::conventions::DocumentConventions> _conventions;
-
-
-
-		//std::vector<std::string> _initial_urls;
-		//std::shared_ptr<Topology> _topology;
 
 	protected:
 		std::weak_ptr<RequestExecutor> _weak_this{};
@@ -94,18 +93,12 @@ namespace ravendb::client::http
 
 		std::vector<std::string> _last_known_urls{};
 
-
-
 	public:
 		//Extension point to plug - in request pre/post processing like adding proxy etc.
 		impl::CurlOptionsSetter set_before_perform = {};
 		impl::CurlOptionsSetter set_after_perform = {};
 
 		std::atomic_int64_t number_of_server_requests{ 0 };
-
-
-
-
 
 	private:
 		void initialize_update_topology_timer();
@@ -115,13 +108,6 @@ namespace ravendb::client::http
 			const std::optional<documents::session::SessionInfo>& session_info);
 
 		void update_topology_callback();
-
-
-
-		//TODO old version for checks
-		template<typename TResult>
-		std::shared_ptr<TResult> execute_internal(ServerNode& node, RavenCommand<TResult>& command);
-		//-------------------------
 
 		template<typename TResult>
 		HttpCache::ReleaseCacheItem get_from_cache(RavenCommand<TResult>& command, bool use_cache,
@@ -321,80 +307,6 @@ namespace ravendb::client::http
 		execute(current_index_and_node.current_node, current_index_and_node.current_index, command, true, session_info);
 	}
 
-	//TODO old code -> remove later
-	//template<typename TResult>
-	//std::shared_ptr<TResult> RequestExecutor::execute_internal(ServerNode & node, RavenCommand<TResult>& command)
-	//{
-	//	auto curl_ref = _curl_holder.checkout_curl();
-	//	auto curl = curl_ref.get();
-
-	//	std::string url;
-	//	command.create_request(curl_ref, node, url);
-	//	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-
-	//	if (_certificate_details)//using certificate
-	//	{
-	//		curl_easy_setopt(curl, CURLOPT_SSL_CTX_FUNCTION, ravendb::client::impl::utils::sslctx_function);
-	//		curl_easy_setopt(curl, CURLOPT_SSL_CTX_DATA, &_certificate_details);
-	//	}
-
-	//	if (set_before_perform)
-	//	{
-	//		set_before_perform(curl);
-	//	}
-
-	//	const auto response = impl::CurlResponse::run_curl_perform(curl_ref);
-
-	//	if (response.perform_result != CURLE_OK)
-	//	{
-	//		std::ostringstream error_builder;
-	//		error_builder << "Failed request to: "
-	//			<< url
-	//			<< ", status code: "
-	//			<< std::to_string(response.status_code)
-	//			<< "\n"
-	//			<< response.error
-	//			<< "\n";
-
-	//		throw RavenError(error_builder.str(), RavenError::ErrorType::GENERIC);
-	//	}
-	//	if (set_after_perform)
-	//	{
-	//		set_after_perform(curl);
-	//	}
-
-	//	command.status_code = response.status_code;
-	//	switch (response.status_code)
-	//	{
-	//	case 200:
-	//	case 201:
-	//	{
-	//		auto result = response.output.empty() ? nlohmann::json() : nlohmann::json::parse(response.output);
-	//		command.set_response(curl, result, false);
-	//		break;
-	//	}
-	//	case 204:
-	//		break;
-	//	case 304:
-	//		break;
-	//	case 404:
-	//		command.set_response_not_found(curl);
-	//		break;
-	//	case 503:
-	//		if (response.headers.find("Database-Missing") != response.headers.end())
-	//		{
-	//			throw RavenError(response.output, RavenError::ErrorType::DATABASE_DOES_NOT_EXIST);
-	//		}
-	//		throw RavenError(response.output, RavenError::ErrorType::SERVICE_NOT_AVAILABLE);
-	//	case 500:
-	//		throw RavenError(response.output, RavenError::ErrorType::INTERNAL_SERVER_ERROR);
-	//	default:
-	//		throw RavenError(response.output, RavenError::ErrorType::UNEXPECTED_RESPONSE);
-	//	}
-
-	//	return command.get_result();
-	//}
-
 	template <typename TResult>
 	HttpCache::ReleaseCacheItem RequestExecutor::get_from_cache(RavenCommand<TResult>& command, bool use_cache,
 		const std::string& url, std::optional<std::string>& cached_change_vector,
@@ -505,7 +417,7 @@ namespace ravendb::client::http
 					auto url_ref = std::optional<std::string>();
 					auto curl_ref = _curl_holder.checkout_curl();
 					create_request(curl_ref, nodes[task_number], command, url_ref);
-					return IndexAndResponse(task_number, command.send(curl_ref));
+					return IndexAndResponse{ task_number, command.send(curl_ref) };
 				}
 				catch (...)
 				{
@@ -544,8 +456,8 @@ namespace ravendb::client::http
 				}
 				try
 				{
-					const auto fastest = tasks[i]->get();
-					_node_selector->record_fastest(fastest.first, nodes[fastest.first]);
+					const auto& fastest = tasks[i]->get();
+					_node_selector->record_fastest(fastest.index, nodes[fastest.index]);
 					break;
 				}
 				catch (...)
@@ -564,7 +476,7 @@ namespace ravendb::client::http
 
 		if (preferred_task)
 		{
-			return preferred_task->get().second;
+			return preferred_task->get().response;
 		}
 		throw std::runtime_error("'execute_on_all_to_figure_out_the_fastest' failed");
 	}
@@ -694,7 +606,7 @@ namespace ravendb::client::http
 		RavenCommand<TResult>& command, const impl::CurlHandlesHolder::CurlReference& curl_ref,
 		const impl::CurlResponse& response, std::exception_ptr e)
 	{
-		const auto& response_json = response.output;
+		const auto& response_json = response.output.str();
 		if (!response_json.empty())
 		{
 			try

@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Highlightings.h"
 
-
 namespace ravendb::client::documents::queries
 {
 	struct QueryResult;

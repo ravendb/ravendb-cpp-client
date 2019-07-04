@@ -12,7 +12,7 @@ namespace ravendb::client::impl
 
 	public:
 		std::string_view error{};
-		std::string output{};
+		std::stringstream output{};
 		std::unordered_map<std::string, std::string> headers{}; 
 		long status_code{};
 		CURLcode perform_result{};
@@ -23,6 +23,14 @@ namespace ravendb::client::impl
 		static CurlResponse run_curl_perform(const CurlHandlesHolder::CurlReference& curl_ref);
 
 		CurlResponse() : _valid(false){}
+
+		CurlResponse(const CurlResponse& other);
+
+		CurlResponse(CurlResponse&& other) noexcept;
+
+		CurlResponse& operator=(const CurlResponse& other);
+
+		CurlResponse& operator=(CurlResponse&& other) noexcept;
 
 		bool is_valid() const;
 	};

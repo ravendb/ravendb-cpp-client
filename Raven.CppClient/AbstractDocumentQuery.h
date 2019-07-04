@@ -51,6 +51,7 @@
 #include "GetCppClassName.h"
 #include "ExplanationOptions.h"
 #include "EventHelper.h"
+#include "IncludeBuilderBase.h"
 
 namespace ravendb::client::documents::session
 {
@@ -72,7 +73,7 @@ namespace ravendb::client::documents::session
 
 		std::optional<std::string> index_name{};
 
-		std::optional<std::string> collection_name {};
+		std::optional<std::string> collection_name{};
 
 		int32_t _current_clause_depth{};
 
@@ -97,7 +98,7 @@ namespace ravendb::client::documents::session
 		bool is_intersect{};
 
 		bool is_group_by{};
-		   
+
 		std::weak_ptr<InMemoryDocumentSessionOperations> the_session;
 
 		std::optional<int32_t> page_size{};
@@ -126,7 +127,7 @@ namespace ravendb::client::documents::session
 
 		//Holds the query stats
 		std::shared_ptr<QueryStatistics> query_stats = std::make_shared<QueryStatistics>();
-		
+
 		bool disable_entities_tracking{};
 
 		bool disable_caching{};
@@ -229,7 +230,7 @@ namespace ravendb::client::documents::session
 		static void get_source_alias_if_exists(const queries::QueryData& query_data,
 			const std::vector<std::string>& fields, std::optional<std::string>& source_alias_reference);
 
-		 void _include_timings(std::shared_ptr<queries::timings::QueryTimings>& timings);
+		void _include_timings(std::shared_ptr<queries::timings::QueryTimings>& timings);
 
 		void _within_radius_of(const std::string& field_name, double radius, double latitude, double longitude,
 			const std::optional<indexes::spatial::SpatialUnits>& radius_units, double dist_error_percent);
@@ -285,8 +286,7 @@ namespace ravendb::client::documents::session
 
 		void _include(std::string path);
 
-		//TODO
-		//public void _include(IncludeBuilderBase includes)
+		void _include(std::shared_ptr<loaders::IncludeBuilderBase> includes);
 
 		void _take(int32_t count);
 
@@ -320,7 +320,7 @@ namespace ravendb::client::documents::session
 		void _where_in(const std::string& field_name, const std::vector<TValue>& values, bool exact = false);
 
 		template<typename TValue>
-		void _where_starts_with(std::string field_name,const TValue* value);
+		void _where_starts_with(std::string field_name, const TValue* value);
 
 		template<typename TValue>
 		void _where_ends_with(std::string field_name, const TValue* value);
@@ -353,7 +353,7 @@ namespace ravendb::client::documents::session
 		void _proximity(int32_t proximity);
 
 		void _order_by(const std::string& field, OrderingType ordering = OrderingType::STRING);
-		
+
 		void _order_by_descending(const std::string& field, OrderingType ordering = OrderingType::STRING);
 
 		void _order_by_score();
@@ -376,7 +376,7 @@ namespace ravendb::client::documents::session
 		void _intersect();
 
 		void _where_exists(const std::string& field_name);
-		
+
 		template<typename TValue>
 		void _contains_any(const std::string& field_name, const std::vector<TValue>& values);
 
@@ -454,11 +454,14 @@ namespace ravendb::client::documents::session
 		std::optional<std::string> get_options_parameter_name(const std::optional<queries::suggestions::SuggestionOptions>& options);
 
 		void _include_explanations(const std::optional<queries::explanation::ExplanationOptions>& options,
-			std::optional<queries::explanation::Explanations>& explanations_reference);		
+			std::optional<queries::explanation::Explanations>& explanations_reference);
 	};
+}
 
 #include "DocumentSessionImpl.h"
 
+namespace ravendb::client::documents::session
+{
 	template<typename T>
 	std::chrono::milliseconds AbstractDocumentQuery<T>::DEFAULT_TIMEOUT = std::chrono::seconds(15);
 
@@ -856,7 +859,7 @@ namespace ravendb::client::documents::session
 			{
 				return ensure_valid_field_name(field_name, is_nested_path);
 			})
-				<< "' cannot be used when static index '" << from_token->get_index_name()
+				<< "' cannot be used when static index '" << from_token->get_index_name().value_or("")
 				<< "' is queried. Dynamic spatial fields can only be used with dynamic queries, "
 				<< "for static index queries please use valid spatial fields defined in index definition.";
 
@@ -995,7 +998,7 @@ namespace ravendb::client::documents::session
 	{
 		append_operator_if_needed(where_tokens);
 
-		where_tokens.push_back(tokens::MoreLikeThisToken::create());
+		where_tokens.push_back(std::static_pointer_cast<tokens::QueryToken>(tokens::MoreLikeThisToken::create()));
 		return queries::more_like_this::MoreLikeThisScope(where_tokens.back(), 
 			[this](nlohmann::json value)->std::string
 		{
@@ -1011,6 +1014,26 @@ namespace ravendb::client::documents::session
 	void AbstractDocumentQuery<T>::_include(std::string path)
 	{
 		document_includes.insert(std::move(path));
+	}
+
+	template <typename T>
+	void AbstractDocumentQuery<T>::_include(std::shared_ptr<loaders::IncludeBuilderBase> includes)
+	{
+		if(!includes)
+		{
+			return;
+		}
+
+		if(!includes->documents_to_include.empty())
+		{
+			for(const auto& doc : includes->documents_to_include)
+			{
+				document_includes.insert(doc);
+			}
+		}
+
+		//TODO
+		//_includeCounters(includes.alias, includes.countersToIncludeBySourcePath);
 	}
 
 	template <typename T>
@@ -2020,11 +2043,10 @@ namespace ravendb::client::documents::session
 			if(required_quotes)
 			{
 				writer << "'";
-				std::transform(include.cbegin(), include.cend(), std::ostream_iterator<const char*>(writer),
-					[](auto c)->const char*
+				std::transform(include.cbegin(), include.cend(), std::ostream_iterator<std::string>(writer),
+					[](auto c)->std::string
 				{
-					char char_as_str[2] = { c, '\0' };
-					return c == '\'' ? "\\'" : char_as_str;
+					return c == '\'' ? "\\'" : std::string{ c };
 				});
 				writer << "'";
 			}
@@ -2277,7 +2299,7 @@ namespace ravendb::client::documents::session
 			return lazy_query_op->get_result();
 		};
 
-		return get_session()->add_lazy_operation<std::vector<std::shared_ptr<T>>>(lazy_query_operation,
+		return get_session()->template add_lazy_operation<std::vector<std::shared_ptr<T>>>(lazy_query_operation,
 			get_operation_result, [=]()
 		{
 			if (on_eval)

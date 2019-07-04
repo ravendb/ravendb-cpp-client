@@ -13,7 +13,7 @@ namespace ravendb::client::tests::client
 	protected:
 		void customise_store(std::shared_ptr<documents::DocumentStore> store) override
 		{
-			store->set_before_perform(infrastructure::set_for_fiddler);
+			//store->set_before_perform(infrastructure::set_for_fiddler);
 		}
 	};
 

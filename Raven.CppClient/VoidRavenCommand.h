@@ -14,9 +14,6 @@ namespace ravendb::client::http
 		~VoidRavenCommand() override = 0;
 
 		bool is_read_request() const override;
-
-		//TODO check if necessary
-		//void set_response(const std::optional<nlohmann::json>& response, bool from_cache) override;
 	};
 
 	inline VoidRavenCommand::VoidRavenCommand()
@@ -30,10 +27,5 @@ namespace ravendb::client::http
 	{
 		return false;
 	}
-
-	//inline void VoidRavenCommand::set_response(const std::optional<nlohmann::json>& response, bool from_cache)
-	//{
-	//	_result.reset();
-	//}
 }
 

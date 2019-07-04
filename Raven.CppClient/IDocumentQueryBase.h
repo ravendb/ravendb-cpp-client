@@ -1,7 +1,11 @@
 #pragma once
-#include "IQueryBase.h"
 #include "OrderingType.h"
 #include "IFilterDocumentQueryBase.h"
+#include "QueryIncludeBuilder.h"
+#include "Highlightings.h"
+#include "HighlightingOptions.h"
+#include "Explanations.h"
+#include "ExplanationOptions.h"
 
 namespace ravendb::client::documents::session
 {
@@ -44,12 +48,7 @@ namespace ravendb::client::documents::session
 			std::optional<queries::highlighting::Highlightings>& highlightings_reference);
 
 		auto include(std::string path);
-
-		//TODO implement
-		//auto include(const std::function<void(std::shared_ptr<IQueryIncludeBuilder>)>& includes)
-		//{
-		//	return cast_down()->include(includes);
-		//}
+		auto include(const std::function<void(std::shared_ptr<loaders::IQueryIncludeBuilder<loaders::QueryIncludeBuilder>>)>& includes);
 
 		auto intersect();
 
@@ -136,6 +135,14 @@ namespace ravendb::client::documents::session
 	auto IDocumentQueryBase<T, TThis>::include(std::string path)
 	{
 		return cast_down()->include(std::move(path));
+	}
+
+	template <typename T, class TThis>
+	auto IDocumentQueryBase<T, TThis>::include(
+		const std::function<void(std::shared_ptr<loaders::IQueryIncludeBuilder<loaders::QueryIncludeBuilder>>)>&
+		includes)
+	{
+		return cast_down()->include(includes);
 	}
 
 	template <typename T, class TThis>

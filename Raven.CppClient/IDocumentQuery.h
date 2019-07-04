@@ -1,7 +1,9 @@
 #pragma once
 #include "IDocumentQueryBaseSingle.h"
 #include "IDocumentQueryBase.h"
-#include "QueryResult.h"
+#include "IEnumerableQuery.h"
+#include "GroupBy.h"
+#include "QueryData.h"
 
 namespace ravendb::client::documents::session
 {

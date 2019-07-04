@@ -23,7 +23,7 @@ namespace ravendb::client::documents::commands::batches
 			{
 				set_val_to_json(j, "ChangeVector", nullptr);
 			}
-			set_val_to_json(j, "Type", "DELETE");
+			set_val_to_json(j, "Type", get_type());
 
 			serialize_extra_fields(j);
 

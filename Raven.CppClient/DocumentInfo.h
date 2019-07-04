@@ -3,6 +3,7 @@
 #include "ConcurrencyCheckMode.h"
 #include "Constants.h"
 #include "IMetadataDictionary.h"
+#include <json.hpp>
 
 namespace ravendb::client::documents::session
 {
@@ -37,11 +38,37 @@ namespace ravendb::client::documents::session
 		using ToJsonConverter = std::function<nlohmann::json(std::shared_ptr<void>)>;
 		using EntityUpdater = std::function<void(std::shared_ptr<void>, const nlohmann::json&)>;
 
+#ifndef _MSC_VER
 		template<typename T>
-		inline static const ToJsonConverter default_to_json = [](std::shared_ptr<void> entity) -> nlohmann::json
+        static const ToJsonConverter default_to_json;
+
+		template<typename T>
+		static const FromJsonConverter default_from_json;
+
+		template<typename T>
+		static const EntityUpdater default_entity_update;
+#else
+		template <typename T>
+		inline static const ToJsonConverter default_to_json = 
+			[](std::shared_ptr<void> entity) -> nlohmann::json
 		{
 			return nlohmann::json(*std::static_pointer_cast<T>(entity));
 		};
+
+		template<typename T>
+		inline static const FromJsonConverter default_from_json = 
+			[](const nlohmann::json& json) -> std::shared_ptr<void>
+		{
+			return inner_default_from_json<T>(json);
+		};
+
+		template<typename T>
+		inline static const EntityUpdater default_entity_update =
+			[](std::shared_ptr<void> entity, const nlohmann::json& new_json) -> void
+		{
+			inner_default_entity_update<T>(entity, new_json);
+		};
+#endif
 
 		//TODO waiting for MSVC bug fix
 		//template<typename T>
@@ -56,14 +83,7 @@ namespace ravendb::client::documents::session
 		//		return {};
 		//	}
 		//};
-
-		template<typename T>
-		inline static const FromJsonConverter default_from_json = [](const nlohmann::json& json) -> std::shared_ptr<void>
-		{
-			return inner_default_from_json<T>(json);
-		};
-
-		//TODO waiting for MSVC bug fix
+		//
 		//template<typename T>
 		//inline static const EntityUpdater default_entity_update = 
 		//	[](std::shared_ptr<void> entity, const nlohmann::json& new_json) -> void
@@ -74,13 +94,6 @@ namespace ravendb::client::documents::session
 		//		*document = new_json.get<T>(); //change the old document with the new one obtained from 'new_json'
 		//	}
 		//};
-
-		template<typename T>
-		inline static const EntityUpdater default_entity_update = 
-			[](std::shared_ptr<void> entity, const nlohmann::json& new_json) -> void
-		{
-			inner_default_entity_update<T>(entity, new_json);
-		};
 
 		nlohmann::json document{};
 		nlohmann::json metadata{};
@@ -139,4 +152,25 @@ namespace ravendb::client::documents::session
 		{}
 
 	};
+
+#ifndef _MSC_VER
+    template <typename T>
+    const DocumentInfo::ToJsonConverter DocumentInfo::default_to_json = [](std::shared_ptr<void> entity) -> nlohmann::json
+    {
+        return nlohmann::json(*std::static_pointer_cast<T>(entity));
+    };
+
+    template<typename T>
+    const DocumentInfo::FromJsonConverter DocumentInfo::default_from_json = [](const nlohmann::json& json) -> std::shared_ptr<void>
+    {
+        return inner_default_from_json<T>(json);
+    };
+
+    template<typename T>
+    const DocumentInfo::EntityUpdater DocumentInfo::default_entity_update =
+        [](std::shared_ptr<void> entity, const nlohmann::json& new_json) -> void
+    {
+        inner_default_entity_update<T>(entity, new_json);
+    };
+#endif
 }

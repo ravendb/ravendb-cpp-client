@@ -107,6 +107,7 @@ namespace ravendb::client::tests::server::documents::indexing_auto
 				->to_list();
 
 			auto product_counts2 = session.advanced().document_query<infrastructure::entities::Order>()
+			    ->order_by("count")
 				->group_by({ "lines[].product" })
 				->select_key({}, "productName")
 				->select_count()
@@ -135,6 +136,7 @@ namespace ravendb::client::tests::server::documents::indexing_auto
 				->to_list();
 
 			auto product_counts2 = session.advanced().document_query<infrastructure::entities::Order>()
+			    ->order_by("count")
 				->group_by(std::vector<std::string>{ "lines[].product", "shipTo.country" })
 				->select_key("lines[].product", "productName")
 				->select_key("shipTo.country", "country")
@@ -166,6 +168,7 @@ namespace ravendb::client::tests::server::documents::indexing_auto
 				->to_list();
 
 			auto product_counts2 = session.advanced().document_query<infrastructure::entities::Order>()
+			    ->order_by("quantity")
 				->group_by(std::vector<std::string>{"lines[].product", "lines[].quantity"})
 				->select_key("lines[].product", "productName")
 				->select_key("lines[].quantity", "quantity")

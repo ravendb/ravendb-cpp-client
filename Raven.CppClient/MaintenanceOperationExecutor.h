@@ -2,6 +2,7 @@
 #include "RequestExecutor.h"
 #include "IVoidMaintenanceOperation.h"
 #include "ServerOperationExecutor.h"
+#include "Operation.h"
 
 namespace ravendb::client::documents
 {
@@ -21,9 +22,12 @@ namespace ravendb::client::documents::operations
 
 		std::shared_ptr<serverwide::operations::ServerOperationExecutor> _server_operation_executor;
 
+	private:
 		std::shared_ptr<http::RequestExecutor> get_request_executor();
 
 		void assert_database_set() const;
+
+		void assert_database_name_set() const;
 
 		MaintenanceOperationExecutor(std::shared_ptr<DocumentStore> store, std::optional<std::string> database_name = {});
 	public:
@@ -39,8 +43,7 @@ namespace ravendb::client::documents::operations
 		template<typename TResult>
 		std::shared_ptr<TResult> send(const IMaintenanceOperation<TResult>& operation);
 
-		//TODO implement
-		//public Operation sendAsync(IMaintenanceOperation<OperationIdResult> operation)
+		std::unique_ptr<Operation> send_async(const IMaintenanceOperation<OperationIdResult>& operation);
 	};
 
 	template <typename TResult>

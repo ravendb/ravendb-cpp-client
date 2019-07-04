@@ -61,7 +61,7 @@ namespace ravendb::client::documents::session::loaders
 		const std::optional<DocumentInfo::FromJsonConverter>& from_json,
 		const std::optional<DocumentInfo::ToJsonConverter>& to_json)
 	{
-		static_assert(std::is_same_v<typename std::iterator_traits<InputIt>::value_type, std::string>,
+		static_assert(std::is_same_v<std::remove_cv_t<typename std::iterator_traits<InputIt>::value_type>, std::string>,
 			"invalid iterator type");
 
 		std::vector<std::reference_wrapper<const std::string>> ids{};

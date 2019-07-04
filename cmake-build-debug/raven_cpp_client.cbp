@@ -1,0 +1,2173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="raven_cpp_client"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\Raven.CppClient\;CMake Files\Raven.CppClient.Tests\;CMake Files\Raven.CppClient.Tests\lib\;CMake Files\Raven.CppClient.Tests\lib\googletest\;CMake Files\Raven.CppClient.Tests\lib\googletest\googletest\;CMake Files\Raven.CppClient.Tests\lib\googletest\googletest\cmake\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/strip">
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 install/strip"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install">
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 install"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/local">
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 install/local"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="list_install_components">
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 list_install_components"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PrepareOneHeader">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/PrepareOneHeader" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 PrepareOneHeader"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PrepareOneHeader/fast">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/PrepareOneHeader" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 PrepareOneHeader/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Raven_CppClient">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/libRaven_CppClient.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DDEFAULT_CA_BUNDLE_PATH=&quot;../../ca_bundle/ca-bundle.crt&quot;"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/.."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/../external"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 Raven_CppClient"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Raven_CppClient/fast">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/libRaven_CppClient.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DDEFAULT_CA_BUNDLE_PATH=&quot;../../ca_bundle/ca-bundle.crt&quot;"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/.."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/../external"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 Raven_CppClient/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Raven_CppClient_Tests">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Raven_CppClient_Tests" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DDEFAULT_CA_BUNDLE_PATH=&quot;../../ca_bundle/ca-bundle.crt&quot;"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/.."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/../Raven.CppClient"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/../external"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/.."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/../external"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/include"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 Raven_CppClient_Tests"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Raven_CppClient_Tests/fast">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Raven_CppClient_Tests" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DDEFAULT_CA_BUNDLE_PATH=&quot;../../ca_bundle/ca-bundle.crt&quot;"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/.."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/../Raven.CppClient"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/../external"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/.."/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/../external"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/include"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 Raven_CppClient_Tests/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest_main">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/lib/libgtest_maind.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/include"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 gtest_main"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest_main/fast">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/lib/libgtest_maind.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/include"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 gtest_main/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/lib/libgtestd.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/include"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 gtest"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gtest/fast">
+				<Option output="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/lib/libgtestd.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/include"/>
+					<Add directory="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 gtest/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient.Tests/lib/googletest/googletest/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Address.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/AdvancedPatchingTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Arr.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/BasicDocumentCommandsTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/BasicDocumentsSessionTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/BasicPatchTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/BasicQueryTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/BoundingBoxIndexTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/ClientConfigurationTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Company.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/CompanyType.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/ConnectionDetailsHolder.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/ConnectionDetailsHolder.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Contact.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/CreateSampleDataOperation.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/CreateSampleDataOperation.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/CrudTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/DeleteDocumentCommandTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/DeleteTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/DocumentIdPropertyTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Employee.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/ExistsTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Family.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/FirstClassPatchTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/GeekPerson.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/GetDocumentsCommandTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/GetNextOperationIdCommandTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/GetStatisticsCommandTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/HiLoTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/HttpsTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/IndexOperationsTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/IndexOperationsTestsOld.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/IndexesFromClientTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/JavaScriptIndexTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/LazyTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/LoadAllStartingWith.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/LoadTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/LoadTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/NullableUser.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Order.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/OrderLine.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Person.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Poc.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/Post.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/PutDocumentCommandTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/QueryTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/RavenDB_8761.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/RavenTestDriver.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/RavenTestDriver.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/RequestExecutorAndDBsTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/RequestExecutorTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/SecuredRequestExecutorTests.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/SimpleMultiMapTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/TrackEntityTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/User.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/WhatChangedTest.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/ds_definitions.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/ds_definitions.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/src/gtest-all.cc">
+			<Option target="gtest"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/src/gtest_main.cc">
+			<Option target="gtest_main"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/main.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/pch.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/pch.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/raven_test_definitions.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/raven_test_definitions.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/re_definitions.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/re_definitions.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/test_utils.cpp">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/test_utils.h">
+			<Option target="Raven_CppClient_Tests"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AbstractDocumentQuery.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AbstractGenericIndexCreationTask.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AbstractGenericIndexCreationTask.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AbstractIndexCreationTask.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AbstractIndexCreationTask.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AbstractIndexCreationTaskBase.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AbstractIndexCreationTaskBase.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AbstractJavaScriptIndexCreationTask.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AbstractJavaScriptIndexCreationTask.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AbstractMultiMapIndexCreationTask.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AbstractMultiMapIndexCreationTask.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AdvancedSessionOperations.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AdvancedSessionOperations.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AllTopologyNodesDownException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AllTopologyNodesDownException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AttachmentDoesNotExistException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AttachmentDoesNotExistException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AuthenticationException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AuthenticationException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AuthorizationException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AuthorizationException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AutoSpatialMethodType.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/AutoSpatialOptions.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/BadRequestException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/BadRequestException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/BadResponseException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/BadResponseException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/BatchCommand.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/BatchCommandResult.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/BatchCommandResult.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/BatchOperation.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/BatchOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/BatchOptions.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/BulkInsertAbortedException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/BulkInsertAbortedException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/BulkInsertProtocolViolationException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/BulkInsertProtocolViolationException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CertificateDetails.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CertificateNameMismatchException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CertificateNameMismatchException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ChangeProcessingException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ChangeProcessingException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CircleCriteria.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CircleCriteria.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ClientConfiguration.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ClientVersionMismatchException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ClientVersionMismatchException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CloseSubclauseToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CloseSubclauseToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ClusterRequestExecutor.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ClusterRequestExecutor.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ClusterTopology.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ClusterTopology.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ClusterTopologyResponse.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ClusterTopologyResponse.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CmpXchg.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CollectionStatistics.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CommandDataBase.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CommandExecutionException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CommandExecutionException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CommandType.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CompareStringsEqualIgnoreCase.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CompareStringsLessThanIgnoreCase.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CompilationException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CompilationException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ConcurrencyCheckMode.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ConcurrencyException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ConcurrencyException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ConflictException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ConflictException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ConflictSolver.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ConflictSolver.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/Constants.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CounterIncludesToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CounterIncludesToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CounterOverflowException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CounterOverflowException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CreateDatabaseOperation.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CreateDatabaseOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CurlException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CurlHandlesHolder.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CurlHandlesHolder.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CurlResponse.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CurlResponse.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CurlSListHolder.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CurlSListHolder.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CurrentIndexAndNode.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseConcurrentLoadTimeoutException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseConcurrentLoadTimeoutException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseDisabledException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseDisabledException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseDoesNotExistException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseDoesNotExistException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseLoadFailureException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseLoadFailureException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseLoadTimeoutException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseLoadTimeoutException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseNotRelevantException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseNotRelevantException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabasePromotionStatus.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabasePutResult.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabasePutResult.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseRecord.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseRecord.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseSchemaErrorException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseSchemaErrorException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseStatistics.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseTopology.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DatabaseTopology.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DateTimeOffset.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DateTimeOffset.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DeclareToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DeclareToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DeleteByQueryOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DeleteCommandData.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DeleteDatabaseResult.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DeleteDatabaseResult.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DeleteDatabasesOperation.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DeleteDatabasesOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DeleteDocumentCommand.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DeleteIndexOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DisableIndexOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DistinctToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DistinctToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentConflictException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentConflictException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentConventions.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentConventions.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentDoesNotExistException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentDoesNotExistException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentInfo.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentQuery.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentQueryHelper.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentQueryHelper.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentSession.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentSession.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentSessionImpl.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentSessionImpl.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentStore.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentStore.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentStoreBase.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentStoreBase.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentsById.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentsByIdsMap.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DocumentsChanges.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/DynamicSpatialField.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/EagerSessionOperations.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/EagerSessionOperations.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/EnableIndexOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/EntityIdHelper.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/EntityIdHelperUtil.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/EntityToJson.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/EntityToJson.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/EventArgs.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/EventArgs.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/EventHandler.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/EventHelper.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ExceptionDispatcher.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ExceptionDispatcher.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ExplanationOptions.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ExplanationOptions.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ExplanationToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ExplanationToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/Explanations.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/Explanations.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/FacetToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/FacetToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/FieldIndexing.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/FieldStorage.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/FieldTermVector.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/FieldsToFetchToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/FieldsToFetchToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/FromToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/FromToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GenerateEntityIdOnTheClient.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GenerateEntityIdOnTheClient.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GenericQueryResult.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetClientConfigurationOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetClusterTopologyCommand.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetClusterTopologyCommand.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetCollectionStatisticsOperation.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetCollectionStatisticsOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetCppClassName.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetCppClassName.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetDatabaseNamesOperation.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetDatabaseNamesOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetDatabaseRecordOperation.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetDatabaseRecordOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetDatabaseTopologyCommand.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetDatabaseTopologyCommand.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetDocumentsCommand.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetDocumentsResult.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetIndexErrorsOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetIndexNamesOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetIndexOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetIndexStatisticsOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetIndexesOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetIndexesStatisticsOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetIndexingStatusOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetNextOperationIdCommand.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetOperationStateOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetRequest.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetResponse.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetServerWideClientConfigurationOperation.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetServerWideClientConfigurationOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetStatisticsOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetTcpInfoCommand.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetTcpInfoCommand.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GetTermsOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GroupBy.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GroupBy.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GroupByCountToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GroupByCountToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GroupByDocumentQuery.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GroupByField.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GroupByKeyToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GroupByKeyToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GroupByMethod.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GroupBySumToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GroupBySumToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GroupByToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/GroupByToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/HeadDocumentCommand.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/HiLoIdGenerator.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/HiLoIdGenerator.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/HiLoResult.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/HiLoReturnCommand.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/HiLoReturnCommand.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/HighlightingOptions.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/HighlightingOptions.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/HighlightingToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/HighlightingToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/Highlightings.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/Highlightings.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/HttpCache.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/HttpCache.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/HttpCacheItem.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/HttpExtensions.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/HttpExtensions.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/HttpStatus.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IDisposalNotification.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IDocumentQuery.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IDocumentQueryBase.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IDocumentQueryBaseSingle.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IDocumentStore.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IEnumerableQuery.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IExecutorService.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IFilterDocumentQueryBase.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IGroupByDocumentQuery.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ILazyOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IMaintenanceOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IMetadataDictionary.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IQueryBase.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IRawDocumentQuery.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IServerOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IVoidMaintenanceOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IVoidOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IVoidServerOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/InMemoryDocumentSessionOperations.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/InMemoryDocumentSessionOperations.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexAlreadyExistException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexAlreadyExistException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexBatchOptions.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexCompilationException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexCompilationException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexConfiguration.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexCreation.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexCreation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexCreationException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexCreationException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexDefinition.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexDefinitionBuilder.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexDefinitionBuilder.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexDeletionException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexDeletionException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexDoesNotExistException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexDoesNotExistException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexErrors.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexFieldOptions.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexHasChangedOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexInformation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexInvalidException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexInvalidException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexLockMode.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexPriority.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexQuery.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexQueryBase.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexQueryContent.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexRunningStatus.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexState.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexStats.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexType.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexTypeExtensions.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexTypeExtensions.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexingError.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IndexingStatus.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/Inflector.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IntersectMarkerToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/IntersectMarkerToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/InvalidQueryException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/InvalidQueryException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/JavaScriptArray.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/JavaScriptException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/JavaScriptException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/JavaScriptParseException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/JavaScriptParseException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/JsonOperation.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/JsonOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/Lazy.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LazyLoadOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LazyLoaderWithInclude.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LazyMultiLoaderWithInclude.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LazyMultiLoaderWithInclude.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LazyQueryOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LazySessionOperations.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LazySessionOperationsImpl.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LazySessionOperationsImpl.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LazyStartsWithOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LeaderStamp.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LeaderStamp.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LicenseActivationException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LicenseActivationException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LoadOperation.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LoadOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LoadStartingWithOperation.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LoadStartingWithOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LoadToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LoadToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/LoaderWithInclude.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MaintenanceOperationExecutor.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MaintenanceOperationExecutor.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MetadataAsDictionary.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MetadataAsDictionary.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MethodCall.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MillisToTimespanConverter.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MillisToTimespanConverter.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MoreLikeThisBase.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MoreLikeThisOptions.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MoreLikeThisOptions.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MoreLikeThisScope.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MoreLikeThisScope.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MoreLikeThisToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MoreLikeThisToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MoreLikeThisUsingAnyDocument.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MoreLikeThisUsingDocument.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MoreLikeThisUsingDocumentForDocumentQuery.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MultiDatabaseHiLoIdGenerator.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MultiDatabaseHiLoIdGenerator.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MultiGetCommand.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MultiGetOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MultiLoaderWithInclude.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MultiLoaderWithInclude.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MultiTypeHiLoIdGenerator.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/MultiTypeHiLoIdGenerator.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/NegateToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/NegateToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/NextHiLoCommand.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/NextHiLoCommand.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/NoLeaderException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/NoLeaderException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/NodeIsPassiveException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/NodeIsPassiveException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/NodeSelector.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/NodeSelector.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/NodeStatus.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/NodeStatus.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/NonUniqueObjectException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/NonUniqueObjectException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/OpenSubclauseToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/OpenSubclauseToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/OperationExecutor.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/OperationExecutor.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/OperationIdResult.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/OrderByToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/OrderByToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/OrderingType.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/Parameters.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/PatchByQueryOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/PatchCommandData.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/PatchOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/PatchRequest.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/PatchResult.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/PatchStatus.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/PointField.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/PointField.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/PutClientConfigurationOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/PutCommandData.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/PutDocumentCommand.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/PutIndexResult.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/PutIndexesOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/PutResult.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/PutServerWideClientConfigurationOperation.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/PutServerWideClientConfigurationOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/Query.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/Query.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryCommand.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryData.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryData.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryFieldUtil.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryFieldUtil.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryHighlightings.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryHighlightings.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryOperation.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryOperationOptions.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryOperator.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryOperatorToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryOperatorToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryResult.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryResultBase.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryStatistics.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryStatistics.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryTimings.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryTimings.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/QueryToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/RavenCommand.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/RavenCommand.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/RavenException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/RavenException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/RawDocumentQuery.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ReadBalanceBehavior.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ReplicationBatchOptions.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/RequestExecutor.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/RequestExecutor.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ResetIndexOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ResponseDisposeHandling.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ResponseTimeInformation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/RevisionsDisabledException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/RevisionsDisabledException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/RouteNotFoundException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/RouteNotFoundException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ScriptResolver.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ScriptResolver.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SearchOperator.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SecurityException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SecurityException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ServerLoadFailureException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ServerLoadFailureException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ServerNode.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ServerNode.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ServerOperationExecutor.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ServerOperationExecutor.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SessionCreatedEventArgs.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SessionInfo.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SessionOperationExecutor.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SessionOperationExecutor.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SessionOptions.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SetIndexesLockOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SetIndexesPriorityOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ShapeToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/ShapeToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SimpleStopWatch.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/Size.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SpatialCriteria.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SpatialCriteria.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SpatialCriteriaFactory.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SpatialCriteriaFactory.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SpatialFieldType.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SpatialOptions.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SpatialOptionsFactory.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SpatialOptionsFactory.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SpatialRelation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SpatialSearchStrategy.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SpatialUnits.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/StartIndexOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/StartIndexingOperationh.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/StopIndexOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/StopIndexingOperation.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/StringDistanceTypes.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SubscriberErrorException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SubscriberErrorException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SubscriptionChangeVectorUpdateConcurrencyException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SubscriptionChangeVectorUpdateConcurrencyException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SubscriptionClosedException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SubscriptionClosedException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SubscriptionDoesNotBelongToNodeException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SubscriptionDoesNotBelongToNodeException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SubscriptionDoesNotExistException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SubscriptionDoesNotExistException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SubscriptionException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SubscriptionException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SubscriptionInUseException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SubscriptionInUseException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SubscriptionInvalidStateException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SubscriptionInvalidStateException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SuggestToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SuggestToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SuggestionBase.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SuggestionBase.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SuggestionOptions.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SuggestionOptions.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SuggestionSortMode.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SuggestionWithTerm.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SuggestionWithTerm.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SuggestionWithTerms.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/SuggestionWithTerms.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/Supplier.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/TasksExecutor.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/TasksScheduler.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/TcpConnectionInfo.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/TcpConnectionInfo.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/TermsQueryResult.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/TimeoutException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/TimeoutException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/Timer.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/TimingsToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/TimingsToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/Topology.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/Topology.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/TransactionMode.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/TrueToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/TrueToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/UnsuccessfulRequestException.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/UnsuccessfulRequestException.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/VoidRavenCommand.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/WhereOperator.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/WhereParams.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/WhereToken.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/WhereToken.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/WktCriteria.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/WktCriteria.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/WktField.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/WktField.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/json_utils.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/json_utils.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/prepare_one_header.cpp">
+			<Option target="PrepareOneHeader"/>
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/raven_cpp_client.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/stdafx.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/stdafx.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/targetver.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/utils.cpp">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/utils.h">
+			<Option target="Raven_CppClient"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Raven.CppClient\"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Raven.CppClient.Tests\"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Raven.CppClient.Tests\lib\googletest\googletest\"/>
+		</Unit>
+		<Unit filename="/home/alexander/RavenDB_Client/raven-cpp-client/Raven.CppClient.Tests/lib/googletest/googletest/cmake/internal_utils.cmake">
+			<Option virtualFolder="CMake Files\Raven.CppClient.Tests\lib\googletest\googletest\cmake\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

@@ -3,6 +3,7 @@
 #include "raven_test_definitions.h"
 #include "DocumentSession.h"
 #include "User.h"
+#include "EntityIdHelperUtil.h"
 #include "NonUniqueObjectException.h"
 
 namespace ravendb::client::tests::client
@@ -13,6 +14,11 @@ namespace ravendb::client::tests::client
 		void customise_store(std::shared_ptr<documents::DocumentStore> store) override
 		{
 			//store->set_before_perform(infrastructure::set_for_fiddler);
+		}
+
+		static void SetUpTestCase()
+		{
+			REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
 		}
 	};
 

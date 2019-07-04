@@ -42,4 +42,33 @@ namespace ravendb::client::tests::client::documents::commands
 			ASSERT_EQ("Alexander", loaded_user->name);
 		}
 	}
+
+	TEST_F(PutDocumentCommandTest, CanPutLargeDocumentUsingCommand)
+	{
+		auto store = get_document_store(TEST_NAME);
+
+		auto user = std::make_shared<infrastructure::entities::User>();
+		constexpr std::size_t LARGE_STRING_SIZE{ 1024 * 1024 };
+
+		user->name.reserve(LARGE_STRING_SIZE);
+		for(std::size_t i = 0; i < LARGE_STRING_SIZE/4; ++i)
+		{
+			user->name.append("AbCd");
+		}
+
+		nlohmann::json json = *user;
+
+		auto command = ravendb::client::documents::commands::PutDocumentCommand("users/1", {}, json);
+		store->get_request_executor()->execute(command);
+
+		auto res = command.get_result();
+
+		ASSERT_EQ("users/1", res->id);
+		ASSERT_FALSE(res->change_vector.empty());
+		{
+			auto session = store->open_session();
+			auto loaded_user = session.load<infrastructure::entities::User>("users/1");
+			ASSERT_EQ(user->name, loaded_user->name);
+		}
+	}
 }

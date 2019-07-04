@@ -12,6 +12,8 @@
 #include "LazySessionOperations.h"
 #include "LoadStartingWithOperation.h"
 #include "HeadDocumentCommand.h"
+#include "IAttachmentsSessionOperations.h"
+#include "DocumentSessionAttachments.h"
 
 namespace ravendb::client::documents::session
 {
@@ -23,6 +25,15 @@ namespace ravendb::client::documents::session
 	{
 		return operations::lazy::LazySessionOperations(operations::lazy::LazySessionOperationsImpl::create(
 			std::static_pointer_cast<DocumentSessionImpl>(_weak_this.lock())));
+	}
+
+	std::shared_ptr<IAttachmentsSessionOperations> DocumentSessionImpl::attachments()
+	{
+		if(!_attachments)
+		{
+			_attachments = std::make_shared<DocumentSessionAttachments>(_weak_this.lock());
+		}
+		return _attachments;
 	}
 
 	operations::LoadOperation DocumentSessionImpl::load_impl(const std::string& id)

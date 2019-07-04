@@ -66,7 +66,7 @@ namespace ravendb::client::tests::definitions
 	std::shared_ptr<DocumentStoreScope> DocumentStoreScope::get_document_store(
 		const std::string& file, int line, int counter, bool is_secured, bool use_fiddler)
 	{
-		std::filesystem::path path(file);
+		std::experimental::filesystem::path path(file);
 		std::ostringstream name;
 		name << path.filename().replace_extension().string() << "_" << line << "_" << counter;
 		return is_secured ?

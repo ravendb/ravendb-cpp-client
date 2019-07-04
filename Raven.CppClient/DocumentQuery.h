@@ -1,4 +1,5 @@
 #pragma once
+#include "AbstractDocumentQuery.h"
 #include "IDocumentQuery.h"
 #include "SpatialCriteriaFactory.h"
 #include "MoreLikeThisUsingDocument.h"
@@ -66,7 +67,7 @@ namespace ravendb::client::documents::session
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> wait_for_non_stale_results(const std::optional<std::chrono::milliseconds>& wait_timeout = {});
 
-		queries::IndexQuery get_index_query() const;
+		queries::IndexQuery get_index_query();
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> add_parameter(std::string name, nlohmann::json object);
 
@@ -106,8 +107,8 @@ namespace ravendb::client::documents::session
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> include(std::string path);
 
-		//TODO
-		//public IDocumentQuery<T> include(Consumer<IQueryIncludeBuilder> includes)
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> include(const std::function<
+			void(std::shared_ptr<loaders::IQueryIncludeBuilder<loaders::QueryIncludeBuilder>>)>& includes);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> not_next();
 
@@ -488,7 +489,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	queries::IndexQuery DocumentQuery<T>::get_index_query() const
+	queries::IndexQuery DocumentQuery<T>::get_index_query()
 	{
 		return AbstractDocumentQuery<T>::get_index_query();
 	}
@@ -626,6 +627,17 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::include(std::string path)
 	{
 		AbstractDocumentQuery<T>::_include(std::move(path));
+		return _weak_this.lock();
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::include(
+		const std::function<void(std::shared_ptr<loaders::IQueryIncludeBuilder<loaders::QueryIncludeBuilder>>)>&
+		includes)
+	{
+		auto include_builder = loaders::QueryIncludeBuilder::create(get_conventions());
+		includes(include_builder);
+		AbstractDocumentQuery<T>::_include(include_builder);
 		return _weak_this.lock();
 	}
 
@@ -1038,7 +1050,7 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_distance_descending(
 		const queries::spatial::DynamicSpatialField& field, double latitude, double longitude)
 	{
-		AbstractDocumentQuery<T>::_order_by_descending(field, latitude, longitude);
+		AbstractDocumentQuery<T>::_order_by_distance_descending(field, latitude, longitude);
 		return _weak_this.lock();
 	}
 
@@ -1046,7 +1058,7 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_distance_descending(
 		const std::string& field_name, double latitude, double longitude)
 	{
-		AbstractDocumentQuery<T>::_order_by_descending(field_name, latitude, longitude);
+		AbstractDocumentQuery<T>::_order_by_distance_descending(field_name, latitude, longitude);
 		return _weak_this.lock();
 	}
 
@@ -1054,7 +1066,7 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_distance_descending(
 		const queries::spatial::DynamicSpatialField& field, const std::string& shape_wkt)
 	{
-		AbstractDocumentQuery<T>::_order_by_descending(field, shape_wkt);
+		AbstractDocumentQuery<T>::_order_by_distance_descending(field, shape_wkt);
 		return _weak_this.lock();
 	}
 
@@ -1062,7 +1074,7 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_distance_descending(
 		const std::string& field_name, const std::string& shape_wkt)
 	{
-		AbstractDocumentQuery<T>::_order_by_descending(field_name, shape_wkt);
+		AbstractDocumentQuery<T>::_order_by_distance_descending(field_name, shape_wkt);
 		return _weak_this.lock();
 	}
 

@@ -17,14 +17,14 @@ namespace ravendb::client::documents::operations::indexes
 			: _index_definition(std::move(definition))
 		{}
 
-		std::unique_ptr<RavenCommand<bool>> get_command(
+		std::unique_ptr<http::RavenCommand<bool>> get_command(
 			std::shared_ptr<conventions::DocumentConventions> conventions) const override
 		{
 			return std::make_unique<IndexHasChangedCommand>(conventions, _index_definition);
 		}
 
 	private:
-		class IndexHasChangedCommand : public RavenCommand<bool>
+		class IndexHasChangedCommand : public http::RavenCommand<bool>
 		{
 		private:
 			nlohmann::json _definition;
@@ -45,10 +45,11 @@ namespace ravendb::client::documents::operations::indexes
 
 				curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE, "application/json");
 
-				curl_easy_setopt(curl_ref.get(), CURLOPT_HTTPPOST, 1);
+				curl_easy_setopt(curl_ref.get(), CURLOPT_POST, 1);
 
 				auto&& json_str = _definition.dump();
 
+				curl_easy_setopt(curl_ref.get(), CURLOPT_POSTFIELDSIZE_LARGE, curl_off_t (json_str.size()));
 				curl_easy_setopt(curl_ref.get(), CURLOPT_COPYPOSTFIELDS, json_str.c_str());
 
 				curl_ref.method = constants::methods::POST;

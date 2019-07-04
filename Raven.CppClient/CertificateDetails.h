@@ -1,5 +1,10 @@
 #pragma once
+
+#ifdef _MSC_VER 
 #include <filesystem>
+#else
+#include <experimental/filesystem>
+#endif
 
 namespace ravendb::client::impl
 {
@@ -13,6 +18,10 @@ namespace ravendb::client::impl
 
 		//full path including the filename
 		//optional , may be empty
+#ifdef __MSC_VER 
 		std::filesystem::path ca_path{};
+#else
+        std::experimental::filesystem::path ca_path{};
+#endif
 	};
 }

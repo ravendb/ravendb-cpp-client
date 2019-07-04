@@ -29,6 +29,15 @@ namespace ravendb::client::documents::operations
 		}
 	}
 
+	void MaintenanceOperationExecutor::assert_database_name_set() const
+	{
+		if(!_database_name)
+		{
+			throw std::runtime_error("Cannot use maintenance without a database defined,"
+				" did you forget to call for_database?");
+		}
+	}
+
 	MaintenanceOperationExecutor::MaintenanceOperationExecutor(std::shared_ptr<DocumentStore> store,
 		std::optional<std::string> database_name)
 		: _store(store)
@@ -77,5 +86,15 @@ namespace ravendb::client::documents::operations
 		assert_database_set();
 		auto command = operation.get_command(get_request_executor()->get_conventions());
 		get_request_executor()->execute(*command);
+	}
+
+	std::unique_ptr<Operation> MaintenanceOperationExecutor::send_async(const IMaintenanceOperation<OperationIdResult>& operation)
+	{
+		assert_database_name_set();
+
+		auto command = operation.get_command(get_request_executor()->get_conventions());
+
+		get_request_executor()->execute(*command);
+		return std::make_unique<Operation>(get_request_executor(), get_request_executor()->get_conventions(), command->get_result()->operation_id);
 	}
 }

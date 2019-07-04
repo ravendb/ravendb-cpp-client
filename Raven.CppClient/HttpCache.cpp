@@ -23,6 +23,8 @@ namespace ravendb::client::http
 #ifdef max
 #undef max
 			return std::chrono::milliseconds::max();
+#else
+			return std::chrono::milliseconds::max();
 #endif
 		}
 		return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - item->last_sever_update);

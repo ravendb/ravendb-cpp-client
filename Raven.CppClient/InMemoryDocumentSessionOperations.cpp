@@ -691,7 +691,7 @@ namespace ravendb::client::documents::session
 		return result;
 	}
 
-	void InMemoryDocumentSessionOperations::validateClusterTransaction(const SaveChangesData& result) const
+	void InMemoryDocumentSessionOperations::validate_cluster_transaction(const SaveChangesData& result) const
 	{
 		if(_transaction_mode != TransactionMode::CLUSTER_WIDE)
 		{

@@ -1,9 +1,12 @@
 #pragma once
 #include "IQueryBase.h"
+#include "WhereParams.h"
 #include "SearchOperator.h"
 #include "SpatialOptionsFactory.h"
 #include "MoreLikeThisBase.h"
 #include "SpatialCriteriaFactory.h"
+#include "DynamicSpatialField.h"
+#include "MethodCall.h"
 
 namespace ravendb::client::documents::session
 {
@@ -309,7 +312,7 @@ namespace ravendb::client::documents::session
 		const std::string& shape_wkt, indexes::spatial::SpatialRelation relation,
 		const std::optional<indexes::spatial::SpatialUnits>& units, double dist_error_percent)
 	{
-		return cast_down()->relates_to_shape(field_name, relation, units, dist_error_percent);
+		return cast_down()->relates_to_shape(field_name, shape_wkt, relation, units, dist_error_percent);
 	}
 
 	template <typename T, class TThis>

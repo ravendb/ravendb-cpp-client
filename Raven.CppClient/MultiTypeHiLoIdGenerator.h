@@ -1,6 +1,7 @@
 #pragma once
 #include <shared_mutex>
 #include <typeindex>
+#include "HiLoIdGenerator.h"
 
 namespace ravendb::client::documents
 {

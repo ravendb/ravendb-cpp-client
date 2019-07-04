@@ -1,33 +1,36 @@
 #include "stdafx.h"
 #include "GetCppClassName.h"
+#include <shared_mutex>
 
 namespace ravendb::client::impl::utils
 {
+	std::shared_mutex  GetCppClassName::_classes_names_mutex{};
 	std::unordered_map<std::type_index, std::string> GetCppClassName::_classes_names{};
 
 #ifdef _WIN32
 	std::string GetCppClassName::_get_class_name_impl(std::type_index type)
 	{
-		std::string_view win_class_name = type.name();
+		std::string_view extended_win_class_name = type.name();
 
-		if(win_class_name.find("class ") == 0)
+		if(extended_win_class_name.find("class ") == 0)
 		{
-			win_class_name.remove_prefix(6);
+			extended_win_class_name.remove_prefix(6);
 		}
-		else if (win_class_name.find("struct ") == 0)
+		else if (extended_win_class_name.find("struct ") == 0)
 		{
-			win_class_name.remove_prefix(7);
+			extended_win_class_name.remove_prefix(7);
 		}
 
-		std::string res = win_class_name.data();
-		_classes_names.insert_or_assign(type, res);
-
-		return std::move(res);
+		std::string win_class_name = extended_win_class_name.data();
+		{
+			auto lock = std::unique_lock(_classes_names_mutex);
+			_classes_names.insert_or_assign(type, win_class_name);
+		}
+		return win_class_name;
 	}
 #endif
 
 #ifdef  __unix__
-#define _GNU_SOURCE
 #include <cxxabi.h>
 
 	std::string GetCppClassName::_get_class_name_impl(std::type_index type)
@@ -45,19 +48,24 @@ namespace ravendb::client::impl::utils
 			msg << "demangling of " << mangled_class_name << " failed";
 			throw std::invalid_argument(msg.str());
 		}
-		_classes_names.insert_or_assign(type, demangled_class_name);
-		return std::move(demangled_class_name);
+		{
+			auto lock = std::unique_lock(_classes_names_mutex);
+			_classes_names.insert_or_assign(type, demangled_class_name);
+		}
+		return demangled_class_name;
 	}
 #endif
 
 	std::string GetCppClassName::get_class_name(std::type_index type)
 	{
-		if (auto it = _classes_names.find(type);
-			it != _classes_names.end())
 		{
-			return it->second;
+			auto lock = std::shared_lock(_classes_names_mutex);
+			if (auto it = _classes_names.find(type);
+				it != _classes_names.end())
+			{
+				return it->second;
+			}
 		}
-
 		return _get_class_name_impl(type);
 	}
 

@@ -57,7 +57,7 @@ namespace ravendb::client::serverwide::operations
 
 	DeleteDatabasesOperation::DeleteDatabaseCommand::DeleteDatabaseCommand(
 		std::shared_ptr<documents::conventions::DocumentConventions> conventions, const delete_db_op::Parameters & parameters)
-		:_parameters_str([&]
+		:_parameters_stream([&]
 	{
 		nlohmann::json j = parameters;
 		return j.dump();
@@ -73,13 +73,17 @@ namespace ravendb::client::serverwide::operations
 
 		path_builder << node->url << "/admin/databases";
 
-		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-		curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
-		curl_easy_setopt(curl, CURLOPT_READDATA, &_parameters_str);
-		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)_parameters_str.length());
-		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 		curl_ref.method = constants::methods::DELETE_;
+		curl_ref.headers.insert_or_assign("Transfer-Encoding", "chunked");
 		curl_ref.headers.emplace(constants::headers::CONTENT_TYPE, "application/json");
+
+		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+		curl_easy_setopt(curl, CURLOPT_READFUNCTION, stream_read_callback);
+		curl_easy_setopt(curl, CURLOPT_READDATA, &_parameters_stream);
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+
+		_parameters_stream.clear();
+		_parameters_stream.seekg(0);
 
 		url_ref.emplace(path_builder.str());
 	}
