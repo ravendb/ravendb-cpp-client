@@ -73,7 +73,7 @@ namespace ravendb::client::documents::session
 
 		std::optional<std::string> index_name{};
 
-		std::optional<std::string> collection_name {};
+		std::optional<std::string> collection_name{};
 
 		int32_t _current_clause_depth{};
 
@@ -98,7 +98,7 @@ namespace ravendb::client::documents::session
 		bool is_intersect{};
 
 		bool is_group_by{};
-		   
+
 		std::weak_ptr<InMemoryDocumentSessionOperations> the_session;
 
 		std::optional<int32_t> page_size{};
@@ -127,7 +127,7 @@ namespace ravendb::client::documents::session
 
 		//Holds the query stats
 		std::shared_ptr<QueryStatistics> query_stats = std::make_shared<QueryStatistics>();
-		
+
 		bool disable_entities_tracking{};
 
 		bool disable_caching{};
@@ -230,7 +230,7 @@ namespace ravendb::client::documents::session
 		static void get_source_alias_if_exists(const queries::QueryData& query_data,
 			const std::vector<std::string>& fields, std::optional<std::string>& source_alias_reference);
 
-		 void _include_timings(std::shared_ptr<queries::timings::QueryTimings>& timings);
+		void _include_timings(std::shared_ptr<queries::timings::QueryTimings>& timings);
 
 		void _within_radius_of(const std::string& field_name, double radius, double latitude, double longitude,
 			const std::optional<indexes::spatial::SpatialUnits>& radius_units, double dist_error_percent);
@@ -320,7 +320,7 @@ namespace ravendb::client::documents::session
 		void _where_in(const std::string& field_name, const std::vector<TValue>& values, bool exact = false);
 
 		template<typename TValue>
-		void _where_starts_with(std::string field_name,const TValue* value);
+		void _where_starts_with(std::string field_name, const TValue* value);
 
 		template<typename TValue>
 		void _where_ends_with(std::string field_name, const TValue* value);
@@ -353,7 +353,7 @@ namespace ravendb::client::documents::session
 		void _proximity(int32_t proximity);
 
 		void _order_by(const std::string& field, OrderingType ordering = OrderingType::STRING);
-		
+
 		void _order_by_descending(const std::string& field, OrderingType ordering = OrderingType::STRING);
 
 		void _order_by_score();
@@ -376,7 +376,7 @@ namespace ravendb::client::documents::session
 		void _intersect();
 
 		void _where_exists(const std::string& field_name);
-		
+
 		template<typename TValue>
 		void _contains_any(const std::string& field_name, const std::vector<TValue>& values);
 
@@ -454,11 +454,14 @@ namespace ravendb::client::documents::session
 		std::optional<std::string> get_options_parameter_name(const std::optional<queries::suggestions::SuggestionOptions>& options);
 
 		void _include_explanations(const std::optional<queries::explanation::ExplanationOptions>& options,
-			std::optional<queries::explanation::Explanations>& explanations_reference);		
+			std::optional<queries::explanation::Explanations>& explanations_reference);
 	};
+}
 
 #include "DocumentSessionImpl.h"
 
+namespace ravendb::client::documents::session
+{
 	template<typename T>
 	std::chrono::milliseconds AbstractDocumentQuery<T>::DEFAULT_TIMEOUT = std::chrono::seconds(15);
 

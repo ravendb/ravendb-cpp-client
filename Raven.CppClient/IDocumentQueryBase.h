@@ -1,8 +1,11 @@
 #pragma once
-#include "IQueryBase.h"
 #include "OrderingType.h"
 #include "IFilterDocumentQueryBase.h"
 #include "QueryIncludeBuilder.h"
+#include "Highlightings.h"
+#include "HighlightingOptions.h"
+#include "Explanations.h"
+#include "ExplanationOptions.h"
 
 namespace ravendb::client::documents::session
 {

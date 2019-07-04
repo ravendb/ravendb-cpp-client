@@ -1,4 +1,5 @@
 #pragma once
+#include "AbstractDocumentQuery.h"
 #include "IDocumentQuery.h"
 #include "SpatialCriteriaFactory.h"
 #include "MoreLikeThisUsingDocument.h"

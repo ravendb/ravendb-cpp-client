@@ -1,9 +1,18 @@
 #pragma once
+#include "QueryOperator.h"
+#include "QueryTimings.h"
+#include "QueryStatistics.h"
+#include "IndexQuery.h"
+#include "QueryResult.h"
 
-namespace ravendb::client::documents::queries
+namespace ravendb::client::documents
 {
-	enum class QueryOperator;
+	namespace conventions
+	{
+		class DocumentConventions;
+	}
 }
+
 
 namespace ravendb::client::documents::session
 {

@@ -156,6 +156,9 @@
     <ClCompile Include="DetectIndexTypeTest.cpp">
       <Filter>ravendb.client.tests\test\client\indexing</Filter>
     </ClCompile>
+    <ClCompile Include="RavenDB903Test.cpp">
+      <Filter>ravendb.client.tests\test\client\issues</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -310,6 +313,9 @@
     </Filter>
     <Filter Include="ravendb.client.tests\test\serverwide.commands">
       <UniqueIdentifier>{55f8c5f7-2ad5-4f1c-8c07-6c75a8bb2f67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\client\issues">
+      <UniqueIdentifier>{cb1e7d33-3204-4ef0-be3b-54700d6bf95e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

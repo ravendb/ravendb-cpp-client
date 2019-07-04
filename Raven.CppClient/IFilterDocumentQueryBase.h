@@ -1,9 +1,12 @@
 #pragma once
 #include "IQueryBase.h"
+#include "WhereParams.h"
 #include "SearchOperator.h"
 #include "SpatialOptionsFactory.h"
 #include "MoreLikeThisBase.h"
 #include "SpatialCriteriaFactory.h"
+#include "DynamicSpatialField.h"
+#include "MethodCall.h"
 
 namespace ravendb::client::documents::session
 {

@@ -158,6 +158,12 @@ namespace ravendb::client::documents::session
 			std::optional<std::string> index_name = {},
 			std::optional<std::string> collection_name = {},
 			bool is_map_reduced = false);
+
+		template <typename T>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> document_query();
+
+		template <typename T, typename TIndex>
+		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> document_query();
 	};
 
 	template <typename T>
@@ -303,6 +309,14 @@ namespace ravendb::client::documents::session
 		_session_impl->increment(id, path, value_to_add, update_from_json);
 	}
 
+	template <typename T, typename TIndex>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> AdvancedSessionOperations::document_query()
+	{
+		static_assert(std::is_base_of_v<indexes::AbstractIndexCreationTask, TIndex>, "'TIndex' must be derived from AbstractIndexCreationTask");
+
+		return _session_impl->document_query<T, TIndex>();
+	}
+
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> AdvancedSessionOperations::document_query(
 		std::optional<std::string> index_name,
@@ -310,5 +324,11 @@ namespace ravendb::client::documents::session
 		bool is_map_reduced)
 	{
 		return _session_impl->document_query<T>(std::move(index_name), std::move(collection_name), is_map_reduced);
+	}
+
+	template <typename T>
+	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> AdvancedSessionOperations::document_query()
+	{
+		return _session_impl->document_query<T>();
 	}
 }
