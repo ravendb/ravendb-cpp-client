@@ -171,6 +171,12 @@
     <ClCompile Include="SimonBartlettTest.cpp">
       <Filter>ravendb.client.tests\test\client\spatial</Filter>
     </ClCompile>
+    <ClCompile Include="SpatialQueriesTest.cpp">
+      <Filter>ravendb.client.tests\test\client\spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="SpatialSearchTest.cpp">
+      <Filter>ravendb.client.tests\test\client\spatial</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

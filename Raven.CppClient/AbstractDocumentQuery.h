@@ -1765,10 +1765,15 @@ namespace ravendb::client::documents::session
 		append_operator_if_needed(tokens);
 		negate_if_needed(tokens, valid_field_name);
 
+		auto&& radius_param = add_query_parameter(radius);
+		auto&& latitude_param = add_query_parameter(latitude);
+		auto&& longitude_param = add_query_parameter(longitude);
+
 		auto where_token = tokens::WhereToken::create(tokens::WhereOperator::SPATIAL_WITHIN, std::move(valid_field_name),
-			{}, tokens::WhereToken::WhereOptions(tokens::ShapeToken::circle(add_query_parameter(radius),
-				add_query_parameter(latitude), add_query_parameter(longitude),
+			{}, tokens::WhereToken::WhereOptions(tokens::ShapeToken::circle(
+				radius_param, latitude_param, longitude_param,
 				radius_units), dist_error_percent));
+		tokens.push_back(where_token);
 	}
 
 	template <typename T>
@@ -1860,8 +1865,11 @@ namespace ravendb::client::documents::session
 	template <typename T>
 	void AbstractDocumentQuery<T>::_order_by_distance(const std::string& field_name, double latitude, double longitude)
 	{
+		auto&& latitude_param = add_query_parameter(latitude);
+		auto && longitude_param = add_query_parameter(longitude);
+
 		order_by_tokens.push_back(tokens::OrderByToken::create_distance_ascending(field_name,
-			add_query_parameter(latitude), add_query_parameter(longitude)));
+			latitude_param, longitude_param));
 	}
 
 	template <typename T>

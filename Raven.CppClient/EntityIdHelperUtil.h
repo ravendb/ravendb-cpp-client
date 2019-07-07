@@ -14,7 +14,7 @@ do\
 		auto typed_entity = std::static_pointer_cast<TYPE>(entity);\
 		if (!entity)\
 		{\
-			throw std::invalid_argument("'entity' can not be empty");\
+			throw std::invalid_argument("'entity' is empty or of incompatible type");\
 		}\
 		if constexpr(std::is_same_v<decltype(typed_entity->ID_FIELD_NAME), std::optional<std::string>>)\
 			/*useless cast to shut the compiler*/ \
@@ -34,7 +34,7 @@ do\
 		auto typed_entity = std::static_pointer_cast<TYPE>(entity);\
 		if (!entity)\
 		{\
-			throw std::invalid_argument("'entity' can not be empty");\
+			throw std::invalid_argument("'entity' is empty or of incompatible type");\
 		}\
 		if constexpr(std::is_same_v<decltype(typed_entity->ID_FIELD_NAME), std::optional<std::string>> ||\
 			std::is_same_v<decltype(typed_entity->ID_FIELD_NAME), std::string>)\

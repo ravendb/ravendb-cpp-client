@@ -123,6 +123,8 @@
     <ClCompile Include="RavenTestDriver.cpp" />
     <ClCompile Include="SimonBartlettTest.cpp" />
     <ClCompile Include="SimpleMultiMapTest.cpp" />
+    <ClCompile Include="SpatialQueriesTest.cpp" />
+    <ClCompile Include="SpatialSearchTest.cpp" />
     <ClCompile Include="test_utils.cpp" />
     <ClCompile Include="TrackEntityTest.cpp" />
     <ClCompile Include="WhatChangedTest.cpp" />
