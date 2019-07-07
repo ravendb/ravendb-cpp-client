@@ -214,6 +214,7 @@
     <ClInclude Include="DeclareToken.h" />
     <ClInclude Include="DeleteAttachmentCommandData.h" />
     <ClInclude Include="DeleteAttachmentOperation.h" />
+    <ClInclude Include="DetailedDatabaseStatistics.h" />
     <ClInclude Include="DistinctToken.h" />
     <ClInclude Include="DocumentConflictException.h" />
     <ClInclude Include="DocumentDoesNotExistException.h" />
@@ -240,6 +241,7 @@
     <ClInclude Include="GetClusterTopologyCommand.h" />
     <ClInclude Include="GetCollectionStatisticsOperation.h" />
     <ClInclude Include="GetCppClassName.h" />
+    <ClInclude Include="GetDetailedStatisticsOperation.h" />
     <ClInclude Include="GetIndexStatisticsOperation.h" />
     <ClInclude Include="GetRequest.h" />
     <ClInclude Include="GetResponse.h" />
@@ -586,6 +588,7 @@
     <ClCompile Include="ExplanationOptions.cpp" />
     <ClCompile Include="Explanations.cpp" />
     <ClCompile Include="GetClusterTopologyCommand.cpp" />
+    <ClCompile Include="GetDetailedStatisticsOperation.cpp" />
     <ClCompile Include="GetServerWideClientConfigurationOperation.cpp" />
     <ClCompile Include="GetServerWideOperationStateOperation.cpp" />
     <ClCompile Include="GetTcpInfoCommand.cpp" />

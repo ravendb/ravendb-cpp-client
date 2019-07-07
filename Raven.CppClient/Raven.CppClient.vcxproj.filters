@@ -581,6 +581,9 @@
     <ClCompile Include="IndexDefinition.cpp">
       <Filter>ravendb.client\documents\indexes</Filter>
     </ClCompile>
+    <ClCompile Include="GetDetailedStatisticsOperation.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -1718,6 +1721,12 @@
     </ClInclude>
     <ClInclude Include="ReorderDatabaseMembersOperation.h">
       <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="GetDetailedStatisticsOperation.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="DetailedDatabaseStatistics.h">
+      <Filter>ravendb.client\documents\operations</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

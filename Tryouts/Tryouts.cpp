@@ -22,6 +22,7 @@
 #include "PutDocumentCommand.h"
 #include "GetAttachmentOperation.h"
 #include "AdvancedSessionOperations.h"
+#include "GetDetailedStatisticsOperation.h"
 
 namespace
 {
@@ -131,51 +132,54 @@ int main()
 //	}
 
 
-	std::stringstream str{};
-	for (auto i = 0; i < 20000; ++i)
-	{
-		str << "ab Cd$" << 123;
-	}
+	//std::stringstream str{};
+	//for (auto i = 0; i < 20000; ++i)
+	//{
+	//	str << "ab Cd$" << 123;
+	//}
 
-	auto cmd1 = documents::operations::attachments::PutAttachmentOperation("users/1", "file1.txt",
-		str, "ASCII").get_command(
-			store, store->get_conventions(), store->get_request_executor()->get_cache());
-
-	store->get_request_executor()->execute(*cmd1);
-
-	//auto command = documents::operations::attachments::PutAttachmentOperation("users/1", "file1.txt",
-	//	file1, nullptr, "ASCII").get_command(
+	//auto cmd1 = documents::operations::attachments::PutAttachmentOperation("users/1", "file1.txt",
+	//	str, "ASCII").get_command(
 	//		store, store->get_conventions(), store->get_request_executor()->get_cache());
 
-	//store->get_request_executor()->execute(*command);
+	//store->get_request_executor()->execute(*cmd1);
 
-	auto cmd2 = documents::commands::HeadAttachmentCommand("users/1", "file.txt");
-	store->get_request_executor()->execute(cmd2);
+	////auto command = documents::operations::attachments::PutAttachmentOperation("users/1", "file1.txt",
+	////	file1, nullptr, "ASCII").get_command(
+	////		store, store->get_conventions(), store->get_request_executor()->get_cache());
 
+	////store->get_request_executor()->execute(*command);
 
-	auto cmd3 = documents::operations::attachments::GetAttachmentOperation("users/1", "file1.txt",
-		documents::attachments::AttachmentType::DOCUMENT).get_command(store,
-			store->get_conventions(), store->get_request_executor()->get_cache());
-	store->get_request_executor()->execute(*cmd3);
-
-	std::ostringstream res{};
-
-	res << cmd3->get_result()->get_data().rdbuf();
-
-	std::cout << (res.str() == str.str() ? "----OK----" : "There is a problem ...") << std::endl;
-
-	//auto cmd4 = documents::operations::attachments::DeleteAttachmentOperation("users/1", "file1.txt")
-	//	.get_command(store, store->get_conventions(), store->get_request_executor()->get_cache());
-	//store->get_request_executor()->execute(*cmd4);
+	//auto cmd2 = documents::commands::HeadAttachmentCommand("users/1", "file.txt");
+	//store->get_request_executor()->execute(cmd2);
 
 
-	auto session = store->open_session();
-	auto user = session.load<tests::infrastructure::entities::User>("users/1");
+	//auto cmd3 = documents::operations::attachments::GetAttachmentOperation("users/1", "file1.txt",
+	//	documents::attachments::AttachmentType::DOCUMENT).get_command(store,
+	//		store->get_conventions(), store->get_request_executor()->get_cache());
+	//store->get_request_executor()->execute(*cmd3);
 
-	auto has_attachment = session.advanced().attachments()->exists("users/1", "file1.txt");
+	//std::ostringstream res{};
 
-	auto att = session.advanced().attachments()->get_attachment("users/1", "file1.txt");
+	//res << cmd3->get_result()->get_data().rdbuf();
 
+	//std::cout << (res.str() == str.str() ? "----OK----" : "There is a problem ...") << std::endl;
+
+	////auto cmd4 = documents::operations::attachments::DeleteAttachmentOperation("users/1", "file1.txt")
+	////	.get_command(store, store->get_conventions(), store->get_request_executor()->get_cache());
+	////store->get_request_executor()->execute(*cmd4);
+
+
+	//auto session = store->open_session();
+	//auto user = session.load<tests::infrastructure::entities::User>("users/1");
+
+	//auto has_attachment = session.advanced().attachments()->exists("users/1", "file1.txt");
+
+	//auto att = session.advanced().attachments()->get_attachment("users/1", "file1.txt");
+
+	auto command = documents::operations::GetDetailedStatisticsOperation().get_command(store->get_conventions());
+	store->get_request_executor()->execute(*command);
+	auto res = command->get_result();
 
 	std::cout << "Bye" << std::endl;
 }
