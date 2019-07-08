@@ -177,6 +177,15 @@
     <ClCompile Include="SpatialSearchTest.cpp">
       <Filter>ravendb.client.tests\test\client\spatial</Filter>
     </ClCompile>
+    <ClCompile Include="SpatialSortingTest.cpp">
+      <Filter>ravendb.client.tests\test\client\spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="SpatialTest.cpp">
+      <Filter>ravendb.client.tests\test\client\spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="ContainsTest.cpp">
+      <Filter>ravendb.client.tests\test\client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

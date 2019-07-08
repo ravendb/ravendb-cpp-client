@@ -29,6 +29,8 @@ namespace ravendb::client::impl
 		//str should be in ISO8061 format : YYYY-MM-DDThh:mm:ss.sssssss(Z) or YYYY-MM-DDThh:mm:ss.sssssss±hh:mm
 		explicit DateTimeOffset(const std::string& str);
 
+		DateTimeOffset& operator=(const DateTimeOffset& other);
+
 		//output in ISO8061 format : YYYY-MM-DDThh:mm:ss.sssssss(Z) or YYYY-MM-DDThh:mm:ss.sssssss±hh:mm
 		std::string to_string(bool add_Z_if_zero_offset = false) const;
 

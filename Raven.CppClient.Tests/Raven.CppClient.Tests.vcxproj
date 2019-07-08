@@ -49,6 +49,7 @@
     <ClCompile Include="BasicDocumentsTest.cpp" />
     <ClCompile Include="CachingOfDocumentInclude.cpp" />
     <ClCompile Include="CanGetBuildNumberTest.cpp" />
+    <ClCompile Include="ContainsTest.cpp" />
     <ClCompile Include="DeleteByQueryTest.cpp" />
     <ClCompile Include="DetectIndexTypeTest.cpp" />
     <ClCompile Include="ExistsTest.cpp" />
@@ -125,6 +126,8 @@
     <ClCompile Include="SimpleMultiMapTest.cpp" />
     <ClCompile Include="SpatialQueriesTest.cpp" />
     <ClCompile Include="SpatialSearchTest.cpp" />
+    <ClCompile Include="SpatialSortingTest.cpp" />
+    <ClCompile Include="SpatialTest.cpp" />
     <ClCompile Include="test_utils.cpp" />
     <ClCompile Include="TrackEntityTest.cpp" />
     <ClCompile Include="WhatChangedTest.cpp" />

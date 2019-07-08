@@ -119,6 +119,17 @@ namespace ravendb::client::impl
 		}
 	}
 
+	DateTimeOffset& DateTimeOffset::operator=(const DateTimeOffset& other)
+	{
+		if(this != &other)
+		{
+			this->_date_time = other._date_time;
+			this->_nsec = other._nsec;
+			this->_offset = other._offset;
+		}
+		return *this;
+	}
+
 	std::string DateTimeOffset::to_string(bool add_Z_if_zero_offset) const
 	{
 		std::ostringstream result{};
