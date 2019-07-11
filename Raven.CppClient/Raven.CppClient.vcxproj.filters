@@ -1728,6 +1728,12 @@
     <ClInclude Include="DetailedDatabaseStatistics.h">
       <Filter>ravendb.client\documents\operations</Filter>
     </ClInclude>
+    <ClInclude Include="CompactSettings.h">
+      <Filter>ravendb.client\serverwide</Filter>
+    </ClInclude>
+    <ClInclude Include="CompactDatabaseOperation.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">

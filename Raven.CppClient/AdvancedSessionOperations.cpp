@@ -141,6 +141,12 @@ namespace ravendb::client::documents::session
 		return _session_impl->what_changed();
 	}
 
+	void AdvancedSessionOperations::wait_for_indexes_after_save_changes(std::function<void(
+		InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder&)> options)
+	{
+		_session_impl->wait_for_indexes_after_save_changes(options);
+	}
+
 	void AdvancedSessionOperations::set_transaction_mode(TransactionMode mode)
 	{
 		_session_impl->set_transaction_mode(mode);

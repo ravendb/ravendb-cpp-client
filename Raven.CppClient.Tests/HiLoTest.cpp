@@ -15,14 +15,14 @@ namespace hilo_test
 		int64_t max{};
 	};
 
-	inline void to_json(nlohmann::json& j, const HiloDoc& hld)
+	void to_json(nlohmann::json& j, const HiloDoc& hld)
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
 		set_val_to_json(j, "Max", hld.max);
 	}
 
-	inline void from_json(const nlohmann::json& j, HiloDoc& hld)
+	void from_json(const nlohmann::json& j, HiloDoc& hld)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
@@ -34,14 +34,14 @@ namespace hilo_test
 		std::string product_name{};
 	};
 
-	inline void to_json(nlohmann::json& j, const Product& pn)
+	void to_json(nlohmann::json& j, const Product& pn)
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;
 
 		set_val_to_json(j, "ProductName", pn.product_name);
 	}
 
-	inline void from_json(const nlohmann::json& j, Product& pn)
+	void from_json(const nlohmann::json& j, Product& pn)
 	{
 		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 

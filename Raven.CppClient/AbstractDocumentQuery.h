@@ -411,7 +411,7 @@ namespace ravendb::client::documents::session
 
 		void _highlight(std::string field_name, int32_t fragment_length, int32_t fragment_count,
 			const std::optional<queries::highlighting::HighlightingOptions>& options,
-			std::optional<queries::highlighting::Highlightings>& highlightings_reference);
+			std::shared_ptr<queries::highlighting::Highlightings>& highlightings_reference);
 
 		void _spatial(const std::string& field_name, const queries::spatial::SpatialCriteria& criteria);
 		void _spatial(const queries::spatial::DynamicSpatialField& dynamic_field, const queries::spatial::SpatialCriteria& criteria);
@@ -1642,7 +1642,7 @@ namespace ravendb::client::documents::session
 		, load_tokens(std::move(load_tokens_param))
 	{
 		root_types.insert(typeid(T));
-		_add_after_query_executed_listener([*this] (const queries::QueryResult& query_result) mutable
+		_add_after_query_executed_listener([this](const queries::QueryResult& query_result)
 		{
 			update_stats_highlightings_and_explanations(query_result);
 		});
@@ -1941,13 +1941,13 @@ namespace ravendb::client::documents::session
 	template <typename T>
 	void AbstractDocumentQuery<T>::_highlight(std::string field_name, int32_t fragment_length, int32_t fragment_count,
 		const std::optional<queries::highlighting::HighlightingOptions>& options,
-		std::optional<queries::highlighting::Highlightings>& highlightings_reference)
+		std::shared_ptr<queries::highlighting::Highlightings>& highlightings_reference)
 	{
-		highlightings_reference.emplace(query_highlightings.add(field_name));
+		highlightings_reference = query_highlightings.add(field_name);
 		std::optional<std::string> options_parameter_name{};
 		if (options)
 		{
-			add_query_parameter(*options);
+			options_parameter_name.emplace(add_query_parameter(*options));
 		}
 		highlighting_tokens.push_back(tokens::HighlightingToken::create(std::move(field_name), fragment_length, fragment_count,
 			std::move(options_parameter_name)));

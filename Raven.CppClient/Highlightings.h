@@ -1,12 +1,12 @@
 ﻿#pragma once
-#include "CompareStringsLessThanIgnoreCase.h"
+#include "CompareStringsEqualIgnoreCase.h"
 
 namespace ravendb::client::documents::queries::highlighting
 {
 	class Highlightings
 	{
 	private:
-		std::unordered_map<std::string, std::vector<std::string>, std::hash<std::string>, impl::utils::CompareStringsLessThanIgnoreCase> _highlightings{};
+		std::unordered_map<std::string, std::vector<std::string>, std::hash<std::string>, impl::utils::CompareStringsEqualIgnoreCase> _highlightings{};
 		std::string _field_name;
 
 	public:

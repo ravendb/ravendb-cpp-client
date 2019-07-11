@@ -192,6 +192,8 @@
     <ClInclude Include="CommandDataBase.h" />
     <ClInclude Include="CommandExecutionException.h" />
     <ClInclude Include="CommandType.h" />
+    <ClInclude Include="CompactDatabaseOperation.h" />
+    <ClInclude Include="CompactSettings.h" />
     <ClInclude Include="CompareStringsEqualIgnoreCase.h" />
     <ClInclude Include="CompareStringsLessThanIgnoreCase.h" />
     <ClInclude Include="CompilationException.h" />

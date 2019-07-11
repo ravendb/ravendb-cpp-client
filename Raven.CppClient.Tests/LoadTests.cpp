@@ -219,9 +219,45 @@ namespace ravendb::client::tests::client
 		}
 	}
 
-	//TODO implement
 	TEST_F(LoadTests, LoadStartsWith)
 	{
-		SUCCEED();
+		auto store = get_document_store(TEST_NAME);
+		{
+			auto session = store->open_session();
+
+			const auto create_user = [&](std::string id)
+			{
+				auto user = std::make_shared<infrastructure::entities::User>();
+				user->id = std::move(id);
+				session.store(user);
+			};
+
+			create_user("Aaa");
+			create_user("Abc");
+			create_user("Afa");
+			create_user("Ala");
+			create_user("Baa");
+
+			session.save_changes();
+		}
+		{
+			auto session = store->open_session();
+
+			auto users = session.advanced().load_starting_with<infrastructure::entities::User>("A");
+
+			auto loaded_ids = std::vector<std::string>();
+			std::transform(users.cbegin(), users.cend(), std::back_inserter(loaded_ids),
+				[](const auto& user) {return user->id; });
+			auto expected_ids = std::vector<std::string>{ "Aaa", "Abc", "Afa", "Ala" };
+			ASSERT_EQ(expected_ids, loaded_ids);
+
+			users = session.advanced().load_starting_with<infrastructure::entities::User>("A", {}, 1, 2);
+
+			loaded_ids.clear();
+			std::transform(users.cbegin(), users.cend(), std::back_inserter(loaded_ids),
+				[](const auto& user) {return user->id; });
+			expected_ids.assign({ "Abc", "Afa" });
+			ASSERT_EQ(expected_ids, loaded_ids);
+		}
 	}
 }

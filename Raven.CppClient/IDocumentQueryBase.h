@@ -41,11 +41,11 @@ namespace ravendb::client::documents::session
 		auto fuzzy(double fuzzy);
 
 		auto highlight(std::string field_name, int32_t fragment_length, int32_t fragment_count,
-			std::optional<queries::highlighting::Highlightings>& highlightings_reference);
+			std::shared_ptr<queries::highlighting::Highlightings>& highlightings_reference);
 
 		auto highlight(std::string field_name, int32_t fragment_length, int32_t fragment_count,
 			const std::optional<queries::highlighting::HighlightingOptions>& options,
-			std::optional<queries::highlighting::Highlightings>& highlightings_reference);
+			std::shared_ptr<queries::highlighting::Highlightings>& highlightings_reference);
 
 		auto include(std::string path);
 		auto include(const std::function<void(std::shared_ptr<loaders::IQueryIncludeBuilder<loaders::QueryIncludeBuilder>>)>& includes);
@@ -116,7 +116,7 @@ namespace ravendb::client::documents::session
 
 	template <typename T, class TThis>
 	auto IDocumentQueryBase<T, TThis>::highlight(std::string field_name, int32_t fragment_length,
-		int32_t fragment_count, std::optional<queries::highlighting::Highlightings>& highlightings_reference)
+		int32_t fragment_count, std::shared_ptr<queries::highlighting::Highlightings>& highlightings_reference)
 	{
 		return cast_down()->highlight(std::move(field_name), fragment_length, fragment_count,
 			highlightings_reference);
@@ -125,7 +125,7 @@ namespace ravendb::client::documents::session
 	template <typename T, class TThis>
 	auto IDocumentQueryBase<T, TThis>::highlight(std::string field_name, int32_t fragment_length,
 		int32_t fragment_count, const std::optional<queries::highlighting::HighlightingOptions>& options,
-		std::optional<queries::highlighting::Highlightings>& highlightings_reference)
+		std::shared_ptr<queries::highlighting::Highlightings>& highlightings_reference)
 	{
 		return cast_down()->highlight(std::move(field_name), fragment_length, fragment_count,
 			options, highlightings_reference);

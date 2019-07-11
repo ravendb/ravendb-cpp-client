@@ -16,6 +16,49 @@
 
 namespace ravendb::client::documents::session
 {
+	commands::batches::BatchOptions& InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder::get_options()
+	{
+		if(!_outer_this._save_changes_options.index_options)
+		{
+			_outer_this._save_changes_options.index_options.emplace();
+		}
+		return  _outer_this._save_changes_options;
+	}
+
+	std::shared_ptr<InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder> InMemoryDocumentSessionOperations::
+	IndexesWaitOptsBuilder::create(InMemoryDocumentSessionOperations& outer_this)
+	{
+		auto object = std::shared_ptr<IndexesWaitOptsBuilder>(new IndexesWaitOptsBuilder(outer_this));
+		object->_weak_this = object;
+		return object;
+	}
+
+	std::shared_ptr<InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder> InMemoryDocumentSessionOperations::
+	IndexesWaitOptsBuilder::with_timeout(std::chrono::milliseconds timeout)
+	{
+		get_options().index_options->wait_for_indexes_timeout = timeout;
+		return _weak_this.lock();
+	}
+
+	std::shared_ptr<InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder> InMemoryDocumentSessionOperations::
+	IndexesWaitOptsBuilder::throw_on_timeout(bool should_throw)
+	{
+		get_options().index_options->throw_on_timeout_in_wait_for_indexes = should_throw;
+		return _weak_this.lock();
+	}
+
+	std::shared_ptr<InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder> InMemoryDocumentSessionOperations::
+	IndexesWaitOptsBuilder::wait_for_indexes(std::vector<std::string> indexes)
+	{
+		get_options().index_options->wait_for_specific_indexes = std::move(indexes);
+		return _weak_this.lock();
+	}
+
+	InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder::IndexesWaitOptsBuilder(
+		InMemoryDocumentSessionOperations& outer_this)
+		: _outer_this(outer_this)
+	{}
+
 	InMemoryDocumentSessionOperations::~InMemoryDocumentSessionOperations() = default;
 
 	void InMemoryDocumentSessionOperations::add_before_store_listener(primitives::EventHandler handler)
@@ -937,6 +980,26 @@ namespace ravendb::client::documents::session
 		}
 
 		return !_deleted_entities.empty();
+	}
+
+	void InMemoryDocumentSessionOperations::wait_for_indexes_after_save_changes(
+		std::function<void(InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder&)> options)
+	{
+		auto builder = IndexesWaitOptsBuilder::create(*this);
+		options(*builder);
+
+		auto& builder_options = builder->get_options();
+		auto& index_options = builder_options.index_options;
+
+		if(!index_options)
+		{
+			index_options.emplace();
+		}
+		if(index_options->wait_for_indexes_timeout == std::chrono::milliseconds::zero())
+		{
+			index_options->wait_for_indexes_timeout = std::chrono::seconds(15);
+		}
+		index_options->wait_for_indexes = true;
 	}
 
 	bool InMemoryDocumentSessionOperations::has_changed_internal(std::shared_ptr<void> entity) const

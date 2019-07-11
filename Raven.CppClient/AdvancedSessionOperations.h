@@ -95,7 +95,8 @@ namespace ravendb::client::documents::session
 
 		//TODO void wait_for_replication_after_save_changes();
 
-		//TODO void wait_for_indexes_after_save_changes();
+		void wait_for_indexes_after_save_changes(std::function<void(
+			InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder&)> options);
 
 		void set_transaction_mode(TransactionMode mode);
 

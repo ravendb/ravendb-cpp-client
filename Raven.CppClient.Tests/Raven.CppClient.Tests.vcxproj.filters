@@ -186,6 +186,18 @@
     <ClCompile Include="ContainsTest.cpp">
       <Filter>ravendb.client.tests\test\client</Filter>
     </ClCompile>
+    <ClCompile Include="CompactTest.cpp">
+      <Filter>ravendb.client.tests\test\client</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchTest.cpp">
+      <Filter>ravendb.client.tests\test\client</Filter>
+    </ClCompile>
+    <ClCompile Include="StoreTest.cpp">
+      <Filter>ravendb.client.tests\test\client</Filter>
+    </ClCompile>
+    <ClCompile Include="HighlightesTest.cpp">
+      <Filter>ravendb.client.tests\test\querying</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -349,6 +361,9 @@
     </Filter>
     <Filter Include="ravendb.client.tests\test\client\spatial">
       <UniqueIdentifier>{1f87a78c-5fff-4945-8511-c2ef3ea25524}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\querying">
+      <UniqueIdentifier>{2e895f84-5363-41c3-b0e1-7dfbd267e399}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

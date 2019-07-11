@@ -227,11 +227,11 @@ namespace ravendb::client::documents::session
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> more_like_this(const queries::more_like_this::MoreLikeThisBase& more_like_this);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> highlight(std::string field_name, int32_t fragment_length, int32_t fragment_count,
-			std::optional<queries::highlighting::Highlightings>& highlightings_reference);
+			std::shared_ptr<queries::highlighting::Highlightings>& highlightings_reference);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> highlight(std::string field_name, int32_t fragment_length, int32_t fragment_count,
 			const std::optional<queries::highlighting::HighlightingOptions>& options,
-			std::optional<queries::highlighting::Highlightings>& highlightings_reference);
+			std::shared_ptr<queries::highlighting::Highlightings>& highlightings_reference);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> order_by_distance(const queries::spatial::DynamicSpatialField& field,
 			double latitude, double longitude);
@@ -998,7 +998,7 @@ namespace ravendb::client::documents::session
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::highlight(std::string field_name,
 		int32_t fragment_length, int32_t fragment_count,
-		std::optional<queries::highlighting::Highlightings>& highlightings_reference)
+		std::shared_ptr<queries::highlighting::Highlightings>& highlightings_reference)
 	{
 		AbstractDocumentQuery<T>::_highlight(std::move(field_name), fragment_length, fragment_count, {}, highlightings_reference);
 		return _weak_this.lock();
@@ -1008,7 +1008,7 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::highlight(std::string field_name,
 		int32_t fragment_length, int32_t fragment_count,
 		const std::optional<queries::highlighting::HighlightingOptions>& options,
-		std::optional<queries::highlighting::Highlightings>& highlightings_reference)
+		std::shared_ptr<queries::highlighting::Highlightings>& highlightings_reference)
 	{
 		AbstractDocumentQuery<T>::_highlight(std::move(field_name), fragment_length, fragment_count, options, highlightings_reference);
 		return _weak_this.lock();

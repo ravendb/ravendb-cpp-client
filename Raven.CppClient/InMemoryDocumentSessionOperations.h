@@ -126,6 +126,28 @@ namespace ravendb::client::documents::session
 			{}
 		};
 
+		class IndexesWaitOptsBuilder
+		{
+		public:
+			friend InMemoryDocumentSessionOperations;
+		private:
+			InMemoryDocumentSessionOperations& _outer_this;
+			std::weak_ptr<IndexesWaitOptsBuilder> _weak_this;
+
+		private:
+			explicit IndexesWaitOptsBuilder(InMemoryDocumentSessionOperations& outer_this);
+			commands::batches::BatchOptions& get_options();
+
+		public:
+			static std::shared_ptr<IndexesWaitOptsBuilder> create(InMemoryDocumentSessionOperations& outer_this);
+
+			std::shared_ptr<IndexesWaitOptsBuilder> with_timeout(std::chrono::milliseconds timeout);
+
+			std::shared_ptr<IndexesWaitOptsBuilder> throw_on_timeout(bool should_throw);
+
+			std::shared_ptr<IndexesWaitOptsBuilder> wait_for_indexes(std::vector<std::string> indexes);
+		};
+
 	protected:
 		std::weak_ptr<DocumentStoreBase> _document_store;
 
@@ -323,7 +345,8 @@ namespace ravendb::client::documents::session
 
 		//TODO void wait_for_replication_after_save_changes();
 
-		//TODO void wait_for_indexes_after_save_changes();
+		void wait_for_indexes_after_save_changes(std::function<void(
+			InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder&)> options);
 
 		template<typename T>
 		void ignore_changes_for(std::shared_ptr<T> entity);

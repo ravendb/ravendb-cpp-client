@@ -14,5 +14,7 @@ namespace ravendb::client::impl::utils
 		operator const std::string&() const;
 
 		operator const char*() const;
+
+		static std::string as_string(const std::chrono::milliseconds& msec);
 	};
 }

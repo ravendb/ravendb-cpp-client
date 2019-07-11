@@ -23,6 +23,8 @@
 #include "GetAttachmentOperation.h"
 #include "AdvancedSessionOperations.h"
 #include "GetDetailedStatisticsOperation.h"
+#include "CompactSettings.h"
+#include "CompactDatabaseOperation.h"
 
 namespace
 {
@@ -78,9 +80,9 @@ int main()
 	REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
 
 	auto store = documents::DocumentStore::create();
-	store->set_urls({ "http://127.0.0.1:8080" });
+	store->set_urls({ "http://10.0.0.92:8080" });
 	store->set_before_perform(set_for_fiddler);
-	store->set_database("Test111");
+	store->set_database("TEST_DB");
 	store->initialize();
 
 	//auto conventions = documents::conventions::DocumentConventions::create();
@@ -177,9 +179,21 @@ int main()
 
 	//auto att = session.advanced().attachments()->get_attachment("users/1", "file1.txt");
 
-	auto command = documents::operations::GetDetailedStatisticsOperation().get_command(store->get_conventions());
+	/*auto command = documents::operations::GetDetailedStatisticsOperation().get_command(store->get_conventions());
 	store->get_request_executor()->execute(*command);
-	auto res = command->get_result();
+	auto res = command->get_result();*/
+
+	//auto dr = serverwide::DatabaseRecord();
+	//dr.database_name = "TEST_DB";
+	//store->maintenance()->server()->send(serverwide::operations::CreateDatabaseOperation(dr));
+
+
+	auto cs = serverwide::CompactSettings();
+	cs.database_name = "TEST_DB";
+	cs.documents = true;
+
+	auto command = store->maintenance()->send(documents::operations::CompactDatabaseOperation(cs));
+	
 
 	std::cout << "Bye" << std::endl;
 }

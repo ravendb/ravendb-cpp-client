@@ -1,4 +1,5 @@
 #pragma once
+#include "json.hpp"
 
 namespace ravendb::client::http
 {
@@ -49,6 +50,8 @@ namespace ravendb::client::http
 	};
 
 	void from_json(const nlohmann::json& j, ServerNode& sn);
+
+	void to_json(nlohmann::json& j, const ServerNode& sn);
 
 	struct CompareSharedPtrConstServerNode
 	{

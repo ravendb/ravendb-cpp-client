@@ -49,6 +49,7 @@
     <ClCompile Include="BasicDocumentsTest.cpp" />
     <ClCompile Include="CachingOfDocumentInclude.cpp" />
     <ClCompile Include="CanGetBuildNumberTest.cpp" />
+    <ClCompile Include="CompactTest.cpp" />
     <ClCompile Include="ContainsTest.cpp" />
     <ClCompile Include="DeleteByQueryTest.cpp" />
     <ClCompile Include="DetectIndexTypeTest.cpp" />
@@ -84,10 +85,12 @@
     <ClCompile Include="GetDatabaseRecordTest.cpp" />
     <ClCompile Include="GetNextOperationIdCommandTest.cpp" />
     <ClCompile Include="GetStatisticsCommandTest.cpp" />
+    <ClCompile Include="HighlightesTest.cpp" />
     <ClCompile Include="IndexesFromClientTest.cpp" />
     <ClCompile Include="IndexOperationsTest.cpp" />
     <ClCompile Include="JavaScriptIndexTest.cpp" />
     <ClCompile Include="LoadAllStartingWith.cpp" />
+    <ClCompile Include="PatchTest.cpp" />
     <ClCompile Include="PutDocumentCommandTest.cpp" />
     <ClCompile Include="RavenDB903Test.cpp" />
     <ClCompile Include="RavenDB_5669Test.cpp" />
@@ -128,6 +131,7 @@
     <ClCompile Include="SpatialSearchTest.cpp" />
     <ClCompile Include="SpatialSortingTest.cpp" />
     <ClCompile Include="SpatialTest.cpp" />
+    <ClCompile Include="StoreTest.cpp" />
     <ClCompile Include="test_utils.cpp" />
     <ClCompile Include="TrackEntityTest.cpp" />
     <ClCompile Include="WhatChangedTest.cpp" />
