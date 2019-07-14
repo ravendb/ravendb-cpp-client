@@ -84,6 +84,8 @@ namespace ravendb::client::documents::session
 		std::optional<std::string> _included_alias{};
 
 	protected:
+		std::weak_ptr<AbstractDocumentQuery> _weak_this;
+
 		queries::QueryOperator default_operator = queries::QueryOperator::AND;
 
 		std::unordered_set<std::type_index> root_types{};
@@ -215,6 +217,9 @@ namespace ravendb::client::documents::session
 			std::shared_ptr<tokens::DeclareToken> declare_token_param,
 			std::vector<std::shared_ptr<tokens::LoadToken>> load_tokens_param,
 			std::optional<std::string> from_alias = {});
+
+		//call AFTER! the _weak_ptr is set.
+		void complete_construction();
 
 		std::shared_ptr<operations::QueryOperation> initialize_query_operation();
 
@@ -1642,11 +1647,19 @@ namespace ravendb::client::documents::session
 		, load_tokens(std::move(load_tokens_param))
 	{
 		root_types.insert(typeid(T));
-		_add_after_query_executed_listener([this](const queries::QueryResult& query_result)
-		{
-			update_stats_highlightings_and_explanations(query_result);
-		});
 		_conventions = session->get_conventions() ? session->get_conventions() : conventions::DocumentConventions::create();
+	}
+
+	template <typename T>
+	void AbstractDocumentQuery<T>::complete_construction()
+	{
+		_add_after_query_executed_listener([shared_this = _weak_this.lock()](const queries::QueryResult& query_result)
+		{
+			if(shared_this)
+			{
+				shared_this->update_stats_highlightings_and_explanations(query_result);
+			}
+		});
 	}
 
 	template <typename T>

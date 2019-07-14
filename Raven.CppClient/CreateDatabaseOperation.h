@@ -28,7 +28,7 @@ namespace ravendb::client::serverwide::operations
 	public:
 		~CreateDatabaseOperation() override;
 
-		CreateDatabaseOperation(DatabaseRecord database_record, int32_t replication_factor = 1);
+		explicit CreateDatabaseOperation(DatabaseRecord database_record, int32_t replication_factor = 1);
 
 		std::unique_ptr<http::RavenCommand<DatabasePutResult>> get_command(std::shared_ptr<documents::conventions::DocumentConventions> conventions) const override;
 

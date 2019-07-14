@@ -201,6 +201,12 @@
     <ClCompile Include="AdvancedPatchingTest.cpp">
       <Filter>ravendb.client.tests\test\server\patching</Filter>
     </ClCompile>
+    <ClCompile Include="DatabasesTest.cpp">
+      <Filter>ravendb.client.tests\test\server</Filter>
+    </ClCompile>
+    <ClCompile Include="PromoteDatabaseTest.cpp">
+      <Filter>ravendb.client.tests\test\server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

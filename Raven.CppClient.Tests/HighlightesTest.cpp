@@ -144,7 +144,7 @@ namespace ravendb::client::tests::querying
 	protected:
 		void customise_store(std::shared_ptr<client::documents::DocumentStore> store) override
 		{
-			store->set_before_perform(infrastructure::set_for_fiddler);
+			//store->set_before_perform(infrastructure::set_for_fiddler);
 		}
 
 		static void SetUpTestCase()

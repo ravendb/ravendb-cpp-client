@@ -52,6 +52,7 @@
     <ClCompile Include="CanGetBuildNumberTest.cpp" />
     <ClCompile Include="CompactTest.cpp" />
     <ClCompile Include="ContainsTest.cpp" />
+    <ClCompile Include="DatabasesTest.cpp" />
     <ClCompile Include="DeleteByQueryTest.cpp" />
     <ClCompile Include="DetectIndexTypeTest.cpp" />
     <ClCompile Include="ExistsTest.cpp" />
@@ -92,6 +93,7 @@
     <ClCompile Include="JavaScriptIndexTest.cpp" />
     <ClCompile Include="LoadAllStartingWith.cpp" />
     <ClCompile Include="PatchTest.cpp" />
+    <ClCompile Include="PromoteDatabaseTest.cpp" />
     <ClCompile Include="PutDocumentCommandTest.cpp" />
     <ClCompile Include="RavenDB903Test.cpp" />
     <ClCompile Include="RavenDB_5669Test.cpp" />

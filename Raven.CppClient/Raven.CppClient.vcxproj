@@ -157,6 +157,7 @@
     <ClInclude Include="AbstractIndexCreationTaskBase.h" />
     <ClInclude Include="AbstractJavaScriptIndexCreationTask.h" />
     <ClInclude Include="AbstractMultiMapIndexCreationTask.h" />
+    <ClInclude Include="AddDatabaseNodeOperation.h" />
     <ClInclude Include="AdvancedSessionExtentionBase.h" />
     <ClInclude Include="AllTopologyNodesDownException.h" />
     <ClInclude Include="AttachmentDetails.h" />
@@ -217,6 +218,7 @@
     <ClInclude Include="DeleteAttachmentCommandData.h" />
     <ClInclude Include="DeleteAttachmentOperation.h" />
     <ClInclude Include="DetailedDatabaseStatistics.h" />
+    <ClInclude Include="DisableDatabaseToggleResult.h" />
     <ClInclude Include="DistinctToken.h" />
     <ClInclude Include="DocumentConflictException.h" />
     <ClInclude Include="DocumentDoesNotExistException.h" />
@@ -428,6 +430,7 @@
     <ClInclude Include="PatchResult.h" />
     <ClInclude Include="PatchStatus.h" />
     <ClInclude Include="PointField.h" />
+    <ClInclude Include="PromoteDatabaseNodeOperation.h" />
     <ClInclude Include="PutAttachmentCommandData.h" />
     <ClInclude Include="PutAttachmentCommandHelper.h" />
     <ClInclude Include="PutAttachmentOperation.h" />
@@ -523,6 +526,7 @@
     <ClInclude Include="TimeoutException.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TimingsToken.h" />
+    <ClInclude Include="ToggleDatabasesStateOperation.h" />
     <ClInclude Include="Topology.h" />
     <ClInclude Include="TransactionMode.h" />
     <ClInclude Include="TrueToken.h" />
@@ -541,6 +545,7 @@
     <ClCompile Include="AbstractIndexCreationTaskBase.cpp" />
     <ClCompile Include="AbstractJavaScriptIndexCreationTask.cpp" />
     <ClCompile Include="AbstractMultiMapIndexCreationTask.cpp" />
+    <ClCompile Include="AddDatabaseNodeOperation.cpp" />
     <ClCompile Include="AdvancedSessionOperations.cpp" />
     <ClCompile Include="AllTopologyNodesDownException.cpp" />
     <ClCompile Include="AttachmentDetails.cpp" />
@@ -626,6 +631,7 @@
     <ClCompile Include="OperationExecutor.cpp" />
     <ClCompile Include="OrderByToken.cpp" />
     <ClCompile Include="PointField.cpp" />
+    <ClCompile Include="PromoteDatabaseNodeOperation.cpp" />
     <ClCompile Include="PutServerWideClientConfigurationOperation.cpp" />
     <ClCompile Include="QueryData.cpp" />
     <ClCompile Include="QueryFieldUtil.cpp" />
@@ -661,6 +667,7 @@
     <ClCompile Include="TcpConnectionInfo.cpp" />
     <ClCompile Include="TimeoutException.cpp" />
     <ClCompile Include="TimingsToken.cpp" />
+    <ClCompile Include="ToggleDatabasesStateOperation.cpp" />
     <ClCompile Include="TrueToken.cpp" />
     <ClCompile Include="UnsuccessfulRequestException.cpp" />
     <ClCompile Include="WhereToken.cpp" />

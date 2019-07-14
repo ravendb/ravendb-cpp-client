@@ -584,6 +584,15 @@
     <ClCompile Include="GetDetailedStatisticsOperation.cpp">
       <Filter>ravendb.client\documents\operations</Filter>
     </ClCompile>
+    <ClCompile Include="ToggleDatabasesStateOperation.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="AddDatabaseNodeOperation.cpp">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="PromoteDatabaseNodeOperation.cpp">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ravendb.h">
@@ -1733,6 +1742,18 @@
     </ClInclude>
     <ClInclude Include="CompactDatabaseOperation.h">
       <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="ToggleDatabasesStateOperation.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="DisableDatabaseToggleResult.h">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="AddDatabaseNodeOperation.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="PromoteDatabaseNodeOperation.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

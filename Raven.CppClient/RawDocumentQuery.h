@@ -10,8 +10,6 @@ namespace ravendb::client::documents::session
 		public IRawDocumentQuery<T, RawDocumentQuery<T>>
 	{
 	private:
-		std::weak_ptr<RawDocumentQuery> _weak_this{};
-
 		RawDocumentQuery(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::string raw_query);
 
 	public:
@@ -99,6 +97,7 @@ namespace ravendb::client::documents::session
 	{
 		auto object = std::shared_ptr<RawDocumentQuery>(new RawDocumentQuery(session, std::move(raw_query)));
 		object->_weak_this = object;
+		object->complete_construction();
 
 		return object;
 	}
@@ -113,14 +112,14 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery<T>>> RawDocumentQuery<T>::skip(int32_t count)
 	{
 		AbstractDocumentQuery<T>::_skip(count);
-		return _weak_this.lock();
+		return std::static_pointer_cast<RawDocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery<T>>> RawDocumentQuery<T>::take(int32_t count)
 	{
 		AbstractDocumentQuery<T>::_take(count);
-		return _weak_this.lock();
+		return std::static_pointer_cast<RawDocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -128,7 +127,7 @@ namespace ravendb::client::documents::session
 		const std::optional<std::chrono::milliseconds>& wait_timeout)
 	{
 		AbstractDocumentQuery<T>::_wait_for_non_stale_results(wait_timeout);
-		return _weak_this.lock();
+		return std::static_pointer_cast<RawDocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -136,21 +135,21 @@ namespace ravendb::client::documents::session
 		std::optional<queries::timings::QueryTimings>& timings)
 	{
 		AbstractDocumentQuery<T>::_wait_for_non_stale_results(timings);
-		return _weak_this.lock();
+		return std::static_pointer_cast<RawDocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery<T>>> RawDocumentQuery<T>::no_tracking()
 	{
 		AbstractDocumentQuery<T>::_no_tracking();
-		return _weak_this.lock();
+		return std::static_pointer_cast<RawDocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IRawDocumentQuery<T, RawDocumentQuery<T>>> RawDocumentQuery<T>::no_caching()
 	{
 		AbstractDocumentQuery<T>::_no_caching();
-		return _weak_this.lock();
+		return std::static_pointer_cast<RawDocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -158,7 +157,7 @@ namespace ravendb::client::documents::session
 		queries::QueryOperator query_operator)
 	{
 		AbstractDocumentQuery<T>::_using_default_operator(query_operator);
-		return _weak_this.lock();
+		return std::static_pointer_cast<RawDocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -166,7 +165,7 @@ namespace ravendb::client::documents::session
 		std::shared_ptr<QueryStatistics>& stats) const
 	{
 		AbstractDocumentQuery<T>::_statistics(stats);
-		return _weak_this.lock();
+		return std::static_pointer_cast<RawDocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -174,7 +173,7 @@ namespace ravendb::client::documents::session
 		const std::chrono::milliseconds& timeout)
 	{
 		AbstractDocumentQuery<T>::_wait_for_non_stale_results(timeout);
-		return _weak_this.lock();
+		return std::static_pointer_cast<RawDocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -188,7 +187,7 @@ namespace ravendb::client::documents::session
 		remove_after_query_executed_listener(std::function<void(const queries::QueryResult&)> action)
 	{
 		AbstractDocumentQuery<T>::_remove_after_query_executed_listener(action);
-		return _weak_this.lock();
+		return std::static_pointer_cast<RawDocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -196,7 +195,7 @@ namespace ravendb::client::documents::session
 		std::function<void(const queries::QueryResult&)> action)
 	{
 		AbstractDocumentQuery<T>::_add_after_query_executed_listener(action);
-		return _weak_this.lock();
+		return std::static_pointer_cast<RawDocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -204,7 +203,7 @@ namespace ravendb::client::documents::session
 		std::function<void(const queries::IndexQuery&)> action)
 	{
 		AbstractDocumentQuery<T>::_add_before_query_executed_listener(action);
-		return _weak_this.lock();
+		return std::static_pointer_cast<RawDocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -212,7 +211,7 @@ namespace ravendb::client::documents::session
 		remove_before_query_executed_listener(std::function<void(const queries::IndexQuery&)> action)
 	{
 		AbstractDocumentQuery<T>::_remove_before_query_executed_listener(action);
-		return _weak_this.lock();
+		return std::static_pointer_cast<RawDocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -220,7 +219,7 @@ namespace ravendb::client::documents::session
 		std::function<void(const nlohmann::json&)> action)
 	{
 		AbstractDocumentQuery<T>::_add_after_stream_executed_listener(action);
-		return _weak_this.lock();
+		return std::static_pointer_cast<RawDocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -228,7 +227,7 @@ namespace ravendb::client::documents::session
 		remove_after_stream_executed_listener(std::function<void(const nlohmann::json&)> action)
 	{
 		AbstractDocumentQuery<T>::_remove_after_stream_executed_listener(action);
-		return _weak_this.lock();
+		return std::static_pointer_cast<RawDocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -236,7 +235,7 @@ namespace ravendb::client::documents::session
 		std::string name, nlohmann::json value)
 	{
 		AbstractDocumentQuery<T>::_add_parameter(std::move(name), std::move(value));
-		return _weak_this.lock();
+		return std::static_pointer_cast<RawDocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
