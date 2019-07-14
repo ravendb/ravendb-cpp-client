@@ -198,6 +198,9 @@
     <ClCompile Include="HighlightesTest.cpp">
       <Filter>ravendb.client.tests\test\querying</Filter>
     </ClCompile>
+    <ClCompile Include="AdvancedPatchingTest.cpp">
+      <Filter>ravendb.client.tests\test\server\patching</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -364,6 +367,9 @@
     </Filter>
     <Filter Include="ravendb.client.tests\test\querying">
       <UniqueIdentifier>{2e895f84-5363-41c3-b0e1-7dfbd267e399}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\server\patching">
+      <UniqueIdentifier>{f8137986-bfbb-498e-a594-d1c896624206}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

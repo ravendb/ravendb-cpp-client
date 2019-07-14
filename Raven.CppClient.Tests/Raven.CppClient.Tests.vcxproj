@@ -45,6 +45,7 @@
     <ClInclude Include="ConnectionDetailsHolder.h" />
     <ClInclude Include="Contact.h" />
     <ClInclude Include="CreateSampleDataOperation.h" />
+    <ClCompile Include="AdvancedPatchingTest.cpp" />
     <ClCompile Include="AttachmentsSessionTest.cpp" />
     <ClCompile Include="BasicDocumentsTest.cpp" />
     <ClCompile Include="CachingOfDocumentInclude.cpp" />
