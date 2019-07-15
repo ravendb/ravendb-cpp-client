@@ -3,7 +3,7 @@
 #include "ConcurrencyCheckMode.h"
 #include "Constants.h"
 #include "IMetadataDictionary.h"
-#include <json.hpp>
+#include "json.hpp"
 
 namespace ravendb::client::documents::session
 {

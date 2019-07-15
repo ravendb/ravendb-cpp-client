@@ -5,7 +5,6 @@
 
 namespace ravendb::client::documents::commands
 {
-
 	class GetNextOperationIdCommand :public http::RavenCommand<int64_t>
 	{
 	public:

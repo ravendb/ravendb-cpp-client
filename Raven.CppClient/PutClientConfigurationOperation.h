@@ -1,5 +1,6 @@
 #pragma once
 #include "IVoidMaintenanceOperation.h"
+#include "ClientConfiguration.h"
 
 namespace ravendb::client::documents::operations::configuration
 {
@@ -45,10 +46,10 @@ namespace ravendb::client::documents::operations::configuration
 
 				curl_ref.method = constants::methods::PUT;
 				curl_ref.headers.insert_or_assign("Transfer-Encoding", "chunked");
-				curl_ref.headers.emplace(constants::headers::CONTENT_TYPE, "application/json");
+				curl_ref.headers.insert_or_assign(constants::headers::CONTENT_TYPE, "application/json");
 
-				curl_easy_setopt(curl, CURLOPT_READFUNCTION, stream_read_callback);
 				curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+				curl_easy_setopt(curl, CURLOPT_READFUNCTION, stream_read_callback);
 				curl_easy_setopt(curl, CURLOPT_READDATA, &_configuration_json_stream);
 
 				_configuration_json_stream.clear();

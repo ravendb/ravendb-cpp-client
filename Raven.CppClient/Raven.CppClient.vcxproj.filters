@@ -593,11 +593,11 @@
     <ClCompile Include="PromoteDatabaseNodeOperation.cpp">
       <Filter>ravendb.client\serverwide\operations</Filter>
     </ClCompile>
+    <ClCompile Include="PatchCommandData.cpp">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ravendb.h">
-      <Filter>ravendb.client</Filter>
-    </ClInclude>
     <ClInclude Include="VoidRavenCommand.h">
       <Filter>ravendb.client\http</Filter>
     </ClInclude>
@@ -1754,6 +1754,9 @@
     </ClInclude>
     <ClInclude Include="PromoteDatabaseNodeOperation.h">
       <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="raven_cpp_client.h">
+      <Filter>ravendb.client</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

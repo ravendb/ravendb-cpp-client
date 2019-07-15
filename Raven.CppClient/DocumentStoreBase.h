@@ -1,8 +1,8 @@
 #pragma once
+#include <optional>
 #include "IDocumentStore.h"
 #include "CertificateDetails.h"
 #include "CurlHandlesHolder.h"
-#include <optional>
 #include "EventHandler.h"
 #include "InMemoryDocumentSessionOperations.h"
 

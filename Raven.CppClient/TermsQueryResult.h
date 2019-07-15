@@ -1,5 +1,4 @@
 #pragma once
-
 #include "json_utils.h"
 
 namespace ravendb::client::documents::queries

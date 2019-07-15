@@ -22,6 +22,5 @@ namespace ravendb::client::extensions
 			impl::utils::CompareStringsLessThanIgnoreCase>& headers);
 
 		static std::optional<bool> get_boolean_header(const impl::CurlResponse& response, const std::string& header);
-
 	};
 }

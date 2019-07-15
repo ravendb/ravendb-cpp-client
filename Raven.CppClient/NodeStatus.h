@@ -8,10 +8,6 @@ namespace ravendb::client
 		class RequestExecutor;
 		struct ServerNode;
 	}
-	namespace primitives
-	{
-		class Timer;
-	}
 }
 
 namespace ravendb::client::http

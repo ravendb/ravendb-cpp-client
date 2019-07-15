@@ -1,30 +1,33 @@
 
 #include "pch.h"
-#include <curl/curl.h>
-#include <thread>
-#include <DatabaseRecord.h>
-#include <CreateDatabaseOperation.h>
-#include "DocumentStore.h"
-#include "DocumentSession.h"
-#include "User.h"
-#include "GetDatabaseTopologyCommand.h"
-#include "EntityIdHelperUtil.h"
-#include "GetNextOperationIdCommand.h"
-#include "TasksExecutor.h"
-#include "GetDatabaseNamesOperation.h"
-#include "RavenException.h"
-#include "ConnectionDetailsHolder.h"
-#include "MaintenanceOperationExecutor.h"
-#include "PutAttachmentOperation.h"
-#include "CompareStringsEqualIgnoreCase.h"
-#include "HeadAttachmentCommand.h"
-#include "DeleteAttachmentOperation.h"
-#include "PutDocumentCommand.h"
-#include "GetAttachmentOperation.h"
-#include "AdvancedSessionOperations.h"
-#include "GetDetailedStatisticsOperation.h"
-#include "CompactSettings.h"
-#include "CompactDatabaseOperation.h"
+//#include <curl/curl.h>
+//#include <thread>
+//#include <DatabaseRecord.h>
+//#include <CreateDatabaseOperation.h>
+//#include "DocumentStore.h"
+//#include "DocumentSession.h"
+//#include "User.h"
+//#include "GetDatabaseTopologyCommand.h"
+//#include "EntityIdHelperUtil.h"
+//#include "GetNextOperationIdCommand.h"
+//#include "TasksExecutor.h"
+//#include "GetDatabaseNamesOperation.h"
+//#include "RavenException.h"
+//#include "ConnectionDetailsHolder.h"
+//#include "MaintenanceOperationExecutor.h"
+//#include "PutAttachmentOperation.h"
+//#include "CompareStringsEqualIgnoreCase.h"
+//#include "HeadAttachmentCommand.h"
+//#include "DeleteAttachmentOperation.h"
+//#include "PutDocumentCommand.h"
+//#include "GetAttachmentOperation.h"
+//#include "AdvancedSessionOperations.h"
+//#include "GetDetailedStatisticsOperation.h"
+//#include "CompactSettings.h"
+//#include "CompactDatabaseOperation.h"
+
+#include "raven_cpp_client.h"
+
 
 namespace
 {
@@ -77,7 +80,7 @@ int main()
 {
 	using namespace ravendb::client;
 
-	REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
+	//REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
 
 	auto store = documents::DocumentStore::create();
 	store->set_urls({ "http://10.0.0.92:8080" });
@@ -192,7 +195,7 @@ int main()
 	cs.database_name = "TEST_DB";
 	cs.documents = true;
 
-	auto command = store->maintenance()->send(documents::operations::CompactDatabaseOperation(cs));
+	auto command = store->maintenance()->server()->send(documents::operations::CompactDatabaseOperation(cs));
 	
 
 	std::cout << "Bye" << std::endl;

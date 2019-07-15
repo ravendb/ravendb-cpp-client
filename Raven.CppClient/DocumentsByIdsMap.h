@@ -1,7 +1,6 @@
 #pragma once
 #include "CompareStringsLessThanIgnoreCase.h"
 
-
 namespace ravendb::client::documents::session
 {
 	template<typename T>

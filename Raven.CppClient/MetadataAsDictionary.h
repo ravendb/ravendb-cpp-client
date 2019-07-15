@@ -1,6 +1,6 @@
 #pragma once
 #include "IMetadataDictionary.h"
-#include <json.hpp>
+#include "json.hpp"
 
 namespace  ravendb::client::json
 {

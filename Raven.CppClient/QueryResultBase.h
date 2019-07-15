@@ -4,9 +4,6 @@
 #include "DateTimeOffset.h"
 #include "QueryTimings.h"
 
-using 
-	ravendb::client::impl::DateTimeOffset;
-
 namespace ravendb::client::documents::queries
 {
 	template<typename TResult, typename TInclude>
@@ -20,10 +17,10 @@ namespace ravendb::client::documents::queries
 		std::unordered_map<std::string, std::vector<std::string>> included_counter_names{};
 		std::vector<std::string> included_paths;
 		bool is_stale;
-		DateTimeOffset index_timestamp;
+		impl::DateTimeOffset index_timestamp;
 		std::string index_name;
 		std::optional<int64_t> result_etag;
-		DateTimeOffset last_query_time;
+		impl::DateTimeOffset last_query_time;
 		std::string node_tag;
 		std::optional<timings::QueryTimings> timings{};
 	};

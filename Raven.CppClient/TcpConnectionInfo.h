@@ -4,8 +4,8 @@ namespace ravendb::client::serverwide::commands
 {
 	struct TcpConnectionInfo
 	{
-		int32_t port;
-		std::string url;
+		int32_t port{};
+		std::string url{};
 		std::optional<std::string> certificate{};
 	};
 

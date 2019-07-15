@@ -1,8 +1,8 @@
 #pragma once
 #include <typeindex>
+#include <shared_mutex>
 #include "ClientConfiguration.h"
 #include "EntityIdHelper.h"
-#include <shared_mutex>
 
 namespace ravendb::client::documents::conventions
 {

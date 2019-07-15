@@ -5,11 +5,6 @@
 #include "ServerNode.h"
 #include "TermsQueryResult.h"
 
-
-using
-ravendb::client::http::RavenCommand,
-ravendb::client::http::ServerNode;
-
 namespace ravendb::client::documents::operations::indexes
 {
 	class GetTermsOperation : public operations::IMaintenanceOperation<std::vector<std::string>>
@@ -51,14 +46,14 @@ namespace ravendb::client::documents::operations::indexes
 			, _page_size(std::move(page_size))
 		{}
 
-		std::unique_ptr<RavenCommand<std::vector<std::string>>> get_command(
+		std::unique_ptr<http::RavenCommand<std::vector<std::string>>> get_command(
 			std::shared_ptr<conventions::DocumentConventions> conventions) const override
 		{
 			return std::make_unique<GetTermsCommand>(_index_name, _field, _from_value, _page_size);
 		}
 
 	private:
-		class GetTermsCommand : public RavenCommand<std::vector<std::string>>
+		class GetTermsCommand : public http::RavenCommand<std::vector<std::string>>
 		{
 		private:
 			const std::string _index_name;
@@ -97,7 +92,7 @@ namespace ravendb::client::documents::operations::indexes
 				, _page_size(std::move(page_size))
 			{}
 
-			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const ServerNode> node,
+			void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
 				std::optional<std::string>& url_ref) override
 			{
 				std::ostringstream path_builder;

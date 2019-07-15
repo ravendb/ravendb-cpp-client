@@ -462,8 +462,8 @@
     <ClInclude Include="PutDocumentCommand.h" />
     <ClInclude Include="RavenCommand.h" />
     <ClInclude Include="GetDocumentsCommand.h" />
-    <ClInclude Include="ravendb.h" />
     <ClInclude Include="RavenException.h" />
+    <ClInclude Include="raven_cpp_client.h" />
     <ClInclude Include="RawDocumentQuery.h" />
     <ClInclude Include="ReadBalanceBehavior.h" />
     <ClInclude Include="ReorderDatabaseMembersOperation.h" />
@@ -630,6 +630,7 @@
     <ClCompile Include="OperationExceptionResult.cpp" />
     <ClCompile Include="OperationExecutor.cpp" />
     <ClCompile Include="OrderByToken.cpp" />
+    <ClCompile Include="PatchCommandData.cpp" />
     <ClCompile Include="PointField.cpp" />
     <ClCompile Include="PromoteDatabaseNodeOperation.cpp" />
     <ClCompile Include="PutServerWideClientConfigurationOperation.cpp" />

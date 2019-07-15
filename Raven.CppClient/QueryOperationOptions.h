@@ -1,4 +1,6 @@
 #pragma once
+#include <optional>
+#include "chrono"
 
 namespace ravendb::client::documents::queries
 {

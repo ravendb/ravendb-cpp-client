@@ -1,9 +1,8 @@
 #pragma once
 #include "CommandDataBase.h"
-#include "json.hpp"
 #include "json_utils.h"
+#include "json.hpp"
 #include "utils.h"
-
 
 namespace ravendb::client::documents::commands::batches
 {

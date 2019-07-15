@@ -1,5 +1,4 @@
 #pragma once
-
 #include "DateTimeOffset.h"
 #include "json_utils.h"
 
