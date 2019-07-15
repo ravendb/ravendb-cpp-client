@@ -16,7 +16,7 @@ namespace advanced_patching_test
 		std::string owner{};
 		int32_t value{};
 		std::vector<std::string> comments{};
-		DateTimeOffset date{};
+		ravendb::client::impl::DateTimeOffset date{};
 	};
 
 	void to_json(nlohmann::json& j, const CustomType& ct)

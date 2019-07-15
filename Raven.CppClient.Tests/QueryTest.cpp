@@ -832,25 +832,25 @@ namespace ravendb::client::tests::client
 
 		store->execute_index(std::make_shared<query_test::OrderTime>());
 
-		const auto now = DateTimeOffset("2019-07-11T12:00:00.0000000");
+		const auto now = impl::DateTimeOffset("2019-07-11T12:00:00.0000000");
 
 		{
 			auto session = store->open_session();
 			auto order1 = std::make_shared<infrastructure::entities::Order>();
 			order1->company = "hours";
-			order1->orderedAt = DateTimeOffset("2019-07-11T10:00:00.0000000");//now - 2hours
+			order1->orderedAt = impl::DateTimeOffset("2019-07-11T10:00:00.0000000");//now - 2hours
 			order1->shippedAt = now;
 			session.store(order1);
 
 			auto order2 = std::make_shared<infrastructure::entities::Order>();
 			order2->company = "days";
-			order2->orderedAt = DateTimeOffset("2019-07-09T12:00:00.0000000");//now - 2 days
+			order2->orderedAt = impl::DateTimeOffset("2019-07-09T12:00:00.0000000");//now - 2 days
 			order2->shippedAt = now;
 			session.store(order2);
 
 			auto order3 = std::make_shared<infrastructure::entities::Order>();
 			order3->company = "minutes";
-			order3->orderedAt = DateTimeOffset("2019-07-11T11:58:00.0000000");//now - 2 minutes
+			order3->orderedAt = impl::DateTimeOffset("2019-07-11T11:58:00.0000000");//now - 2 minutes
 			order3->shippedAt = now;
 			session.store(order3);
 

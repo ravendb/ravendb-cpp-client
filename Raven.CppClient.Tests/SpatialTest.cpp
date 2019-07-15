@@ -5,6 +5,7 @@
 #include "AdvancedSessionOperations.h"
 #include "AbstractIndexCreationTask.h"
 #include "EntityIdHelperUtil.h"
+#include "json_utils.h"
 
 namespace ravendb::client::tests::client::spatial
 {
@@ -12,7 +13,7 @@ namespace ravendb::client::tests::client::spatial
 	{
 		struct MyDocumentItem
 		{
-			DateTimeOffset date{};
+			impl::DateTimeOffset date{};
 			double latitude{};
 			double longitude{};
 		};
@@ -58,7 +59,7 @@ namespace ravendb::client::tests::client::spatial
 		struct MyProjection
 		{
 			std::string id{};
-			DateTimeOffset date{};
+			impl::DateTimeOffset date{};
 			double latitude{};
 			double longitude{};
 		};
@@ -139,7 +140,7 @@ namespace ravendb::client::tests::client::spatial
 			my_document->id = "First";
 
 			auto my_document_item = spatial_test::MyDocumentItem();
-			my_document_item.date = DateTimeOffset("2019-07-08T00:00:00.0000000");
+			my_document_item.date = impl::DateTimeOffset("2019-07-08T00:00:00.0000000");
 			my_document_item.latitude = 10.0;
 			my_document_item.longitude = 10.0;
 
@@ -179,7 +180,7 @@ namespace ravendb::client::tests::client::spatial
 			my_document->id = "First";
 
 			auto my_document_item = spatial_test::MyDocumentItem();
-			my_document_item.date = DateTimeOffset("2019-07-08T00:00:00.0000000");
+			my_document_item.date = impl::DateTimeOffset("2019-07-08T00:00:00.0000000");
 			my_document_item.latitude = 10.0;
 			my_document_item.longitude = 10.0;
 

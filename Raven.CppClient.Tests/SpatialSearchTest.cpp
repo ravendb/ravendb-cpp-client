@@ -14,14 +14,14 @@ namespace ravendb::client::tests::client::spatial
 			std::string venue{};
 			double latitude{};
 			double longitude{};
-			std::optional<DateTimeOffset> date{};
+			std::optional<impl::DateTimeOffset> date{};
 			int32_t capacity{};
 
 			Event() = default;
 
 			Event(std::string venue_param,
 				double latitude_param, double longitude_param,
-				std::optional<DateTimeOffset> date_param = {},
+				std::optional<impl::DateTimeOffset> date_param = {},
 				int32_t capacity = {})
 				: venue(std::move(venue_param))
 				, latitude(latitude_param)
@@ -91,13 +91,13 @@ namespace ravendb::client::tests::client::spatial
 			auto session = store->open_session();
 			session.store(std::make_shared<spatial_search_test::Event>("a/1", 38.9579000, -77.3572000));
 			session.store(std::make_shared<spatial_search_test::Event>("a/2", 38.9690000, -77.3862000,
-				DateTimeOffset("2000-01-02T00:00:00.0000000")));
+				impl::DateTimeOffset("2000-01-02T00:00:00.0000000")));
 			session.store(std::make_shared<spatial_search_test::Event>("b/2", 38.9690000, -77.3862000,
-				DateTimeOffset("2000-01-03T00:00:00.0000000")));
+			    impl::DateTimeOffset("2000-01-03T00:00:00.0000000")));
 			session.store(std::make_shared<spatial_search_test::Event>("c/3", 38.9510000, -77.4107000,
-				DateTimeOffset("2003-01-01T00:00:00.0000000")));
+			    impl::DateTimeOffset("2003-01-01T00:00:00.0000000")));
 			session.store(std::make_shared<spatial_search_test::Event>("d/1", 37.9510000, -77.4107000,
-				DateTimeOffset("2003-01-01T00:00:00.0000000")));
+			    impl::DateTimeOffset("2003-01-01T00:00:00.0000000")));
 			session.save_changes();
 		}
 
@@ -110,7 +110,7 @@ namespace ravendb::client::tests::client::spatial
 
 			auto events = session.query<spatial_search_test::Event>(documents::queries::Query::index("SpatialIdx"))
 				->statistics(stats_ref)
-				->where_less_than_or_equal("date", DateTimeOffset("2001-01-01T00:00:00.0000000"))
+				->where_less_than_or_equal("date", impl::DateTimeOffset("2001-01-01T00:00:00.0000000"))
 				->within_radius_of("coordinates", 6.0, 38.96939, -77.386398)
 				->order_by_descending("date")
 				->to_list();
@@ -146,15 +146,15 @@ namespace ravendb::client::tests::client::spatial
 		{
 			auto session = store->open_session();
 			session.store(std::make_shared<spatial_search_test::Event>("a/1", 38.9579000, -77.3572000, 
-				std::optional<DateTimeOffset>(), 5000));
+				std::optional<impl::DateTimeOffset>(), 5000));
 			session.store(std::make_shared<spatial_search_test::Event>("a/2", 38.9690000, -77.3862000,
-				DateTimeOffset("2000-01-02T00:00:00.0000000"), 5000));
+			    impl::DateTimeOffset("2000-01-02T00:00:00.0000000"), 5000));
 			session.store(std::make_shared<spatial_search_test::Event>("b/2", 38.9690000, -77.3862000,
-				DateTimeOffset("2000-01-03T00:00:00.0000000"), 2000));
+			    impl::DateTimeOffset("2000-01-03T00:00:00.0000000"), 2000));
 			session.store(std::make_shared<spatial_search_test::Event>("c/3", 38.9510000, -77.4107000,
-				DateTimeOffset("2003-01-01T00:00:00.0000000"), 1500));
+			    impl::DateTimeOffset("2003-01-01T00:00:00.0000000"), 1500));
 			session.store(std::make_shared<spatial_search_test::Event>("d/1", 37.9510000, -77.4107000,
-				DateTimeOffset("2003-01-01T00:00:00.0000000"), 1500));
+			    impl::DateTimeOffset("2003-01-01T00:00:00.0000000"), 1500));
 			session.save_changes();
 		}
 
