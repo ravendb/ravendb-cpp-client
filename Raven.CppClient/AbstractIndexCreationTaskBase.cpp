@@ -6,12 +6,12 @@
 
 namespace ravendb::client::documents::indexes
 {
-	void AbstractIndexCreationTaskBase::throw_index_name_was_set() const
+	void AbstractIndexCreationTaskBase::throw_index_name_was_set()
 	{
 		throw std::runtime_error("The index name was already set");
 	}
 
-	void AbstractIndexCreationTaskBase::throw_index_name_was_not_set() const
+	void AbstractIndexCreationTaskBase::throw_index_name_was_not_set()
 	{
 		throw std::runtime_error("Index name was not set."
 			"Did you forget to call set_index_name() or set_default_index_name() ?");
@@ -88,7 +88,7 @@ namespace ravendb::client::documents::indexes
 
 	void AbstractIndexCreationTaskBase::set_priority(std::optional<IndexPriority> priority_param)
 	{
-		priority = std::move(priority_param);
+		priority = priority_param;
 	}
 
 	std::optional<IndexLockMode> AbstractIndexCreationTaskBase::get_lock_mode() const
@@ -98,7 +98,7 @@ namespace ravendb::client::documents::indexes
 
 	void AbstractIndexCreationTaskBase::set_lock_mode(std::optional<IndexLockMode> lock_mode_param)
 	{
-		lock_mode = std::move(lock_mode_param);
+		lock_mode = lock_mode_param;
 	}
 
 	void AbstractIndexCreationTaskBase::execute(std::shared_ptr<IDocumentStore> store,

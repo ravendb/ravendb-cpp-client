@@ -4,7 +4,6 @@
 #include "IDocumentStore.h"
 #include "GetCppClassName.h"
 
-
 // Set the index name from the IndexCreationTask name
 // Call from the ctor;
 #define SET_DEFAULT_INDEX_NAME()\
@@ -20,8 +19,8 @@ namespace ravendb::client::documents::indexes
 	private:
 		std::optional<std::string> _index_name{};
 
-		void throw_index_name_was_set() const;
-		void throw_index_name_was_not_set() const;
+		static void throw_index_name_was_set();
+		static void throw_index_name_was_not_set();
 
 	protected:
 		std::shared_ptr<conventions::DocumentConventions> conventions{};

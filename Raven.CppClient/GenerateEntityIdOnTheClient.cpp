@@ -7,7 +7,7 @@ namespace ravendb::client::documents::identity
 		std::shared_ptr<conventions::DocumentConventions> conventions,
 		std::function<std::string(std::type_index, std::shared_ptr<void>)> generate_id)
 		: _conventions(conventions)
-		, _generate_id(generate_id)
+		, _generate_id(std::move(generate_id))
 	{}
 
 	std::optional<std::string> GenerateEntityIdOnTheClient::try_get_id_from_instance(std::type_index type, std::shared_ptr<void> entity) const
@@ -31,7 +31,7 @@ namespace ravendb::client::documents::identity
 		auto&& id_from_instance = try_get_id_from_instance(type, entity);
 		std::string id = !id_from_instance ? _generate_id(type, entity) : *id_from_instance;
 
-		if(id.size() > 0 && id.front() == '/')
+		if(!id.empty() && id.front() == '/')
 		{
 			std::ostringstream msg{};
 			msg << "Cannot use value '" << id << "' as a document id because it begins with a '/'";
@@ -44,7 +44,7 @@ namespace ravendb::client::documents::identity
 	std::string GenerateEntityIdOnTheClient::generate_document_key_for_storage(std::type_index type,
 		std::shared_ptr<void> entity) const
 	{
-		auto&& id = get_or_generate_document_id(type, entity);
+		auto id = get_or_generate_document_id(type, entity);
 		try_set_identity(type, entity, id);
 		return id;
 	}

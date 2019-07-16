@@ -9,12 +9,12 @@ namespace ravendb::client::documents::queries
 	{
 		~GenericQueryResult() override = 0;
 
-		int32_t total_results;
-		int32_t skipped_results;
-		std::optional<std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::string>>>> highlightings;
-		std::optional<std::unordered_map<std::string, std::vector<std::string>>> explanations;
-		int64_t duration_in_ms;
-		std::optional<std::unordered_map<std::string, std::string>> score_explanations;
+		int32_t total_results{};
+		int32_t skipped_results{};
+		std::optional<std::unordered_map<std::string, std::unordered_map<std::string, std::vector<std::string>>>> highlightings{};
+		std::optional<std::unordered_map<std::string, std::vector<std::string>>> explanations{};
+		int64_t duration_in_ms{};
+		std::optional<std::unordered_map<std::string, std::string>> score_explanations{};
 	};
 
 	template <typename TResult, typename TInclude>

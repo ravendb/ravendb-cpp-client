@@ -15,13 +15,13 @@ namespace ravendb::client::documents::queries
 		TInclude includes;
 		nlohmann::json counter_includes = nlohmann::json::object();
 		std::unordered_map<std::string, std::vector<std::string>> included_counter_names{};
-		std::vector<std::string> included_paths;
-		bool is_stale;
-		impl::DateTimeOffset index_timestamp;
-		std::string index_name;
-		std::optional<int64_t> result_etag;
-		impl::DateTimeOffset last_query_time;
-		std::string node_tag;
+		std::vector<std::string> included_paths{};
+		bool is_stale{};
+		impl::DateTimeOffset index_timestamp{};
+		std::string index_name{};
+		std::optional<int64_t> result_etag{};
+		impl::DateTimeOffset last_query_time{};
+		std::string node_tag{};
 		std::optional<timings::QueryTimings> timings{};
 	};
 

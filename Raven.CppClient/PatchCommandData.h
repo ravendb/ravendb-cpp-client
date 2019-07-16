@@ -18,13 +18,17 @@ namespace ravendb::client::documents::commands::batches
 		PatchCommandData(std::string id, std::optional<std::string> change_vector,
 			operations::PatchRequest patch, std::optional<operations::PatchRequest> patch_if_missing);
 			
+		const operations::PatchRequest& get_patch() const
+		{
+			return _patch;
+		}
 
-		const operations::PatchRequest& get_patch() const;
-
-		const std::optional<operations::PatchRequest>& get_patch_if_missing() const;
+		const std::optional<operations::PatchRequest>& get_patch_if_missing() const
+		{
+			return _patch_if_missing;
+		}
 
 		nlohmann::json serialize() const override;
-
 
 		void on_before_save_changes(std::shared_ptr<session::InMemoryDocumentSessionOperations> session) override;
 	};

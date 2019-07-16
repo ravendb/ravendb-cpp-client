@@ -13,16 +13,6 @@ namespace ravendb::client::documents::commands::batches
 		, _patch_if_missing(std::move(patch_if_missing))
 	{}
 
-	const operations::PatchRequest& PatchCommandData::get_patch() const
-	{
-		return _patch;
-	}
-
-	const std::optional<operations::PatchRequest>& PatchCommandData::get_patch_if_missing() const
-	{
-		return _patch_if_missing;
-	}
-
 	nlohmann::json PatchCommandData::serialize() const
 	{
 		using ravendb::client::impl::utils::json_utils::set_val_to_json;

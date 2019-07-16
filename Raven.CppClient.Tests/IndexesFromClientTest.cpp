@@ -175,32 +175,32 @@ namespace ravendb::client::tests::client::indexing
 
 		auto status = store->maintenance()->send(documents::operations::indexes::GetIndexingStatusOperation());
 
-		ASSERT_EQ(IndexRunningStatus::RUNNING, status->status);
+		ASSERT_EQ(documents::indexes::IndexRunningStatus::RUNNING, status->status);
 		ASSERT_EQ(1, status->indexes.size());
-		ASSERT_EQ(IndexRunningStatus::RUNNING, status->indexes[0].status);
+		ASSERT_EQ(documents::indexes::IndexRunningStatus::RUNNING, status->indexes[0].status);
 
 		store->maintenance()->send(documents::operations::indexes::StopIndexingOperation());
 
 		status = store->maintenance()->send(documents::operations::indexes::GetIndexingStatusOperation());
 
-		ASSERT_EQ(IndexRunningStatus::PAUSED, status->status);
-		ASSERT_EQ(IndexRunningStatus::PAUSED, status->indexes[0].status);
+		ASSERT_EQ(documents::indexes::IndexRunningStatus::PAUSED, status->status);
+		ASSERT_EQ(documents::indexes::IndexRunningStatus::PAUSED, status->indexes[0].status);
 
 		store->maintenance()->send(documents::operations::indexes::StartIndexingOperation());
 
 		status = store->maintenance()->send(documents::operations::indexes::GetIndexingStatusOperation());
 
-		ASSERT_EQ(IndexRunningStatus::RUNNING, status->status);
+		ASSERT_EQ(documents::indexes::IndexRunningStatus::RUNNING, status->status);
 		ASSERT_EQ(1, status->indexes.size());
-		ASSERT_EQ(IndexRunningStatus::RUNNING, status->indexes[0].status);
+		ASSERT_EQ(documents::indexes::IndexRunningStatus::RUNNING, status->indexes[0].status);
 
 		store->maintenance()->send(documents::operations::indexes::StopIndexOperation(status->indexes[0].name));
 
 		status = store->maintenance()->send(documents::operations::indexes::GetIndexingStatusOperation());
 
-		ASSERT_EQ(IndexRunningStatus::RUNNING, status->status);
+		ASSERT_EQ(documents::indexes::IndexRunningStatus::RUNNING, status->status);
 		ASSERT_EQ(1, status->indexes.size());
-		ASSERT_EQ(IndexRunningStatus::PAUSED, status->indexes[0].status);
+		ASSERT_EQ(documents::indexes::IndexRunningStatus::PAUSED, status->indexes[0].status);
 	}
 
 	TEST_F(IndexesFromClientTest, SetLockModeAndSetPriority)

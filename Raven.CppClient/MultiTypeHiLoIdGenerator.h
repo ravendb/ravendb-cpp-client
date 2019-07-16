@@ -24,7 +24,7 @@ namespace ravendb::client::documents::identity
 	{
 	private:
 		std::shared_mutex _generator_lock{};
-		std::unordered_map<std::string, std::unique_ptr<HiLoIdGenerator>> _id_generator_by_tag;
+		std::unordered_map<std::string, std::unique_ptr<HiLoIdGenerator>> _id_generator_by_tag{};
 
 	protected:
 		const std::weak_ptr<DocumentStore> store;

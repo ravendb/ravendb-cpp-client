@@ -96,13 +96,13 @@ namespace ravendb::client::tests::client::documents::operations::indexes
 		auto indexing_status = store->maintenance()->send(ravendb::client::documents::operations::indexes::GetIndexingStatusOperation());
 
 		auto index_status = indexing_status->indexes[0];
-		ASSERT_EQ(IndexRunningStatus::DISABLED, index_status.status);
+		ASSERT_EQ(ravendb::client::documents::indexes::IndexRunningStatus::DISABLED, index_status.status);
 
 		store->maintenance()->send(
 			ravendb::client::documents::operations::indexes::EnableIndexOperation(Users_Index().get_index_name()));
 
 		indexing_status = store->maintenance()->send(ravendb::client::documents::operations::indexes::GetIndexingStatusOperation());
-		ASSERT_EQ(IndexRunningStatus::RUNNING, indexing_status->indexes[0].status);
+		ASSERT_EQ(ravendb::client::documents::indexes::IndexRunningStatus::RUNNING, indexing_status->indexes[0].status);
 	}
 
 	TEST_F(IndexOperationsTest, CanGetIndexes)
@@ -177,14 +177,14 @@ namespace ravendb::client::tests::client::documents::operations::indexes
 		auto indexing_status = store->maintenance()->send(
 			ravendb::client::documents::operations::indexes::GetIndexingStatusOperation());
 
-		ASSERT_EQ(IndexRunningStatus::PAUSED, indexing_status->status);
+		ASSERT_EQ(ravendb::client::documents::indexes::IndexRunningStatus::PAUSED, indexing_status->status);
 
 		store->maintenance()->send(ravendb::client::documents::operations::indexes::StartIndexingOperation());
 
 		indexing_status = store->maintenance()->send(
 			ravendb::client::documents::operations::indexes::GetIndexingStatusOperation());
 
-		ASSERT_EQ(IndexRunningStatus::RUNNING, indexing_status->status);
+		ASSERT_EQ(ravendb::client::documents::indexes::IndexRunningStatus::RUNNING, indexing_status->status);
 	}
 
 	TEST_F(IndexOperationsTest, CanStopStartIndex)
@@ -201,8 +201,8 @@ namespace ravendb::client::tests::client::documents::operations::indexes
 		auto indexing_status = store->maintenance()->send(
 			ravendb::client::documents::operations::indexes::GetIndexingStatusOperation());
 
-		ASSERT_EQ(IndexRunningStatus::RUNNING, indexing_status->status);
-		ASSERT_EQ(IndexRunningStatus::PAUSED, indexing_status->indexes[0].status);
+		ASSERT_EQ(ravendb::client::documents::indexes::IndexRunningStatus::RUNNING, indexing_status->status);
+		ASSERT_EQ(ravendb::client::documents::indexes::IndexRunningStatus::PAUSED, indexing_status->indexes[0].status);
 
 		store->maintenance()->send(
 			ravendb::client::documents::operations::indexes::StartIndexOperation(index_def.name));
@@ -210,8 +210,8 @@ namespace ravendb::client::tests::client::documents::operations::indexes
 		indexing_status = store->maintenance()->send(
 			ravendb::client::documents::operations::indexes::GetIndexingStatusOperation());
 
-		ASSERT_EQ(IndexRunningStatus::RUNNING, indexing_status->status);
-		ASSERT_EQ(IndexRunningStatus::RUNNING, indexing_status->indexes[0].status);
+		ASSERT_EQ(ravendb::client::documents::indexes::IndexRunningStatus::RUNNING, indexing_status->status);
+		ASSERT_EQ(ravendb::client::documents::indexes::IndexRunningStatus::RUNNING, indexing_status->indexes[0].status);
 	}
 
 	TEST_F(IndexOperationsTest, CanSetIndexLockMode)

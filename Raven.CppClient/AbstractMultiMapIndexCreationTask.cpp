@@ -30,7 +30,7 @@ namespace ravendb::client::documents::indexes
 		index_definition_builder.output_reduce_to_collection = output_reduce_to_collections;
 		index_definition_builder.additional_sources = additional_sources;
 
-		auto&& index_definition = index_definition_builder.to_index_definition(conventions, false);
+		auto index_definition = index_definition_builder.to_index_definition(conventions, false);
 		index_definition.maps = std::unordered_set<std::string>(_maps.cbegin(), _maps.cend());
 
 		return index_definition;

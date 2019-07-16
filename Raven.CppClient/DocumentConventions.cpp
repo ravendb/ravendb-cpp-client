@@ -106,7 +106,7 @@ namespace ravendb::client::documents::conventions
 	void DocumentConventions::set_use_compression(std::optional<bool> use_compression)
 	{
 		assert_not_frozen();
-		_use_compression = std::move(use_compression);
+		_use_compression.emplace(use_compression);
 	}
 
 	http::ReadBalanceBehavior DocumentConventions::get_read_balance_behavior() const
@@ -372,7 +372,7 @@ namespace ravendb::client::documents::conventions
 		const int64_t upper_count = std::accumulate(collection_name.cbegin(), collection_name.cend(), 0,
 			[](const int64_t& count, std::string::value_type c)
 		{
-			return count + bool(std::isupper(c)) ? 1 : 0;
+			return count + (bool(std::isupper(c)) ? 1 : 0);
 		});
 
 		if(upper_count <= 1)

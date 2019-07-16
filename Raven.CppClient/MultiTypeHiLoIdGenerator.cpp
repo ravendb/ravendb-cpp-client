@@ -14,8 +14,7 @@ namespace ravendb::client::documents::identity
 
 	MultiTypeHiLoIdGenerator::MultiTypeHiLoIdGenerator(std::shared_ptr<DocumentStore> store_param,
 		std::string db_name_param, std::shared_ptr<conventions::DocumentConventions> conventions_param)
-		: _id_generator_by_tag()
-		, store(store_param)
+		: store(store_param)
 		, db_name(std::move(db_name_param))
 		, conventions(conventions_param)
 	{}

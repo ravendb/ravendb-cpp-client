@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SpatialOptionsFactory.h"
+#include "xxhash.hpp"
 
 namespace ravendb::client::documents::indexes::spatial
 {
@@ -37,7 +38,7 @@ namespace ravendb::client::documents::indexes::spatial
 		opts.strategy = SpatialSearchStrategy::BOUNDING_BOX;
 		opts.units = circle_radius_units;
 
-		return std::move(opts);
+		return opts;
 	}
 
 	SpatialOptions SpatialOptionsFactory::GeographySpatialOptionsFactory::geohash_prefix_tree_index(
@@ -59,7 +60,7 @@ namespace ravendb::client::documents::indexes::spatial
 		opts.strategy = SpatialSearchStrategy::GEOHASH_PREFIX_TREE;
 		opts.units = circle_radius_units;
 
-		return std::move(opts);
+		return opts;
 	}
 
 	SpatialOptions SpatialOptionsFactory::GeographySpatialOptionsFactory::quad_prefix_tree_index(
@@ -81,7 +82,7 @@ namespace ravendb::client::documents::indexes::spatial
 		opts.strategy = SpatialSearchStrategy::QUAD_PREFIX_TREE;
 		opts.units = circle_radius_units;
 
-		return std::move(opts);
+		return opts;
 	}
 
 	SpatialOptions SpatialOptionsFactory::CartesianSpatialOptionsFactory::bounding_box_index() const
@@ -90,7 +91,7 @@ namespace ravendb::client::documents::indexes::spatial
 		opts.type = SpatialFieldType::CARTESIAN;
 		opts.strategy = SpatialSearchStrategy::BOUNDING_BOX;
 
-		return std::move(opts);
+		return opts;
 	}
 
 	SpatialOptions SpatialOptionsFactory::CartesianSpatialOptionsFactory::quad_prefix_tree_index(
@@ -106,7 +107,7 @@ namespace ravendb::client::documents::indexes::spatial
 		opts.minY = bounds.minY;
 		opts.maxY = bounds.maxY;
 
-		return std::move(opts);
+		return opts;
 	}
 
 	SpatialOptionsFactory::SpatialBounds::SpatialBounds(double minX_param, double minY_param, double maxX_param, double maxY_param)
@@ -115,4 +116,29 @@ namespace ravendb::client::documents::indexes::spatial
 		, minY(minY_param)
 		, maxY(maxY_param)
 	{}
+
+	std::size_t SpatialOptionsFactory::SpatialBounds::hash_code() const
+	{
+		xxh::hash_state_t<64> hash_stream;
+		
+		hash_stream.update(&maxX, sizeof(maxX));
+		hash_stream.update(&maxY, sizeof(maxY));
+		hash_stream.update(&minX, sizeof(minX));
+		hash_stream.update(&minY, sizeof(minY));
+		
+		return hash_stream.digest();
+	}
+
+	bool operator==(const SpatialOptionsFactory::SpatialBounds& lhs, const SpatialOptionsFactory::SpatialBounds& rhs)
+	{
+		return lhs.minX == rhs.minX
+			&& lhs.maxX == rhs.maxX
+			&& lhs.minY == rhs.minY
+			&& lhs.maxY == rhs.maxY;
+	}
+
+	bool operator!=(const SpatialOptionsFactory::SpatialBounds& lhs, const SpatialOptionsFactory::SpatialBounds& rhs)
+	{
+		return !(lhs == rhs);
+	}
 }

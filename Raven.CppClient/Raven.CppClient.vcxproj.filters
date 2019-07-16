@@ -596,6 +596,156 @@
     <ClCompile Include="PatchCommandData.cpp">
       <Filter>ravendb.client\documents\commands\batches</Filter>
     </ClCompile>
+    <ClCompile Include="CopyAttachmentCommandData.cpp">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClCompile>
+    <ClCompile Include="DeleteAttachmentCommandData.cpp">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClCompile>
+    <ClCompile Include="DeleteCommandData.cpp">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveAttachmentCommandData.cpp">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClCompile>
+    <ClCompile Include="PutAttachmentCommandData.cpp">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClCompile>
+    <ClCompile Include="PutCommandData.cpp">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClCompile>
+    <ClCompile Include="GetRequest.cpp">
+      <Filter>ravendb.client\documents\commands\multy_get</Filter>
+    </ClCompile>
+    <ClCompile Include="GetResponse.cpp">
+      <Filter>ravendb.client\documents\commands\multy_get</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiGetCommand.cpp">
+      <Filter>ravendb.client\documents\commands\multy_get</Filter>
+    </ClCompile>
+    <ClCompile Include="DeleteDocumentCommand.cpp">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="GetDocumentsCommand.cpp">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="GetDocumentsResult.cpp">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="GetNextOperationIdCommand.cpp">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="HeadAttachmentCommand.cpp">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="HeadDocumentCommand.cpp">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="PutDocumentCommand.cpp">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryCommand.cpp">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="HiLoResult.cpp">
+      <Filter>ravendb.client\documents\identity</Filter>
+    </ClCompile>
+    <ClCompile Include="SpatialOptions.cpp">
+      <Filter>ravendb.client\documents\indexes\spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexFieldOptions.cpp">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexingError.cpp">
+      <Filter>ravendb.client\documents\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexStats.cpp">
+      <Filter>ravendb.client\documents\indexes\spatial</Filter>
+    </ClCompile>
+    <ClCompile Include="DeleteAttachmentOperation.cpp">
+      <Filter>ravendb.client\documents\operations\attachments</Filter>
+    </ClCompile>
+    <ClCompile Include="GetAttachmentOperation.cpp">
+      <Filter>ravendb.client\documents\operations\attachments</Filter>
+    </ClCompile>
+    <ClCompile Include="PutAttachmentOperation.cpp">
+      <Filter>ravendb.client\documents\operations\attachments</Filter>
+    </ClCompile>
+    <ClCompile Include="GetClientConfigurationOperation.cpp">
+      <Filter>ravendb.client\documents\operations\configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="PutClientConfigurationOperation.cpp">
+      <Filter>ravendb.client\documents\operations\configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientConfiguration.cpp">
+      <Filter>ravendb.client\documents\operations\configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="DeleteIndexOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="DisableIndexOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="EnableIndexOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="GetIndexErrorsOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="GetIndexesOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="GetIndexesStatisticsOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="GetIndexingStatusOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="GetIndexNamesOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="GetIndexOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="GetIndexStatisticsOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="GetTermsOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexHasChangedOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="PutIndexesOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="ResetIndexOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="SetIndexesLockOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="SetIndexesPriorityOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="StartIndexingOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="StartIndexOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="StopIndexingOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="StopIndexOperation.cpp">
+      <Filter>ravendb.client\documents\operations\indexes</Filter>
+    </ClCompile>
+    <ClCompile Include="CollectionStatistics.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="CompactDatabaseOperation.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VoidRavenCommand.h">

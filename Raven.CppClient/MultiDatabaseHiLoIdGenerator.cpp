@@ -7,8 +7,7 @@ namespace ravendb::client::documents::identity
 {
 	MultiDatabaseHiLoIdGenerator::MultiDatabaseHiLoIdGenerator(std::shared_ptr<DocumentStore> store_param,
 		std::shared_ptr<conventions::DocumentConventions> conventions_param)
-		: _generators()
-		, store(store_param)
+		: store(store_param)
 		, conventions(conventions_param)
 	{}
 

@@ -19,7 +19,6 @@ namespace ravendb::client::documents::commands
 		NextHiLoCommand(std::string tag, int64_t last_batch_size, impl::DateTimeOffset last_range_at,
 		                std::string identity_part_separator, int64_t last_range_max);
 
-
 		void create_request(impl::CurlHandlesHolder::CurlReference& curl_ref, std::shared_ptr<const http::ServerNode> node,
 			std::optional<std::string>& url_ref) override;
 
