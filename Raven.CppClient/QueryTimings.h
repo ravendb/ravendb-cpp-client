@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <map>
-#include <json.hpp>
+#include "json.hpp"
 
 namespace ravendb::client::documents::queries
 {

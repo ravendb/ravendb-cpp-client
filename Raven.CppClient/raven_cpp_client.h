@@ -133,6 +133,7 @@
 #include "NextHiLoCommand.h"
 #include "PatchRequest.h"
 #include "PatchCommandData.h"
+#include "BatchPatchCommandData.h"
 #include "PutCommandData.h"
 #include "PutResult.h"
 #include "PutDocumentCommand.h"

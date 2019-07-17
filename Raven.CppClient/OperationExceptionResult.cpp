@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "OperationExceptionResult.h"
+#include "json_utils.h"
 
 namespace ravendb::client::documents::operations
 {

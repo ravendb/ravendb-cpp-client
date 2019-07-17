@@ -40,7 +40,7 @@ namespace ravendb::client::documents::session
 
 	DocumentSessionAttachmentsBase::DocumentSessionAttachmentsBase(
 		std::shared_ptr<InMemoryDocumentSessionOperations> session)
-		: AdvancedSessionExtensionBase(session)
+		: AdvancedSessionExtentionBase(session)
 	{}
 
 	std::vector<documents::operations::attachments::AttachmentName> DocumentSessionAttachmentsBase::get_attachments_names(

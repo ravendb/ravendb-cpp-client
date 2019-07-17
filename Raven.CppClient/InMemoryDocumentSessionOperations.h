@@ -45,7 +45,7 @@ namespace ravendb::client
 			struct SessionOptions;
 			struct IMetadataDictionary;
 			struct DocumentsChanges;
-			class AdvancedSessionExtensionBase;
+			class AdvancedSessionExtentionBase;
 
 			namespace operations
 			{
@@ -107,7 +107,7 @@ namespace ravendb::client::documents::session
 		template <typename T>
 		friend class operations::lazy::LazyStartsWithOperation;
 		friend operations::BatchOperation;
-		friend AdvancedSessionExtensionBase;
+		friend AdvancedSessionExtentionBase;
 
 		static const int32_t DEFAULT_MAX_NUMBER_OF_REQUESTS_PER_SESSION = 30;
 

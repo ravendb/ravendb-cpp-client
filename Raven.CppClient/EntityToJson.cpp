@@ -95,38 +95,31 @@ namespace ravendb::client::documents::session
 		{
 			return nullptr;
 		}
-		if (auto val_ptr = std::any_cast<std::string>(&object);
-			nullptr != val_ptr)
+		if (auto val_ptr = std::any_cast<std::string>(&object))
 		{
 			return *val_ptr;
 		}
-		if (auto val_ptr = std::any_cast<const char*>(&object);
-			nullptr != val_ptr)
+		if (auto val_ptr = std::any_cast<const char*>(&object))
 		{
 			return std::string(*val_ptr);
 		}
-		if (auto val_ptr = std::any_cast<int64_t>(&object);
-			nullptr != val_ptr)
+		if (auto val_ptr = std::any_cast<int64_t>(&object))
 		{
 			return *val_ptr;
 		}
-		if (auto val_ptr = std::any_cast<uint64_t>(&object);
-			nullptr != val_ptr)
+		if (auto val_ptr = std::any_cast<uint64_t>(&object))
 		{
 			return *val_ptr;
 		}
-		if (auto val_ptr = std::any_cast<double>(&object);
-			nullptr != val_ptr)
+		if (auto val_ptr = std::any_cast<double>(&object))
 		{
 			return *val_ptr;
 		}
-		if (auto val_ptr = std::any_cast<bool>(&object);
-			nullptr != val_ptr)
+		if (auto val_ptr = std::any_cast<bool>(&object))
 		{
 			return *val_ptr;
 		}
-		if (auto val_ptr = std::any_cast<std::shared_ptr<json::MetadataAsDictionary>>(&object);
-			nullptr != val_ptr)
+		if (auto val_ptr = std::any_cast<std::shared_ptr<json::MetadataAsDictionary>>(&object))
 		{
 			const auto& map = val_ptr->get()->get_dictionary();
 			nlohmann::json j = nlohmann::json::object();
@@ -137,8 +130,7 @@ namespace ravendb::client::documents::session
 			}
 			return j;
 		}
-		if (auto val_ptr = std::any_cast<std::vector<std::any>>(&object);
-			nullptr != val_ptr)
+		if (auto val_ptr = std::any_cast<std::vector<std::any>>(&object))
 		{
 			nlohmann::json arr = nlohmann::json::array();
 			for (const auto& val : *val_ptr)

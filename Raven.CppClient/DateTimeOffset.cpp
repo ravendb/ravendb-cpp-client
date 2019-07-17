@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "DateTimeOffset.h"
+#include "utils.h"
 
 #include <iomanip>
 #define __STDC_WANT_LIB_EXT1__ 1

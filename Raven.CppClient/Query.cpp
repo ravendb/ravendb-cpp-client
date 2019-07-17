@@ -17,13 +17,13 @@ namespace ravendb::client::documents::queries
 	{
 		auto query = Query();
 		query._index_name = std::move(index_name);
-		return std::move(query);
+		return query;
 	}
 
 	Query Query::collection(std::string collection_name)
 	{
 		auto query = Query();
 		query._collection = std::move(collection_name);
-		return std::move(query);
+		return query;
 	}
 }

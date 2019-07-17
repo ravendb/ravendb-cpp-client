@@ -213,7 +213,7 @@ namespace ravendb::client::documents::session
 		std::ostringstream new_script{};
 		new_script << old_patch->get_patch().script << "\n" << patch_request.script;
 
-		decltype(documents::operations::PatchRequest::values) new_values(std::move(old_patch->get_patch().values));
+		decltype(documents::operations::PatchRequest::values) new_values(old_patch->get_patch().values);
 		std::copy(patch_request.values.cbegin(), patch_request.values.cend(), std::inserter(new_values, new_values.end()));
 
 		auto new_patch_request = documents::operations::PatchRequest(std::move(new_script).str());
@@ -234,7 +234,7 @@ namespace ravendb::client::documents::session
 
 		auto&& responses = multi_get_command.get_result();
 
-		for(auto i = 0; i <_pending_lazy_operations.size(); ++i)
+		for(size_t i = 0; i < _pending_lazy_operations.size(); ++i)
 		{
 			int64_t total_time{};
 

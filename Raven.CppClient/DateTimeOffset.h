@@ -2,7 +2,6 @@
 #include <ctime>
 #include <ostream>
 #include "json.hpp"
-#include "utils.h"
 
 namespace ravendb::client::impl
 {

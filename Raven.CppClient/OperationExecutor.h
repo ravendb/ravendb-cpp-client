@@ -32,7 +32,6 @@ namespace ravendb::client::documents::operations
 		explicit OperationExecutor(std::shared_ptr<DocumentStoreBase> store, const std::optional<std::string>& database_name = {});
 
 		explicit OperationExecutor(std::shared_ptr<IDocumentStore> store, const std::optional<std::string>& database_name = {});
-		
 
 	public:
 		~OperationExecutor() = default;
@@ -48,13 +47,8 @@ namespace ravendb::client::documents::operations
 		void send(IVoidOperation& operation, const std::optional<session::SessionInfo>& session_info = {});
 
 		template<typename TResult>
-		std::shared_ptr<TResult> send(IOperation<TResult>& operation, const std::optional<session::SessionInfo>& session_info = {})
-		{
-			auto command = operation.get_command(_store.lock(), _request_executor->get_conventions(), _request_executor->get_cache());
-			_request_executor->execute(*command, session_info);
-
-			return command->get_result();
-		}
+		std::shared_ptr<TResult> send(IOperation<TResult>& operation,
+		                              const std::optional<session::SessionInfo>& session_info = {});
 
 		std::unique_ptr<Operation> send_async(const IOperation<OperationIdResult>& operation, 
 			const std::optional<session::SessionInfo>& session_info = {});
@@ -62,32 +56,49 @@ namespace ravendb::client::documents::operations
 		PatchStatus send(const PatchOperation& operation, const std::optional<session::SessionInfo>& session_info = {});
 
 		template<typename TEntity>
-		PatchOperation::Result<TEntity> send(const PatchOperation& operation, const std::optional<session::SessionInfo>& session_info = {})
-		{
-			auto command = operation.get_command(_store.lock(), _request_executor->get_conventions(), _request_executor->get_cache());
-			_request_executor->execute(*command, session_info);
-
-			auto result = PatchOperation::Result<TEntity>{};
-
-			if(command->status_code == static_cast<int32_t>(http::HttpStatus::SC_NOT_MODIFIED))
-			{
-				result.first = PatchStatus::NOT_MODIFIED;
-			}
-			if (command->status_code == static_cast<int32_t>(http::HttpStatus::SC_NOT_FOUND))
-			{
-				result.first = PatchStatus::DOCUMENT_DOES_NOT_EXIST;
-			}
-
-			try
-			{
-				result.first = command->get_result()->status;
-				result.second = static_cast<nlohmann::json>(command->get_result()->modified_document).get<TEntity>();
-				return result;
-			}
-			catch (const std::exception& e)
-			{
-				std::throw_with_nested(std::runtime_error(std::string("Unable to read patch result: ") + e.what()));
-			}
-		}
+		PatchOperation::Result<TEntity> send(const PatchOperation& operation,
+			const std::optional<session::SessionInfo>& session_info = {});
 	};
+
+	template <typename TResult>
+	std::shared_ptr<TResult> OperationExecutor::send(IOperation<TResult>& operation,
+		const std::optional<session::SessionInfo>& session_info)
+	{
+		auto command = operation.get_command(_store.lock(), _request_executor->get_conventions(),
+			_request_executor->get_cache());
+		_request_executor->execute(*command, session_info);
+
+		return command->get_result();
+	}
+
+	template <typename TEntity>
+	PatchOperation::Result<TEntity> OperationExecutor::send(const PatchOperation& operation,
+		const std::optional<session::SessionInfo>& session_info)
+	{
+		auto command = operation.get_command(_store.lock(), _request_executor->get_conventions(),
+		                                     _request_executor->get_cache());
+		_request_executor->execute(*command, session_info);
+
+		auto result = PatchOperation::Result<TEntity>{};
+
+		if (command->status_code == static_cast<int32_t>(http::HttpStatus::SC_NOT_MODIFIED))
+		{
+			result.first = PatchStatus::NOT_MODIFIED;
+		}
+		if (command->status_code == static_cast<int32_t>(http::HttpStatus::SC_NOT_FOUND))
+		{
+			result.first = PatchStatus::DOCUMENT_DOES_NOT_EXIST;
+		}
+
+		try
+		{
+			result.first = command->get_result()->status;
+			result.second = static_cast<nlohmann::json>(command->get_result()->modified_document).get<TEntity>();
+			return result;
+		}
+		catch (const std::exception& e)
+		{
+			std::throw_with_nested(std::runtime_error(std::string("Unable to read patch result: ") + e.what()));
+		}
+	}
 }

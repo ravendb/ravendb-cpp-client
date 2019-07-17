@@ -4,7 +4,7 @@
 
 namespace ravendb::client::documents::session
 {
-	class DocumentSessionAttachmentsBase : public AdvancedSessionExtensionBase
+	class DocumentSessionAttachmentsBase : public AdvancedSessionExtentionBase
 	{
 	private:
 		static void throw_document_already_deleted(const std::string& document_id, const std::string& name,

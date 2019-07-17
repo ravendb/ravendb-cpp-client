@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 #include "QueryResultBase.h"
 
 namespace ravendb::client::documents::queries

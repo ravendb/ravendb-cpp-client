@@ -20,15 +20,6 @@ namespace ravendb::client::documents::operations
 		return _request_executor;
 	}
 
-	void MaintenanceOperationExecutor::assert_database_set() const
-	{
-		if(!_database_name.has_value())
-		{
-			throw std::runtime_error("Cannot use maintenance without a database defined,"
-				" did you forget to call for_database()?");
-		}
-	}
-
 	void MaintenanceOperationExecutor::assert_database_name_set() const
 	{
 		if(!_database_name)
@@ -83,7 +74,7 @@ namespace ravendb::client::documents::operations
 
 	void MaintenanceOperationExecutor::send(IVoidMaintenanceOperation& operation)
 	{
-		assert_database_set();
+		assert_database_name_set();
 		auto command = operation.get_command(get_request_executor()->get_conventions());
 		get_request_executor()->execute(*command);
 	}

@@ -19,7 +19,7 @@ namespace ravendb::client::documents::queries
 		group_by._field = std::move(field_name);
 		group_by._method = GroupByMethod::NONE;
 
-		return std::move(group_by);
+		return group_by;
 	}
 
 	GroupBy GroupBy::array(std::string field_name)
@@ -28,6 +28,6 @@ namespace ravendb::client::documents::queries
 		group_by._field = std::move(field_name);
 		group_by._method = GroupByMethod::ARRAY;
 
-		return std::move(group_by);
+		return group_by;
 	}
 }

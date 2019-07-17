@@ -22,7 +22,7 @@ namespace ravendb::client::documents::queries::highlighting
 			res.push_back(key);
 		}
 
-		return std::move(res);
+		return res;
 	}
 
 	const std::vector<std::string>& Highlightings::get_fragments(const std::string& key) const

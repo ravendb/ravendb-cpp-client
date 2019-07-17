@@ -746,6 +746,57 @@
     <ClCompile Include="CompactDatabaseOperation.cpp">
       <Filter>ravendb.client\documents\operations</Filter>
     </ClCompile>
+    <ClCompile Include="DatabaseStatistics.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="DeleteByQueryOperation.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="DetailedDatabaseStatistics.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="DisableDatabaseToggleResult.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="GetOperationStateOperation.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="GetStatisticsOperation.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexInformation.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchByQueryOperation.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchOperation.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchRequest.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="PatchResult.cpp">
+      <Filter>ravendb.client\documents\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexQuery.cpp">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryOperationOptions.cpp">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClCompile>
+    <ClCompile Include="TermsQueryResult.cpp">
+      <Filter>ravendb.client\documents\queries</Filter>
+    </ClCompile>
+    <ClCompile Include="BatchPatchCommandData.cpp">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClCompile>
+    <ClCompile Include="AdvancedSessionExtentionBase.cpp">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClCompile>
+    <ClCompile Include="DocumentInfo.cpp">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VoidRavenCommand.h">
@@ -1907,6 +1958,9 @@
     </ClInclude>
     <ClInclude Include="raven_cpp_client.h">
       <Filter>ravendb.client</Filter>
+    </ClInclude>
+    <ClInclude Include="BatchPatchCommandData.h">
+      <Filter>ravendb.client\documents\commands\batches</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

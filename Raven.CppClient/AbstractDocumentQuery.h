@@ -489,11 +489,8 @@ namespace ravendb::client::documents::session
 	template <typename T>
 	void AbstractDocumentQuery<T>::execute_actual_query()
 	{
-		//TODO
-		// try (CleanCloseable context = queryOperation.enterQueryContext())
 		{
 			auto command = query_operation->create_request();
-			//TODO 
 			the_session.lock()->get_request_executor()->execute(command, the_session.lock()->get_session_info());
 			query_operation->set_result(command.get_result());
 		}

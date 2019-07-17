@@ -1,8 +1,7 @@
 #pragma once
-#include "stdafx.h"
-#include  "json_utils.h"
 #include "DateTimeOffset.h"
 #include "QueryTimings.h"
+#include "json_utils.h"
 
 namespace ravendb::client::documents::queries
 {

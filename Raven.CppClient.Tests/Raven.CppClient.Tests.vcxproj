@@ -96,6 +96,7 @@
     <ClCompile Include="PromoteDatabaseTest.cpp" />
     <ClCompile Include="PutDocumentCommandTest.cpp" />
     <ClCompile Include="RavenDB903Test.cpp" />
+    <ClCompile Include="RavenDB_12169Test.cpp" />
     <ClCompile Include="RavenDB_5669Test.cpp" />
     <ClCompile Include="RavenDB_8761.cpp" />
     <ClCompile Include="RavenDB_9676Test.cpp" />

@@ -13,6 +13,7 @@
 #include "BatchCommandResult.h"
 #include "DocumentConventions.h"
 #include "NonUniqueObjectException.h"
+#include "BatchPatchCommandData.h"
 
 namespace ravendb::client::documents::session
 {
@@ -854,6 +855,7 @@ namespace ravendb::client::documents::session
 				{
 					change_vector.clear();
 				}
+
 				//TODO call EventHelper.invoke()
 
 				result.session_commands.push_back(std::make_shared<commands::batches::DeleteCommandData>
@@ -1068,12 +1070,22 @@ namespace ravendb::client::documents::session
 
 	void InMemoryDocumentSessionOperations::defer_internal(std::shared_ptr<commands::batches::CommandDataBase> command)
 	{
-		if (command->get_type() == commands::batches::CommandType::BATCH_PATCH)
+		if(command->get_type() == commands::batches::CommandType::BATCH_PATCH)
 		{
-			//TODO complete
-			throw std::runtime_error("not implemented");
+			auto batch_patch_command = std::static_pointer_cast<commands::batches::BatchPatchCommandData>(command);
+
+			batch_patch_command->set_type(commands::batches::CommandType::PATCH);
+
+			for(const auto& [id,_] : batch_patch_command->get_ids())
+			{
+				batch_patch_command->set_id(id);
+				add_command(command);
+			}
 		}
+		else
+		{
 		add_command(command);
+		}
 	}
 
 	void InMemoryDocumentSessionOperations::add_command(std::shared_ptr<commands::batches::CommandDataBase> command)

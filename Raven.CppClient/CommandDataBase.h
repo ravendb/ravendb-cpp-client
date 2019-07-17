@@ -25,6 +25,17 @@ namespace ravendb::client::documents::commands::batches
 			, change_vector(std::move(change_vector_))
 			, type(type_)
 		{}
+
+		void set_id(std::string new_id)
+		{
+			this->id = std::move(new_id);
+		}
+
+		void set_type(CommandType new_type)
+		{
+			this->type = new_type;
+		}
+
 	public:
 		virtual ~CommandDataBase() = 0;
 

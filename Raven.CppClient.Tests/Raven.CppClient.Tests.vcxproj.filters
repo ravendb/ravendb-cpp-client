@@ -207,6 +207,9 @@
     <ClCompile Include="PromoteDatabaseTest.cpp">
       <Filter>ravendb.client.tests\test\server</Filter>
     </ClCompile>
+    <ClCompile Include="RavenDB_12169Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -376,6 +379,9 @@
     </Filter>
     <Filter Include="ravendb.client.tests\test\server\patching">
       <UniqueIdentifier>{f8137986-bfbb-498e-a594-d1c896624206}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ravendb.client.tests\test\issues">
+      <UniqueIdentifier>{1c222a05-b44d-40f8-bfe4-ef67d6864df4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -1,7 +1,6 @@
 #pragma once
 #include "IndexQueryBase.h"
 #include "Parameters.h"
-#include "xxhash.hpp"
 
 namespace ravendb::client::documents::queries
 {
@@ -15,36 +14,14 @@ namespace ravendb::client::documents::queries
 
 		bool disable_caching = false;
 
+	public:
 		IndexQuery() = default;
 
-		explicit IndexQuery(std::string query_str)
-		{
-			query = std::move(query_str);
-		}
+		explicit IndexQuery(std::string query_str);
 
-		//using xxhash_cpp from https://github.com/RedSpah/xxhash_cpp
-		std::string get_query_hash() const
-		{
-			xxh::hash_state_t<64> hash_stream;
-
-			nlohmann::json query_json{};
-			to_json(query_json, *this);
-
-			hash_stream.update(query_json.dump());
-
-			return std::to_string(hash_stream.digest());
-		}
+		//using https://github.com/RedSpah/xxhash_cpp
+		std::string get_query_hash() const;
 	};
 
-	inline void to_json(nlohmann::json& j, const IndexQuery& iq)
-	{
-		using ravendb::client::impl::utils::json_utils::set_val_to_json;
-
-		to_json(j, static_cast<const IndexQueryBase<Parameters>&>(iq));
-
-		set_val_to_json(j, "SkipDuplicateChecking", iq.skip_duplicate_checking);
-		set_val_to_json(j, "ExplainScores", iq.explain_scores);
-		set_val_to_json(j, "ShowTimings", iq.show_timings);
-		set_val_to_json(j, "DisableCaching", iq.disable_caching);
-	}
+	void to_json(nlohmann::json& j, const IndexQuery& iq);
 }

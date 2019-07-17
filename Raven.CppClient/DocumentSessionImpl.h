@@ -92,7 +92,6 @@ namespace ravendb::client::documents::session
 
 		loaders::LoaderWithInclude include(const std::string& path);
 
-		//TODO add custom (de)serializers to/from json
 		template<typename T>
 		Lazy<T> add_lazy_operation(std::shared_ptr<operations::lazy::ILazyOperation> operation,
 			std::function<T(std::shared_ptr<operations::lazy::ILazyOperation>)> get_operation_result,

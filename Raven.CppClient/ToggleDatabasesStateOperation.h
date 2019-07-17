@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "DisableDatabaseToggleResult.h"
-#include "RavenCommand.h"
 #include "IServerOperation.h"
 
 namespace ravendb::client::documents::operations
@@ -30,7 +29,8 @@ namespace ravendb::client::documents::operations
 
 		ToggleDatabasesStateOperation(toggle_databases_state_operation::Parameters parameters, bool disable);
 
-		std::unique_ptr<http::RavenCommand<DisableDatabaseToggleResult>> get_command(std::shared_ptr<documents::conventions::DocumentConventions> conventions) const override;
+		std::unique_ptr<http::RavenCommand<DisableDatabaseToggleResult>> get_command(
+			std::shared_ptr<documents::conventions::DocumentConventions> conventions) const override;
 
 	private:
 		class ToggleDatabaseStateCommand : public http::RavenCommand<DisableDatabaseToggleResult>

@@ -7,8 +7,8 @@ namespace ravendb::client::documents::session
 	{
 		std::string field_name{};
 		const TValue* value{};
-		bool allow_wildcards = false;
-		bool nested_path = false;
+		bool allow_wildcards{ false };
+		bool nested_path{ false };
 		bool exact{};
 	};
 }

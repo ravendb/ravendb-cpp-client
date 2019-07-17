@@ -77,6 +77,7 @@
     <LinkIncremental>true</LinkIncremental>
     <CodeAnalysisRuleSet>NativeMinimumRules.ruleset</CodeAnalysisRuleSet>
     <IncludePath>C:\work\raven-cpp-client\external;C:\work\raven-cpp-client;$(IncludePath)</IncludePath>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -108,6 +109,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -175,6 +177,7 @@
     <ClInclude Include="BatchCommandResult.h" />
     <ClInclude Include="BatchOperation.h" />
     <ClInclude Include="BatchOptions.h" />
+    <ClInclude Include="BatchPatchCommandData.h" />
     <ClInclude Include="BuildNumber.h" />
     <ClInclude Include="BulkInsertAbortedException.h" />
     <ClInclude Include="BulkInsertProtocolViolationException.h" />
@@ -546,6 +549,7 @@
     <ClCompile Include="AbstractJavaScriptIndexCreationTask.cpp" />
     <ClCompile Include="AbstractMultiMapIndexCreationTask.cpp" />
     <ClCompile Include="AddDatabaseNodeOperation.cpp" />
+    <ClCompile Include="AdvancedSessionExtentionBase.cpp" />
     <ClCompile Include="AdvancedSessionOperations.cpp" />
     <ClCompile Include="AllTopologyNodesDownException.cpp" />
     <ClCompile Include="AttachmentDetails.cpp" />
@@ -559,6 +563,7 @@
     <ClCompile Include="BatchCommand.cpp" />
     <ClCompile Include="BatchCommandResult.cpp" />
     <ClCompile Include="BatchOperation.cpp" />
+    <ClCompile Include="BatchPatchCommandData.cpp" />
     <ClCompile Include="BulkInsertAbortedException.cpp" />
     <ClCompile Include="BulkInsertProtocolViolationException.cpp" />
     <ClCompile Include="CertificateNameMismatchException.cpp" />
@@ -590,14 +595,19 @@
     <ClCompile Include="DatabaseLoadTimeoutException.cpp" />
     <ClCompile Include="DatabaseNotRelevantException.cpp" />
     <ClCompile Include="DatabaseSchemaErrorException.cpp" />
+    <ClCompile Include="DatabaseStatistics.cpp" />
     <ClCompile Include="DeleteAttachmentCommandData.cpp" />
     <ClCompile Include="DeleteAttachmentOperation.cpp" />
+    <ClCompile Include="DeleteByQueryOperation.cpp" />
     <ClCompile Include="DeleteCommandData.cpp" />
     <ClCompile Include="DeleteDocumentCommand.cpp" />
     <ClCompile Include="DeleteIndexOperation.cpp" />
+    <ClCompile Include="DetailedDatabaseStatistics.cpp" />
+    <ClCompile Include="DisableDatabaseToggleResult.cpp" />
     <ClCompile Include="DisableIndexOperation.cpp" />
     <ClCompile Include="DocumentConflictException.cpp" />
     <ClCompile Include="DocumentDoesNotExistException.cpp" />
+    <ClCompile Include="DocumentInfo.cpp" />
     <ClCompile Include="DocumentSessionAttachments.cpp" />
     <ClCompile Include="DocumentSessionAttachmentsBase.cpp" />
     <ClCompile Include="EnableIndexOperation.cpp" />
@@ -619,10 +629,12 @@
     <ClCompile Include="GetIndexOperation.cpp" />
     <ClCompile Include="GetIndexStatisticsOperation.cpp" />
     <ClCompile Include="GetNextOperationIdCommand.cpp" />
+    <ClCompile Include="GetOperationStateOperation.cpp" />
     <ClCompile Include="GetRequest.cpp" />
     <ClCompile Include="GetResponse.cpp" />
     <ClCompile Include="GetServerWideClientConfigurationOperation.cpp" />
     <ClCompile Include="GetServerWideOperationStateOperation.cpp" />
+    <ClCompile Include="GetStatisticsOperation.cpp" />
     <ClCompile Include="GetTcpInfoCommand.cpp" />
     <ClCompile Include="GetTermsOperation.cpp" />
     <ClCompile Include="GroupBy.cpp" />
@@ -642,8 +654,10 @@
     <ClCompile Include="IndexDoesNotExistException.cpp" />
     <ClCompile Include="IndexFieldOptions.cpp" />
     <ClCompile Include="IndexHasChangedOperation.cpp" />
+    <ClCompile Include="IndexInformation.cpp" />
     <ClCompile Include="IndexingError.cpp" />
     <ClCompile Include="IndexInvalidException.cpp" />
+    <ClCompile Include="IndexQuery.cpp" />
     <ClCompile Include="IndexStats.cpp" />
     <ClCompile Include="InvalidQueryException.cpp" />
     <ClCompile Include="JavaScriptException.cpp" />
@@ -665,7 +679,11 @@
     <ClCompile Include="OperationExceptionResult.cpp" />
     <ClCompile Include="OperationExecutor.cpp" />
     <ClCompile Include="OrderByToken.cpp" />
+    <ClCompile Include="PatchByQueryOperation.cpp" />
     <ClCompile Include="PatchCommandData.cpp" />
+    <ClCompile Include="PatchOperation.cpp" />
+    <ClCompile Include="PatchRequest.cpp" />
+    <ClCompile Include="PatchResult.cpp" />
     <ClCompile Include="PointField.cpp" />
     <ClCompile Include="PromoteDatabaseNodeOperation.cpp" />
     <ClCompile Include="PutAttachmentCommandData.cpp" />
@@ -680,6 +698,7 @@
     <ClCompile Include="QueryFieldUtil.cpp" />
     <ClCompile Include="QueryHighlightings.cpp" />
     <ClCompile Include="QueryIncludeBuilder.cpp" />
+    <ClCompile Include="QueryOperationOptions.cpp" />
     <ClCompile Include="QueryOperatorToken.cpp" />
     <ClCompile Include="QueryStatistics.cpp" />
     <ClCompile Include="QueryTimings.cpp" />
@@ -716,6 +735,7 @@
     <ClCompile Include="SuggestionWithTerms.cpp" />
     <ClCompile Include="SuggestToken.cpp" />
     <ClCompile Include="TcpConnectionInfo.cpp" />
+    <ClCompile Include="TermsQueryResult.cpp" />
     <ClCompile Include="TimeoutException.cpp" />
     <ClCompile Include="TimingsToken.cpp" />
     <ClCompile Include="ToggleDatabasesStateOperation.cpp" />

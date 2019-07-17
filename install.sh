@@ -315,20 +315,8 @@ function test_ravendb()
 	MAINSTR="${C_L_CYAN}Testing    ${C_L_MAGENTA}RavenDB Client..."
 	print_state_msg "${MAINSTR}" "Compiling.."
 	pushd ${RVN_INSTALL_PREFIX} >> ${LOG} 2>&1
-# ########### REMOVE LATER:
-echo '#include <string>' > tmpfile.tmp
-echo '#include <iostream>' >> tmpfile.tmp
-echo '#include "RavenException.h"' >> tmpfile.tmp
-echo '#include "GetCppClassName.h"' >> tmpfile.tmp
-echo '#include "AllTopologyNodesDownException.h"' >> tmpfile.tmp
-echo "" >> tmpfile.tmp
-cat hello_world.cpp | sed -e 's/#include/\/\/ #include/' > hello_world.cpp_tmp
-rm hello_world.cpp
-mv tmpfile.tmp hello_world.cpp
-cat hello_world.cpp_tmp >> hello_world.cpp
-rm hello_world.cpp_tmp
-# ############################
-	g++ hello_world.cpp -std=c++1z -I ./include/ -I ./external/ -L ./lib -lRaven_CppClient -lstdc++fs -lcurl -lssl -lcrypto -lpthread -latomic -o testExec >> ${LOG} 2>&1 &
+
+	g++ hello_world.cpp -O2 -std=c++1z -I ./include/ -I ./external/ -L ./lib -lRaven_CppClient -lstdc++fs -lcurl -lssl -lcrypto -lpthread -latomic -o testExec >> ${LOG} 2>&1 &
 	PID=$!
 	progress_show_and_wait ${PID} "Compiling.." "${MAINSTR}" 
 	if [ ${STATUS} -ne 0 ]; then
