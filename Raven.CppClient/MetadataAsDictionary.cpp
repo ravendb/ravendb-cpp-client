@@ -47,7 +47,7 @@ namespace  ravendb::client::json
 
 		if (_parent)// mark parent as dirty
 		{
-			_parent->insert(_parent_key, shared_this);
+			_parent->insert(_parent_key, _weak_this);
 		}
 	}
 
@@ -83,7 +83,7 @@ namespace  ravendb::client::json
 			res = value.get<std::string>();
 			break;
 		case nlohmann::detail::value_t::object:
-			res = create(value, shared_this.lock(), key);
+			res = create(value, _weak_this.lock(), key);
 			break;
 		case nlohmann::detail::value_t::array:
 		{
@@ -107,14 +107,14 @@ namespace  ravendb::client::json
 	std::shared_ptr<MetadataAsDictionary> MetadataAsDictionary::create()
 	{
 		auto shared = std::shared_ptr<MetadataAsDictionary>(new MetadataAsDictionary());
-		shared->shared_this = shared;
+		shared->_weak_this = shared;
 		return shared;
 	}
 
 	std::shared_ptr<MetadataAsDictionary> MetadataAsDictionary::create(nlohmann::json metadata)
 	{
 		auto shared = std::shared_ptr<MetadataAsDictionary>(new MetadataAsDictionary(std::move(metadata)));
-		shared->shared_this = shared;
+		shared->_weak_this = shared;
 		shared->update_from_source();
 		return shared;
 
@@ -123,7 +123,7 @@ namespace  ravendb::client::json
 	std::shared_ptr<MetadataAsDictionary> MetadataAsDictionary::create(std::unordered_map<std::string, std::any> metadata)
 	{
 		auto shared = std::shared_ptr<MetadataAsDictionary>(new MetadataAsDictionary(std::move(metadata)));
-		shared->shared_this = shared;
+		shared->_weak_this = shared;
 		shared->update_from_source();
 		return shared;
 	}
@@ -132,7 +132,7 @@ namespace  ravendb::client::json
 	{
 		auto shared = std::shared_ptr<MetadataAsDictionary>(new MetadataAsDictionary(
 			std::move(metadata), parent, std::move(parent_key)));
-		shared->shared_this = shared;
+		shared->_weak_this = shared;
 		shared->update_from_source();
 		return shared;
 	}

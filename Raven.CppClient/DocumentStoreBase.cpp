@@ -74,6 +74,46 @@ namespace ravendb::client::documents
 		urls = std::move(urls_param);
 	}
 
+	std::optional<int64_t> DocumentStoreBase::get_last_transaction_index(const std::string& database) const
+	{
+		auto lock = std::lock_guard(_transaction_index_mutex);
+		if (auto it = _last_raft_index_per_database.find(database);
+			it != _last_raft_index_per_database.end())
+		{
+			auto&& index = it->second;
+			if (!index || *index == 0)
+			{
+				return {};
+			}
+			return index;
+		}
+		return {};
+	}
+
+	void DocumentStoreBase::set_last_transaction_index(const std::string& database, std::optional<int64_t> index)
+	{
+		if (!index)
+		{
+			return;
+		}
+
+		auto lock = std::lock_guard(_transaction_index_mutex);
+
+		if (auto it = _last_raft_index_per_database.find(database);
+			it != _last_raft_index_per_database.end() && it->second.has_value())
+		{
+			//undef Windows macro
+#ifdef max
+#undef max
+#endif
+			it->second = std::max(it->second.value(), index.value());
+		}
+		else
+		{
+			_last_raft_index_per_database.insert_or_assign(database, index);
+		}
+	}
+
 	void DocumentStoreBase::ensure_not_closed() const
 	{
 		if(disposed)

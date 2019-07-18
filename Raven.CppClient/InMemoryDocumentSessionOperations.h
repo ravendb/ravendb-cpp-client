@@ -364,7 +364,7 @@ namespace ravendb::client::documents::session
 
 		//TODO register_missing_includes is NOT fully implemented since it DOESN'T parse the include path
 		//     but uses them as is (only works with simple path)
-		//     this behaviour is NOT implemented in Java client nether.
+		//     this behaviour is NOT implemented in Java client either.
 		void register_missing_includes(const nlohmann::json& results, const nlohmann::json& includes,
 			const std::vector<std::string>& include_paths);
 

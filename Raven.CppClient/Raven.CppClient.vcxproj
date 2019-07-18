@@ -564,6 +564,7 @@
     <ClCompile Include="BatchCommandResult.cpp" />
     <ClCompile Include="BatchOperation.cpp" />
     <ClCompile Include="BatchPatchCommandData.cpp" />
+    <ClCompile Include="BuildNumber.cpp" />
     <ClCompile Include="BulkInsertAbortedException.cpp" />
     <ClCompile Include="BulkInsertProtocolViolationException.cpp" />
     <ClCompile Include="CertificateNameMismatchException.cpp" />
@@ -578,6 +579,7 @@
     <ClCompile Include="CollectionStatistics.cpp" />
     <ClCompile Include="CommandExecutionException.cpp" />
     <ClCompile Include="CompactDatabaseOperation.cpp" />
+    <ClCompile Include="CompactSettings.cpp" />
     <ClCompile Include="CompilationException.cpp" />
     <ClCompile Include="ConcurrencyException.cpp" />
     <ClCompile Include="ConflictException.cpp" />
@@ -588,6 +590,7 @@
     <ClCompile Include="CreateDatabaseOperation.cpp" />
     <ClCompile Include="CurlHandlesHolder.cpp" />
     <ClCompile Include="CurlResponse.cpp" />
+    <ClCompile Include="CurrentIndexAndNode.cpp" />
     <ClCompile Include="DatabaseConcurrentLoadTimeoutException.cpp" />
     <ClCompile Include="DatabaseDisabledException.cpp" />
     <ClCompile Include="DatabaseDoesNotExistException.cpp" />
@@ -611,11 +614,13 @@
     <ClCompile Include="DocumentSessionAttachments.cpp" />
     <ClCompile Include="DocumentSessionAttachmentsBase.cpp" />
     <ClCompile Include="EnableIndexOperation.cpp" />
+    <ClCompile Include="EntityIdHelper.cpp" />
     <ClCompile Include="EventArgs.cpp" />
     <ClCompile Include="ExceptionDispatcher.cpp" />
     <ClCompile Include="ExplanationOptions.cpp" />
     <ClCompile Include="Explanations.cpp" />
     <ClCompile Include="GetAttachmentOperation.cpp" />
+    <ClCompile Include="GetBuildNumberOperation.cpp" />
     <ClCompile Include="GetClientConfigurationOperation.cpp" />
     <ClCompile Include="GetClusterTopologyCommand.cpp" />
     <ClCompile Include="GetDetailedStatisticsOperation.cpp" />
@@ -659,6 +664,7 @@
     <ClCompile Include="IndexInvalidException.cpp" />
     <ClCompile Include="IndexQuery.cpp" />
     <ClCompile Include="IndexStats.cpp" />
+    <ClCompile Include="Inflector.cpp" />
     <ClCompile Include="InvalidQueryException.cpp" />
     <ClCompile Include="JavaScriptException.cpp" />
     <ClCompile Include="JavaScriptParseException.cpp" />
@@ -706,6 +712,7 @@
     <ClCompile Include="RavenException.cpp" />
     <ClCompile Include="ReorderDatabaseMembersOperation.cpp" />
     <ClCompile Include="ResetIndexOperation.cpp" />
+    <ClCompile Include="ResponseTimeInformation.cpp" />
     <ClCompile Include="RevisionsDisabledException.cpp" />
     <ClCompile Include="RouteNotFoundException.cpp" />
     <ClCompile Include="SecurityException.cpp" />

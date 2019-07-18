@@ -797,6 +797,27 @@
     <ClCompile Include="DocumentInfo.cpp">
       <Filter>ravendb.client\documents\session</Filter>
     </ClCompile>
+    <ClCompile Include="ResponseTimeInformation.cpp">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClCompile>
+    <ClCompile Include="CurrentIndexAndNode.cpp">
+      <Filter>ravendb.client\http</Filter>
+    </ClCompile>
+    <ClCompile Include="BuildNumber.cpp">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="GetBuildNumberOperation.cpp">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="CompactSettings.cpp">
+      <Filter>ravendb.client\serverwide</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityIdHelper.cpp">
+      <Filter>ravendb.client</Filter>
+    </ClCompile>
+    <ClCompile Include="Inflector.cpp">
+      <Filter>ravendb.client\impl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VoidRavenCommand.h">

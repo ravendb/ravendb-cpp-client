@@ -38,7 +38,6 @@ namespace ravendb::client
 
 namespace  ravendb::client::documents
 {
-	//TODO complete!
 	//Interface for managing access to RavenDB and open sessions.
 	class IDocumentStore : public impl::IDisposalNotification
 	{
@@ -60,6 +59,8 @@ namespace  ravendb::client::documents
 		virtual void remove_before_query_listener(const primitives::EventHandler& handler) = 0;
 
 
+		//TODO changes, aggressive caching
+
 		virtual std::string get_identifier() const = 0;
 
 		virtual void set_identifier(std::string identifier) = 0;
@@ -79,13 +80,17 @@ namespace  ravendb::client::documents
 
 		virtual const std::vector<std::string>& get_urls() const = 0;
 
+		//TODO bulk insert, subscriptions
+
 		virtual const std::string& get_database() const = 0;
 
 		virtual std::shared_ptr<http::RequestExecutor> get_request_executor(const std::string& database = {}) const = 0;
 
 		virtual std::shared_ptr<operations::MaintenanceOperationExecutor> maintenance() = 0;
 
-		virtual std::shared_ptr<operations::OperationExecutor> operations() = 0;			
+		virtual std::shared_ptr<operations::OperationExecutor> operations() = 0;
+
+		//TODO smuggler
 	};
 
 	inline IDocumentStore::~IDocumentStore() = default;

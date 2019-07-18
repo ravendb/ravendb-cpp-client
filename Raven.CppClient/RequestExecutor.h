@@ -45,8 +45,7 @@ namespace ravendb::client::http
 
 		impl::CurlHandlesHolder _curl_holder{};
 
-		//TODO update
-		static constexpr char CLIENT_VERSION[] = "4.1.0";
+		static constexpr char CLIENT_VERSION[] = "4.2.0";
 
 		std::timed_mutex _update_database_topology_mutex{};
 		std::mutex _update_client_configuration_mutex{};
@@ -67,8 +66,7 @@ namespace ravendb::client::http
 
 		std::shared_ptr<const ServerNode> _topology_taken_from_node{};
 
-		//TODO 
-		//public final ThreadLocal<AggressiveCacheOptions> aggressiveCaching = new ThreadLocal<>();
+		//TODO public final ThreadLocal<AggressiveCacheOptions> aggressiveCaching = new ThreadLocal<>();
 
 		std::shared_ptr<primitives::Timer> _update_topology_timer{};
 
@@ -130,10 +128,7 @@ namespace ravendb::client::http
 
 		template<typename TResult>
 		impl::CurlResponse execute_on_all_to_figure_out_the_fastest(std::shared_ptr<const ServerNode> chosen_node,
-			RavenCommand<TResult>& command);
-
-		//TODO
-		//private <TResult> HttpCache.ReleaseCacheItem getFromCache(RavenCommand<TResult> command, boolean useCache, String url, Reference<String> cachedChangeVector, Reference<String> cachedValue)
+			RavenCommand<TResult>& command);		
 		
 		template<typename TResult>
 		bool handle_unsuccessful_response(std::shared_ptr<const ServerNode> chosen_node,
@@ -499,8 +494,7 @@ namespace ravendb::client::http
 				command.set_response({}, false);
 				break;
 			default:
-				//TODO
-				//command.setResponseRaw(response, null);
+				command.set_response_raw(response);
 				break;
 			}
 			return true;
@@ -809,6 +803,7 @@ namespace ravendb::client::http
 		}
 
 		command.status_code = response->status_code;
+
 		bool refresh_topology = extensions::HttpExtensions::get_boolean_header(*response,
 			constants::headers::REFRESH_TOPOLOGY).value_or(false);
 
@@ -817,30 +812,35 @@ namespace ravendb::client::http
 
 		const auto finally = [&]()
 		{
-			if(refresh_topology || refresh_client_configuration)
+			if (refresh_topology || refresh_client_configuration)
 			{
 				auto server_node = std::make_shared<ServerNode>();
 				server_node->url = chosen_node->url;
 				server_node->database = _database_name.value_or("");
 
-				if(refresh_topology)
+				if (refresh_topology)
 				{
 					update_topology_async(std::const_pointer_cast<const ServerNode>(server_node), 0,
 						false, {}, false).get();
 				}
-				if(refresh_client_configuration)
+				if (refresh_client_configuration)
 				{
 					update_client_configuration_async().get();
 				}
 			}
 		};
-		try
 		{
+			struct Finally
+			{
+				const std::function<void()> func;
+				~Finally() { func(); }
+			} finally_exec{finally};
+
 			if (response->status_code == static_cast<long>(HttpStatus::SC_NOT_MODIFIED))
 			{
 				cached_item.not_modified();
 
-				if(command.get_response_type() == RavenCommandResponseType::OBJECT)
+				if (command.get_response_type() == RavenCommandResponseType::OBJECT)
 				{
 					command.set_response(nlohmann::json::parse(*cached_value), true);
 				}
@@ -848,69 +848,31 @@ namespace ravendb::client::http
 				return;
 			}
 
-			if(response->status_code >= 400)
+			if (response->status_code >= 400)
 			{
-				if(!handle_unsuccessful_response(chosen_node, node_index, command, curl_ref, *response, *url_ref, session_info, should_retry))
+				if (!handle_unsuccessful_response(chosen_node, node_index, command, curl_ref, *response, *url_ref, session_info, should_retry))
 				{
-					if(auto it = response->headers.find("Database-Missing");
+					if (auto it = response->headers.find("Database-Missing");
 						it != response->headers.end())
 					{
 						throw exceptions::database::DatabaseDoesNotExistException(it->second);
 					}
-					if(command.get_failed_nodes().empty())//precaution, should never happen at this point
+					if (command.get_failed_nodes().empty())//precaution, should never happen at this point
 					{
 						throw std::runtime_error("Received unsuccessful response and couldn't recover from it. "
 							"Also, no record of exceptions per failed nodes. This is weird and should not happen.");
 					}
-					if(command.get_failed_nodes().size() == 1 && command.get_failed_nodes().begin()->second)
+					if (command.get_failed_nodes().size() == 1 && command.get_failed_nodes().begin()->second)
 					{
 						std::rethrow_exception(command.get_failed_nodes().begin()->second);
 					}
 					throw exceptions::AllTopologyNodesDownException(
 						"Received unsuccessful response from all servers and couldn't recover from it.");
 				}
-				finally();
 				return;// we either handled this already in the unsuccessful response or we are throwing
 			}
 			response_dispose = command.process_response(_cache, *response, *url_ref);
 			_last_returned_response = std::chrono::steady_clock::now();
 		}
-		catch (...)
-		{
-			finally();
-			throw;
-		}
-		finally();
 	}
-
-	//TODO old version -> erase later
-	//template<typename TResult>
-	//std::shared_ptr<TResult> RequestExecutor::execute(RavenCommand<TResult>& cmd)
-	//{
-	//	std::optional<std::ostringstream> errors;
-
-	//	std::shared_ptr<Topology> topology_local = std::atomic_load(&_topology);
-
-	//	for (auto& node : topology_local->nodes)
-	//	{
-	//		try
-	//		{
-	//			return execute_internal(node, cmd);
-	//		}
-	//		catch (RavenError& re)
-	//		{
-	//			if (!errors)
-	//			{
-	//				errors.emplace();
-	//			}
-	//			errors.value() << re.what() << '\n';
-	//			if (re.get_error_type() == RavenError::ErrorType::DATABASE_DOES_NOT_EXIST)
-	//			{
-	//				throw RavenError(errors->str(), RavenError::ErrorType::DATABASE_DOES_NOT_EXIST);
-	//			}
-	//			continue;
-	//		}
-	//	}
-	//	throw RavenError(errors->str(), RavenError::ErrorType::GENERIC);
-	//}
 }

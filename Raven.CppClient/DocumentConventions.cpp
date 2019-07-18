@@ -369,7 +369,7 @@ namespace ravendb::client::documents::conventions
 	std::string DocumentConventions::default_transform_collection_name_to_document_id_prefix(
 		const std::string& collection_name)
 	{
-		const int64_t upper_count = std::accumulate(collection_name.cbegin(), collection_name.cend(), 0,
+		const int64_t upper_count = std::accumulate(collection_name.cbegin(), collection_name.cend(), int64_t(0),
 			[](const int64_t& count, std::string::value_type c)
 		{
 			return count + (bool(std::isupper(c)) ? 1 : 0);

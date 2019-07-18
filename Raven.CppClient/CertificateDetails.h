@@ -18,7 +18,7 @@ namespace ravendb::client::impl
 
 		//full path including the filename
 		//optional , may be empty
-#ifdef __MSC_VER 
+#ifdef _MSC_VER 
 		std::filesystem::path ca_path{};
 #else
         std::experimental::filesystem::path ca_path{};

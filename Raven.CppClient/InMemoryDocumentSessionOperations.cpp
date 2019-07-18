@@ -231,7 +231,7 @@ namespace ravendb::client::documents::session
 		, _client_session_id(++_client_session_id_counter)
 		, _request_executor(options.request_executor ? options.request_executor : 
 			document_store->get_request_executor(database_name))
-		, _session_info(_client_session_id, /*document_store->get_last_transaction_index(database_name)*/{}, options.no_caching)
+		, _session_info(_client_session_id, document_store->get_last_transaction_index(database_name), options.no_caching)
 	{
 		_generate_entity_id_on_the_client = std::make_unique<identity::GenerateEntityIdOnTheClient>(
 			_request_executor->get_conventions(), [this](std::type_index type, std::shared_ptr<void> entity)
@@ -1265,6 +1265,4 @@ namespace ravendb::client::documents::session
 		_document_store.lock()->set_last_transaction_index(database_name, returned_transaction_index);
 		_session_info.last_cluster_transaction_index = returned_transaction_index;
 	}
-
-
 }
