@@ -1,4 +1,5 @@
 #pragma once
+#include "json.hpp"
 
 namespace ravendb::client::http
 {
@@ -29,33 +30,20 @@ namespace ravendb::client::http
 
 		ServerNode() = default;
 
-		ServerNode(std::string url, std::string db, std::string tag, Role role = Role::NONE)
-			: url(std::move(url))
-			, database(std::move(db))
-			, cluster_tag(std::move(tag))
-			, server_role(role)
-		{}
+		ServerNode(std::string url, std::string db, std::string tag, Role role = Role::NONE);
 
-		friend bool operator==(const ServerNode& lhs, const ServerNode& rhs)
-		{
-			return lhs.url == rhs.url
-				&& lhs.database == rhs.database;
-		}
+		friend bool operator==(const ServerNode& lhs, const ServerNode& rhs);
 
-		friend bool operator!=(const ServerNode& lhs, const ServerNode& rhs)
-		{
-			return !(lhs == rhs);
-		}
+		friend bool operator!=(const ServerNode& lhs, const ServerNode& rhs);
 	};
 
 	void from_json(const nlohmann::json& j, ServerNode& sn);
 
+	void to_json(nlohmann::json& j, const ServerNode& sn);
+
 	struct CompareSharedPtrConstServerNode
 	{
-		bool operator()(std::shared_ptr<const ServerNode> lhs, std::shared_ptr<const ServerNode> rhs) const
-		{
-			return lhs ? (rhs ? *lhs == *rhs : false) : !rhs;
-		}
+		bool operator()(std::shared_ptr<const ServerNode> lhs, std::shared_ptr<const ServerNode> rhs) const;
 	};
 }
 

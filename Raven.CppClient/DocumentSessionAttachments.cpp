@@ -100,7 +100,7 @@ namespace ravendb::client::documents::session
 		{
 			throw_entity_not_in_session();
 			//just to disable a warning - shouldn't get here...
-			throw std::runtime_error("Shouldn't get her -> a bug.");
+			throw std::runtime_error("Shouldn't get here -> a bug.");
 		}
 		else
 		{

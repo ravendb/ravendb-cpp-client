@@ -3,7 +3,7 @@
 #include "ConcurrencyCheckMode.h"
 #include "Constants.h"
 #include "IMetadataDictionary.h"
-#include <json.hpp>
+#include "json.hpp"
 
 namespace ravendb::client::documents::session
 {
@@ -70,31 +70,6 @@ namespace ravendb::client::documents::session
 		};
 #endif
 
-		//TODO waiting for MSVC bug fix
-		//template<typename T>
-		//inline static const FromJsonConverter default_from_json = [](const nlohmann::json& json) -> std::shared_ptr<void>
-		//{
-		//	if constexpr (std::is_constructible_v<T>)
-		//	{
-		//		auto temp = std::make_shared<T>(json.get<T>());//conversion(deserialization)
-		//		return std::static_pointer_cast<void>(temp);
-		//	}else
-		//	{
-		//		return {};
-		//	}
-		//};
-		//
-		//template<typename T>
-		//inline static const EntityUpdater default_entity_update = 
-		//	[](std::shared_ptr<void> entity, const nlohmann::json& new_json) -> void
-		//{
-		//	if constexpr (std::is_default_constructible_v<T>)
-		//	{
-		//		auto document = std::static_pointer_cast<T>(entity);
-		//		*document = new_json.get<T>(); //change the old document with the new one obtained from 'new_json'
-		//	}
-		//};
-
 		nlohmann::json document{};
 		nlohmann::json metadata{};
 
@@ -120,37 +95,7 @@ namespace ravendb::client::documents::session
 
 		//TODO from entity ctor(perhaps template)
 
-		DocumentInfo(nlohmann::json document_)
-			: document(std::move(document_))
-			, metadata([&]
-		{
-			auto&& it = document.find(constants::documents::metadata::KEY);
-			if (it == document.end() || !it->is_object())
-			{
-				throw std::runtime_error("Document must have a metadata");
-			}
-			return *it;
-		}())
-			, id([&]
-		{
-			auto&& it = metadata.find(constants::documents::metadata::ID);
-			if (it == metadata.end() || !it->is_string())
-			{
-				throw std::runtime_error("Document must have an id");
-			}
-			return it->get<std::string>();
-		}())
-			, change_vector([&]
-		{
-			auto&& it = metadata.find(constants::documents::metadata::CHANGE_VECTOR);
-			if (it == metadata.end() || !it->is_string())
-			{
-				throw std::runtime_error("Document " + id + " must have a Change Vector");
-			}
-			return it->get<std::string>();
-		}())
-		{}
-
+		explicit DocumentInfo(nlohmann::json document_);
 	};
 
 #ifndef _MSC_VER

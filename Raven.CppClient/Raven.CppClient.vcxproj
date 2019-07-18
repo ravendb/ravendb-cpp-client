@@ -77,6 +77,7 @@
     <LinkIncremental>true</LinkIncremental>
     <CodeAnalysisRuleSet>NativeMinimumRules.ruleset</CodeAnalysisRuleSet>
     <IncludePath>C:\work\raven-cpp-client\external;C:\work\raven-cpp-client;$(IncludePath)</IncludePath>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -108,6 +109,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -157,6 +159,7 @@
     <ClInclude Include="AbstractIndexCreationTaskBase.h" />
     <ClInclude Include="AbstractJavaScriptIndexCreationTask.h" />
     <ClInclude Include="AbstractMultiMapIndexCreationTask.h" />
+    <ClInclude Include="AddDatabaseNodeOperation.h" />
     <ClInclude Include="AdvancedSessionExtentionBase.h" />
     <ClInclude Include="AllTopologyNodesDownException.h" />
     <ClInclude Include="AttachmentDetails.h" />
@@ -174,6 +177,7 @@
     <ClInclude Include="BatchCommandResult.h" />
     <ClInclude Include="BatchOperation.h" />
     <ClInclude Include="BatchOptions.h" />
+    <ClInclude Include="BatchPatchCommandData.h" />
     <ClInclude Include="BuildNumber.h" />
     <ClInclude Include="BulkInsertAbortedException.h" />
     <ClInclude Include="BulkInsertProtocolViolationException.h" />
@@ -192,6 +196,8 @@
     <ClInclude Include="CommandDataBase.h" />
     <ClInclude Include="CommandExecutionException.h" />
     <ClInclude Include="CommandType.h" />
+    <ClInclude Include="CompactDatabaseOperation.h" />
+    <ClInclude Include="CompactSettings.h" />
     <ClInclude Include="CompareStringsEqualIgnoreCase.h" />
     <ClInclude Include="CompareStringsLessThanIgnoreCase.h" />
     <ClInclude Include="CompilationException.h" />
@@ -214,6 +220,8 @@
     <ClInclude Include="DeclareToken.h" />
     <ClInclude Include="DeleteAttachmentCommandData.h" />
     <ClInclude Include="DeleteAttachmentOperation.h" />
+    <ClInclude Include="DetailedDatabaseStatistics.h" />
+    <ClInclude Include="DisableDatabaseToggleResult.h" />
     <ClInclude Include="DistinctToken.h" />
     <ClInclude Include="DocumentConflictException.h" />
     <ClInclude Include="DocumentDoesNotExistException.h" />
@@ -240,6 +248,7 @@
     <ClInclude Include="GetClusterTopologyCommand.h" />
     <ClInclude Include="GetCollectionStatisticsOperation.h" />
     <ClInclude Include="GetCppClassName.h" />
+    <ClInclude Include="GetDetailedStatisticsOperation.h" />
     <ClInclude Include="GetIndexStatisticsOperation.h" />
     <ClInclude Include="GetRequest.h" />
     <ClInclude Include="GetResponse.h" />
@@ -424,6 +433,7 @@
     <ClInclude Include="PatchResult.h" />
     <ClInclude Include="PatchStatus.h" />
     <ClInclude Include="PointField.h" />
+    <ClInclude Include="PromoteDatabaseNodeOperation.h" />
     <ClInclude Include="PutAttachmentCommandData.h" />
     <ClInclude Include="PutAttachmentCommandHelper.h" />
     <ClInclude Include="PutAttachmentOperation.h" />
@@ -455,8 +465,8 @@
     <ClInclude Include="PutDocumentCommand.h" />
     <ClInclude Include="RavenCommand.h" />
     <ClInclude Include="GetDocumentsCommand.h" />
-    <ClInclude Include="ravendb.h" />
     <ClInclude Include="RavenException.h" />
+    <ClInclude Include="raven_cpp_client.h" />
     <ClInclude Include="RawDocumentQuery.h" />
     <ClInclude Include="ReadBalanceBehavior.h" />
     <ClInclude Include="ReorderDatabaseMembersOperation.h" />
@@ -519,6 +529,7 @@
     <ClInclude Include="TimeoutException.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TimingsToken.h" />
+    <ClInclude Include="ToggleDatabasesStateOperation.h" />
     <ClInclude Include="Topology.h" />
     <ClInclude Include="TransactionMode.h" />
     <ClInclude Include="TrueToken.h" />
@@ -537,6 +548,8 @@
     <ClCompile Include="AbstractIndexCreationTaskBase.cpp" />
     <ClCompile Include="AbstractJavaScriptIndexCreationTask.cpp" />
     <ClCompile Include="AbstractMultiMapIndexCreationTask.cpp" />
+    <ClCompile Include="AddDatabaseNodeOperation.cpp" />
+    <ClCompile Include="AdvancedSessionExtentionBase.cpp" />
     <ClCompile Include="AdvancedSessionOperations.cpp" />
     <ClCompile Include="AllTopologyNodesDownException.cpp" />
     <ClCompile Include="AttachmentDetails.cpp" />
@@ -550,26 +563,34 @@
     <ClCompile Include="BatchCommand.cpp" />
     <ClCompile Include="BatchCommandResult.cpp" />
     <ClCompile Include="BatchOperation.cpp" />
+    <ClCompile Include="BatchPatchCommandData.cpp" />
+    <ClCompile Include="BuildNumber.cpp" />
     <ClCompile Include="BulkInsertAbortedException.cpp" />
     <ClCompile Include="BulkInsertProtocolViolationException.cpp" />
     <ClCompile Include="CertificateNameMismatchException.cpp" />
     <ClCompile Include="ChangeProcessingException.cpp" />
     <ClCompile Include="CircleCriteria.cpp" />
+    <ClCompile Include="ClientConfiguration.cpp" />
     <ClCompile Include="ClientVersionMismatchException.cpp" />
     <ClCompile Include="CloseSubclauseToken.cpp" />
     <ClCompile Include="ClusterRequestExecutor.cpp" />
     <ClCompile Include="ClusterTopology.cpp" />
     <ClCompile Include="ClusterTopologyResponse.cpp" />
+    <ClCompile Include="CollectionStatistics.cpp" />
     <ClCompile Include="CommandExecutionException.cpp" />
+    <ClCompile Include="CompactDatabaseOperation.cpp" />
+    <ClCompile Include="CompactSettings.cpp" />
     <ClCompile Include="CompilationException.cpp" />
     <ClCompile Include="ConcurrencyException.cpp" />
     <ClCompile Include="ConflictException.cpp" />
     <ClCompile Include="ConflictSolver.cpp" />
+    <ClCompile Include="CopyAttachmentCommandData.cpp" />
     <ClCompile Include="CounterIncludesToken.cpp" />
     <ClCompile Include="CounterOverflowException.cpp" />
     <ClCompile Include="CreateDatabaseOperation.cpp" />
     <ClCompile Include="CurlHandlesHolder.cpp" />
     <ClCompile Include="CurlResponse.cpp" />
+    <ClCompile Include="CurrentIndexAndNode.cpp" />
     <ClCompile Include="DatabaseConcurrentLoadTimeoutException.cpp" />
     <ClCompile Include="DatabaseDisabledException.cpp" />
     <ClCompile Include="DatabaseDoesNotExistException.cpp" />
@@ -577,21 +598,56 @@
     <ClCompile Include="DatabaseLoadTimeoutException.cpp" />
     <ClCompile Include="DatabaseNotRelevantException.cpp" />
     <ClCompile Include="DatabaseSchemaErrorException.cpp" />
+    <ClCompile Include="DatabaseStatistics.cpp" />
+    <ClCompile Include="DeleteAttachmentCommandData.cpp" />
+    <ClCompile Include="DeleteAttachmentOperation.cpp" />
+    <ClCompile Include="DeleteByQueryOperation.cpp" />
+    <ClCompile Include="DeleteCommandData.cpp" />
+    <ClCompile Include="DeleteDocumentCommand.cpp" />
+    <ClCompile Include="DeleteIndexOperation.cpp" />
+    <ClCompile Include="DetailedDatabaseStatistics.cpp" />
+    <ClCompile Include="DisableDatabaseToggleResult.cpp" />
+    <ClCompile Include="DisableIndexOperation.cpp" />
     <ClCompile Include="DocumentConflictException.cpp" />
     <ClCompile Include="DocumentDoesNotExistException.cpp" />
+    <ClCompile Include="DocumentInfo.cpp" />
     <ClCompile Include="DocumentSessionAttachments.cpp" />
     <ClCompile Include="DocumentSessionAttachmentsBase.cpp" />
+    <ClCompile Include="EnableIndexOperation.cpp" />
+    <ClCompile Include="EntityIdHelper.cpp" />
     <ClCompile Include="EventArgs.cpp" />
     <ClCompile Include="ExceptionDispatcher.cpp" />
     <ClCompile Include="ExplanationOptions.cpp" />
     <ClCompile Include="Explanations.cpp" />
+    <ClCompile Include="GetAttachmentOperation.cpp" />
+    <ClCompile Include="GetBuildNumberOperation.cpp" />
+    <ClCompile Include="GetClientConfigurationOperation.cpp" />
     <ClCompile Include="GetClusterTopologyCommand.cpp" />
+    <ClCompile Include="GetDetailedStatisticsOperation.cpp" />
+    <ClCompile Include="GetDocumentsCommand.cpp" />
+    <ClCompile Include="GetDocumentsResult.cpp" />
+    <ClCompile Include="GetIndexErrorsOperation.cpp" />
+    <ClCompile Include="GetIndexesOperation.cpp" />
+    <ClCompile Include="GetIndexesStatisticsOperation.cpp" />
+    <ClCompile Include="GetIndexingStatusOperation.cpp" />
+    <ClCompile Include="GetIndexNamesOperation.cpp" />
+    <ClCompile Include="GetIndexOperation.cpp" />
+    <ClCompile Include="GetIndexStatisticsOperation.cpp" />
+    <ClCompile Include="GetNextOperationIdCommand.cpp" />
+    <ClCompile Include="GetOperationStateOperation.cpp" />
+    <ClCompile Include="GetRequest.cpp" />
+    <ClCompile Include="GetResponse.cpp" />
     <ClCompile Include="GetServerWideClientConfigurationOperation.cpp" />
     <ClCompile Include="GetServerWideOperationStateOperation.cpp" />
+    <ClCompile Include="GetStatisticsOperation.cpp" />
     <ClCompile Include="GetTcpInfoCommand.cpp" />
+    <ClCompile Include="GetTermsOperation.cpp" />
     <ClCompile Include="GroupBy.cpp" />
+    <ClCompile Include="HeadAttachmentCommand.cpp" />
+    <ClCompile Include="HeadDocumentCommand.cpp" />
     <ClCompile Include="HighlightingOptions.cpp" />
     <ClCompile Include="Highlightings.cpp" />
+    <ClCompile Include="HiLoResult.cpp" />
     <ClCompile Include="HttpCache.cpp" />
     <ClCompile Include="HttpExtensions.cpp" />
     <ClCompile Include="IncludeBuilderBase.cpp" />
@@ -601,7 +657,14 @@
     <ClCompile Include="IndexDefinition.cpp" />
     <ClCompile Include="IndexDeletionException.cpp" />
     <ClCompile Include="IndexDoesNotExistException.cpp" />
+    <ClCompile Include="IndexFieldOptions.cpp" />
+    <ClCompile Include="IndexHasChangedOperation.cpp" />
+    <ClCompile Include="IndexInformation.cpp" />
+    <ClCompile Include="IndexingError.cpp" />
     <ClCompile Include="IndexInvalidException.cpp" />
+    <ClCompile Include="IndexQuery.cpp" />
+    <ClCompile Include="IndexStats.cpp" />
+    <ClCompile Include="Inflector.cpp" />
     <ClCompile Include="InvalidQueryException.cpp" />
     <ClCompile Include="JavaScriptException.cpp" />
     <ClCompile Include="JavaScriptParseException.cpp" />
@@ -610,6 +673,8 @@
     <ClCompile Include="LoadStartingWithOperation.cpp" />
     <ClCompile Include="MoreLikeThisOptions.cpp" />
     <ClCompile Include="MoreLikeThisScope.cpp" />
+    <ClCompile Include="MoveAttachmentCommandData.cpp" />
+    <ClCompile Include="MultiGetCommand.cpp" />
     <ClCompile Include="NegateToken.cpp" />
     <ClCompile Include="NodeIsPassiveException.cpp" />
     <ClCompile Include="NodeSelector.cpp" />
@@ -620,26 +685,49 @@
     <ClCompile Include="OperationExceptionResult.cpp" />
     <ClCompile Include="OperationExecutor.cpp" />
     <ClCompile Include="OrderByToken.cpp" />
+    <ClCompile Include="PatchByQueryOperation.cpp" />
+    <ClCompile Include="PatchCommandData.cpp" />
+    <ClCompile Include="PatchOperation.cpp" />
+    <ClCompile Include="PatchRequest.cpp" />
+    <ClCompile Include="PatchResult.cpp" />
     <ClCompile Include="PointField.cpp" />
+    <ClCompile Include="PromoteDatabaseNodeOperation.cpp" />
+    <ClCompile Include="PutAttachmentCommandData.cpp" />
+    <ClCompile Include="PutAttachmentOperation.cpp" />
+    <ClCompile Include="PutClientConfigurationOperation.cpp" />
+    <ClCompile Include="PutCommandData.cpp" />
+    <ClCompile Include="PutDocumentCommand.cpp" />
+    <ClCompile Include="PutIndexesOperation.cpp" />
     <ClCompile Include="PutServerWideClientConfigurationOperation.cpp" />
+    <ClCompile Include="QueryCommand.cpp" />
     <ClCompile Include="QueryData.cpp" />
     <ClCompile Include="QueryFieldUtil.cpp" />
     <ClCompile Include="QueryHighlightings.cpp" />
     <ClCompile Include="QueryIncludeBuilder.cpp" />
+    <ClCompile Include="QueryOperationOptions.cpp" />
     <ClCompile Include="QueryOperatorToken.cpp" />
     <ClCompile Include="QueryStatistics.cpp" />
     <ClCompile Include="QueryTimings.cpp" />
     <ClCompile Include="RavenCommand.cpp" />
     <ClCompile Include="RavenException.cpp" />
     <ClCompile Include="ReorderDatabaseMembersOperation.cpp" />
+    <ClCompile Include="ResetIndexOperation.cpp" />
+    <ClCompile Include="ResponseTimeInformation.cpp" />
     <ClCompile Include="RevisionsDisabledException.cpp" />
     <ClCompile Include="RouteNotFoundException.cpp" />
     <ClCompile Include="SecurityException.cpp" />
     <ClCompile Include="ServerLoadFailureException.cpp" />
     <ClCompile Include="ServerOperationExecutor.cpp" />
+    <ClCompile Include="SetIndexesLockOperation.cpp" />
+    <ClCompile Include="SetIndexesPriorityOperation.cpp" />
     <ClCompile Include="ShapeToken.cpp" />
     <ClCompile Include="SpatialCriteria.cpp" />
     <ClCompile Include="SpatialCriteriaFactory.cpp" />
+    <ClCompile Include="SpatialOptions.cpp" />
+    <ClCompile Include="StartIndexingOperation.cpp" />
+    <ClCompile Include="StartIndexOperation.cpp" />
+    <ClCompile Include="StopIndexingOperation.cpp" />
+    <ClCompile Include="StopIndexOperation.cpp" />
     <ClCompile Include="SubscriberErrorException.cpp" />
     <ClCompile Include="SubscriptionChangeVectorUpdateConcurrencyException.cpp" />
     <ClCompile Include="SubscriptionClosedException.cpp" />
@@ -654,8 +742,10 @@
     <ClCompile Include="SuggestionWithTerms.cpp" />
     <ClCompile Include="SuggestToken.cpp" />
     <ClCompile Include="TcpConnectionInfo.cpp" />
+    <ClCompile Include="TermsQueryResult.cpp" />
     <ClCompile Include="TimeoutException.cpp" />
     <ClCompile Include="TimingsToken.cpp" />
+    <ClCompile Include="ToggleDatabasesStateOperation.cpp" />
     <ClCompile Include="TrueToken.cpp" />
     <ClCompile Include="UnsuccessfulRequestException.cpp" />
     <ClCompile Include="WhereToken.cpp" />

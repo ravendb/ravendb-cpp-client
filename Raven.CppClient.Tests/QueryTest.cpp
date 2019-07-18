@@ -8,6 +8,7 @@
 #include "AbstractIndexCreationTask.h"
 #include "MaintenanceOperationExecutor.h"
 #include "GetCollectionStatisticsOperation.h"
+#include "Order.h"
 
 namespace query_test
 {
@@ -36,6 +37,21 @@ namespace query_test
 				name = g.Key,
 				count = g.Sum(x => x.count)
 			})";
+		}
+	};
+
+	class OrderTime : public ravendb::client::documents::indexes::AbstractIndexCreationTask
+	{
+	public:
+		~OrderTime() override = default;
+		OrderTime()
+		{
+			SET_DEFAULT_INDEX_NAME();
+
+			map = "from order in docs.Orders "
+				"select new { "
+				"  delay = order.shippedAt - ((DateTime?)order.orderedAt) "
+				"}";
 		}
 	};
 
@@ -810,8 +826,63 @@ namespace ravendb::client::tests::client
 		ASSERT_EQ(2, users.size());
 	}
 
-	//TODO
-	//public void queryWithDuration() throws Exception {
+	TEST_F(QueryTest, QueryWithDuration)
+	{
+		auto store = get_document_store(TEST_NAME);
+
+		store->execute_index(std::make_shared<query_test::OrderTime>());
+
+		const auto now = impl::DateTimeOffset("2019-07-11T12:00:00.0000000");
+
+		{
+			auto session = store->open_session();
+			auto order1 = std::make_shared<infrastructure::entities::Order>();
+			order1->company = "hours";
+			order1->orderedAt = impl::DateTimeOffset("2019-07-11T10:00:00.0000000");//now - 2hours
+			order1->shippedAt = now;
+			session.store(order1);
+
+			auto order2 = std::make_shared<infrastructure::entities::Order>();
+			order2->company = "days";
+			order2->orderedAt = impl::DateTimeOffset("2019-07-09T12:00:00.0000000");//now - 2 days
+			order2->shippedAt = now;
+			session.store(order2);
+
+			auto order3 = std::make_shared<infrastructure::entities::Order>();
+			order3->company = "minutes";
+			order3->orderedAt = impl::DateTimeOffset("2019-07-11T11:58:00.0000000");//now - 2 minutes
+			order3->shippedAt = now;
+			session.store(order3);
+
+			session.save_changes();
+		}
+
+		wait_for_indexing(store);
+
+		{
+			auto session = store->open_session();
+
+			auto result = session.query<infrastructure::entities::Order, query_test::OrderTime>()
+				->where_less_than("delay", impl::utils::MillisToTimeSpanConverter::as_string(std::chrono::hours(3)))
+				->to_list();
+
+			auto delays = std::set<std::string>();
+			std::transform(result.cbegin(), result.cend(), std::inserter(delays, delays.end()),
+				[](const auto& order) {return order->company; });
+			auto expected_delays = std::set<std::string>{ "hours", "minutes" };
+			ASSERT_EQ(expected_delays, delays);
+
+			auto result2 = session.query<infrastructure::entities::Order, query_test::OrderTime>()
+				->where_greater_than("delay", impl::utils::MillisToTimeSpanConverter::as_string(std::chrono::hours(3)))
+				->to_list();
+
+			auto delays2 = std::set<std::string>();
+			std::transform(result2.cbegin(), result2.cend(), std::inserter(delays2, delays2.end()),
+				[](const auto& order) {return order->company; });
+			auto expected_delays2 = std::set<std::string>{ "days" };
+			ASSERT_EQ(expected_delays2, delays2);
+		}
+	}
 
 	TEST_F(QueryTest, QueryFirst)
 	{

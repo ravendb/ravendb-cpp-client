@@ -13,9 +13,53 @@
 #include "BatchCommandResult.h"
 #include "DocumentConventions.h"
 #include "NonUniqueObjectException.h"
+#include "BatchPatchCommandData.h"
 
 namespace ravendb::client::documents::session
 {
+	commands::batches::BatchOptions& InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder::get_options()
+	{
+		if(!_outer_this._save_changes_options.index_options)
+		{
+			_outer_this._save_changes_options.index_options.emplace();
+		}
+		return  _outer_this._save_changes_options;
+	}
+
+	std::shared_ptr<InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder> InMemoryDocumentSessionOperations::
+	IndexesWaitOptsBuilder::create(InMemoryDocumentSessionOperations& outer_this)
+	{
+		auto object = std::shared_ptr<IndexesWaitOptsBuilder>(new IndexesWaitOptsBuilder(outer_this));
+		object->_weak_this = object;
+		return object;
+	}
+
+	std::shared_ptr<InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder> InMemoryDocumentSessionOperations::
+	IndexesWaitOptsBuilder::with_timeout(std::chrono::milliseconds timeout)
+	{
+		get_options().index_options->wait_for_indexes_timeout = timeout;
+		return _weak_this.lock();
+	}
+
+	std::shared_ptr<InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder> InMemoryDocumentSessionOperations::
+	IndexesWaitOptsBuilder::throw_on_timeout(bool should_throw)
+	{
+		get_options().index_options->throw_on_timeout_in_wait_for_indexes = should_throw;
+		return _weak_this.lock();
+	}
+
+	std::shared_ptr<InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder> InMemoryDocumentSessionOperations::
+	IndexesWaitOptsBuilder::wait_for_indexes(std::vector<std::string> indexes)
+	{
+		get_options().index_options->wait_for_specific_indexes = std::move(indexes);
+		return _weak_this.lock();
+	}
+
+	InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder::IndexesWaitOptsBuilder(
+		InMemoryDocumentSessionOperations& outer_this)
+		: _outer_this(outer_this)
+	{}
+
 	InMemoryDocumentSessionOperations::~InMemoryDocumentSessionOperations() = default;
 
 	void InMemoryDocumentSessionOperations::add_before_store_listener(primitives::EventHandler handler)
@@ -187,7 +231,7 @@ namespace ravendb::client::documents::session
 		, _client_session_id(++_client_session_id_counter)
 		, _request_executor(options.request_executor ? options.request_executor : 
 			document_store->get_request_executor(database_name))
-		, _session_info(_client_session_id, /*document_store->get_last_transaction_index(database_name)*/{}, options.no_caching)
+		, _session_info(_client_session_id, document_store->get_last_transaction_index(database_name), options.no_caching)
 	{
 		_generate_entity_id_on_the_client = std::make_unique<identity::GenerateEntityIdOnTheClient>(
 			_request_executor->get_conventions(), [this](std::type_index type, std::shared_ptr<void> entity)
@@ -811,6 +855,7 @@ namespace ravendb::client::documents::session
 				{
 					change_vector.clear();
 				}
+
 				//TODO call EventHelper.invoke()
 
 				result.session_commands.push_back(std::make_shared<commands::batches::DeleteCommandData>
@@ -939,6 +984,26 @@ namespace ravendb::client::documents::session
 		return !_deleted_entities.empty();
 	}
 
+	void InMemoryDocumentSessionOperations::wait_for_indexes_after_save_changes(
+		std::function<void(InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder&)> options)
+	{
+		auto builder = IndexesWaitOptsBuilder::create(*this);
+		options(*builder);
+
+		auto& builder_options = builder->get_options();
+		auto& index_options = builder_options.index_options;
+
+		if(!index_options)
+		{
+			index_options.emplace();
+		}
+		if(index_options->wait_for_indexes_timeout == std::chrono::milliseconds::zero())
+		{
+			index_options->wait_for_indexes_timeout = std::chrono::seconds(15);
+		}
+		index_options->wait_for_indexes = true;
+	}
+
 	bool InMemoryDocumentSessionOperations::has_changed_internal(std::shared_ptr<void> entity) const
 	{
 		std::shared_ptr<DocumentInfo> doc_info{};
@@ -1005,12 +1070,22 @@ namespace ravendb::client::documents::session
 
 	void InMemoryDocumentSessionOperations::defer_internal(std::shared_ptr<commands::batches::CommandDataBase> command)
 	{
-		if (command->get_type() == commands::batches::CommandType::BATCH_PATCH)
+		if(command->get_type() == commands::batches::CommandType::BATCH_PATCH)
 		{
-			//TODO complete
-			throw std::runtime_error("not implemented");
+			auto batch_patch_command = std::static_pointer_cast<commands::batches::BatchPatchCommandData>(command);
+
+			batch_patch_command->set_type(commands::batches::CommandType::PATCH);
+
+			for(const auto& [id,_] : batch_patch_command->get_ids())
+			{
+				batch_patch_command->set_id(id);
+				add_command(command);
+			}
 		}
+		else
+		{
 		add_command(command);
+		}
 	}
 
 	void InMemoryDocumentSessionOperations::add_command(std::shared_ptr<commands::batches::CommandDataBase> command)
@@ -1190,6 +1265,4 @@ namespace ravendb::client::documents::session
 		_document_store.lock()->set_last_transaction_index(database_name, returned_transaction_index);
 		_session_info.last_cluster_transaction_index = returned_transaction_index;
 	}
-
-
 }

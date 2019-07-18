@@ -113,14 +113,6 @@ namespace ravendb::client::documents::session::operations::lazy
 	template <typename T>
 	void LazyStartsWithOperation<T>::handle_response(const commands::multi_get::GetResponse& response)
 	{
-		//TODO keep it ?
-		//if (response.force_retry)
-		//{
-		//	_result.clear();
-		//	_requires_retry = true;
-		//	return;
-		//}
-
 		auto multi_load_result = std::make_shared<commands::GetDocumentsResult>();
 		if (response.result)
 		{

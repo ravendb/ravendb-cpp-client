@@ -39,6 +39,12 @@ namespace ravendb::client::impl::utils
 	{
 		return _timespan_as_string.c_str();
 	}
+
+	std::string MillisToTimeSpanConverter::as_string(const std::chrono::milliseconds& msec)
+	{
+		return MillisToTimeSpanConverter(msec);
+	}
+
 	MillisToTimeSpanConverter::operator const std::string&() const
 	{
 		return _timespan_as_string;

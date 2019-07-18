@@ -88,7 +88,7 @@ namespace first_class_patch_test
 	struct User
 	{
 		std::vector<Stuff> stuff{};
-		DateTimeOffset last_login{};
+		ravendb::client::impl::DateTimeOffset last_login{};
 		std::vector<int32_t> numbers{};
 	};
 
@@ -140,7 +140,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 
-		const auto time_point = DateTimeOffset("2019-02-12T08:47:17.5033415Z");
+		const auto time_point = impl::DateTimeOffset("2019-02-12T08:47:17.5033415Z");
 
 		{
 			auto session = store->open_session();
@@ -478,7 +478,7 @@ namespace ravendb::client::tests::client
 			session.save_changes();
 		}
 
-		const auto time_point = DateTimeOffset("2019-02-12T12:15:25.1234000");
+		const auto time_point = impl::DateTimeOffset("2019-02-12T12:15:25.1234000");
 
 		{
 			auto session = store->open_session();

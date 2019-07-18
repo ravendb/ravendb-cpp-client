@@ -31,17 +31,17 @@ namespace ravendb::client::documents::queries::timings
 
 		const auto& timings = reinterpret_cast<const nlohmann::json::object_t&>(j.at("Timings"));
 		qt.timings.emplace();
-		for(const auto& item : j.at("Timings").items())
+		for(const auto& [key, value] : timings)
 		{
-			if(item.value().is_null())
+			if(value.is_null())
 			{
-				qt.timings->insert_or_assign(item.key(), std::optional<QueryTimings>());
+				qt.timings->insert_or_assign(key, std::optional<QueryTimings>());
 			}
 			else
 			{
 				QueryTimings temp{};
-				from_json(item.value(), temp);
-				qt.timings->insert_or_assign(item.key(), std::move(temp));
+				from_json(value, temp);
+				qt.timings->insert_or_assign(key, std::move(temp));
 			}
 		}
 	}

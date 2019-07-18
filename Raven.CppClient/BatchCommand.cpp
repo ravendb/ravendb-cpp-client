@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "BatchCommand.h"
+#include "MillisToTimespanConverter.h"
+#include "json_utils.h"
 
 namespace ravendb::client::documents::commands::batches
 {

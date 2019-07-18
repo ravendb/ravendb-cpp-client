@@ -2,7 +2,6 @@
 #include <ctime>
 #include <ostream>
 #include "json.hpp"
-#include "utils.h"
 
 namespace ravendb::client::impl
 {
@@ -28,6 +27,8 @@ namespace ravendb::client::impl
 		//WARNING tm_wday and tm_yday fields are NOT filled in the deserialization ctor
 		//str should be in ISO8061 format : YYYY-MM-DDThh:mm:ss.sssssss(Z) or YYYY-MM-DDThh:mm:ss.sssssss±hh:mm
 		explicit DateTimeOffset(const std::string& str);
+
+		DateTimeOffset& operator=(const DateTimeOffset& other);
 
 		//output in ISO8061 format : YYYY-MM-DDThh:mm:ss.sssssss(Z) or YYYY-MM-DDThh:mm:ss.sssssss±hh:mm
 		std::string to_string(bool add_Z_if_zero_offset = false) const;

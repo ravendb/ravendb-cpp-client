@@ -1,6 +1,6 @@
 #pragma once
 #include "DateTimeOffset.h"
-#include "json_utils.h"
+#include "json.hpp"
 
 namespace ravendb::client::serverwide
 {

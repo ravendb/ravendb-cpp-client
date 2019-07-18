@@ -47,20 +47,10 @@ namespace ravendb::client::documents::indexes::spatial
 
 			SpatialBounds(double minX_param, double minY_param, double maxX_param, double maxY_param);
 
-			friend bool operator==(const SpatialBounds& lhs, const SpatialBounds& rhs)
-			{
-				return lhs.minX == rhs.minX
-					&& lhs.maxX == rhs.maxX
-					&& lhs.minY == rhs.minY
-					&& lhs.maxY == rhs.maxY;
-			}
+			friend bool operator==(const SpatialBounds& lhs, const SpatialBounds& rhs);
 
-			friend bool operator!=(const SpatialBounds& lhs, const SpatialBounds& rhs)
-			{
-				return !(lhs == rhs);
-			}
+			friend bool operator!=(const SpatialBounds& lhs, const SpatialBounds& rhs);
 
-			//TODO implement
 			std::size_t hash_code() const;
 		};
 	};

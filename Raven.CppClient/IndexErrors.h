@@ -1,5 +1,4 @@
 #pragma once
-
 #include "IndexingError.h"
 #include "json_utils.h"
 

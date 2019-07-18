@@ -1,16 +1,9 @@
 #pragma once
+#include "RavenCommand.h"
 
-namespace ravendb::client
+namespace ravendb::client::documents::conventions
 {
-	namespace http
-	{
-		template<typename TResult>
-		class RavenCommand;
-	}
-	namespace documents::conventions
-	{
 		class DocumentConventions;
-	}
 }
 
 namespace ravendb::client::serverwide::operations

@@ -34,8 +34,6 @@ namespace ravendb::client::tests::infrastructure::entities
 		set_val_to_json(j, "contacts", c.contacts);
 		set_val_to_json(j, "type", c.type);
 		set_val_to_json(j, "employeesIds", c.employeesIds);
-		//TODO erase once proper "pluralize" is ready
-		j["@metadata"]["@collection"] = "Companies";
 	}
 
 	inline void from_json(const nlohmann::json& j, Company& c)

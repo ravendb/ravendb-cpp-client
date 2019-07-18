@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "DateTimeOffset.h"
+#include "utils.h"
 
 #include <iomanip>
 #define __STDC_WANT_LIB_EXT1__ 1
@@ -117,6 +118,17 @@ namespace ravendb::client::impl
 		default:
 			throw_invalid_format(str);
 		}
+	}
+
+	DateTimeOffset& DateTimeOffset::operator=(const DateTimeOffset& other)
+	{
+		if(this != &other)
+		{
+			this->_date_time = other._date_time;
+			this->_nsec = other._nsec;
+			this->_offset = other._offset;
+		}
+		return *this;
 	}
 
 	std::string DateTimeOffset::to_string(bool add_Z_if_zero_offset) const

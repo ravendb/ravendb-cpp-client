@@ -5,7 +5,6 @@
 #include "HiLoReturnCommand.h"
 #include "DocumentStore.h"
 
-
 namespace ravendb::client::documents::identity
 {
 	void HiLoIdGenerator::get_next_range()

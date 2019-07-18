@@ -1,14 +1,51 @@
 #!/bin/bash
-RVN_INSTALL_PREFIX=${PWD}/CppClientOut
+if [ "${PWD}" == "/" ]; then
+	CURDIR=""
+else
+	CURDIR="${PWD}"
+fi
+RVN_INSTALL_PREFIX=${CURDIR}/CppClientOut
 RVN_GIT_PATH="https://github.com/ravendb/raven-cpp-client.git"
-RVN_GIT_PATH="https://github.com/sashatim125/raven-cpp-client.git"
 CMAKE_GIT_PATH="https://github.com/Kitware/CMake"
-PKGS=( "apt-update" git gcc g++ libcurl4-openssl-dev libssl-dev make )
-
-LOG=${PWD}/install_cpp_client.log
+PKGS=( git gcc g++ libcurl4-openssl-dev libssl-dev make )
+LOG=${CURDIR}/install_cpp_client.log
 echo $(date) > ${LOG}
 TMP_CMAKE="temp_cmake"
-TMP_CLIENT="temp_client"
+TMP_CLIENT=${PWD}
+BUILDDIR="cmake-build-release"
+PERFORM_APT_UPGRADE=0
+SUDO="sudo"
+CLONE_RAVENDB=0
+function print_usage() {
+	echo "Usage: ${0} [ OPTIONS ]"
+	echo "       OPTIONS:"
+	echo "               --apt-upgrade                       perform apt-upgrade -y (non interactive with default confirmation)"
+	echo "               --skip-sudo                         perform super user actions without sudo command"
+	echo "               --clone-ravendb                     if script is running outside ravendb client clone, use this option"
+	echo "               --install-dir=<CppClient out dir>   specify artifact directory (default: CppClientOut)"
+	echo ""
+}
+if [ $# -gt 0 ]; then
+	for arg in $@; do
+		if [ ${arg} == "--apt-upgrade" ]; then
+			PERFORM_APT_UPGRADE=1
+		elif [ ${arg} == "--skip-sudo" ]; then
+			SUDO=""
+		elif [ ${arg} == "--clone-ravendb" ]; then
+			CLONE_RAVENDB=1
+			TMP_CLIENT="temp_client"
+		elif [ ${arg} == "-h" ] || [ ${arg} == "--help" ]; then
+			print_usage
+			exit 0
+		elif [ "$(echo -n ${arg} | cut -f1 -d'=')" == "--install-dir" ]; then
+			RVN_INSTALL_PREFIX="$(echo -n ${arg} | cut -f2 -d'=')"
+		else
+			echo "Error: Invalid argument '${arg}'"
+			print_usage
+			exit 1
+		fi
+	done
+fi
 
 NC="\\e[39m"
 C_BLACK="\\e[30m"
@@ -33,61 +70,123 @@ T_BOLD="\\e[1m"
 T_UL="\\e[4m"
 T_BLINK="\\e[5m"
 
-ERR_STRING="${C_L_RED}${T_BOLD}Error: ${NT}${C_L_RED}"
+function print_state_installed() { echo -e "\r${NC}[${C_GREEN} INSTALLED ${NC}] ${1} ${C_GREEN}${2}${NT}${NC}"
+} 
+function print_state_error() { echo -e "\r${NC}[${C_RED} ERROR     ${NC}] ${1} ${C_RED}${2}${NT}${NC}" 
+}
+function print_state_msg() { echo -en "\r${NC}[${C_YELLOW}${2}${NC}] ${1}${NT}${NC}" 
+}
+function print_build_failed() { echo -e "${C_RED}Build Failed.${STATUS}${NC}${NT}" 
+}
 
-echo -e "${C_L_GREEN}${T_BOLD}Build RavenDB Cpp Client${NC}${NT}"
-echo -e "${C_D_GRAY}========================${NC}"
-echo ""
-echo -e "${C_L_YELLOW}(Please enter sudo password, if asked to)${NC}${NT}"
-sudo echo ""
+function progress_show_and_wait()
+{
+	STRFIXLEN=60
+	STRHALF=$(expr ${STRFIXLEN} / 2 - 2)
+	while [ $(ps -ef | awk '{print $2}' | grep "^${1}$" | wc -l) -ne 0 ]; do
+		STRLINE="$(tail -1 ${LOG})"
+		STRLINE="$(echo -n ${STRLINE} | tr --delete '\n')"
+		STRLENG=$(echo -n $STRLINE | wc -c)
+		if [ ${STRLENG} -lt ${STRFIXLEN} ]; then
+			STRLINE="${STRLINE}$(printf %-$(expr 60 - ${STRLENG})s)"
+		elif [ ${STRLENG} -gt ${STRFIXLEN} ]; then
+			STRLINE="$(echo -n ${STRLINE} | head -c${STRHALF})....$(echo -n ${STRLINE} | tail -c${STRHALF})"
+		fi
+		print_state_msg "${3}${C_WHITE} <${STRLINE}>" "${2}"
+		sleep 1
+	done
+	print_state_msg "${3}${C_L_GRAY}  $(printf %-${STRFIXLEN}s)  " "${2}"
+	wait ${1}
+	STATUS=$?
+}
+
+function print_welcome_and_test_sudo()
+{
+	echo -e "${C_L_GREEN}${T_BOLD}Build RavenDB Cpp Client${NC}${NT}"
+	echo -e "${C_D_GRAY}========================${NC}"
+	echo ""
+	echo "Logging into file: ${LOG}"
+	if [ ${PERFORM_APT_UPGRADE} -eq 1 ]; then
+		echo -e "${T_BLINK}Note: 'apt upgrade' will be performed${NT}${NC}"
+	else
+		echo "Note: 'apt upgrade' will be skipped. Run again with --apt-upgrade to include upgrade operation."
+	fi
+	if [ "${SUDO}" == "" ]; then
+		echo "Note: Skipping sudo command"
+	else
+		echo -e "${C_L_YELLOW}(Please enter sudo password, if asked to)${NC}${NT}"
+	fi
+	${SUDO} echo ""
+}
 
 function install_packages()
 {
+	MAINSTR="${C_L_CYAN}Performing ${C_L_MAGENTA}apt update${C_L_GRAY}..."
+	${SUDO} /bin/bash -c "apt update" >> ${LOG} 2>&1 &
+        PID=$!
+	progress_show_and_wait ${PID} "Updating..." "${MAINSTR}"
+	if [ ${STATUS} -eq 0 ]; then
+		print_state_installed "${MAINSTR}" "Successfully updated."
+	else
+		print_state_error "${MAINSTR}" "Exit code ${STATUS}"
+		print_build_failed
+		exit 1
+	fi
+
+	if [ ${PERFORM_APT_UPGRADE} -eq 1 ]; then
+		MAINSTR="${C_L_CYAN}Performing ${C_L_MAGENTA}apt upgrade -y (non interactive)${C_L_GRAY}..."
+		${SUDO} /bin/bash -c "DEBIAN_FRONTEND=noninteractive apt upgrade -y" >> ${LOG} 2>&1 &
+		PID=$!
+		progress_show_and_wait ${PID} "Upgrading.." "${MAINSTR}"
+		if [ ${STATUS} -eq 0 ]; then
+			print_state_installed "${MAINSTR}" "Successfully upgraded."
+		else
+			print_state_error "${MAINSTR}" "Exit code ${STATUS}"
+			print_build_failed
+			exit 1
+		fi
+	fi
+
 	HADERRORS=0
 	for pkg in ${PKGS[@]}; do
-		echo -en "${NC}[${C_GREEN}           ${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}${pkg}${C_L_GRAY}...${NC}${NT}"
-		echo -en "\r${NC}[${C_YELLOW}Working ...${NC}]"
-		if [ ${pkg} == "apt-update" ]; then
-			 sudo /bin/bash -c "apt update" >> ${LOG} 2>&1
-		else
-			 sudo /bin/bash -c "apt install -y ${pkg}" >> ${LOG} 2>&1
-		fi
+		MAINSTR="${C_L_CYAN}Installing ${C_L_MAGENTA}${pkg}${C_L_GRAY}..."
+		print_state_msg "${MAINSTR}" "Install ..."
+		${SUDO} /bin/bash -c "DEBIAN_FRONTEND=noninteractive apt install -y ${pkg}" >> ${LOG} 2>&1
 		STATUS=$?
 		if [ ${STATUS} -eq 0 ]; then
-			echo -e "\r${NC}[${C_GREEN} INSTALLED ${NC}]"
+			print_state_installed "${MAINSTR}" "Successfully installed."
 		else
-			echo -e "\r${NC}[${C_RED} ERROR     ${NC}]"
-			echo ""
-			echo -e "${C_RED}Exit code ${STATUS}${NC}${NT}"
+			print_state_error "${MAINSTR}" "Exit code ${STATUS}"
 			HADERRORS=1
 		fi
 	done
 	if [ ${HADERRORS} -eq 1 ]; then
-		echo ""
-		echo -e "${C_RED}Build Failed.${STATUS}${NC}${NT}"
+		print_build_failed
 		exit 1
-
 	fi
 
 	# verify gcc version >= 7.30
+	MAINSTR="${C_L_CYAN}Verifying  ${C_L_MAGENTA}g++ (gcc) version must be >= 7.30${C_L_GRAY}..."
+	print_state_msg "${MAINSTR}" "Verifying.."
 	GCCVER=$(g++ -v |& grep "gcc version" | awk '{print $3}')
 	GCCVER_MAJOR=$(echo ${GCCVER} | cut -d'.' -f1)
 	GCCVER_MINOR=$(echo ${GCCVER} | cut -d'.' -f2 | head -c 1)
 	if [ ${GCCVER_MAJOR} -lt 8 ]; then
 		if [ ${GCCVER_MAJOR} -lt 7 ] || [ ${GCCVER_MINOR} -lt 3 ]; then 
-			echo -e "${C_RED}g++ (gcc) version must be >= 7.30${NC}"
-			echo -e "${C_RED}Build Failed.${NC}"
+			print_state_error "${MAINSTR}" "${C_RED}Found: ${GCCVER}"
+			print_build_failed
 			exit 1
 		fi
 	fi
+	print_state_installed "${MAINSTR}" "Found: ${GCCVER}"
 }
 
 # verify cmake >= 3.13
 function install_cmake()
 {
-	echo -en "${NC}[${C_GREEN}           ${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}cmake (>=3.13)${C_L_GRAY} (installation may take some time)...${NC}${NT}"
+	MAINSTR="${C_L_CYAN}Installing ${C_L_MAGENTA}cmake (>=3.13)${C_L_GRAY} (installation may take some time)..."
 	CMAKE_VERSION="Version: 0"
-		echo -en "\r${NC}[${C_YELLOW}Verifying..${NC}]"
+	print_state_msg "${MAINSTR}" "Verifying.."
 	if [ $(which cmake | wc -l) -gt 0 ]; then
 		CMAKE_VERSION="$(cmake --version | grep -i version | sed 's/version/Version:/g' | cut -d' ' -f2-999)"
 	fi
@@ -113,139 +212,60 @@ function install_cmake()
 	fi
 
 	if [ ${VER_OK} -eq 1 ]; then
-		echo -e "\r${NC}[${C_GREEN} INSTALLED ${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}cmake (>=3.13)${C_L_GRAY} (installation may take some time)...${NC} Already installed ${C_CYAN}${CMAKE_VERSION}${NT}"
+		print_state_installed "${MAINSTR}" "Already installed ${C_CYAN}${CMAKE_VERSION}"
 	elif [ ${APT_VER_OK} -eq 1 ]; then
-		echo -en "\r${NC}[${C_YELLOW}Working ...${NC}]"
-		sudo /bin/bash -c "apt install -y cmake" >> ${LOG} 2>&1 &
+		${SUDO} /bin/bash -c "apt install -y cmake" >> ${LOG} 2>&1 &
 		PID=$!
-		while [ $(ps -ef | awk '{print $2}' | grep "^${PID}$" | wc -l) -ne 0 ]; do
-			sleep 1
-			STTLINE="$(tail -1 ${LOG})"
-			STTLENG=$(echo $STTLINE | wc -c)
-			if [ ${STTLENG} -lt 30 ]; then
-				STTLINE="${STTLINE}$(printf "%-$(expr 30 - ${STTLENG})s")"
-				STTLENG=30
-			fi
-			if [ ${STTLENG} -lt 60 ]; then
-				STTDIFF=$(expr ${STTLENG} - 30)
-				STTLINE="$(echo ${STTLINE} | head -c30)$(printf "%-$(expr 60 - ${STTLENG})s")$(echo ${STTLINE} | tail -c${STTDIFF})"
-			fi
-			echo -en "\r${NC}[${C_YELLOW}Working ...${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}cmake (>=3.13)${C_L_GRAY} <$(echo ${STTLINE} | head -c30)...$(echo ${STTLINE} | tail -c30)> ${NC}"
-		done
-		wait ${PID}
-		STATUS=$?
-		echo -en "\r${NC}[${C_YELLOW}Finishing..${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}cmake (>=3.13)${C_L_GRAY}$(printf "%-60s")${NC}"
+		progress_show_and_wait ${PID} "Working ..." "${MAINSTR}" 
 		if [ ${STATUS} -eq 0 ]; then
-			echo -e "\r${NC}[${C_GREEN} INSTALLED ${NC}]"
+			print_state_installed "${MAINSTR}" "Successfully installed via apt."
 		else
-			echo -e "\r${NC}[${C_RED} ERROR     ${NC}]"
-			echo ""
-			echo -e "${C_RED}Exit code ${STATUS}${NC}${NT}"
-			echo ""
-			echo -e "${C_RED}Build Failed.${STATUS}${NC}${NT}"
+			print_state_error "${MAINSTR}" "Exit code ${STATUS}"
+			print_build_failed
 			exit 1
 		fi
 	else
-		echo -en "\r${NC}[${C_YELLOW}Cloning ...${NC}]"
+		print_state_msg "${MAINSTR}" "Cleaning..."
 		if [ -d ${TMP_CMAKE} ]; then
 			rm -rf ${TMP_CMAKE} >> ${LOG} 2>&1
 		fi
 		git clone ${CMAKE_GIT_PATH} ${TMP_CMAKE} >> ${LOG} 2>&1 &
 		PID=$!
-		while [ $(ps -ef | awk '{print $2}' | grep "^${PID}$" | wc -l) -ne 0 ]; do
-			sleep 1
-			STTLINE="$(tail -1 ${LOG})"
-			STTLENG=$(echo $STTLINE | wc -c)
-			if [ ${STTLENG} -lt 30 ]; then
-				STTLINE="${STTLINE}$(printf "%-$(expr 30 - ${STTLENG})s")"
-				STTLENG=30
-			fi
-			if [ ${STTLENG} -lt 60 ]; then
-				STTDIFF=$(expr ${STTLENG} - 30)
-                                STTLINE="$(echo ${STTLINE} | head -c30)$(printf "%-$(expr 60 - ${STTLENG})s")$(echo ${STTLINE} | tail -c${STTDIFF})"
-			fi
-			echo -en "\r${NC}[${C_YELLOW}Cloning ...${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}cmake (>=3.13)${C_L_GRAY} <$(echo ${STTLINE} | head -c30)...$(echo ${STTLINE} | tail -c30)> ${NC}"
-		done
-		wait ${PID}
-		STATUS=$?
-		echo -en "\r${NC}[${C_YELLOW}Finishing..${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}cmake (>=3.13)${C_L_GRAY}$(printf "%-60s")${NC}"
+		progress_show_and_wait ${PID} "Cloning ..." "${MAINSTR}" 
 		if [ ${STATUS} -ne 0 ]; then
-			echo -e "\r${NC}[${C_GREEN}   ERROR   ${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}cmake (>=3.13)${C_L_GRAY}...${C_L_RED}Failed to git clone ${CMAKE_GIT_PATH} ${TMP_CMAKE}${NT}"
-			echo -e "${C_RED}Build Failed.${STATUS}${NC}${NT}"
+			print_state_error "${MAINSTR}" "Failed to git clone ${CMAKE_GIT_PATH} ${TMP_CMAKE}"
+			print_build_failed
 			exit 1
 		fi
-		echo -en "\r${NC}[${C_YELLOW}Bootstrap..${NC}]"
 		pushd ${TMP_CMAKE} >> ${LOG} 2>&1
 		./bootstrap >> ${LOG} 2>&1 &
 		PID=$!
-		while [ $(ps -ef | awk '{print $2}' | grep "^${PID}$" | wc -l) -ne 0 ]; do
-			sleep 1
-			STTLINE="$(tail -1 ${LOG})"
-			STTLENG=$(echo $STTLINE | wc -c)
-			if [ ${STTLENG} -lt 30 ]; then
-				STTLINE="${STTLINE}$(printf "%-$(expr 30 - ${STTLENG})s")"
-				STTLENG=30
-			fi
-			if [ ${STTLENG} -lt 60 ]; then
-				STTDIFF=$(expr ${STTLENG} - 30)
-                                STTLINE="$(echo ${STTLINE} | head -c30)$(printf "%-$(expr 60 - ${STTLENG})s")$(echo ${STTLINE} | tail -c${STTDIFF})"
-			fi
-			echo -en "\r${NC}[${C_YELLOW}Bootstrap..${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}cmake (>=3.13)${C_L_GRAY} <$(echo ${STTLINE} | head -c30)...$(echo ${STTLINE} | tail -c30)> ${NC}"
-		done
-		wait ${PID}
-		STATUS=$?
-		echo -en "\r${NC}[${C_YELLOW}Finishing..${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}cmake (>=3.13)${C_L_GRAY}$(printf "%-60s")${NC}"
+		progress_show_and_wait ${PID} "Bootstrap.." "${MAINSTR}" 
 		if [ ${STATUS} -ne 0 ]; then
-			echo -e "\r${NC}[${C_RED} ERROR     ${NC}]"
-			echo ""
-			echo -e "${C_RED}Exit code ${STATUS}${NC}${NT}"
-			echo ""
-			echo -e "${C_RED}Build Failed.${STATUS}${NC}${NT}"
+			print_state_error "${MAINSTR}" "Exit code ${STATUS}"
+                        print_build_failed
 			popd >> ${LOG} 2>&1
 			exit 1
 		fi
-		echo -en "\r${NC}[${C_YELLOW} make ...  ${NC}]"
 		make >> ${LOG} 2>&1 &
 		PID=$!
-		while [ $(ps -ef | awk '{print $2}' | grep "^${PID}$" | wc -l) -ne 0 ]; do
-			sleep 1
-			STTLINE="$(tail -1 ${LOG})"
-			STTLENG=$(echo $STTLINE | wc -c)
-			if [ ${STTLENG} -lt 30 ]; then
-				STTLINE="${STTLINE}$(printf "%-$(expr 30 - ${STTLENG})s")"
-				STTLENG=30
-			fi
-			if [ ${STTLENG} -lt 60 ]; then
-				STTDIFF=$(expr ${STTLENG} - 30)
-                                STTLINE="$(echo ${STTLINE} | head -c30)$(printf "%-$(expr 60 - ${STTLENG})s")$(echo ${STTLINE} | tail -c${STTDIFF})"
-			fi
-			echo -en "\r${NC}[${C_YELLOW} make ...  ${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}cmake (>=3.13)${C_L_GRAY} <$(echo ${STTLINE} | head -c30)...$(echo ${STTLINE} | tail -c30)> ${NC}"
-		done
-		wait ${PID}
-		STATUS=$?
-		echo -en "\r${NC}[${C_YELLOW}Finishing..${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}cmake (>=3.13)${C_L_GRAY}$(printf "%-60s")${NC}"
+		progress_show_and_wait ${PID} "Make ...   " "${MAINSTR}"
 		if [ ${STATUS} -ne 0 ]; then
-			echo -e "\r${NC}[${C_RED} ERROR     ${NC}]"
-			echo ""
-			echo -e "${C_RED}Exit code ${STATUS}${NC}${NT}"
-			echo ""
-			echo -e "${C_RED}Build Failed.${STATUS}${NC}${NT}"
+			print_state_error "${MAINSTR}" "Exit code ${STATUS}"
+                        print_build_failed
 			popd >> ${LOG} 2>&1
 			exit 1
 		fi
-		echo -en "\r${NC}[${C_YELLOW}Installing ${NC}]"
-		sudo make install >> ${LOG} 2>&1
-		STATUS=$?
+		${SUDO} make install >> ${LOG} 2>&1 &
+		PID=$!
+		progress_show_and_wait ${PID} "Install ..." "${MAINSTR}"
 		if [ ${STATUS} -ne 0 ]; then
-			echo -e "\r${NC}[${C_RED} ERROR     ${NC}]"
-			echo ""
-			echo -e "${C_RED}Exit code ${STATUS}${NC}${NT}"
-			echo ""
-			echo -e "${C_RED}Build Failed.${STATUS}${NC}${NT}"
+			print_state_error "${MAINSTR}" "Exit code ${STATUS}"
+                        print_build_failed
 			popd >> ${LOG} 2>&1
 			exit 1
 		else
-			echo -e "\r${NC}[${C_GREEN} INSTALLED ${NC}]"		
+			print_state_installed "${MAINSTR}" "Successfully installed via make."
 		fi
 		popd >> ${LOG} 2>&1
 		rm -rf ${TMP_CMAKE} >> ${LOG} 2>&1
@@ -255,154 +275,80 @@ function install_cmake()
 # install ravendb client
 function install_ravendb_clone()
 { 
-	echo -en "${NC}[${C_GREEN}           ${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}RavenDB Client...${NC}${NT}"
-	echo -en "\r${NC}[${C_YELLOW}Cloning ...${NC}]"
+	MAINSTR="Installing ${C_L_MAGENTA}RavenDB Client..."
+	print_state_msg "${MAINSTR}" "Cleaning..."
 	if [ -d ${TMP_CLIENT} ]; then
 		rm -rf ${TMP_CLIENT} >> ${LOG} 2>&1
 	fi
 	git clone ${RVN_GIT_PATH} ${TMP_CLIENT} >> ${LOG} 2>&1 &
 	PID=$!
-	while [ $(ps -ef | awk '{print $2}' | grep "^${PID}$" | wc -l) -ne 0 ]; do
-		sleep 1
-		STTLINE="$(tail -1 ${LOG})"
-		STTLENG=$(echo $STTLINE | wc -c)
-		if [ ${STTLENG} -lt 30 ]; then
-			STTLINE="${STTLINE}$(printf "%-$(expr 30 - ${STTLENG})s")"
-			STTLENG=30
-		fi
-		if [ ${STTLENG} -lt 60 ]; then
-			STTDIFF=$(expr ${STTLENG} - 30)
-			STTLINE="$(echo ${STTLINE} | head -c30)$(printf "%-$(expr 60 - ${STTLENG})s")$(echo ${STTLINE} | tail -c${STTDIFF})"
-		fi
-		echo -en "\r${NC}[${C_YELLOW}Cloning ...${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}RavenDB Client...${C_L_GRAY} <$(echo ${STTLINE} | head -c30)...$(echo ${STTLINE} | tail -c30)> ${NC}"
-	done
-	wait ${PID}
-	STATUS=$?
-	echo -en "\r${NC}[${C_YELLOW}Finishing..${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}RavenDB Client...${C_L_GRAY}$(printf "%-60s")${NC}"
+	progress_show_and_wait ${PID} "Cloning ..." "${MAINSTR}" 
 	if [ ${STATUS} -ne 0 ]; then
-		echo -e "\r${NC}[${C_GREEN}   ERROR   ${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}RavenDB Client...${C_L_RED}Failed to git clone ${RVN_GIT_PATH} ${TMP_CLIENT}${NT}"
-		echo -e "${C_RED}Build Failed.${STATUS}${NC}${NT}"
+		print_state_error "${MAINSTR}" "Failed to git clone ${RVN_GIT_PATH} ${TMP_CLIENT}"
+		print_build_failed
 		exit 1
 	fi
-
-	# TODO: to remove later
-	#############################
-	echo -en "\r${NC}[${C_YELLOW}Updating...${NC}]"
-	pushd ${TMP_CLIENT} >> ${LOG} 2>&1
-	git checkout WorkingBranch >> ${LOG} 2>&1
-	STATUS=$?
-	if [ ${STATUS} -ne 0 ]; then
-		echo -e "\r${NC}[${C_RED} ERROR     ${NC}]"
-		echo ""
-		echo -e "${C_RED}Exit code ${STATUS}${NC}${NT}"
-		echo ""
-		echo -e "${C_RED}Build Failed.${STATUS}${NC}${NT}"
-		popd >> ${LOG} 2>&1
-		exit 1
-	fi
-
-	cat CMakeLists.txt | sed -e 's/choose if building tests/#choose if building tests/g' > CMakeLists.txt2
-	mv CMakeLists.txt2 CMakeLists.txt
-	popd >> ${LOG} 2>&1
-	#############################
 }
 
 function install_ravendb_build()
 {
-	echo -en "${NC}[${C_GREEN}           ${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}RavenDB Client...${NC}${NT}"
-	echo -en "\r${NC}[${C_YELLOW}Preparing..${NC}]"
-	pushd ${TMP_CLIENT}/cmake-build-release >> ${LOG} 2>&1
+	MAINSTR="${C_L_CYAN}Installing ${C_L_MAGENTA}RavenDB Client..."
+	print_state_msg "${MAINSTR}" "Preparing.."
+	pushd ${TMP_CLIENT}/${BUILDDIR} >> ${LOG} 2>&1
 	cmake -DCMAKE_INSTALL_PREFIX=${RVN_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release .. >> ${LOG} 2>&1
-	echo -en "\r${NC}[${C_YELLOW}Building...${NC}]"
 	cmake --build . --target install >> ${LOG} 2>&1 &
 	PID=$!
-	while [ $(ps -ef | awk '{print $2}' | grep "^${PID}$" | wc -l) -ne 0 ]; do
-		sleep 1
-		STTLINE="$(tail -1 ${LOG})"
-		STTLENG=$(echo $STTLINE | wc -c)
-		if [ ${STTLENG} -lt 30 ]; then
-			STTLINE="${STTLINE}$(printf "%-$(expr 30 - ${STTLENG})s")"
-			STTLENG=30
-		fi
-		if [ ${STTLENG} -lt 60 ]; then
-			STTDIFF=$(expr ${STTLENG} - 30)
-                        STTLINE="$(echo ${STTLINE} | head -c30)$(printf "%-$(expr 60 - ${STTLENG})s")$(echo ${STTLINE} | tail -c${STTDIFF})"
-		fi
-		echo -en "\r${NC}[${C_YELLOW}Building...${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}RavenDB Client...${C_L_GRAY} <$(echo ${STTLINE} | head -c30)...$(echo ${STTLINE} | tail -c30)> ${NC}"
-	done
-	wait ${PID}
-	STATUS=$?
-	echo -en "\r${NC}[${C_YELLOW}Finishing..${NC}] ${C_L_CYAN}Installing ${C_L_MAGENTA}RavenDB Client...${C_L_GRAY}$(printf "%-60s")${NC}"
-
-	STATUS=$?
+	progress_show_and_wait ${PID} "Building..." "${MAINSTR}" 
 	if [ ${STATUS} -ne 0 ]; then
-		echo -e "\r${NC}[${C_RED} ERROR     ${NC}]"
-		echo ""
-		echo -e "${C_RED}Exit code ${STATUS}${NC}${NT}"
-		echo ""
-		echo -e "${C_RED}Build Failed.${STATUS}${NC}${NT}"
+		print_state_error "${MAINSTR}" "Exit code ${STATUS}"
+                print_build_failed
 		popd >> ${LOG} 2>&1
 		exit 1
 	fi
 	popd >> ${LOG} 2>&1	
-	echo -e "\r${NC}[${C_GREEN} INSTALLED ${NC}]"	
+	print_state_installed "${MAINSTR}" "Successfully installed at ${RVN_INSTALL_PREFIX}"
 }
 
 # testing ravendb client
 function test_ravendb()
 {
-	echo -en "${NC}[${C_GREEN}           ${NC}] ${C_L_CYAN}Testing    ${C_L_MAGENTA}RavenDB Client...${NC}${NT}"
-	echo -en "\r${NC}[${C_YELLOW}Compiling..${NC}]"
+	MAINSTR="${C_L_CYAN}Testing    ${C_L_MAGENTA}RavenDB Client..."
+	print_state_msg "${MAINSTR}" "Compiling.."
 	pushd ${RVN_INSTALL_PREFIX} >> ${LOG} 2>&1
-# ########### REMOVE LATER:
-echo '#include <string>' > tmpfile.tmp
-echo '#include <iostream>' >> tmpfile.tmp
-echo '#include "RavenException.h"' >> tmpfile.tmp
-echo '#include "GetCppClassName.h"' >> tmpfile.tmp
-echo '#include "AllTopologyNodesDownException.h"' >> tmpfile.tmp
-echo "" >> tmpfile.tmp
-cat hello_world.cpp | sed -e 's/#include/\/\/ #include/' > hello_world.cpp_tmp
-rm hello_world.cpp
-mv tmpfile.tmp hello_world.cpp
-cat hello_world.cpp_tmp >> hello_world.cpp
-rm hello_world.cpp_tmp
-# ############################
-	g++ hello_world.cpp -std=c++1z -I ./include/ -I ./external/ -L ./lib -lRaven_CppClient -lstdc++fs -lcurl -lssl -lcrypto -lpthread -latomic -o testExec >> ${LOG} 2>&1
-	STATUS=$?
+
+	g++ hello_world.cpp -O2 -std=c++1z -I ./include/ -I ./external/ -L ./lib -lRaven_CppClient -lstdc++fs -lcurl -lssl -lcrypto -lpthread -latomic -o testExec >> ${LOG} 2>&1 &
+	PID=$!
+	progress_show_and_wait ${PID} "Compiling.." "${MAINSTR}" 
 	if [ ${STATUS} -ne 0 ]; then
-		echo -e "\r${NC}[${C_RED} ERROR     ${NC}]"
-		echo ""
-		echo -e "${C_RED}Exit code ${STATUS}${NC}${NT}"
-		echo ""
-		echo -e "${C_RED}Build Failed.${STATUS}${NC}${NT}"
+		print_state_error "${MAINSTR}" "Exit code ${STATUS}"
+                print_build_failed
+		popd >> ${LOG} 2>&1
 		exit 1
 	fi
 	export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${RVN_INSTALL_PREFIX}/lib
-	echo -en "\r${NC}[${C_YELLOW}Testing....${NC}]"
-	popd >> ${LOG} 2>&1
-	pushd ${RVN_INSTALL_PREFIX} >> ${LOG} 2>&1
+	print_state_msg "${MAINSTR}" "Testing...."
 	./testExec >> ${LOG} 2>&1	
 	STATUS=$?
 	if [ ${STATUS} -ne 0 ]; then
-		echo -e "\r${NC}[${C_RED} ERROR     ${NC}]"
-		echo ""
-		echo -e "${C_RED}Exit code ${STATUS}${NC}${NT}"
-		echo ""
-		echo -e "${C_RED}Build Failed.${STATUS}${NC}${NT}"
+		print_state_error "${MAINSTR}" "Exit code ${STATUS}"
+                print_build_failed
+                popd >> ${LOG} 2>&1
 		exit 1
 	fi
-	echo -e "\r${NC}[${C_GREEN}  SUCCESS  ${NC}]"		
+	print_state_installed "${MAINSTR}" "Test passed successfully."
 	popd >> ${LOG} 2>&1
 	echo ""
 	echo -e 
-	echo -e "${C_GREEN}RavenDB C++ Client was ${C_L_GREEN}Successfully${C_GREEN} installed${NC}${NT}"
+	echo -e "${C_GREEN}RavenDB C++ Client was ${C_L_GREEN}Successfully${C_GREEN} installed at ${NC}${NT} ${RVN_INSTALL_PREFIX}"
 	echo ""
 }
 
-
+print_welcome_and_test_sudo
 install_packages
 install_cmake
-install_ravendb_clone
+if [ ${CLONE_RAVENDB} -eq 1 ]; then
+	install_ravendb_clone
+fi
 install_ravendb_build
 test_ravendb
 

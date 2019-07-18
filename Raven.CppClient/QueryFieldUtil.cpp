@@ -13,7 +13,7 @@ namespace ravendb::client::documents::queries
 			name == constants::documents::indexing::fields::REDUCE_KEY_KEY_VALUE_FIELD_NAME ||
 			name == constants::documents::indexing::fields::SPATIAL_SHAPE_FIELD_NAME)
 		{
-			return std::move(name);
+			return name;
 		}
 
 		bool escape = false;
@@ -56,6 +56,6 @@ namespace ravendb::client::documents::queries
 			return res.str();
 		}
 
-		return std::move(name);
+		return name;
 	}
 }

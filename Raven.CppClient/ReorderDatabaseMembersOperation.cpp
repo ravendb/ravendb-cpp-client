@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "ReorderDatabaseMembersOperation.h"
+#include "json_utils.h"
 
 namespace ravendb::client::serverwide::operations::configuration
 {

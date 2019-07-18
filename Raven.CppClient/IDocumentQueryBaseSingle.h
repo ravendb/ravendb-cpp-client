@@ -44,7 +44,7 @@ namespace ravendb::client::documents::session
 	template <typename T, class TThis>
 	Lazy<int32_t> IDocumentQueryBaseSingle<T, TThis>::count_lazily()
 	{
-		return cast_down()->count_lazily;
+		return cast_down()->count_lazily();
 	}
 
 	template <typename T, class TThis>

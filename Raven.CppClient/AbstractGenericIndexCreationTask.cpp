@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "AbstractGenericIndexCreationTask.h"
 #include "SpatialOptionsFactory.h"
+#include "Constants.h"
 
 namespace ravendb::client::documents::indexes
 {

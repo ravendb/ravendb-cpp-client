@@ -1,11 +1,11 @@
 #pragma once
+#include <unordered_set>
 #include "IndexPriority.h"
 #include "IndexLockMode.h"
 #include "IndexType.h"
 #include "IndexConfiguration.h"
 #include "IndexFieldOptions.h"
-#include "json_utils.h"
-#include <unordered_set>
+#include "json.hpp"
 
 namespace ravendb::client::documents::indexes
 {

@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-
 namespace ravendb::client::documents::queries
 {
 	struct QueryResult;

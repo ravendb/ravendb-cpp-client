@@ -1,13 +1,13 @@
 #pragma once
 #include "IMetadataDictionary.h"
-#include <json.hpp>
+#include "json.hpp"
 
 namespace  ravendb::client::json
 {
 	class MetadataAsDictionary : public documents::session::IMetadataDictionary
 	{
 	private:
-		std::weak_ptr<MetadataAsDictionary> shared_this{};
+		std::weak_ptr<MetadataAsDictionary> _weak_this{};
 
 		std::shared_ptr<MetadataAsDictionary> _parent{};
 		std::string _parent_key{};

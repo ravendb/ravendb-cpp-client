@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "MoreLikeThisOptions.h"
+#include "json_utils.h"
 
 namespace ravendb::client::documents::queries::more_like_this
 {

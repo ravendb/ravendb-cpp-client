@@ -46,7 +46,7 @@ namespace ravendb::client::documents::indexes
 	void IndexDefinitionBuilder::apply_values(IndexDefinition& index_definition,
 		const std::unordered_map<std::string, T>& values, std::function<void(IndexFieldOptions&, const T&)> action) const
 	{
-		for(auto& [key, val] : values)
+		for(const auto& [key, val] : values)
 		{
 			action(index_definition.fields[key], val);
 		}

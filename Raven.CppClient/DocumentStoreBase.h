@@ -1,8 +1,11 @@
 #pragma once
+#include <optional>
+#include <mutex>
+#include <map>
+#include <algorithm>
 #include "IDocumentStore.h"
 #include "CertificateDetails.h"
 #include "CurlHandlesHolder.h"
-#include <optional>
 #include "EventHandler.h"
 #include "InMemoryDocumentSessionOperations.h"
 
@@ -20,6 +23,10 @@ namespace ravendb::client::documents
 		std::vector<primitives::EventHandler> on_before_delete{};
 		std::vector<primitives::EventHandler> on_before_query{};
 		std::vector<primitives::EventHandler> on_session_created{};
+
+		mutable std::mutex _transaction_index_mutex{};
+		std::map<std::string, std::optional<std::int64_t>, impl::utils::CompareStringsLessThanIgnoreCase>
+			_last_raft_index_per_database{};
 
 	protected:
 		std::weak_ptr<DocumentStoreBase> _weak_this;
@@ -82,16 +89,9 @@ namespace ravendb::client::documents
 
 		void set_urls(std::vector<std::string> urls);
 
-		std::optional<int64_t> get_last_transaction_index(const std::string& database) const
-		{
-			//TODO implement
-			return {};
-		}
+		std::optional<int64_t> get_last_transaction_index(const std::string& database) const;
 
-		void set_last_transaction_index(const std::string& database, std::optional<int64_t> index)
-		{
-			//TODO implement
-		}
+		void set_last_transaction_index(const std::string& database, std::optional<int64_t> index);
 
 		void assert_initialized() const;
 

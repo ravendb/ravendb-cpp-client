@@ -25,11 +25,10 @@ namespace ravendb::client::documents::operations
 	private:
 		std::shared_ptr<http::RequestExecutor> get_request_executor();
 
-		void assert_database_set() const;
-
 		void assert_database_name_set() const;
 
 		MaintenanceOperationExecutor(std::shared_ptr<DocumentStore> store, std::optional<std::string> database_name = {});
+
 	public:
 		static std::shared_ptr<MaintenanceOperationExecutor> create(
 			std::shared_ptr<DocumentStore> store, std::optional<std::string> database_name = {});
@@ -49,10 +48,9 @@ namespace ravendb::client::documents::operations
 	template <typename TResult>
 	std::shared_ptr<TResult> MaintenanceOperationExecutor::send(const IMaintenanceOperation<TResult>& operation)
 	{
-		assert_database_set();
+		assert_database_name_set();
 		auto command = operation.get_command(get_request_executor()->get_conventions());
 		get_request_executor()->execute(*command);
 		return command->get_result();
-		
 	}
 }

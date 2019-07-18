@@ -45,7 +45,7 @@ namespace ravendb::client
 			struct SessionOptions;
 			struct IMetadataDictionary;
 			struct DocumentsChanges;
-			class AdvancedSessionExtensionBase;
+			class AdvancedSessionExtentionBase;
 
 			namespace operations
 			{
@@ -107,7 +107,7 @@ namespace ravendb::client::documents::session
 		template <typename T>
 		friend class operations::lazy::LazyStartsWithOperation;
 		friend operations::BatchOperation;
-		friend AdvancedSessionExtensionBase;
+		friend AdvancedSessionExtentionBase;
 
 		static const int32_t DEFAULT_MAX_NUMBER_OF_REQUESTS_PER_SESSION = 30;
 
@@ -124,6 +124,28 @@ namespace ravendb::client::documents::session
 				, deferred_commands_map(session->_deferred_commands_map)
 				, options(session->_save_changes_options)
 			{}
+		};
+
+		class IndexesWaitOptsBuilder
+		{
+		public:
+			friend InMemoryDocumentSessionOperations;
+		private:
+			InMemoryDocumentSessionOperations& _outer_this;
+			std::weak_ptr<IndexesWaitOptsBuilder> _weak_this;
+
+		private:
+			explicit IndexesWaitOptsBuilder(InMemoryDocumentSessionOperations& outer_this);
+			commands::batches::BatchOptions& get_options();
+
+		public:
+			static std::shared_ptr<IndexesWaitOptsBuilder> create(InMemoryDocumentSessionOperations& outer_this);
+
+			std::shared_ptr<IndexesWaitOptsBuilder> with_timeout(std::chrono::milliseconds timeout);
+
+			std::shared_ptr<IndexesWaitOptsBuilder> throw_on_timeout(bool should_throw);
+
+			std::shared_ptr<IndexesWaitOptsBuilder> wait_for_indexes(std::vector<std::string> indexes);
 		};
 
 	protected:
@@ -323,7 +345,8 @@ namespace ravendb::client::documents::session
 
 		//TODO void wait_for_replication_after_save_changes();
 
-		//TODO void wait_for_indexes_after_save_changes();
+		void wait_for_indexes_after_save_changes(std::function<void(
+			InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder&)> options);
 
 		template<typename T>
 		void ignore_changes_for(std::shared_ptr<T> entity);
@@ -341,7 +364,7 @@ namespace ravendb::client::documents::session
 
 		//TODO register_missing_includes is NOT fully implemented since it DOESN'T parse the include path
 		//     but uses them as is (only works with simple path)
-		//     this behaviour is NOT implemented in Java client nether.
+		//     this behaviour is NOT implemented in Java client either.
 		void register_missing_includes(const nlohmann::json& results, const nlohmann::json& includes,
 			const std::vector<std::string>& include_paths);
 

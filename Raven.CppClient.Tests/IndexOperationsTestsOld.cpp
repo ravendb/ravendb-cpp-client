@@ -161,7 +161,7 @@ namespace ravendb::client::tests::old_tests
 			auto cmd = op.get_command({});
 			test_suite_executor->get().execute(*cmd);
 			auto&& res = cmd->get_result();
-			EXPECT_EQ(res->indexes[0].status, IndexRunningStatus::RUNNING);
+			EXPECT_EQ(res->indexes[0].status, documents::indexes::IndexRunningStatus::RUNNING);
 		}
 		{
 			auto op = documents::operations::indexes::DisableIndexOperation(example_index.name);
@@ -173,7 +173,7 @@ namespace ravendb::client::tests::old_tests
 			auto cmd = op.get_command({});
 			test_suite_executor->get().execute(*cmd);
 			auto&& res = cmd->get_result();
-			ASSERT_EQ(res->indexes[0].status, IndexRunningStatus::DISABLED);
+			ASSERT_EQ(res->indexes[0].status, documents::indexes::IndexRunningStatus::DISABLED);
 		}
 
 		{
@@ -186,7 +186,7 @@ namespace ravendb::client::tests::old_tests
 			auto cmd = op.get_command({});
 			test_suite_executor->get().execute(*cmd);
 			auto&& res = cmd->get_result();
-			ASSERT_EQ(res->indexes[0].status, IndexRunningStatus::RUNNING);
+			ASSERT_EQ(res->indexes[0].status, documents::indexes::IndexRunningStatus::RUNNING);
 		}
 	}
 
@@ -268,7 +268,7 @@ namespace ravendb::client::tests::old_tests
 			auto cmd = op.get_command({});
 			test_suite_executor->get().execute(*cmd);
 			auto&& res = cmd->get_result();
-			EXPECT_EQ(res->status, IndexRunningStatus::RUNNING);
+			EXPECT_EQ(res->status, documents::indexes::IndexRunningStatus::RUNNING);
 		}
 		{
 			auto op = documents::operations::indexes::StopIndexingOperation();
@@ -281,7 +281,7 @@ namespace ravendb::client::tests::old_tests
 			auto cmd = op.get_command({});
 			test_suite_executor->get().execute(*cmd);
 			auto&& res = cmd->get_result();
-			ASSERT_EQ(res->status, IndexRunningStatus::PAUSED);
+			ASSERT_EQ(res->status, documents::indexes::IndexRunningStatus::PAUSED);
 		}
 
 		{
@@ -294,7 +294,7 @@ namespace ravendb::client::tests::old_tests
 			auto cmd = op.get_command({});
 			test_suite_executor->get().execute(*cmd);
 			auto&& res = cmd->get_result();
-			ASSERT_EQ(res->status, IndexRunningStatus::RUNNING);
+			ASSERT_EQ(res->status, documents::indexes::IndexRunningStatus::RUNNING);
 		}
 	}
 
@@ -306,8 +306,8 @@ namespace ravendb::client::tests::old_tests
 			auto cmd = op.get_command({});
 			test_suite_executor->get().execute(*cmd);
 			auto&& res = cmd->get_result();
-			EXPECT_EQ(res->status, IndexRunningStatus::RUNNING);
-			EXPECT_EQ(res->indexes[0].status, IndexRunningStatus::RUNNING);
+			EXPECT_EQ(res->status, documents::indexes::IndexRunningStatus::RUNNING);
+			EXPECT_EQ(res->indexes[0].status, documents::indexes::IndexRunningStatus::RUNNING);
 		}
 		{
 			auto op = documents::operations::indexes::StopIndexOperation(example_index.name);
@@ -319,8 +319,8 @@ namespace ravendb::client::tests::old_tests
 			auto cmd = op.get_command({});
 			test_suite_executor->get().execute(*cmd);
 			auto&& res = cmd->get_result();
-			ASSERT_EQ(res->status, IndexRunningStatus::RUNNING);
-			ASSERT_EQ(res->indexes[0].status, IndexRunningStatus::PAUSED);
+			ASSERT_EQ(res->status, documents::indexes::IndexRunningStatus::RUNNING);
+			ASSERT_EQ(res->indexes[0].status, documents::indexes::IndexRunningStatus::PAUSED);
 		}
 
 		{
@@ -333,8 +333,8 @@ namespace ravendb::client::tests::old_tests
 			auto cmd = op.get_command({});
 			test_suite_executor->get().execute(*cmd);
 			auto&& res = cmd->get_result();
-			ASSERT_EQ(res->status, IndexRunningStatus::RUNNING);
-			ASSERT_EQ(res->indexes[0].status, IndexRunningStatus::RUNNING);
+			ASSERT_EQ(res->status, documents::indexes::IndexRunningStatus::RUNNING);
+			ASSERT_EQ(res->indexes[0].status, documents::indexes::IndexRunningStatus::RUNNING);
 		}
 	}
 

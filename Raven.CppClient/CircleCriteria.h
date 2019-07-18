@@ -13,7 +13,8 @@ namespace ravendb::client::documents::queries::spatial
 		const std::optional<indexes::spatial::SpatialUnits> _radius_units;
 
 	protected:
-		std::shared_ptr<session::tokens::ShapeToken> get_shape_token(std::function<std::string(nlohmann::json)> add_query_parameter) const override;
+		std::shared_ptr<session::tokens::ShapeToken> get_shape_token(
+			std::function<std::string(nlohmann::json)> add_query_parameter) const override;
 
 	public:
 		~CircleCriteria() override = default;

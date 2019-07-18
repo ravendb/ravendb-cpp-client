@@ -9,6 +9,7 @@
 
 
 #include "json.hpp"
+#include "xxhash.hpp"
 
 // CURL
 #include <curl/curl.h>

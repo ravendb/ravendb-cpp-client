@@ -14,7 +14,6 @@ namespace ravendb::client::documents::session
 		static void write_metadata(nlohmann::json& json, std::shared_ptr<DocumentInfo> doc_info);
 		
 	public:
-		//static class for now
 		explicit EntityToJson(std::shared_ptr<InMemoryDocumentSessionOperations> session);
 		~EntityToJson() = default;
 

@@ -76,7 +76,6 @@ namespace ravendb::client::documents
 		session::DocumentSession open_session(const std::string& database) override;
 		session::DocumentSession open_session(const session::SessionOptions& options) override;
 
-		//can be called with empty database param
 		std::shared_ptr<http::RequestExecutor> get_request_executor(const std::string& database = {}) const override;
 
 		//Initializes this instance.

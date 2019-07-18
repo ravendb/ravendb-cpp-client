@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "IndexDefinition.h"
 #include "utils.h"
+#include "json_utils.h"
 #include <regex>
 
 namespace ravendb::client::documents::indexes

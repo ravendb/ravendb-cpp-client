@@ -45,10 +45,10 @@ namespace ravendb::client::documents::session
 		auto or_else();
 
 		auto search(const std::string& field_name, std::string search_terms,
-		                              queries::SearchOperator search_operator = queries::SearchOperator::OR);
+			queries::SearchOperator search_operator = queries::SearchOperator::OR);
 
 		auto where_lucene(const std::string& field_name, const std::string& where_clause,
-		                                    bool exact = false);
+			bool exact = false);
 
 		template<typename TValue>
 		auto where_between(const std::string& field_name, const TValue& start, const TValue& end, bool exact = false);

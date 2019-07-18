@@ -1,27 +1,33 @@
 
 #include "pch.h"
-#include <curl/curl.h>
-#include <thread>
-#include <DatabaseRecord.h>
-#include <CreateDatabaseOperation.h>
-#include "DocumentStore.h"
-#include "DocumentSession.h"
-#include "User.h"
-#include "GetDatabaseTopologyCommand.h"
-#include "EntityIdHelperUtil.h"
-#include "GetNextOperationIdCommand.h"
-#include "TasksExecutor.h"
-#include "GetDatabaseNamesOperation.h"
-#include "RavenException.h"
-#include "ConnectionDetailsHolder.h"
-#include "MaintenanceOperationExecutor.h"
-#include "PutAttachmentOperation.h"
-#include "CompareStringsEqualIgnoreCase.h"
-#include "HeadAttachmentCommand.h"
-#include "DeleteAttachmentOperation.h"
-#include "PutDocumentCommand.h"
-#include "GetAttachmentOperation.h"
-#include "AdvancedSessionOperations.h"
+//#include <curl/curl.h>
+//#include <thread>
+//#include <DatabaseRecord.h>
+//#include <CreateDatabaseOperation.h>
+//#include "DocumentStore.h"
+//#include "DocumentSession.h"
+//#include "User.h"
+//#include "GetDatabaseTopologyCommand.h"
+//#include "EntityIdHelperUtil.h"
+//#include "GetNextOperationIdCommand.h"
+//#include "TasksExecutor.h"
+//#include "GetDatabaseNamesOperation.h"
+//#include "RavenException.h"
+//#include "ConnectionDetailsHolder.h"
+//#include "MaintenanceOperationExecutor.h"
+//#include "PutAttachmentOperation.h"
+//#include "CompareStringsEqualIgnoreCase.h"
+//#include "HeadAttachmentCommand.h"
+//#include "DeleteAttachmentOperation.h"
+//#include "PutDocumentCommand.h"
+//#include "GetAttachmentOperation.h"
+//#include "AdvancedSessionOperations.h"
+//#include "GetDetailedStatisticsOperation.h"
+//#include "CompactSettings.h"
+//#include "CompactDatabaseOperation.h"
+
+#include "raven_cpp_client.h"
+
 
 namespace
 {
@@ -74,12 +80,12 @@ int main()
 {
 	using namespace ravendb::client;
 
-	REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
+	//REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
 
 	auto store = documents::DocumentStore::create();
-	store->set_urls({ "http://127.0.0.1:8080" });
+	store->set_urls({ "http://10.0.0.92:8080" });
 	store->set_before_perform(set_for_fiddler);
-	store->set_database("Test111");
+	store->set_database("TEST_DB");
 	store->initialize();
 
 	//auto conventions = documents::conventions::DocumentConventions::create();
@@ -131,51 +137,66 @@ int main()
 //	}
 
 
-	std::stringstream str{};
-	for (auto i = 0; i < 20000; ++i)
-	{
-		str << "ab Cd$" << 123;
-	}
+	//std::stringstream str{};
+	//for (auto i = 0; i < 20000; ++i)
+	//{
+	//	str << "ab Cd$" << 123;
+	//}
 
-	auto cmd1 = documents::operations::attachments::PutAttachmentOperation("users/1", "file1.txt",
-		str, "ASCII").get_command(
-			store, store->get_conventions(), store->get_request_executor()->get_cache());
-
-	store->get_request_executor()->execute(*cmd1);
-
-	//auto command = documents::operations::attachments::PutAttachmentOperation("users/1", "file1.txt",
-	//	file1, nullptr, "ASCII").get_command(
+	//auto cmd1 = documents::operations::attachments::PutAttachmentOperation("users/1", "file1.txt",
+	//	str, "ASCII").get_command(
 	//		store, store->get_conventions(), store->get_request_executor()->get_cache());
 
-	//store->get_request_executor()->execute(*command);
+	//store->get_request_executor()->execute(*cmd1);
 
-	auto cmd2 = documents::commands::HeadAttachmentCommand("users/1", "file.txt");
-	store->get_request_executor()->execute(cmd2);
+	////auto command = documents::operations::attachments::PutAttachmentOperation("users/1", "file1.txt",
+	////	file1, nullptr, "ASCII").get_command(
+	////		store, store->get_conventions(), store->get_request_executor()->get_cache());
 
+	////store->get_request_executor()->execute(*command);
 
-	auto cmd3 = documents::operations::attachments::GetAttachmentOperation("users/1", "file1.txt",
-		documents::attachments::AttachmentType::DOCUMENT).get_command(store,
-			store->get_conventions(), store->get_request_executor()->get_cache());
-	store->get_request_executor()->execute(*cmd3);
-
-	std::ostringstream res{};
-
-	res << cmd3->get_result()->get_data().rdbuf();
-
-	std::cout << (res.str() == str.str() ? "----OK----" : "There is a problem ...") << std::endl;
-
-	//auto cmd4 = documents::operations::attachments::DeleteAttachmentOperation("users/1", "file1.txt")
-	//	.get_command(store, store->get_conventions(), store->get_request_executor()->get_cache());
-	//store->get_request_executor()->execute(*cmd4);
+	//auto cmd2 = documents::commands::HeadAttachmentCommand("users/1", "file.txt");
+	//store->get_request_executor()->execute(cmd2);
 
 
-	auto session = store->open_session();
-	auto user = session.load<tests::infrastructure::entities::User>("users/1");
+	//auto cmd3 = documents::operations::attachments::GetAttachmentOperation("users/1", "file1.txt",
+	//	documents::attachments::AttachmentType::DOCUMENT).get_command(store,
+	//		store->get_conventions(), store->get_request_executor()->get_cache());
+	//store->get_request_executor()->execute(*cmd3);
 
-	auto has_attachment = session.advanced().attachments()->exists("users/1", "file1.txt");
+	//std::ostringstream res{};
 
-	auto att = session.advanced().attachments()->get_attachment("users/1", "file1.txt");
+	//res << cmd3->get_result()->get_data().rdbuf();
 
+	//std::cout << (res.str() == str.str() ? "----OK----" : "There is a problem ...") << std::endl;
+
+	////auto cmd4 = documents::operations::attachments::DeleteAttachmentOperation("users/1", "file1.txt")
+	////	.get_command(store, store->get_conventions(), store->get_request_executor()->get_cache());
+	////store->get_request_executor()->execute(*cmd4);
+
+
+	//auto session = store->open_session();
+	//auto user = session.load<tests::infrastructure::entities::User>("users/1");
+
+	//auto has_attachment = session.advanced().attachments()->exists("users/1", "file1.txt");
+
+	//auto att = session.advanced().attachments()->get_attachment("users/1", "file1.txt");
+
+	/*auto command = documents::operations::GetDetailedStatisticsOperation().get_command(store->get_conventions());
+	store->get_request_executor()->execute(*command);
+	auto res = command->get_result();*/
+
+	//auto dr = serverwide::DatabaseRecord();
+	//dr.database_name = "TEST_DB";
+	//store->maintenance()->server()->send(serverwide::operations::CreateDatabaseOperation(dr));
+
+
+	auto cs = serverwide::CompactSettings();
+	cs.database_name = "TEST_DB";
+	cs.documents = true;
+
+	auto command = store->maintenance()->server()->send(documents::operations::CompactDatabaseOperation(cs));
+	
 
 	std::cout << "Bye" << std::endl;
 }

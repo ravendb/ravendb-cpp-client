@@ -15,8 +15,6 @@ namespace ravendb::client::documents::session
 		friend class DocumentQuery;
 
 	private:
-		std::weak_ptr<DocumentQuery> _weak_this{};
-
 		DocumentQuery(std::shared_ptr<InMemoryDocumentSessionOperations> session, std::optional<std::string> index_name,
 			std::optional<std::string> collection_name, bool is_group_by, std::shared_ptr<tokens::DeclareToken> declare_token,
 			std::vector<std::shared_ptr<tokens::LoadToken>> load_tokens, std::optional<std::string> from_alias);
@@ -227,11 +225,11 @@ namespace ravendb::client::documents::session
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> more_like_this(const queries::more_like_this::MoreLikeThisBase& more_like_this);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> highlight(std::string field_name, int32_t fragment_length, int32_t fragment_count,
-			std::optional<queries::highlighting::Highlightings>& highlightings_reference);
+			std::shared_ptr<queries::highlighting::Highlightings>& highlightings_reference);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> highlight(std::string field_name, int32_t fragment_length, int32_t fragment_count,
 			const std::optional<queries::highlighting::HighlightingOptions>& options,
-			std::optional<queries::highlighting::Highlightings>& highlightings_reference);
+			std::shared_ptr<queries::highlighting::Highlightings>& highlightings_reference);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> order_by_distance(const queries::spatial::DynamicSpatialField& field,
 			double latitude, double longitude);
@@ -375,6 +373,7 @@ namespace ravendb::client::documents::session
 			session, std::move(index_name), std::move(collection_name), is_group_by,
 			declare_token, std::move(load_tokens), std::move(from_alias)));
 		new_object->_weak_this = new_object;
+		new_object->complete_construction();
 
 		return new_object;
 	}
@@ -424,21 +423,21 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::distinct()
 	{
 		AbstractDocumentQuery<T>::_distinct();
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_score()
 	{
 		AbstractDocumentQuery<T>::_order_by_score();
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by_score_descending()
 	{
 		AbstractDocumentQuery<T>::_order_by_descending();
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -446,7 +445,7 @@ namespace ravendb::client::documents::session
 		std::optional<queries::explanation::Explanations>& explanations_reference)
 	{
 		AbstractDocumentQuery<T>::_include_explanations({}, explanations_reference);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -455,14 +454,14 @@ namespace ravendb::client::documents::session
 		std::optional<queries::explanation::Explanations>& explanations_reference)
 	{
 		AbstractDocumentQuery<T>::_include_explanations(options, explanations_reference);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::timings(std::shared_ptr<queries::timings::QueryTimings>& timings)
 	{
 		AbstractDocumentQuery<T>::_include_timings(timings);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -485,7 +484,7 @@ namespace ravendb::client::documents::session
 		const std::optional<std::chrono::milliseconds>& wait_timeout)
 	{
 		AbstractDocumentQuery<T>::_wait_for_non_stale_results(std::move(wait_timeout));
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -498,7 +497,7 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::add_parameter(std::string name, nlohmann::json object)
 	{
 		AbstractDocumentQuery<T>::_add_parameter(std::move(name), std::move(object));
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -513,7 +512,7 @@ namespace ravendb::client::documents::session
 		{
 			order_by(field_name, ordering);
 		}
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -521,7 +520,7 @@ namespace ravendb::client::documents::session
 		std::function<void(const queries::QueryResult&)> action)
 	{
 		AbstractDocumentQuery<T>::_add_after_query_executed_listener(action);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -529,7 +528,7 @@ namespace ravendb::client::documents::session
 		std::function<void(const queries::QueryResult&)> action)
 	{
 		AbstractDocumentQuery<T>::_remove_after_query_executed_listener(action);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -537,7 +536,7 @@ namespace ravendb::client::documents::session
 		std::function<void(const nlohmann::json&)> action)
 	{
 		AbstractDocumentQuery<T>::_add_after_stream_executed_listener(action);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -545,21 +544,21 @@ namespace ravendb::client::documents::session
 		std::function<void(const nlohmann::json&)> action)
 	{
 		AbstractDocumentQuery<T>::_remove_after_stream_executed_listener(action);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::open_subclause()
 	{
 		AbstractDocumentQuery<T>::_open_subclause();
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::close_subclause()
 	{
 		AbstractDocumentQuery<T>::_close_subclause();
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -567,14 +566,14 @@ namespace ravendb::client::documents::session
 		queries::SearchOperator search_operator)
 	{
 		AbstractDocumentQuery<T>::_search(field_name, std::move(search_terms), search_operator);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::intersect()
 	{
 		AbstractDocumentQuery<T>::_intersect();
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -583,7 +582,7 @@ namespace ravendb::client::documents::session
 		const std::vector<TValue>& values)
 	{
 		AbstractDocumentQuery<T>::template _contains_any<TValue>(field_name, values);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -592,42 +591,42 @@ namespace ravendb::client::documents::session
 		const std::vector<TValue>& values)
 	{
 		AbstractDocumentQuery<T>::template _contains_all<TValue>(field_name, values);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::statistics(std::shared_ptr<QueryStatistics>& stats) const
 	{
 		AbstractDocumentQuery<T>::_statistics(stats);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::using_default_operator(queries::QueryOperator query_operator)
 	{
 		AbstractDocumentQuery<T>::_using_default_operator(query_operator);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::no_tracking()
 	{
 		AbstractDocumentQuery<T>::_no_tracking();
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::no_caching()
 	{
 		AbstractDocumentQuery<T>::_no_caching();
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::include(std::string path)
 	{
 		AbstractDocumentQuery<T>::_include(std::move(path));
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -638,28 +637,28 @@ namespace ravendb::client::documents::session
 		auto include_builder = loaders::QueryIncludeBuilder::create(get_conventions());
 		includes(include_builder);
 		AbstractDocumentQuery<T>::_include(include_builder);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::not_next()
 	{
 		AbstractDocumentQuery<T>::negate_next();
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::take(int32_t count)
 	{
 		AbstractDocumentQuery<T>::_take(count);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::skip(int32_t count)
 	{
 		AbstractDocumentQuery<T>::_skip(count);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -667,7 +666,7 @@ namespace ravendb::client::documents::session
 		const std::string& where_clause, bool exact)
 	{
 		AbstractDocumentQuery<T>::_where_lucene(field_name, where_clause, exact);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -676,7 +675,7 @@ namespace ravendb::client::documents::session
 		bool exact)
 	{
 		AbstractDocumentQuery<T>::template _where_equals<TValue>(std::move(field_name), &value, exact);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -684,7 +683,7 @@ namespace ravendb::client::documents::session
 		bool exact)
 	{
 		AbstractDocumentQuery<T>::template _where_equals(std::move(field_name), &method, exact);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -692,7 +691,7 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_equals(WhereParams<TValue> where_params)
 	{
 		AbstractDocumentQuery<T>::template _where_equals<TValue>(std::move(where_params));
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -701,7 +700,7 @@ namespace ravendb::client::documents::session
 		bool exact)
 	{
 		AbstractDocumentQuery<T>::template _where_not_equals<TValue>(field_name, &value, exact);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -709,7 +708,7 @@ namespace ravendb::client::documents::session
 		const MethodCall& method, bool exact)
 	{
 		AbstractDocumentQuery<T>::_where_not_equals(field_name, &method, exact);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -717,7 +716,7 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_not_equals(WhereParams<TValue> where_params)
 	{
 		AbstractDocumentQuery<T>::template _where_not_equals<TValue>(std::move(where_params));
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -726,7 +725,7 @@ namespace ravendb::client::documents::session
 		const std::vector<TValue>& values, bool exact)
 	{
 		AbstractDocumentQuery<T>::template _where_in<TValue>(field_name, values, exact);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -734,7 +733,7 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_starts_with(std::string field_name, const TValue& value)
 	{
 		AbstractDocumentQuery<T>::template _where_starts_with<TValue>(field_name, &value);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -742,7 +741,7 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_ends_with(std::string field_name, const TValue& value)
 	{
 		AbstractDocumentQuery<T>::template _where_ends_with<TValue>(field_name, &value);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -751,7 +750,7 @@ namespace ravendb::client::documents::session
 		const TValue& start, const TValue& end, bool exact)
 	{
 		AbstractDocumentQuery<T>::template _where_between<TValue>(field_name, &start, &end, exact);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -760,7 +759,7 @@ namespace ravendb::client::documents::session
 		const TValue& value, bool exact)
 	{
 		AbstractDocumentQuery<T>::template _where_greater_than<TValue>(field_name, &value, exact);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -769,7 +768,7 @@ namespace ravendb::client::documents::session
 		const TValue& value, bool exact)
 	{
 		AbstractDocumentQuery<T>::template _where_greater_than_or_equal<TValue>(field_name, &value, exact);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -778,7 +777,7 @@ namespace ravendb::client::documents::session
 		const TValue& value, bool exact)
 	{
 		AbstractDocumentQuery<T>::template _where_less_than<TValue>(field_name, &value, exact);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -787,70 +786,70 @@ namespace ravendb::client::documents::session
 		const TValue& value, bool exact)
 	{
 		AbstractDocumentQuery<T>::template _where_less_than_or_equal<TValue>(field_name, &value, exact);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_exists(const std::string& field_name)
 	{
 		AbstractDocumentQuery<T>::_where_exists(field_name);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::where_regex(const std::string& field_name, std::string pattern)
 	{
 		AbstractDocumentQuery<T>::_where_regex(field_name, std::move(pattern));
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::and_also()
 	{
 		AbstractDocumentQuery<T>::_and_also();
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::or_else()
 	{
 		AbstractDocumentQuery<T>::_or_else();
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::boost(double boost)
 	{
 		AbstractDocumentQuery<T>::_boost(boost);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::fuzzy(double fuzzy)
 	{
 		AbstractDocumentQuery<T>::_fuzzy(fuzzy);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::proximity(int32_t proximity)
 	{
 		AbstractDocumentQuery<T>::_proximity(proximity);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::random_ordering()
 	{
 		AbstractDocumentQuery<T>::_random_ordering();
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::random_ordering(const std::string& seed)
 	{
 		AbstractDocumentQuery<T>::_random_ordering(seed);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -864,7 +863,7 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::order_by(const std::string& field, OrderingType ordering)
 	{
 		AbstractDocumentQuery<T>::_order_by(field, ordering);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -872,7 +871,7 @@ namespace ravendb::client::documents::session
 		OrderingType ordering)
 	{
 		AbstractDocumentQuery<T>::_order_by_descending(field, ordering);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -880,7 +879,7 @@ namespace ravendb::client::documents::session
 		std::function<void(const queries::IndexQuery&)> action)
 	{
 		AbstractDocumentQuery<T>::_add_before_query_executed_listener(action);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -888,7 +887,7 @@ namespace ravendb::client::documents::session
 		std::function<void(const queries::IndexQuery&)> action)
 	{
 		AbstractDocumentQuery<T>::_remove_before_query_executed_listener(action);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -938,7 +937,7 @@ namespace ravendb::client::documents::session
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::negate_next()
 	{
 		AbstractDocumentQuery<T>::negate_next();
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -947,7 +946,7 @@ namespace ravendb::client::documents::session
 		const std::optional<indexes::spatial::SpatialUnits>& radius_units, double dist_error_percent)
 	{
 		AbstractDocumentQuery<T>::_within_radius_of(field_name, radius, latitude, longitude, radius_units, dist_error_percent);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -956,7 +955,7 @@ namespace ravendb::client::documents::session
 		const std::optional<indexes::spatial::SpatialUnits>& units, double dist_error_percent)
 	{
 		AbstractDocumentQuery<T>::_spatial(field_name, shape_wkt, relation, units, dist_error_percent);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -966,7 +965,7 @@ namespace ravendb::client::documents::session
 	{
 		auto criteria = clause(queries::spatial::SpatialCriteriaFactory::INSTANCE);
 		AbstractDocumentQuery<T>::_spatial(field_name, *criteria);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -977,7 +976,7 @@ namespace ravendb::client::documents::session
 	{
 		auto criteria = clause(queries::spatial::SpatialCriteriaFactory::INSTANCE);
 		AbstractDocumentQuery<T>::_spatial(field_name, *criteria);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -992,26 +991,26 @@ namespace ravendb::client::documents::session
 			mlt.with_document(mlt_ud->document_json);
 		}
 
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::highlight(std::string field_name,
 		int32_t fragment_length, int32_t fragment_count,
-		std::optional<queries::highlighting::Highlightings>& highlightings_reference)
+		std::shared_ptr<queries::highlighting::Highlightings>& highlightings_reference)
 	{
 		AbstractDocumentQuery<T>::_highlight(std::move(field_name), fragment_length, fragment_count, {}, highlightings_reference);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::highlight(std::string field_name,
 		int32_t fragment_length, int32_t fragment_count,
 		const std::optional<queries::highlighting::HighlightingOptions>& options,
-		std::optional<queries::highlighting::Highlightings>& highlightings_reference)
+		std::shared_ptr<queries::highlighting::Highlightings>& highlightings_reference)
 	{
 		AbstractDocumentQuery<T>::_highlight(std::move(field_name), fragment_length, fragment_count, options, highlightings_reference);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -1019,7 +1018,7 @@ namespace ravendb::client::documents::session
 		const queries::spatial::DynamicSpatialField& field, double latitude, double longitude)
 	{
 		AbstractDocumentQuery<T>::_order_by_distance(field, latitude, longitude);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -1027,7 +1026,7 @@ namespace ravendb::client::documents::session
 		const std::string& field_name, double latitude, double longitude)
 	{
 		AbstractDocumentQuery<T>::_order_by_distance(field_name, latitude, longitude);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -1035,7 +1034,7 @@ namespace ravendb::client::documents::session
 		const queries::spatial::DynamicSpatialField& field, const std::string& shape_wkt)
 	{
 		AbstractDocumentQuery<T>::_order_by_distance(field, shape_wkt);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -1043,7 +1042,7 @@ namespace ravendb::client::documents::session
 		const std::string& field_name, const std::string& shape_wkt)
 	{
 		AbstractDocumentQuery<T>::_order_by_distance(field_name, shape_wkt);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -1051,7 +1050,7 @@ namespace ravendb::client::documents::session
 		const queries::spatial::DynamicSpatialField& field, double latitude, double longitude)
 	{
 		AbstractDocumentQuery<T>::_order_by_distance_descending(field, latitude, longitude);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -1059,7 +1058,7 @@ namespace ravendb::client::documents::session
 		const std::string& field_name, double latitude, double longitude)
 	{
 		AbstractDocumentQuery<T>::_order_by_distance_descending(field_name, latitude, longitude);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -1067,7 +1066,7 @@ namespace ravendb::client::documents::session
 		const queries::spatial::DynamicSpatialField& field, const std::string& shape_wkt)
 	{
 		AbstractDocumentQuery<T>::_order_by_distance_descending(field, shape_wkt);
-		return _weak_this.lock();
+		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
 	}
 
 	template <typename T>
@@ -1075,7 +1074,8 @@ namespace ravendb::client::documents::session
 		const std::string& field_name, const std::string& shape_wkt)
 	{
 		AbstractDocumentQuery<T>::_order_by_distance_descending(field_name, shape_wkt);
-		return _weak_this.lock();
+		return std::static_pointer_cast<IDocumentQuery<T, DocumentQuery<T>>>(
+			std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock()));
 	}
 
 	template <typename T>
@@ -1101,7 +1101,8 @@ namespace ravendb::client::documents::session
 		const std::vector<std::string>& field_names)
 	{
 		AbstractDocumentQuery<T>::_group_by(field_names);
-		return GroupByDocumentQuery<T>::create(_weak_this.lock());
+		return GroupByDocumentQuery<T>::create(
+			std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock()));
 	}
 
 	template <typename T>
@@ -1109,6 +1110,7 @@ namespace ravendb::client::documents::session
 		const std::vector<queries::GroupBy>& fields)
 	{
 		AbstractDocumentQuery<T>::_group_by(fields);
-		return GroupByDocumentQuery<T>::create(_weak_this.lock());
+		return GroupByDocumentQuery<T>::create(
+			std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock()));
 	}
 }

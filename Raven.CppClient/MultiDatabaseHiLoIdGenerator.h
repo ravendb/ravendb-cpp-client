@@ -1,7 +1,7 @@
 #pragma once
 #include <typeindex>
-#include "DocumentConventions.h"
 #include <shared_mutex>
+#include "DocumentConventions.h"
 #include "MultiTypeHiLoIdGenerator.h"
 
 namespace ravendb::client::documents
@@ -22,7 +22,7 @@ namespace ravendb::client::documents::identity
 	private:
 		std::shared_mutex _generators_lock{};
 
-		std::unordered_map<std::string, std::unique_ptr<MultiTypeHiLoIdGenerator>> _generators;
+		std::unordered_map<std::string, std::unique_ptr<MultiTypeHiLoIdGenerator>> _generators{};
 
 	protected:
 		const std::weak_ptr<DocumentStore> store;

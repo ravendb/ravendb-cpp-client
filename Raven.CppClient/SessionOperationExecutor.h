@@ -17,7 +17,7 @@ namespace ravendb::client::documents::operations
 
 		SessionOperationExecutor(std::shared_ptr<DocumentStoreBase> store, const std::optional<std::string>& database_name);
 
-		SessionOperationExecutor(std::shared_ptr<session::InMemoryDocumentSessionOperations> session);
+		explicit SessionOperationExecutor(std::shared_ptr<session::InMemoryDocumentSessionOperations> session);
 
 	public:
 		static std::shared_ptr<SessionOperationExecutor> create(std::shared_ptr<DocumentStoreBase> store,

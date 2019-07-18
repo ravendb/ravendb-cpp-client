@@ -84,6 +84,8 @@ namespace ravendb::client::documents::session
 		std::optional<std::string> _included_alias{};
 
 	protected:
+		std::weak_ptr<AbstractDocumentQuery> _weak_this;
+
 		queries::QueryOperator default_operator = queries::QueryOperator::AND;
 
 		std::unordered_set<std::type_index> root_types{};
@@ -215,6 +217,9 @@ namespace ravendb::client::documents::session
 			std::shared_ptr<tokens::DeclareToken> declare_token_param,
 			std::vector<std::shared_ptr<tokens::LoadToken>> load_tokens_param,
 			std::optional<std::string> from_alias = {});
+
+		//call AFTER! the _weak_ptr is set.
+		void complete_construction();
 
 		std::shared_ptr<operations::QueryOperation> initialize_query_operation();
 
@@ -411,7 +416,7 @@ namespace ravendb::client::documents::session
 
 		void _highlight(std::string field_name, int32_t fragment_length, int32_t fragment_count,
 			const std::optional<queries::highlighting::HighlightingOptions>& options,
-			std::optional<queries::highlighting::Highlightings>& highlightings_reference);
+			std::shared_ptr<queries::highlighting::Highlightings>& highlightings_reference);
 
 		void _spatial(const std::string& field_name, const queries::spatial::SpatialCriteria& criteria);
 		void _spatial(const queries::spatial::DynamicSpatialField& dynamic_field, const queries::spatial::SpatialCriteria& criteria);
@@ -484,11 +489,8 @@ namespace ravendb::client::documents::session
 	template <typename T>
 	void AbstractDocumentQuery<T>::execute_actual_query()
 	{
-		//TODO
-		// try (CleanCloseable context = queryOperation.enterQueryContext())
 		{
 			auto command = query_operation->create_request();
-			//TODO 
 			the_session.lock()->get_request_executor()->execute(command, the_session.lock()->get_session_info());
 			query_operation->set_result(command.get_result());
 		}
@@ -1642,11 +1644,19 @@ namespace ravendb::client::documents::session
 		, load_tokens(std::move(load_tokens_param))
 	{
 		root_types.insert(typeid(T));
-		_add_after_query_executed_listener([*this] (const queries::QueryResult& query_result) mutable
-		{
-			update_stats_highlightings_and_explanations(query_result);
-		});
 		_conventions = session->get_conventions() ? session->get_conventions() : conventions::DocumentConventions::create();
+	}
+
+	template <typename T>
+	void AbstractDocumentQuery<T>::complete_construction()
+	{
+		_add_after_query_executed_listener([shared_this = _weak_this.lock()](const queries::QueryResult& query_result)
+		{
+			if(shared_this)
+			{
+				shared_this->update_stats_highlightings_and_explanations(query_result);
+			}
+		});
 	}
 
 	template <typename T>
@@ -1765,10 +1775,15 @@ namespace ravendb::client::documents::session
 		append_operator_if_needed(tokens);
 		negate_if_needed(tokens, valid_field_name);
 
+		auto&& radius_param = add_query_parameter(radius);
+		auto&& latitude_param = add_query_parameter(latitude);
+		auto&& longitude_param = add_query_parameter(longitude);
+
 		auto where_token = tokens::WhereToken::create(tokens::WhereOperator::SPATIAL_WITHIN, std::move(valid_field_name),
-			{}, tokens::WhereToken::WhereOptions(tokens::ShapeToken::circle(add_query_parameter(radius),
-				add_query_parameter(latitude), add_query_parameter(longitude),
+			{}, tokens::WhereToken::WhereOptions(tokens::ShapeToken::circle(
+				radius_param, latitude_param, longitude_param,
 				radius_units), dist_error_percent));
+		tokens.push_back(where_token);
 	}
 
 	template <typename T>
@@ -1860,8 +1875,11 @@ namespace ravendb::client::documents::session
 	template <typename T>
 	void AbstractDocumentQuery<T>::_order_by_distance(const std::string& field_name, double latitude, double longitude)
 	{
+		auto&& latitude_param = add_query_parameter(latitude);
+		auto && longitude_param = add_query_parameter(longitude);
+
 		order_by_tokens.push_back(tokens::OrderByToken::create_distance_ascending(field_name,
-			add_query_parameter(latitude), add_query_parameter(longitude)));
+			latitude_param, longitude_param));
 	}
 
 	template <typename T>
@@ -1933,13 +1951,13 @@ namespace ravendb::client::documents::session
 	template <typename T>
 	void AbstractDocumentQuery<T>::_highlight(std::string field_name, int32_t fragment_length, int32_t fragment_count,
 		const std::optional<queries::highlighting::HighlightingOptions>& options,
-		std::optional<queries::highlighting::Highlightings>& highlightings_reference)
+		std::shared_ptr<queries::highlighting::Highlightings>& highlightings_reference)
 	{
-		highlightings_reference.emplace(query_highlightings.add(field_name));
+		highlightings_reference = query_highlightings.add(field_name);
 		std::optional<std::string> options_parameter_name{};
 		if (options)
 		{
-			add_query_parameter(*options);
+			options_parameter_name.emplace(add_query_parameter(*options));
 		}
 		highlighting_tokens.push_back(tokens::HighlightingToken::create(std::move(field_name), fragment_length, fragment_count,
 			std::move(options_parameter_name)));

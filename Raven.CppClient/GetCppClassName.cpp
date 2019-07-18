@@ -85,7 +85,7 @@ namespace ravendb::client::impl::utils
 			simple_class_name = full_class_name;
 		}
 
-		return std::move(simple_class_name);
+		return simple_class_name;
 	}
 
 	std::string GetCppClassName::operator()(std::type_index type) const

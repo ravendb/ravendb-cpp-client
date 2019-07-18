@@ -2,9 +2,6 @@
 #include "json_utils.h"
 #include "IndexRunningStatus.h"
 
-using
-ravendb::client::documents::indexes::IndexRunningStatus;
-
 namespace ravendb::client::documents::indexes
 {
 	struct IndexStatus

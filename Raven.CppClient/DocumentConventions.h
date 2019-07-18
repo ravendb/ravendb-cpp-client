@@ -1,8 +1,8 @@
 #pragma once
 #include <typeindex>
+#include <shared_mutex>
 #include "ClientConfiguration.h"
 #include "EntityIdHelper.h"
-#include <shared_mutex>
 
 namespace ravendb::client::documents::conventions
 {
@@ -130,7 +130,7 @@ namespace ravendb::client::documents::conventions
 		static std::string default_transform_collection_name_to_document_id_prefix(const std::string& collection_name);
 
 		template<typename TFrom>
-		void registerQueryValueConverter(
+		void register_query_value_converter(
 			std::function<std::optional<nlohmann::json>(const std::string& filed_name, const TFrom& value, bool for_range)> converter);
 
 		template<typename TValue>
@@ -141,7 +141,7 @@ namespace ravendb::client::documents::conventions
 	};
 
 	template <typename TFrom>
-	void DocumentConventions::registerQueryValueConverter(
+	void DocumentConventions::register_query_value_converter(
 		std::function<std::optional<nlohmann::json>(const std::string& filed_name, const TFrom& value, bool for_range)> converter)
 	{
 		assert_not_frozen();

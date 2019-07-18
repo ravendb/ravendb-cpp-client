@@ -1,9 +1,6 @@
 #pragma once
-
-namespace ravendb::client::impl::utils
-{
-	struct CompareStringsLessThanIgnoreCase;
-}
+#include <memory>
+#include "CompareStringsLessThanIgnoreCase.h"
 
 namespace ravendb::client::documents::commands::multi_get
 {
@@ -22,15 +19,7 @@ namespace ravendb::client::documents::commands::multi_get
 		std::string method{};
 		std::unique_ptr<IContent> content{};
 
-		std::string get_url_and_query() const
-		{
-			if(!query)
-			{
-				return url;
-			}
-
-			return url + ((query->size() > 0 && query->front() == '?') ? "" : "?") + *query;
-		}
+		std::string get_url_and_query() const;
 	};
 
 	inline GetRequest::IContent::~IContent() = default;

@@ -1,4 +1,7 @@
 #pragma once
+#include <unordered_map>
+#include <string>
+#include "json.hpp"
 
 namespace  ravendb::client
 {

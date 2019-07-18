@@ -26,7 +26,7 @@ namespace ravendb::client::documents::queries::spatial
 		indexes::spatial::SpatialRelation relation, std::optional<indexes::spatial::SpatialUnits> units,
 		double distance_error_pct) const
 	{
-		return std::make_unique<WktCriteria>(std::move(shape_wkt), relation, std::move(units),
+		return std::make_unique<WktCriteria>(std::move(shape_wkt), relation, units,
 			distance_error_pct);
 	}
 
@@ -44,7 +44,7 @@ namespace ravendb::client::documents::queries::spatial
 	std::unique_ptr<SpatialCriteria> SpatialCriteriaFactory::intersect(std::string shape_wkt,
 		std::optional<indexes::spatial::SpatialUnits> units) const
 	{
-		return intersect(std::move(shape_wkt), std::move(units),
+		return intersect(std::move(shape_wkt), units,
 			constants::documents::indexing::spatial::DEFAULT_DISTANCE_ERROR_PCT);
 	}
 
@@ -52,7 +52,7 @@ namespace ravendb::client::documents::queries::spatial
 		std::optional<indexes::spatial::SpatialUnits> units, double distance_error_pct) const
 	{
 		return relates_to_shape(std::move(shape_wkt), indexes::spatial::SpatialRelation::INTERSECTS,
-			std::move(units), distance_error_pct);
+			units, distance_error_pct);
 	}
 
 	std::unique_ptr<SpatialCriteria> SpatialCriteriaFactory::contains(std::string shape_wkt) const
@@ -69,14 +69,14 @@ namespace ravendb::client::documents::queries::spatial
 	std::unique_ptr<SpatialCriteria> SpatialCriteriaFactory::contains(std::string shape_wkt,
 		std::optional<indexes::spatial::SpatialUnits> units) const
 	{
-		return contains(std::move(shape_wkt), std::move(units), constants::documents::indexing::spatial::DEFAULT_DISTANCE_ERROR_PCT);
+		return contains(std::move(shape_wkt), units, constants::documents::indexing::spatial::DEFAULT_DISTANCE_ERROR_PCT);
 	}
 
 	std::unique_ptr<SpatialCriteria> SpatialCriteriaFactory::contains(std::string shape_wkt,
 		std::optional<indexes::spatial::SpatialUnits> units, double distance_error_pct) const
 	{
 		return relates_to_shape(std::move(shape_wkt), indexes::spatial::SpatialRelation::CONTAINS,
-			std::move(units), distance_error_pct);
+			units, distance_error_pct);
 	}
 
 	std::unique_ptr<SpatialCriteria> SpatialCriteriaFactory::disjoint(std::string shape_wkt) const
@@ -93,14 +93,14 @@ namespace ravendb::client::documents::queries::spatial
 	std::unique_ptr<SpatialCriteria> SpatialCriteriaFactory::disjoint(std::string shape_wkt,
 		std::optional<indexes::spatial::SpatialUnits> units) const
 	{
-		return disjoint(std::move(shape_wkt), std::move(units), constants::documents::indexing::spatial::DEFAULT_DISTANCE_ERROR_PCT);
+		return disjoint(std::move(shape_wkt), units, constants::documents::indexing::spatial::DEFAULT_DISTANCE_ERROR_PCT);
 	}
 
 	std::unique_ptr<SpatialCriteria> SpatialCriteriaFactory::disjoint(std::string shape_wkt,
 		std::optional<indexes::spatial::SpatialUnits> units, double distance_error_pct) const
 	{
 		return relates_to_shape(std::move(shape_wkt), indexes::spatial::SpatialRelation::DISJOINT,
-			std::move(units), distance_error_pct);
+			units, distance_error_pct);
 	}
 
 	std::unique_ptr<SpatialCriteria> SpatialCriteriaFactory::within(std::string shape_wkt) const
@@ -117,14 +117,14 @@ namespace ravendb::client::documents::queries::spatial
 	std::unique_ptr<SpatialCriteria> SpatialCriteriaFactory::within(std::string shape_wkt,
 		std::optional<indexes::spatial::SpatialUnits> units) const
 	{
-		return within(std::move(shape_wkt), std::move(units), constants::documents::indexing::spatial::DEFAULT_DISTANCE_ERROR_PCT);
+		return within(std::move(shape_wkt), units, constants::documents::indexing::spatial::DEFAULT_DISTANCE_ERROR_PCT);
 	}
 
 	std::unique_ptr<SpatialCriteria> SpatialCriteriaFactory::within(std::string shape_wkt,
 		std::optional<indexes::spatial::SpatialUnits> units, double distance_error_pct) const
 	{
 		return relates_to_shape(std::move(shape_wkt), indexes::spatial::SpatialRelation::WITHIN,
-			std::move(units), distance_error_pct);
+			units, distance_error_pct);
 	}
 
 	std::unique_ptr<SpatialCriteria> SpatialCriteriaFactory::within_radius(double radius, double latitude,
@@ -136,14 +136,14 @@ namespace ravendb::client::documents::queries::spatial
 	std::unique_ptr<SpatialCriteria> SpatialCriteriaFactory::within_radius(double radius, double latitude,
 		double longitude, std::optional<indexes::spatial::SpatialUnits> radius_units) const
 	{
-		return within_radius(radius, latitude, longitude, std::move(radius_units),
+		return within_radius(radius, latitude, longitude, radius_units,
 			constants::documents::indexing::spatial::DEFAULT_DISTANCE_ERROR_PCT);
 	}
 
 	std::unique_ptr<SpatialCriteria> SpatialCriteriaFactory::within_radius(double radius, double latitude,
 		double longitude, std::optional<indexes::spatial::SpatialUnits> radius_units, double distance_error_pct) const
 	{
-		return std::make_unique<CircleCriteria>(radius, latitude, longitude, std::move(radius_units),
+		return std::make_unique<CircleCriteria>(radius, latitude, longitude, radius_units,
 			indexes::spatial::SpatialRelation::WITHIN, distance_error_pct);
 	}
 }

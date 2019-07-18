@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "Highlightings.h"
+#include <iterator>
 
 namespace ravendb::client::documents::queries::highlighting
 {
@@ -21,7 +22,7 @@ namespace ravendb::client::documents::queries::highlighting
 			res.push_back(key);
 		}
 
-		return std::move(res);
+		return res;
 	}
 
 	const std::vector<std::string>& Highlightings::get_fragments(const std::string& key) const
@@ -45,7 +46,7 @@ namespace ravendb::client::documents::queries::highlighting
 	{
 		_highlightings.clear();
 
-		if(!highlightings || _highlightings.find(get_field_name()) == _highlightings.end())
+		if(!highlightings || highlightings->find(get_field_name()) == highlightings->end())
 		{
 			return;
 		}

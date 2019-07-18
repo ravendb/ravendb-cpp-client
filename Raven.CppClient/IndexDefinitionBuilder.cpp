@@ -13,7 +13,7 @@ namespace ravendb::client::documents::indexes
 		{
 			throw std::invalid_argument("The index name is limited to 256 characters, but was: " + temp_index_name);
 		}
-		return std::move(temp_index_name);
+		return temp_index_name;
 	}())
 	{}
 
@@ -81,7 +81,7 @@ namespace ravendb::client::documents::indexes
 			}
 			index_definition.additional_sources = additional_sources;
 
-			return std::move(index_definition);
+			return index_definition;
 		}
 		catch (std::exception&)
 		{

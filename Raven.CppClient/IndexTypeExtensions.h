@@ -7,6 +7,7 @@ namespace ravendb::client::documents::indexes
 	{
 	public:
 		IndexTypeExtensions() = delete;
+		~IndexTypeExtensions() = delete;
 
 		static bool is_map(IndexType type);
 

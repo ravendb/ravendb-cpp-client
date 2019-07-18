@@ -11,10 +11,10 @@ namespace ravendb::client::documents::queries::highlighting
 	struct QueryHighlightings
 	{
 	private:
-		std::vector<Highlightings> _highlightings{};
+		std::vector<std::shared_ptr<Highlightings>> _highlightings{};
 
 	public:
-		Highlightings add(std::string field_name);
+		std::shared_ptr<Highlightings> add(std::string field_name);
 
 		void update(const QueryResult& query_result);
 	};
