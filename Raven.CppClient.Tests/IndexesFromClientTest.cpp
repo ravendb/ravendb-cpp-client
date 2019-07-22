@@ -20,6 +20,7 @@
 #include "SetIndexesLockOperation.h"
 #include "SetIndexesPriorityOperation.h"
 #include "GetTermsOperation.h"
+#include "ExplainQueryCommand.h"
 
 namespace ravendb::client::tests::client::indexing
 {
@@ -328,11 +329,46 @@ namespace ravendb::client::tests::client::indexing
 		ASSERT_TRUE(std::find(index_names->begin(), index_names->end(), index_name) != index_names->end());
 	}
 
-	//TODO implement | waiting for queries/CanExplain
-	//TEST_F(IndexesFromClientTest, CanExplain)
-	//{
-	//	auto store = get_document_store(TEST_NAME);
-	//}
+	TEST_F(IndexesFromClientTest, CanExplain)
+	{
+		auto store = get_document_store(TEST_NAME);
+		auto user1 = std::make_shared<infrastructure::entities::User>();
+		user1->name = "Alexander";
+
+		auto user2 = std::make_shared<infrastructure::entities::User>();
+		user2->name = "Alexey";
+
+		{
+			auto session = store->open_session();
+			session.store(user1);
+			session.store(user2);
+			session.save_changes();
+		}
+		{
+			auto session = store->open_session();
+
+			std::shared_ptr<documents::session::QueryStatistics> stats_ref{};
+			auto users = session.query<infrastructure::entities::User>()
+				->statistics(stats_ref)
+				->where_equals("name", "Alexey")
+				->to_list();
+
+			users = session.query<infrastructure::entities::User>()
+				->statistics(stats_ref)
+				->where_greater_than("age", 10)
+				->to_list();
+		}
+
+		auto index_query = documents::queries::IndexQuery("from users");
+		auto command = documents::commands::ExplainQueryCommand(store->get_conventions(), index_query);
+		store->get_request_executor()->execute(command);
+
+		auto explanations = command.get_result();
+
+		ASSERT_EQ(1, explanations->size());
+		ASSERT_FALSE(explanations->at(0).index.empty());
+		ASSERT_FALSE(explanations->at(0).reason.empty());
+	}
 
 	//TODO implement | waiting for query/moreLikeThis
 	//TEST_F(IndexesFromClientTest, MoreLikeThis)

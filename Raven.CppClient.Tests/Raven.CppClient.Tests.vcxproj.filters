@@ -210,6 +210,18 @@
     <ClCompile Include="RavenDB_12169Test.cpp">
       <Filter>ravendb.client.tests\test\issues</Filter>
     </ClCompile>
+    <ClCompile Include="RavenDB_6558Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_9587Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_10566Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_9745Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

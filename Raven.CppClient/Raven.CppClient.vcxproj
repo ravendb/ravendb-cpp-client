@@ -236,6 +236,7 @@
     <ClInclude Include="EventHandler.h" />
     <ClInclude Include="EventHelper.h" />
     <ClInclude Include="ExceptionDispatcher.h" />
+    <ClInclude Include="ExplainQueryCommand.h" />
     <ClInclude Include="ExplanationOptions.h" />
     <ClInclude Include="Explanations.h" />
     <ClInclude Include="ExplanationToken.h" />
@@ -617,6 +618,7 @@
     <ClCompile Include="EntityIdHelper.cpp" />
     <ClCompile Include="EventArgs.cpp" />
     <ClCompile Include="ExceptionDispatcher.cpp" />
+    <ClCompile Include="ExplainQueryCommand.cpp" />
     <ClCompile Include="ExplanationOptions.cpp" />
     <ClCompile Include="Explanations.cpp" />
     <ClCompile Include="GetAttachmentOperation.cpp" />

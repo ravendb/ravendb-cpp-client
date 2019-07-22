@@ -32,11 +32,11 @@ namespace ravendb::client::documents::session
 		auto distinct();
 
 		auto include_explanation(
-			std::optional<queries::explanation::Explanations>& explanations_reference);
+			std::shared_ptr<queries::explanation::Explanations>& explanations_reference);
 
 		auto include_explanations(
 			const std::optional<queries::explanation::ExplanationOptions>& options,
-			std::optional<queries::explanation::Explanations>& explanations_reference);
+			std::shared_ptr<queries::explanation::Explanations>& explanations_reference);
 
 		auto fuzzy(double fuzzy);
 
@@ -95,7 +95,7 @@ namespace ravendb::client::documents::session
 
 	template <typename T, class TThis>
 	auto IDocumentQueryBase<T, TThis>::include_explanation(
-		std::optional<queries::explanation::Explanations>& explanations_reference)
+		std::shared_ptr<queries::explanation::Explanations>& explanations_reference)
 	{
 		return cast_down()->include_explanation(explanations_reference);
 	}
@@ -103,9 +103,9 @@ namespace ravendb::client::documents::session
 	template <typename T, class TThis>
 	auto IDocumentQueryBase<T, TThis>::include_explanations(
 		const std::optional<queries::explanation::ExplanationOptions>& options,
-		std::optional<queries::explanation::Explanations>& explanations_reference)
+		std::shared_ptr<queries::explanation::Explanations>& explanations_reference)
 	{
-		return cast_down()->include_explanation(options, explanations_reference);
+		return cast_down()->include_explanations(options, explanations_reference);
 	}
 
 	template <typename T, class TThis>

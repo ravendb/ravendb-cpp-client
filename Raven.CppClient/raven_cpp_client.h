@@ -144,6 +144,7 @@
 #include "IndexQueryBase.h"
 #include "IndexQuery.h"
 #include "QueryCommand.h"
+#include "ExplainQueryCommand.h"
 #include "IServerOperation.h"
 #include "DatabasePromotionStatus.h"
 #include "LeaderStamp.h"
