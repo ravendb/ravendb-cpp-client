@@ -96,10 +96,14 @@
     <ClCompile Include="PromoteDatabaseTest.cpp" />
     <ClCompile Include="PutDocumentCommandTest.cpp" />
     <ClCompile Include="RavenDB903Test.cpp" />
+    <ClCompile Include="RavenDB_10566Test.cpp" />
     <ClCompile Include="RavenDB_12169Test.cpp" />
     <ClCompile Include="RavenDB_5669Test.cpp" />
+    <ClCompile Include="RavenDB_6558Test.cpp" />
     <ClCompile Include="RavenDB_8761.cpp" />
+    <ClCompile Include="RavenDB_9587Test.cpp" />
     <ClCompile Include="RavenDB_9676Test.cpp" />
+    <ClCompile Include="RavenDB_9745Test.cpp" />
     <ClCompile Include="raven_test_definitions.cpp" />
     <ClCompile Include="DeleteTest.cpp" />
     <ClCompile Include="DocumentIdPropertyTest.cpp" />

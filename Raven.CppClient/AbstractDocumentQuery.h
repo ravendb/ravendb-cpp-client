@@ -148,7 +148,7 @@ namespace ravendb::client::documents::session
 
 		queries::highlighting::QueryHighlightings query_highlightings{};
 
-		std::optional<queries::explanation::Explanations> explanations{};
+		std::shared_ptr<queries::explanation::Explanations> explanations{};
 
 		std::shared_ptr<tokens::ExplanationToken> explanation_token{};
 
@@ -459,7 +459,7 @@ namespace ravendb::client::documents::session
 		std::optional<std::string> get_options_parameter_name(const std::optional<queries::suggestions::SuggestionOptions>& options);
 
 		void _include_explanations(const std::optional<queries::explanation::ExplanationOptions>& options,
-			std::optional<queries::explanation::Explanations>& explanations_reference);
+			std::shared_ptr<queries::explanation::Explanations>& explanations_reference);
 	};
 }
 
@@ -2384,7 +2384,7 @@ namespace ravendb::client::documents::session
 
 	template <typename T>
 	void AbstractDocumentQuery<T>::_include_explanations(const std::optional<queries::explanation::ExplanationOptions>& options,
-		std::optional<queries::explanation::Explanations>& explanations_reference)
+		std::shared_ptr<queries::explanation::Explanations>& explanations_reference)
 	{
 		if(explanation_token)
 		{
@@ -2393,8 +2393,7 @@ namespace ravendb::client::documents::session
 
 		explanation_token = tokens::ExplanationToken::create(options ? add_query_parameter(*options) :
 			std::optional<std::string>());
-		explanations.emplace();
-		explanations_reference.emplace(*explanations);
+		explanations_reference = explanations = std::make_shared<queries::explanation::Explanations>();
 	}
 
 	template <typename T>

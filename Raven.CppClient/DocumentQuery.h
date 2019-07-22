@@ -49,11 +49,11 @@ namespace ravendb::client::documents::session
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> order_by_score_descending();
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> include_explanation(
-			std::optional<queries::explanation::Explanations>& explanations_reference);
+			std::shared_ptr<queries::explanation::Explanations>& explanations_reference);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> include_explanations(
 			const std::optional<queries::explanation::ExplanationOptions>& options,
-			std::optional<queries::explanation::Explanations>& explanations_reference);
+			std::shared_ptr<queries::explanation::Explanations>& explanations_reference);
 
 		std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> timings(std::shared_ptr<queries::timings::QueryTimings>& timings);
 
@@ -442,7 +442,7 @@ namespace ravendb::client::documents::session
 
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::include_explanation(
-		std::optional<queries::explanation::Explanations>& explanations_reference)
+		std::shared_ptr<queries::explanation::Explanations>& explanations_reference)
 	{
 		AbstractDocumentQuery<T>::_include_explanations({}, explanations_reference);
 		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());
@@ -451,7 +451,7 @@ namespace ravendb::client::documents::session
 	template <typename T>
 	std::shared_ptr<IDocumentQuery<T, DocumentQuery<T>>> DocumentQuery<T>::include_explanations(
 		const std::optional<queries::explanation::ExplanationOptions>& options,
-		std::optional<queries::explanation::Explanations>& explanations_reference)
+		std::shared_ptr<queries::explanation::Explanations>& explanations_reference)
 	{
 		AbstractDocumentQuery<T>::_include_explanations(options, explanations_reference);
 		return std::static_pointer_cast<DocumentQuery<T>>(AbstractDocumentQuery<T>::_weak_this.lock());

@@ -29,9 +29,9 @@ namespace ravendb::client::documents::queries::timings
 			return;
 		}
 
-		const auto& timings = reinterpret_cast<const nlohmann::json::object_t&>(j.at("Timings"));
 		qt.timings.emplace();
-		for(const auto& [key, value] : timings)
+
+		for(const auto& [key, value] : j.at("Timings").items())
 		{
 			if(value.is_null())
 			{

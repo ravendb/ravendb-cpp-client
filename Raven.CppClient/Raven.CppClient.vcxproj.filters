@@ -818,6 +818,9 @@
     <ClCompile Include="Inflector.cpp">
       <Filter>ravendb.client\impl</Filter>
     </ClCompile>
+    <ClCompile Include="ExplainQueryCommand.cpp">
+      <Filter>ravendb.client\documents\commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VoidRavenCommand.h">
@@ -1982,6 +1985,9 @@
     </ClInclude>
     <ClInclude Include="BatchPatchCommandData.h">
       <Filter>ravendb.client\documents\commands\batches</Filter>
+    </ClInclude>
+    <ClInclude Include="ExplainQueryCommand.h">
+      <Filter>ravendb.client\documents\commands</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
