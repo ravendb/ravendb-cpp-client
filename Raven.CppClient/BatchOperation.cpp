@@ -8,6 +8,7 @@
 #include "BatchCommand.h"
 #include "PatchStatus.h"
 #include "RequestExecutor.h"
+#include "AfterSaveChangesEventArgs.h"
 
 namespace ravendb::client::documents::session::operations
 {
@@ -287,7 +288,7 @@ namespace ravendb::client::documents::session::operations
 			entity = doc_info->entity;
 		}
 
-		for (const auto&[key, val] : static_cast<const nlohmann::json::object_t&>(batch_result))
+		for (const auto&[key, val] : batch_result.items())
 		{
 			static const std::string type_str = "Type";
 			if (type_str == key)
@@ -308,9 +309,9 @@ namespace ravendb::client::documents::session::operations
 			session->get_generate_entity_id_on_the_client().try_set_identity(*doc_info->stored_type, entity, id);
 		}
 
-		//TODO
-		//AfterSaveChangesEventArgs afterSaveChangesEventArgs = new AfterSaveChangesEventArgs(_session, documentInfo.getId(), documentInfo.getEntity());
-		//_session.onAfterSaveChangesInvoke(afterSaveChangesEventArgs);
+
+		auto&& after_save_changes_event_args = AfterSaveChangesEventArgs(_session.lock(), doc_info->id, doc_info->entity);
+		_session.lock()->on_after_save_changes_invoke(after_save_changes_event_args);
 	}
 
 	void BatchOperation::handle_patch(const nlohmann::json& batch_result)
@@ -420,8 +421,7 @@ namespace ravendb::client::documents::session::operations
 
 	void BatchOperation::apply_metadata_modifications(const std::string& id, std::shared_ptr<DocumentInfo> doc_info)
 	{
-		doc_info->metadata_instance = std::static_pointer_cast<IMetadataDictionary>
-			(json::MetadataAsDictionary::create(doc_info->metadata));
+		doc_info->metadata_instance = std::make_shared<json::MetadataAsDictionary>(doc_info->metadata);
 	}
 
 	std::shared_ptr<DocumentInfo> BatchOperation::get_or_add_modifications(const std::string& id, std::shared_ptr<DocumentInfo> doc_info, bool apply_modifications)

@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <typeinfo>
 #include <atomic>
+#include "MetadataAsDictionary.h"
 #include "BatchOptions.h"
 #include "SessionInfo.h"
 #include "DocumentsById.h"
@@ -18,6 +19,7 @@
 #include "utils.h"
 #include "GenerateEntityIdOnTheClient.h"
 #include "EventHandler.h"
+#include "AfterSaveChangesEventArgs.h"
 
 namespace ravendb::client
 {
@@ -43,7 +45,6 @@ namespace ravendb::client
 			enum class TransactionMode;
 			class EntityToJson;
 			struct SessionOptions;
-			struct IMetadataDictionary;
 			struct DocumentsChanges;
 			class AdvancedSessionExtentionBase;
 
@@ -267,7 +268,7 @@ namespace ravendb::client::documents::session
 		void set_transaction_mode(TransactionMode mode);
 
 		template<typename T>
-		std::shared_ptr<IMetadataDictionary> get_metadata_for(std::shared_ptr<T> entity) const;
+		std::shared_ptr<json::MetadataAsDictionary> get_metadata_for(std::shared_ptr<T> entity) const;
 
 		//TODO template<typename T> std::shared_ptr<IMetadataDictionary> get_counters_for(std::shared_ptr<T> entity)
 
@@ -380,6 +381,8 @@ namespace ravendb::client::documents::session
 
 		bool check_if_already_included(const std::vector<std::string>& ids, const std::vector<std::string>& includes);
 
+		void on_after_save_changes_invoke(const AfterSaveChangesEventArgs& after_save_changes_events_args);
+
 	protected:
 		InMemoryDocumentSessionOperations(std::shared_ptr<DocumentStoreBase> document_store,/* UUID id,*/ SessionOptions options);
 
@@ -411,13 +414,13 @@ namespace ravendb::client::documents::session
 			std::shared_ptr<conventions::DocumentConventions> conventions);
 
 	private:
-		std::shared_ptr<IMetadataDictionary> get_metadata_for_internal(std::shared_ptr<void> entity) const;
+		std::shared_ptr<json::MetadataAsDictionary> get_metadata_for_internal(std::type_index type, std::shared_ptr<void> entity) const;
 
-		std::optional<std::string> get_change_vector_for_internal(std::shared_ptr<void> entity) const;
+		std::optional<std::string> get_change_vector_for_internal(std::type_index type, std::shared_ptr<void> entity) const;
 
-		std::optional<impl::DateTimeOffset> get_last_modified_for_internal(std::shared_ptr<void> entity) const;
+		std::optional<impl::DateTimeOffset> get_last_modified_for_internal(std::type_index type, std::shared_ptr<void> entity) const;
 
-		std::shared_ptr<DocumentInfo> get_document_info(std::shared_ptr<void> entity) const;
+		std::shared_ptr<DocumentInfo> get_document_info(std::type_index type, std::shared_ptr<void> entity) const;
 
 		std::optional<std::string> get_document_id_internal(std::shared_ptr<void> entity) const;
 
@@ -457,33 +460,33 @@ namespace ravendb::client::documents::session
 	};
 
 	template<typename T>
-	inline std::shared_ptr<IMetadataDictionary> InMemoryDocumentSessionOperations::get_metadata_for(std::shared_ptr<T> entity) const
+	std::shared_ptr<json::MetadataAsDictionary> InMemoryDocumentSessionOperations::get_metadata_for(std::shared_ptr<T> entity) const
 	{
 		if (!entity)
 		{
 			throw std::invalid_argument("Entity cannot be empty");
 		}
-		return get_metadata_for_internal(std::static_pointer_cast<void>(entity));
+		return get_metadata_for_internal(typeid(T), std::static_pointer_cast<void>(entity));
 	}
 
 	template<typename T>
-	inline std::optional<std::string> InMemoryDocumentSessionOperations::get_change_vector_for(std::shared_ptr<T> entity) const
+	std::optional<std::string> InMemoryDocumentSessionOperations::get_change_vector_for(std::shared_ptr<T> entity) const
 	{
 		if (!entity)
 		{
 			throw std::invalid_argument("Entity cannot be null");
 		}
-		return get_change_vector_for_internal(std::static_pointer_cast<void>(entity));
+		return get_change_vector_for_internal(typeid(T), std::static_pointer_cast<void>(entity));
 	}
 
 	template<typename T>
-	inline std::optional<impl::DateTimeOffset> InMemoryDocumentSessionOperations::get_last_modified_for(std::shared_ptr<T> entity) const
+	std::optional<impl::DateTimeOffset> InMemoryDocumentSessionOperations::get_last_modified_for(std::shared_ptr<T> entity) const
 	{
 		if (!entity)
 		{
 			throw std::invalid_argument("Entity cannot be null");
 		}
-		return get_last_modified_for_internal(std::static_pointer_cast<void>(entity));
+		return get_last_modified_for_internal(typeid(T), std::static_pointer_cast<void>(entity));
 	}
 
 	template<typename T>
@@ -567,7 +570,7 @@ namespace ravendb::client::documents::session
 	template<typename T>
 	void InMemoryDocumentSessionOperations::ignore_changes_for(std::shared_ptr<T> entity)
 	{
-		get_document_info(std::static_pointer_cast<void>(entity))->ignore_changes = true;
+		get_document_info(typeid(T), std::static_pointer_cast<void>(entity))->ignore_changes = true;
 	}
 
 	template<typename T>

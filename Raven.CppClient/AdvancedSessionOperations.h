@@ -73,7 +73,7 @@ namespace ravendb::client::documents::session
 		std::optional<std::string> get_document_id(std::shared_ptr<T> entity);
 
 		template<typename T>
-		std::shared_ptr<IMetadataDictionary> get_metadata_for(std::shared_ptr<T> entity) const;
+		std::shared_ptr<json::MetadataAsDictionary> get_metadata_for(std::shared_ptr<T> entity) const;
 
 		template<typename T>
 		std::optional<std::string> get_change_vector_for(std::shared_ptr<T> entity) const;
@@ -177,7 +177,7 @@ namespace ravendb::client::documents::session
 	}
 
 	template <typename T>
-	std::shared_ptr<IMetadataDictionary> AdvancedSessionOperations::get_metadata_for(std::shared_ptr<T> entity) const
+	std::shared_ptr<json::MetadataAsDictionary> AdvancedSessionOperations::get_metadata_for(std::shared_ptr<T> entity) const
 	{
 		return _session_impl->get_metadata_for(entity);
 	}
@@ -227,8 +227,8 @@ namespace ravendb::client::documents::session
 	void AdvancedSessionOperations::patch(std::shared_ptr<T> entity, const std::string& path, const V& value,
 	                                      std::optional<DocumentInfo::EntityUpdater> update_from_json)
 	{
-		auto&& metadata = _session_impl->get_metadata_for(entity);
-		auto id = std::any_cast<std::string>(metadata->get_dictionary().at(constants::documents::metadata::ID));
+		auto& metadata = *_session_impl->get_metadata_for(entity);
+		auto id = metadata.template get_as<std::string>(constants::documents::metadata::ID);
 		patch(std::move(id), path, value,
 		      update_from_json ? std::move(update_from_json).value() : DocumentInfo::default_entity_update<T>);
 	}
@@ -244,8 +244,8 @@ namespace ravendb::client::documents::session
 		std::function<void(JavaScriptArray<U>&)> array_adder,
 		std::optional<DocumentInfo::EntityUpdater> update_from_json)
 	{
-		auto&& metadata = _session_impl->get_metadata_for(entity);
-		auto id = std::any_cast<std::string>(metadata->get_dictionary().at(constants::documents::metadata::ID));
+		auto& metadata = *_session_impl->get_metadata_for(entity);
+		auto id = metadata.template get_as<std::string>(constants::documents::metadata::ID);
 		patch(std::move(id), path_to_array, array_adder,
 			update_from_json ? std::move(update_from_json).value() : DocumentInfo::default_entity_update<T>);
 	}
@@ -284,8 +284,8 @@ namespace ravendb::client::documents::session
 	void AdvancedSessionOperations::increment(std::shared_ptr<T> entity, const std::string& path, const V& value_to_add,
 		std::optional<DocumentInfo::EntityUpdater> update_from_json)
 	{
-		auto&& metadata = _session_impl->get_metadata_for(entity);
-		auto id = std::any_cast<std::string>(metadata->get_dictionary().at(constants::documents::metadata::ID));
+		auto& metadata = *_session_impl->get_metadata_for(entity);
+		auto id = metadata.template get_as<std::string>(constants::documents::metadata::ID);
 		increment(std::move(id), path, value_to_add,
 		          update_from_json ? std::move(update_from_json).value() : DocumentInfo::default_entity_update<T>);
 	}

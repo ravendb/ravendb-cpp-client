@@ -14,6 +14,7 @@
 #include "DocumentConventions.h"
 #include "NonUniqueObjectException.h"
 #include "BatchPatchCommandData.h"
+#include "EventHelper.h"
 
 namespace ravendb::client::documents::session
 {
@@ -251,22 +252,23 @@ namespace ravendb::client::documents::session
 		_weak_this = ptr;
 	}
 
-	std::shared_ptr<IMetadataDictionary> InMemoryDocumentSessionOperations::get_metadata_for_internal(std::shared_ptr<void> entity) const
+	std::shared_ptr<json::MetadataAsDictionary> InMemoryDocumentSessionOperations::get_metadata_for_internal(std::type_index type,
+		std::shared_ptr<void> entity) const
 	{
-		auto doc_info = get_document_info(entity);
+		auto doc_info = get_document_info(type, entity);
 		if (doc_info->metadata_instance)
 		{
 			return doc_info->metadata_instance;
 		}
 
-		auto metadata = json::MetadataAsDictionary::create(doc_info->metadata);
-		doc_info->metadata_instance = std::static_pointer_cast<IMetadataDictionary>(metadata);
+		doc_info->metadata_instance = std::make_shared<json::MetadataAsDictionary>(doc_info->metadata);
 		return doc_info->metadata_instance;
 	}
 
-	std::optional<std::string> InMemoryDocumentSessionOperations::get_change_vector_for_internal(std::shared_ptr<void> entity) const
+	std::optional<std::string> InMemoryDocumentSessionOperations::get_change_vector_for_internal(std::type_index type,
+		std::shared_ptr<void> entity) const
 	{
-		auto doc_info = get_document_info(entity);
+		auto doc_info = get_document_info(type, entity);
 
 		std::optional<std::string> change_vector{};
 		impl::utils::json_utils::get_val_from_json(doc_info->metadata, constants::documents::metadata::CHANGE_VECTOR, change_vector);
@@ -274,9 +276,10 @@ namespace ravendb::client::documents::session
 		return change_vector;		
 	}
 
-	std::optional<impl::DateTimeOffset> InMemoryDocumentSessionOperations::get_last_modified_for_internal(std::shared_ptr<void> entity) const
+	std::optional<impl::DateTimeOffset> InMemoryDocumentSessionOperations::get_last_modified_for_internal(std::type_index type,
+		std::shared_ptr<void> entity) const
 	{
-		auto doc_info = get_document_info(entity);
+		auto doc_info = get_document_info(type, entity);
 
 		std::optional<impl::DateTimeOffset> last_modified{};
 		impl::utils::json_utils::get_val_from_json(doc_info->metadata, constants::documents::metadata::LAST_MODIFIED, last_modified);
@@ -284,7 +287,8 @@ namespace ravendb::client::documents::session
 		return last_modified;
 	}
 
-	std::shared_ptr<DocumentInfo> InMemoryDocumentSessionOperations::get_document_info(std::shared_ptr<void> entity) const
+	std::shared_ptr<DocumentInfo> InMemoryDocumentSessionOperations::get_document_info(std::type_index type,
+		std::shared_ptr<void> entity) const
 	{
 		if (auto doc_info_it = _documents_by_entity.find(entity);
 			doc_info_it != _documents_by_entity.end())
@@ -292,8 +296,17 @@ namespace ravendb::client::documents::session
 			return doc_info_it->second;
 		}
 
-		//TODO get id
-		throw std::runtime_error("Not implemented");
+		auto id_ref = _generate_entity_id_on_the_client->try_get_id_from_instance(type, entity);
+		if(!id_ref)
+		{
+			throw std::runtime_error("Could not find the document id for provided entity");
+		}
+
+		assert_is_unique_instance(entity, *id_ref);
+
+		std::ostringstream msg{};
+		msg << "Document " << id_ref.value() << " doesn't exist in the session";
+		throw std::invalid_argument(msg.str());
 	}
 
 	const SessionInfo& InMemoryDocumentSessionOperations::get_session_info() const
@@ -784,13 +797,13 @@ namespace ravendb::client::documents::session
 			{
 				dirty = true;
 			}
-			for (auto& [key, value] : doc_info->metadata_instance->get_dictionary())
-			{
-				//MetadataAsDictionary weak pointer
-				using MAD_wptr = std::weak_ptr<json::MetadataAsDictionary>;
-				if (!value.has_value() ||
-					std::any_cast<MAD_wptr>(&value) != nullptr &&
-					std::any_cast<MAD_wptr>(value).lock()->is_dirty())
+			for (const auto& [key, value] : *doc_info->metadata_instance)
+			{			
+				if (!value.has_value() || [&]()->bool
+				{
+					auto dict_ptr = json::MetadataAsDictionary::get_dict(&value);
+					return dict_ptr != nullptr && dict_ptr->is_dirty();
+				}())
 				{
 					dirty = true;
 				}
@@ -1256,6 +1269,12 @@ namespace ravendb::client::documents::session
 			}
 		}
 		return true;
+	}
+
+	void InMemoryDocumentSessionOperations::on_after_save_changes_invoke(
+		const AfterSaveChangesEventArgs& after_save_changes_events_args)
+	{
+		primitives::EventHelper::invoke(on_after_save_changes, *this, after_save_changes_events_args);
 	}
 
 

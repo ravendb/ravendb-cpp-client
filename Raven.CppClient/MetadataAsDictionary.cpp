@@ -1,65 +1,18 @@
 #include "stdafx.h"
 #include "MetadataAsDictionary.h"
-#include "utils.h"
+#include "MetadataDictionaryArray.h"
 
 namespace  ravendb::client::json
 {
-	MetadataAsDictionary::MetadataAsDictionary() = default;
-
-	MetadataAsDictionary::MetadataAsDictionary(nlohmann::json metadata)
-		: _source([&]
+	void MetadataAsDictionary::update_from_source(const nlohmann::json& source)
 	{
-		if (!metadata.is_object())
+		for (const auto& [key,value] : source.items())
 		{
-			throw std::invalid_argument("Metadata should be an object");
-		}
-		return std::move(metadata);
-	}())
-	{}
-
-	MetadataAsDictionary::MetadataAsDictionary(std::unordered_map<std::string, std::any> metadata)
-		: _metadata(std::move(metadata))
-	{}
-
-	MetadataAsDictionary::MetadataAsDictionary(nlohmann::json::object_t metadata,
-		std::shared_ptr<MetadataAsDictionary> parent, std::string parent_key)
-		: MetadataAsDictionary(std::move(metadata))
-	{
-		if (!parent)
-		{
-			throw std::invalid_argument("parent cannot be empty");
-		}
-		if (impl::utils::is_blank(parent_key))
-		{
-			throw std::invalid_argument("parent_key cannot be blank");
-		}
-
-		_parent = parent;
-		_parent_key = std::move(parent_key);
-	}
-
-	void MetadataAsDictionary::init()
-	{
-		_dirty = true;
-		_metadata.clear();
-
-		update_from_source();
-
-		if (_parent)// mark parent as dirty
-		{
-			_parent->insert(_parent_key, _weak_this);
+			_metadata.insert_or_assign(key, convert_value(value));
 		}
 	}
 
-	void MetadataAsDictionary::update_from_source()
-	{
-		for (const auto& field : _source.items())
-		{
-			_metadata.insert_or_assign(field.key(), convert_value(field.key(), field.value()));
-		}
-	}
-
-	std::any MetadataAsDictionary::convert_value(const std::string key, const nlohmann::json & value) const
+	std::any MetadataAsDictionary::convert_value(const nlohmann::json& value)
 	{
 		std::any res{};
 
@@ -83,58 +36,43 @@ namespace  ravendb::client::json
 			res = value.get<std::string>();
 			break;
 		case nlohmann::detail::value_t::object:
-			res = create(value, _weak_this.lock(), key);
+			res = MetadataAsDictionary(value);
 			break;
 		case nlohmann::detail::value_t::array:
 		{
-			std::vector<std::any> result;
-			result.reserve(value.size());
+			MetadataDictionaryArray result{};
 			for (const auto& val : value)
 			{
-				result.push_back(convert_value(key, val));
+				result.push_back(convert_value(val));
 			}
 			res = std::move(result);
 		}
-		break;
+			break;
 		default:
 			throw std::logic_error("Implement support for numbers and more");
 		}
 		return res;
 	}
 
-	MetadataAsDictionary::~MetadataAsDictionary() = default;
-
-	std::shared_ptr<MetadataAsDictionary> MetadataAsDictionary::create()
+	void MetadataAsDictionary::set_dirty()
 	{
-		auto shared = std::shared_ptr<MetadataAsDictionary>(new MetadataAsDictionary());
-		shared->_weak_this = shared;
-		return shared;
+		_dirty = true;
 	}
 
-	std::shared_ptr<MetadataAsDictionary> MetadataAsDictionary::create(nlohmann::json metadata)
+	MetadataAsDictionary::MetadataAsDictionary(const nlohmann::json& metadata)
 	{
-		auto shared = std::shared_ptr<MetadataAsDictionary>(new MetadataAsDictionary(std::move(metadata)));
-		shared->_weak_this = shared;
-		shared->update_from_source();
-		return shared;
+		
+		if (metadata.is_null())
+		{
+			return;
+		}
 
-	}
+		if (!metadata.is_object())
+		{
+			throw std::invalid_argument("Metadata should be an object");
+		}
 
-	std::shared_ptr<MetadataAsDictionary> MetadataAsDictionary::create(std::unordered_map<std::string, std::any> metadata)
-	{
-		auto shared = std::shared_ptr<MetadataAsDictionary>(new MetadataAsDictionary(std::move(metadata)));
-		shared->_weak_this = shared;
-		shared->update_from_source();
-		return shared;
-	}
-
-	std::shared_ptr<MetadataAsDictionary> MetadataAsDictionary::create(nlohmann::json::object_t metadata, std::shared_ptr<MetadataAsDictionary> parent, std::string parent_key)
-	{
-		auto shared = std::shared_ptr<MetadataAsDictionary>(new MetadataAsDictionary(
-			std::move(metadata), parent, std::move(parent_key)));
-		shared->_weak_this = shared;
-		shared->update_from_source();
-		return shared;
+		update_from_source(metadata);
 	}
 
 	bool MetadataAsDictionary::is_dirty() const
@@ -142,22 +80,101 @@ namespace  ravendb::client::json
 		return _dirty;
 	}
 
-	const std::unordered_map<std::string, std::any>& MetadataAsDictionary::get_dictionary() const
+	const MetadataAsDictionary& MetadataAsDictionary::get_as_dict(const std::string& key) const
 	{
-		return _metadata;
+		return this->get_as<MetadataAsDictionary>(key);
 	}
 
-	bool MetadataAsDictionary::insert(std::string key, std::any value)
+	MetadataAsDictionary& MetadataAsDictionary::get_as_dict(const std::string& key)
 	{
-		if (_metadata.empty())
-		{
-			init();
-		}
-		_dirty = true;
-
-		bool res = false;
-		std::tie(std::ignore, res) = _metadata.insert_or_assign(std::move(key), std::move(value));
-		return res;
+		return this->get_as<MetadataAsDictionary>(key);
 	}
 
+	const MetadataDictionaryArray& MetadataAsDictionary::get_as_array(const std::string& key) const
+	{
+		return this->get_as<MetadataDictionaryArray>(key);
+	}
+
+	MetadataDictionaryArray& MetadataAsDictionary::get_as_array(const std::string& key)
+	{
+		return this->get_as<MetadataDictionaryArray>(key);
+	}
+
+	bool MetadataAsDictionary::empty() const
+	{
+		return _metadata.empty();
+	}
+
+	size_t MetadataAsDictionary::size() const
+	{
+		return _metadata.size();
+	}
+
+	void MetadataAsDictionary::clear()
+	{
+		set_dirty();
+
+		_metadata.clear();
+	}
+
+	bool MetadataAsDictionary::contains(const std::string& key) const
+	{
+		return _metadata.count(key) > 0;
+	}
+
+	bool MetadataAsDictionary::erase(const std::string& key)
+	{
+		set_dirty();
+		return _metadata.erase(key) > 0;
+	}
+
+	MetadataAsDictionary::iterator MetadataAsDictionary::begin()
+	{
+		return _metadata.begin();
+	}
+
+	MetadataAsDictionary::const_iterator MetadataAsDictionary::begin() const
+	{
+		return cbegin();
+	}
+
+	MetadataAsDictionary::const_iterator MetadataAsDictionary::cbegin() const
+	{
+		return _metadata.cbegin();
+	}
+
+	MetadataAsDictionary::iterator MetadataAsDictionary::end()
+	{
+		return _metadata.end();
+	}
+
+	MetadataAsDictionary::const_iterator MetadataAsDictionary::end() const
+	{
+		return cend();
+	}
+
+	MetadataAsDictionary::const_iterator MetadataAsDictionary::cend() const
+	{
+		return _metadata.cend();
+	}
+
+	const MetadataAsDictionary& MetadataAsDictionary::get_dict(const std::any& value)
+	{
+		return std::any_cast<const MetadataAsDictionary&>(value);
+	}
+
+	MetadataAsDictionary& MetadataAsDictionary::get_dict(std::any& value)
+	{
+		return std::any_cast<MetadataAsDictionary&>(value);
+	}
+
+	const MetadataAsDictionary* MetadataAsDictionary::get_dict(const std::any* value)
+	{
+		return std::any_cast<MetadataAsDictionary>(value);
+	}
+
+	MetadataAsDictionary* MetadataAsDictionary::get_dict(std::any* value)
+	{
+		return std::any_cast<MetadataAsDictionary>(value);
+	}
 }

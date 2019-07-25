@@ -14,7 +14,7 @@ namespace ravendb::client::documents::identity
 	{
 		if(!entity)
 		{
-			throw std::invalid_argument("entity cannot be null");
+			throw std::invalid_argument("entity cannot be empty");
 		}
 
 		auto id_helper = conventions::DocumentConventions::get_entity_id_helper(type);
