@@ -821,6 +821,15 @@
     <ClCompile Include="ExplainQueryCommand.cpp">
       <Filter>ravendb.client\documents\commands</Filter>
     </ClCompile>
+    <ClCompile Include="AfterSaveChangesEventArgs.cpp">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClCompile>
+    <ClCompile Include="UpdateDatabaseOperation.cpp">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="MetadataDictionaryArray.cpp">
+      <Filter>ravendb.client\json</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VoidRavenCommand.h">
@@ -1157,9 +1166,6 @@
     </ClInclude>
     <ClInclude Include="MetadataAsDictionary.h">
       <Filter>ravendb.client\json</Filter>
-    </ClInclude>
-    <ClInclude Include="IMetadataDictionary.h">
-      <Filter>ravendb.client\documents\session</Filter>
     </ClInclude>
     <ClInclude Include="JsonOperation.h">
       <Filter>ravendb.client\json</Filter>
@@ -1988,6 +1994,15 @@
     </ClInclude>
     <ClInclude Include="ExplainQueryCommand.h">
       <Filter>ravendb.client\documents\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="AfterSaveChangesEventArgs.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="UpdateDatabaseOperation.h">
+      <Filter>ravendb.client\serverwide\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="MetadataDictionaryArray.h">
+      <Filter>ravendb.client\json</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

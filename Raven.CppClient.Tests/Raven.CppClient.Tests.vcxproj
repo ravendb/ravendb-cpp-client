@@ -97,6 +97,9 @@
     <ClCompile Include="PutDocumentCommandTest.cpp" />
     <ClCompile Include="RavenDB903Test.cpp" />
     <ClCompile Include="RavenDB_10566Test.cpp" />
+    <ClCompile Include="RavenDB_10638Test.cpp" />
+    <ClCompile Include="RavenDB_10641Test.cpp" />
+    <ClCompile Include="RavenDB_10929Test.cpp" />
     <ClCompile Include="RavenDB_12169Test.cpp" />
     <ClCompile Include="RavenDB_5669Test.cpp" />
     <ClCompile Include="RavenDB_6558Test.cpp" />

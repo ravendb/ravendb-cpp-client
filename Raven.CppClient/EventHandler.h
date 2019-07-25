@@ -1,5 +1,6 @@
 #pragma once
 #include <typeindex>
+#include <functional>
 #include "EventArgs.h"
 
 namespace ravendb::client::primitives
@@ -12,13 +13,13 @@ namespace ravendb::client::primitives
 		std::type_index _event_type;
 
 	public:
-		template<class TSender, typename TEvent>
+		template<typename TSender, typename TEvent>
 		EventHandler(std::function<void(const TSender& sender, const TEvent& event)> handler);
 
-		template<class TSender, typename TEvent>
+		template<typename TSender, typename TEvent>
 		void handle(const TSender& sender, const TEvent& event) const;
 
-		template<class TSender, typename TEvent>
+		template<typename TSender, typename TEvent>
 		void operator()(const TSender& sender, const TEvent& event) const;
 
 
@@ -34,25 +35,25 @@ namespace ravendb::client::primitives
 		}
 	};
 
-	template <class TSender, typename TEvent>
+	template <typename TSender, typename TEvent>
 	EventHandler::EventHandler(std::function<void(const TSender& sender, const TEvent& event)> handler)
 		: _handler(std::make_shared<std::function<void(const void* sender, const EventArgs& event)>>(
 			[handler = std::move(handler)](const void* sender, const EventArgs& event)-> void
 			{
 				handler(*static_cast<const TSender*>(sender), static_cast<const TEvent&>(event));
 			}))
-			, _event_type(typeid(TEvent))
+		, _event_type(typeid(TEvent))
 		{
 			static_assert(std::is_base_of_v<EventArgs, TEvent>, "TEvent must be derived from EventArgs");
 		}
 
-	template <class TSender, typename TEvent>
+	template <typename TSender, typename TEvent>
 	void EventHandler::handle(const TSender& sender, const TEvent& event) const
 	{
 		this->operator()(sender, event);
 	}
 
-	template <class TSender, typename TEvent>
+	template <typename TSender, typename TEvent>
 	void EventHandler::operator()(const TSender& sender, const TEvent& event) const
 	{
 		if (std::type_index(typeid(TEvent)) != _event_type)

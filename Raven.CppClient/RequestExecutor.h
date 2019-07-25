@@ -607,7 +607,7 @@ namespace ravendb::client::http
 			{
 				auto read_exception = exceptions::ExceptionDispatcher::get(
 					nlohmann::json::parse(response_json).get<exceptions::ExceptionSchema>(), response.status_code, e);
-				command.get_failed_nodes().insert_or_assign(chosen_node, std::make_exception_ptr(read_exception));
+				command.get_failed_nodes().insert_or_assign(chosen_node, read_exception);
 			}
 			catch (...)
 			{
@@ -857,14 +857,22 @@ namespace ravendb::client::http
 					{
 						throw exceptions::database::DatabaseDoesNotExistException(it->second);
 					}
-					if (command.get_failed_nodes().empty())//precaution, should never happen at this point
+					auto&& failed_nodes = command.get_failed_nodes();
+					if (failed_nodes.empty())//precaution, should never happen at this point
 					{
 						throw std::runtime_error("Received unsuccessful response and couldn't recover from it. "
 							"Also, no record of exceptions per failed nodes. This is weird and should not happen.");
 					}
-					if (command.get_failed_nodes().size() == 1 && command.get_failed_nodes().begin()->second)
+					if (failed_nodes.size() == 1 && failed_nodes.begin()->second)
 					{
-						std::rethrow_exception(command.get_failed_nodes().begin()->second);
+						try
+						{
+							std::rethrow_exception(failed_nodes.begin()->second);
+						}
+						catch (...)
+						{
+							std::throw_with_nested(std::runtime_error(""));
+						}
 					}
 					throw exceptions::AllTopologyNodesDownException(
 						"Received unsuccessful response from all servers and couldn't recover from it.");

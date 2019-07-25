@@ -161,6 +161,7 @@
     <ClInclude Include="AbstractMultiMapIndexCreationTask.h" />
     <ClInclude Include="AddDatabaseNodeOperation.h" />
     <ClInclude Include="AdvancedSessionExtentionBase.h" />
+    <ClInclude Include="AfterSaveChangesEventArgs.h" />
     <ClInclude Include="AllTopologyNodesDownException.h" />
     <ClInclude Include="AttachmentDetails.h" />
     <ClInclude Include="AttachmentDoesNotExistException.h" />
@@ -320,6 +321,7 @@
     <ClInclude Include="LicenseActivationException.h" />
     <ClInclude Include="LoadStartingWithOperation.h" />
     <ClInclude Include="LoadToken.h" />
+    <ClInclude Include="MetadataDictionaryArray.h" />
     <ClInclude Include="MethodCall.h" />
     <ClInclude Include="MillisToTimespanConverter.h" />
     <ClInclude Include="ConcurrencyCheckMode.h" />
@@ -397,7 +399,6 @@
     <ClInclude Include="LoadOperation.h" />
     <ClInclude Include="MaintenanceOperationExecutor.h" />
     <ClInclude Include="MetadataAsDictionary.h" />
-    <ClInclude Include="IMetadataDictionary.h" />
     <ClInclude Include="MoreLikeThisBase.h" />
     <ClInclude Include="MoreLikeThisOptions.h" />
     <ClInclude Include="MoreLikeThisScope.h" />
@@ -535,6 +536,7 @@
     <ClInclude Include="TransactionMode.h" />
     <ClInclude Include="TrueToken.h" />
     <ClInclude Include="UnsuccessfulRequestException.h" />
+    <ClInclude Include="UpdateDatabaseOperation.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="VoidRavenCommand.h" />
     <ClInclude Include="WhereOperator.h" />
@@ -552,6 +554,7 @@
     <ClCompile Include="AddDatabaseNodeOperation.cpp" />
     <ClCompile Include="AdvancedSessionExtentionBase.cpp" />
     <ClCompile Include="AdvancedSessionOperations.cpp" />
+    <ClCompile Include="AfterSaveChangesEventArgs.cpp" />
     <ClCompile Include="AllTopologyNodesDownException.cpp" />
     <ClCompile Include="AttachmentDetails.cpp" />
     <ClCompile Include="AttachmentDoesNotExistException.cpp" />
@@ -673,6 +676,7 @@
     <ClCompile Include="LicenseActivationException.cpp" />
     <ClCompile Include="LoadOperation.cpp" />
     <ClCompile Include="LoadStartingWithOperation.cpp" />
+    <ClCompile Include="MetadataDictionaryArray.cpp" />
     <ClCompile Include="MoreLikeThisOptions.cpp" />
     <ClCompile Include="MoreLikeThisScope.cpp" />
     <ClCompile Include="MoveAttachmentCommandData.cpp" />
@@ -750,6 +754,7 @@
     <ClCompile Include="ToggleDatabasesStateOperation.cpp" />
     <ClCompile Include="TrueToken.cpp" />
     <ClCompile Include="UnsuccessfulRequestException.cpp" />
+    <ClCompile Include="UpdateDatabaseOperation.cpp" />
     <ClCompile Include="WhereToken.cpp" />
     <ClCompile Include="WktCriteria.cpp" />
     <ClCompile Include="WktField.cpp" />

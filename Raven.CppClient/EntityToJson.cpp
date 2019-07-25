@@ -4,6 +4,7 @@
 #include "InMemoryDocumentSessionOperations.h"
 #include "json_utils.h"
 #include "MetadataAsDictionary.h"
+#include "MetadataDictionaryArray.h"
 
 namespace ravendb::client::documents::session
 {
@@ -28,10 +29,10 @@ namespace ravendb::client::documents::session
 		else if (doc_info->metadata_instance)
 		{
 			set_metadata = true;
-			for (auto& metadata_it : doc_info->metadata_instance->get_dictionary())
+			for (const auto& [key, value] : *doc_info->metadata_instance)
 			{
-				impl::utils::json_utils::set_val_to_json(metadata_json, metadata_it.first,
-					basic_metadata_to_json_converter(metadata_it.second));
+				impl::utils::json_utils::set_val_to_json(metadata_json, key,
+					basic_metadata_to_json_converter(value));
 			}
 		}
 		if (!doc_info->collection.empty())
@@ -119,18 +120,17 @@ namespace ravendb::client::documents::session
 		{
 			return *val_ptr;
 		}
-		if (auto val_ptr = std::any_cast<std::shared_ptr<json::MetadataAsDictionary>>(&object))
+		if (auto val_ptr = json::MetadataAsDictionary::get_dict(&object))
 		{
-			const auto& map = val_ptr->get()->get_dictionary();
 			nlohmann::json j = nlohmann::json::object();
 
-			for (const auto&[key, val] : map)
+			for (const auto& [key, val] : *val_ptr)
 			{
 				impl::utils::json_utils::set_val_to_json(j, key, basic_metadata_to_json_converter(val));
 			}
 			return j;
 		}
-		if (auto val_ptr = std::any_cast<std::vector<std::any>>(&object))
+		if (auto val_ptr = json::MetadataDictionaryArray::get_array(&object))
 		{
 			nlohmann::json arr = nlohmann::json::array();
 			for (const auto& val : *val_ptr)
