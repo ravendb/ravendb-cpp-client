@@ -112,19 +112,45 @@ namespace ravendb::client::documents::session
 
 		static const int32_t DEFAULT_MAX_NUMBER_OF_REQUESTS_PER_SESSION = 30;
 
-		struct  SaveChangesData
+		struct SaveChangesData
 		{
+			class ActionsToRunOnSuccess
+			{
+			private:
+				const std::shared_ptr<InMemoryDocumentSessionOperations> _session;
+				std::vector<std::string> _documents_by_id_to_remove{};
+				std::vector<std::shared_ptr<void>> _documents_by_entity_to_remove{};
+				std::vector<std::pair<std::shared_ptr<DocumentInfo>, nlohmann::json>> _documents_infos_to_update{};
+
+				//TODO private ClusterTransactionOperationsBase _clusterTransactionOperations;
+				bool _clear_deleted_entities{};
+
+			public:
+				explicit ActionsToRunOnSuccess(std::shared_ptr<InMemoryDocumentSessionOperations> session);
+
+				void remove_document_by_id(std::string id);
+
+				void remove_document_by_entity(std::shared_ptr<void> entity);
+
+				//TODO public void clearClusterTransactionOperations(ClusterTransactionOperationsBase clusterTransactionOperations) {
+				//_clusterTransactionOperations = clusterTransactionOperations;
+				//}
+
+				void update_entity_document_info(std::shared_ptr<DocumentInfo> document_info, nlohmann::json document);
+
+				void clear_session_state_after_successful_save_changes();
+
+				void clear_deleted_entities();
+			};
+
 			std::list<std::shared_ptr<commands::batches::CommandDataBase>> deferred_commands{};
 			std::unordered_map<in_memory_document_session_operations::IdTypeAndName, std::shared_ptr<commands::batches::CommandDataBase>> deferred_commands_map{};
-			std::list< std::shared_ptr<commands::batches::CommandDataBase>> session_commands{};
+			std::list<std::shared_ptr<commands::batches::CommandDataBase>> session_commands{};
 			std::vector<std::shared_ptr<void>> entities{};
 			std::optional<commands::batches::BatchOptions> options{};
+			std::shared_ptr<ActionsToRunOnSuccess> on_success{};
 
-			explicit SaveChangesData(std::shared_ptr<InMemoryDocumentSessionOperations> session)
-				: deferred_commands(session->_deferred_commands)
-				, deferred_commands_map(session->_deferred_commands_map)
-				, options(session->_save_changes_options)
-			{}
+			explicit SaveChangesData(std::shared_ptr<InMemoryDocumentSessionOperations> session);
 		};
 
 		class IndexesWaitOptsBuilder

@@ -2,7 +2,7 @@
 #include <map>
 #include <vector>
 #include "CompareStringsLessThanIgnoreCase.h"
-#include "json.hpp"
+#include "InMemoryDocumentSessionOperations.h"
 
 namespace ravendb::client
 {
@@ -20,7 +20,6 @@ namespace ravendb::client
 		}
 		namespace session
 		{
-			class InMemoryDocumentSessionOperations;
 			struct DocumentInfo;
 		}
 	}
@@ -35,8 +34,7 @@ namespace ravendb::client::documents::session::operations
 		std::vector<std::shared_ptr<void>> _entities{};
 		size_t _session_commands_count{};
 		size_t _all_commands_count{};
-		//TODO add
-		//InMemoryDocumentSessionOperations.SaveChangesData.ActionsToRunOnSuccess _onSuccessfulRequest;
+		std::shared_ptr<InMemoryDocumentSessionOperations::SaveChangesData::ActionsToRunOnSuccess> _on_successful_request{};
 		std::map<std::string, std::shared_ptr<DocumentInfo>, impl::utils::CompareStringsLessThanIgnoreCase> _modifications{};
 
 	private:

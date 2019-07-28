@@ -231,6 +231,12 @@
     <ClCompile Include="RavenDB_10929Test.cpp">
       <Filter>ravendb.client.tests\test\issues</Filter>
     </ClCompile>
+    <ClCompile Include="RavenDB_12790Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_13034Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
