@@ -8,16 +8,19 @@
 
 namespace ravendb::client::tests::issues
 {
-	struct Document
+	namespace RavenDB_10641Test_ns
 	{
-		std::string id;
-	};
+		struct Document
+		{
+			std::string id;
+		};
 
-	void from_json(const nlohmann::json& j, Document& )
-	{}
+		void from_json(const nlohmann::json& j, Document&)
+		{}
 
-	void to_json(nlohmann::json& j, const Document& )
-	{}
+		void to_json(nlohmann::json& j, const Document&)
+		{}
+	}
 
 	class RavenDB_10641Test : public driver::RavenTestDriver
 	{
@@ -29,7 +32,7 @@ namespace ravendb::client::tests::issues
 
 		static void SetUpTestCase()
 		{
-			REGISTER_ID_PROPERTY_FOR(Document, id);
+			REGISTER_ID_PROPERTY_FOR(RavenDB_10641Test_ns::Document, id);
 		}
 	};
 
@@ -39,7 +42,7 @@ namespace ravendb::client::tests::issues
 		{
 			auto session = store->open_session();
 
-			auto doc = std::make_shared<Document>();
+			auto doc = std::make_shared<RavenDB_10641Test_ns::Document>();
 			session.store(doc, "items/first");
 
 			auto items = json::MetadataAsDictionary();
@@ -51,7 +54,7 @@ namespace ravendb::client::tests::issues
 		{
 			auto session = store->open_session();
 
-			auto doc = session.load<Document>("items/first");
+			auto doc = session.load<RavenDB_10641Test_ns::Document>("items/first");
 			auto& items = session.advanced().get_metadata_for(doc)->get_as_dict("Items");
 
 			ASSERT_EQ("en", items.get_as<std::string>("lang"));
@@ -63,7 +66,7 @@ namespace ravendb::client::tests::issues
 		{
 			auto session = store->open_session();
 
-			auto v = session.load<Document>("items/first");
+			auto v = session.load<RavenDB_10641Test_ns::Document>("items/first");
 			auto& metadata = *session.advanced().get_metadata_for(v);
 			metadata.insert_or_assign("test", "123");
 
@@ -72,7 +75,7 @@ namespace ravendb::client::tests::issues
 		{
 			auto session = store->open_session();
 
-			auto v = session.load<Document>("items/first");
+			auto v = session.load<RavenDB_10641Test_ns::Document>("items/first");
 			auto& metadata = *session.advanced().get_metadata_for(v);
 
 			ASSERT_EQ("sv", metadata.get_as_dict("Items").get_as<std::string>("lang"));

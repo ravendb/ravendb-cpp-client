@@ -3,7 +3,6 @@
 #include "MetadataAsDictionary.h"
 #include "DocumentInfo.h"
 #include "json_utils.h"
-#include "InMemoryDocumentSessionOperations.h"
 #include "CommandType.h"
 #include "BatchCommand.h"
 #include "PatchStatus.h"
@@ -16,8 +15,8 @@ namespace ravendb::client::documents::session::operations
 	{
 		auto session = _session.lock();
 		auto result = session->prepare_for_save_changes();
-		//TODO
-		//_onSuccessfulRequest = result.getOnSuccess();
+
+		_on_successful_request = result.on_success;
 		_session_commands_count = result.session_commands.size();
 		result.session_commands.insert(result.session_commands.end(),
 			result.deferred_commands.cbegin(), result.deferred_commands.cend());
@@ -55,6 +54,8 @@ namespace ravendb::client::documents::session::operations
 		{
 			throw_on_empty_results();
 		}
+
+		_on_successful_request->clear_session_state_after_successful_save_changes();
 
 		if (session->get_transaction_mode() == TransactionMode::CLUSTER_WIDE &&
 			result.transaction_index && result.transaction_index.value() <= 0)
@@ -308,7 +309,6 @@ namespace ravendb::client::documents::session::operations
 		{
 			session->get_generate_entity_id_on_the_client().try_set_identity(*doc_info->stored_type, entity, id);
 		}
-
 
 		auto&& after_save_changes_event_args = AfterSaveChangesEventArgs(_session.lock(), doc_info->id, doc_info->entity);
 		_session.lock()->on_after_save_changes_invoke(after_save_changes_event_args);

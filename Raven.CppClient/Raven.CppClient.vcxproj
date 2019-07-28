@@ -179,6 +179,8 @@
     <ClInclude Include="BatchOperation.h" />
     <ClInclude Include="BatchOptions.h" />
     <ClInclude Include="BatchPatchCommandData.h" />
+    <ClInclude Include="BeforeDeleteEventArgs.h" />
+    <ClInclude Include="BeforeStoreEventArgs.h" />
     <ClInclude Include="BuildNumber.h" />
     <ClInclude Include="BulkInsertAbortedException.h" />
     <ClInclude Include="BulkInsertProtocolViolationException.h" />
@@ -310,6 +312,7 @@
     <ClInclude Include="IVoidServerOperation.h" />
     <ClInclude Include="JavaScriptException.h" />
     <ClInclude Include="JavaScriptParseException.h" />
+    <ClInclude Include="JsonExtensions.h" />
     <ClInclude Include="Lazy.h" />
     <ClInclude Include="LazyLoaderWithInclude.h" />
     <ClInclude Include="LazyLoadOperation.h" />
@@ -568,6 +571,8 @@
     <ClCompile Include="BatchCommandResult.cpp" />
     <ClCompile Include="BatchOperation.cpp" />
     <ClCompile Include="BatchPatchCommandData.cpp" />
+    <ClCompile Include="BeforeDeleteEventArgs.cpp" />
+    <ClCompile Include="BeforeStoreEventArgs.cpp" />
     <ClCompile Include="BuildNumber.cpp" />
     <ClCompile Include="BulkInsertAbortedException.cpp" />
     <ClCompile Include="BulkInsertProtocolViolationException.cpp" />
@@ -673,6 +678,7 @@
     <ClCompile Include="InvalidQueryException.cpp" />
     <ClCompile Include="JavaScriptException.cpp" />
     <ClCompile Include="JavaScriptParseException.cpp" />
+    <ClCompile Include="JsonExtensions.cpp" />
     <ClCompile Include="LicenseActivationException.cpp" />
     <ClCompile Include="LoadOperation.cpp" />
     <ClCompile Include="LoadStartingWithOperation.cpp" />

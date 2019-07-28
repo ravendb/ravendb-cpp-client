@@ -232,7 +232,7 @@ namespace ravendb::client::documents::session
 		auto multi_get_command = multi_get_operation.create_request(requests);
 		get_request_executor()->execute(multi_get_command, _session_info);
 
-		auto&& responses = multi_get_command.get_result();
+		auto responses = multi_get_command.get_result();
 
 		for(size_t i = 0; i < _pending_lazy_operations.size(); ++i)
 		{

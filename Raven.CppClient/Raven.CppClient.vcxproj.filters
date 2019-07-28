@@ -830,6 +830,15 @@
     <ClCompile Include="MetadataDictionaryArray.cpp">
       <Filter>ravendb.client\json</Filter>
     </ClCompile>
+    <ClCompile Include="BeforeDeleteEventArgs.cpp">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClCompile>
+    <ClCompile Include="BeforeStoreEventArgs.cpp">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonExtensions.cpp">
+      <Filter>ravendb.client\extensions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VoidRavenCommand.h">
@@ -2003,6 +2012,15 @@
     </ClInclude>
     <ClInclude Include="MetadataDictionaryArray.h">
       <Filter>ravendb.client\json</Filter>
+    </ClInclude>
+    <ClInclude Include="BeforeDeleteEventArgs.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="BeforeStoreEventArgs.h">
+      <Filter>ravendb.client\documents\session</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonExtensions.h">
+      <Filter>ravendb.client\extensions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

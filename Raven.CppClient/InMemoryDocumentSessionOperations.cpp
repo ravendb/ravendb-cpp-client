@@ -15,6 +15,9 @@
 #include "NonUniqueObjectException.h"
 #include "BatchPatchCommandData.h"
 #include "EventHelper.h"
+#include "BeforeDeleteEventArgs.h"
+#include "BeforeStoreEventArgs.h"
+#include "JsonExtensions.h"
 
 namespace ravendb::client::documents::session
 {
@@ -55,6 +58,73 @@ namespace ravendb::client::documents::session
 		get_options().index_options->wait_for_specific_indexes = std::move(indexes);
 		return _weak_this.lock();
 	}
+
+	InMemoryDocumentSessionOperations::SaveChangesData::ActionsToRunOnSuccess::ActionsToRunOnSuccess(
+		std::shared_ptr<InMemoryDocumentSessionOperations> session)
+		: _session(session)
+	{}
+
+	void InMemoryDocumentSessionOperations::SaveChangesData::ActionsToRunOnSuccess::remove_document_by_id(
+		std::string id)
+	{
+		_documents_by_id_to_remove.push_back(std::move(id));
+	}
+
+	void InMemoryDocumentSessionOperations::SaveChangesData::ActionsToRunOnSuccess::remove_document_by_entity(
+		std::shared_ptr<void> entity)
+	{
+		_documents_by_entity_to_remove.push_back(entity);
+	}
+
+	void InMemoryDocumentSessionOperations::SaveChangesData::ActionsToRunOnSuccess::update_entity_document_info(
+		std::shared_ptr<DocumentInfo> document_info, nlohmann::json document)
+	{
+		_documents_infos_to_update.emplace_back(document_info, std::move(document));
+	}
+
+	void InMemoryDocumentSessionOperations::SaveChangesData::ActionsToRunOnSuccess::
+		clear_session_state_after_successful_save_changes()
+	{
+		for(const auto& id : _documents_by_id_to_remove)
+		{
+			_session->_documents_by_id.erase(id);
+		}
+		for(const auto& entity : _documents_by_entity_to_remove)
+		{
+			_session->_documents_by_entity.erase(entity);
+		}
+
+		for(auto& [info, document] : _documents_infos_to_update)
+		{
+			info->new_document = false;
+			info->document = std::move(document);
+		}
+
+		if(_clear_deleted_entities)
+		{
+			_session->_deleted_entities.clear();
+		}
+
+		//TODO if (_clusterTransactionOperations != null) {
+		//_clusterTransactionOperations.clear();
+		//}
+
+		_session->_deferred_commands.clear();
+		_session->_deferred_commands_map.clear();
+	}
+
+	void InMemoryDocumentSessionOperations::SaveChangesData::ActionsToRunOnSuccess::clear_deleted_entities()
+	{
+		_clear_deleted_entities = true;
+	}
+
+	InMemoryDocumentSessionOperations::SaveChangesData::SaveChangesData(
+		std::shared_ptr<InMemoryDocumentSessionOperations> session)
+		: deferred_commands(session->_deferred_commands)
+		, deferred_commands_map(session->_deferred_commands_map)
+		, options(session->_save_changes_options)
+		, on_success(std::make_shared<ActionsToRunOnSuccess>(session))
+	{}
 
 	InMemoryDocumentSessionOperations::IndexesWaitOptsBuilder::IndexesWaitOptsBuilder(
 		InMemoryDocumentSessionOperations& outer_this)
@@ -225,7 +295,7 @@ namespace ravendb::client::documents::session
 			return document_store->get_database();
 		}
 		throw_no_database();
-		return std::string{};//not suppose to happen - just shut the warning
+		throw std::runtime_error("not suppose to happen -> probably a bug");//not suppose to happen - just shut the warning
 	}())
 		, no_tracking(options.no_tracking)
 		, _transaction_mode(options.transaction_mode)
@@ -859,17 +929,19 @@ namespace ravendb::client::documents::session
 					change_vector = doc_info_from_id->change_vector;
 					if (doc_info_from_id->entity)
 					{
-						_documents_by_entity.erase(doc_info_from_id->entity);
-						result.entities.emplace_back(doc_info_from_id->entity);
+						result.on_success->remove_document_by_entity(doc_info_from_id->entity);
+						result.entities.push_back(doc_info_from_id->entity);
 					}
-					_documents_by_id.erase(doc_info_from_id->id);
+					result.on_success->remove_document_by_id(doc_info_from_id->id);
 				}
 				if (!use_optimistic_concurrency)
 				{
 					change_vector.clear();
 				}
 
-				//TODO call EventHelper.invoke()
+				auto before_delete_event_args = BeforeDeleteEventArgs(_weak_this.lock(),
+					doc_info_from_id->id, doc_info_from_id->entity);
+				primitives::EventHelper::invoke(on_before_delete, _weak_this.lock(), before_delete_event_args);
 
 				result.session_commands.push_back(std::make_shared<commands::batches::DeleteCommandData>
 					(doc_info->id, change_vector));
@@ -877,7 +949,7 @@ namespace ravendb::client::documents::session
 		}
 		if (!changes_collection)
 		{
-			_deleted_entities.clear();
+			result.on_success->clear_deleted_entities();
 		}
 	}
 
@@ -886,6 +958,11 @@ namespace ravendb::client::documents::session
 		for (auto& [entity, doc_info] : _documents_by_entity)
 		{
 			if (doc_info->ignore_changes)
+			{
+				continue;
+			}
+
+			if(is_deleted(doc_info->id))
 			{
 				continue;
 			}
@@ -907,16 +984,31 @@ namespace ravendb::client::documents::session
 				throw_invalid_modified_document_with_deferred_command(command_it->second);
 			}
 
-			//TODO use onBeforeStore
-
-			doc_info->new_document = false;
-			result.entities.push_back(entity);
-			if (!doc_info->id.empty())
+			if(!on_before_store.empty())
 			{
-				_documents_by_id.erase(doc_info->id);
+				auto&& before_store_event_args = BeforeStoreEventArgs(_weak_this.lock(), doc_info->id, entity);
+				primitives::EventHelper::invoke(on_before_store, _weak_this.lock(), before_store_event_args);
+
+				if(before_store_event_args.is_metadata_accesses())
+				{
+					update_metadata_modifications(doc_info);
+				}
+				if(auto empty_changes_collection = std::optional<std::unordered_map<std::string, std::vector<DocumentsChanges>>>{};
+					before_store_event_args.is_metadata_accesses() || entity_changed(document, doc_info, empty_changes_collection))
+				{
+					document = _entity_to_json->convert_entity_to_json(entity, doc_info);
+				}
 			}
 
-			doc_info->document = document;
+			result.entities.push_back(entity);
+
+			if (!doc_info->id.empty())
+			{
+				result.on_success->remove_document_by_id(doc_info->id);
+			}
+
+			result.on_success->update_entity_document_info(doc_info, document);
+
 			std::string change_vector{};
 			if (use_optimistic_concurrency)
 			{
@@ -1154,7 +1246,10 @@ namespace ravendb::client::documents::session
 				continue;
 			}
 			auto doc_info = std::make_shared<DocumentInfo>(val);
-			//TODO tryGetConflict(doc_info.metadata);
+			if(extensions::JsonExtensions::try_get_conflict(doc_info->metadata))
+			{
+				continue;
+			}
 
 			_included_documents_by_id.insert_or_assign(doc_info->id, doc_info);
 		}
@@ -1206,9 +1301,10 @@ namespace ravendb::client::documents::session
 						auto&& document = *document_it;
 
 						auto&& metadata = document.at(constants::documents::metadata::KEY);
-						//TODO  if (JsonExtensions.tryGetConflict(metadata)) {
-						//return;
-						//}
+						if(extensions::JsonExtensions::try_get_conflict(metadata))
+						{
+							return;
+						}
 					}
 					register_missing(id);
 				}
