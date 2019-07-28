@@ -120,6 +120,5 @@ namespace ravendb::client::tests::issues
 			ASSERT_EQ("test", c3->name);
 			ASSERT_EQ("test2", c4->name);
 		}
-
 	}
 }
