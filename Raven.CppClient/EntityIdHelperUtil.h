@@ -8,7 +8,7 @@
 #define REGISTER_ID_PROPERTY_FOR(TYPE, ID_FIELD_NAME)\
 do\
 {\
-	ravendb::client::documents::conventions::DocumentConventions::add_entity_id_helper(typeid(TYPE), EntityIdHelper(\
+	ravendb::client::documents::conventions::DocumentConventions::add_entity_id_helper(typeid(TYPE), ravendb::client::EntityIdHelper(\
 		[](std::type_index type, std::shared_ptr<void> entity)->std::optional<std::string>\
 	{\
 		auto typed_entity = std::static_pointer_cast<TYPE>(entity);\

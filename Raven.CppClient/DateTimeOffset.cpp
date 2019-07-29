@@ -13,6 +13,11 @@ namespace ravendb::client::impl
 		return { _date_time, _nsec, _offset };
 	}
 
+	DateTimeOffset::DateTimeOffset(const RawDateTimeOffset& date_time_offset)
+	{
+		std::tie(_date_time, _nsec, _offset) = date_time_offset;
+	}
+
 	DateTimeOffset::DateTimeOffset(const std::string & str)
 	{
 		constexpr size_t DATE_TIME_LENGTH_BASIC = 27;
@@ -30,7 +35,7 @@ namespace ravendb::client::impl
 
 		const char* input_str = str.c_str();
 
-		//expecting ISO8061 format : YYYY-MM-DDThh:mm:ss.sssssss(Z) or YYYY-MM-DDThh:mm:ss.sssssss�hh:mm
+		//expecting ISO8061 format : YYYY-MM-DDThh:mm:ss.sssssss(Z) or YYYY-MM-DDThh:mm:ss.sssssss+-hh:mm
 		int res =
 #ifdef __STDC_LIB_EXT1__
 			std::sscanf_s
