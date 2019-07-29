@@ -23,14 +23,16 @@ namespace ravendb::client::impl
 
 		DateTimeOffset() = default;
 
+		explicit DateTimeOffset(const RawDateTimeOffset& date_time_offset);
+
 		//WARNING : this ctor may not check for every possible argument errors
-		//WARNING tm_wday and tm_yday fields are NOT filled in the deserialization ctor
-		//str should be in ISO8061 format : YYYY-MM-DDThh:mm:ss.sssssss(Z) or YYYY-MM-DDThh:mm:ss.sssssss±hh:mm
+		//WARNING : tm_wday and tm_yday fields are NOT filled in the deserialization ctor
+		//str should be in ISO8061 format : YYYY-MM-DDThh:mm:ss.sssssss(Z) or YYYY-MM-DDThh:mm:ss.sssssss+-hh:mm
 		explicit DateTimeOffset(const std::string& str);
 
 		DateTimeOffset& operator=(const DateTimeOffset& other);
 
-		//output in ISO8061 format : YYYY-MM-DDThh:mm:ss.sssssss(Z) or YYYY-MM-DDThh:mm:ss.sssssss±hh:mm
+		//output in ISO8061 format : YYYY-MM-DDThh:mm:ss.sssssss(Z) or YYYY-MM-DDThh:mm:ss.sssssss+-hh:mm
 		std::string to_string(bool add_Z_if_zero_offset = false) const;
 
 		friend std::ostream& operator<<(std::ostream& os, const DateTimeOffset& dt);

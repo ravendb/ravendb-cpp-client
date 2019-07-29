@@ -422,6 +422,7 @@ namespace ravendb::client::documents::session::operations
 	void BatchOperation::apply_metadata_modifications(const std::string& id, std::shared_ptr<DocumentInfo> doc_info)
 	{
 		doc_info->metadata_instance = std::make_shared<json::MetadataAsDictionary>(doc_info->metadata);
+		doc_info->document.at(constants::documents::metadata::KEY) = doc_info->metadata;
 	}
 
 	std::shared_ptr<DocumentInfo> BatchOperation::get_or_add_modifications(const std::string& id, std::shared_ptr<DocumentInfo> doc_info, bool apply_modifications)
