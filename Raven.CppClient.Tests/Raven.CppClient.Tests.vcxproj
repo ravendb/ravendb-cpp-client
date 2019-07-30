@@ -108,6 +108,7 @@
     <ClCompile Include="RavenDB_13034Test.cpp" />
     <ClCompile Include="RavenDB_5669Test.cpp" />
     <ClCompile Include="RavenDB_6558Test.cpp" />
+    <ClCompile Include="RavenDB_8328Test.cpp" />
     <ClCompile Include="RavenDB_8761.cpp" />
     <ClCompile Include="RavenDB_9587Test.cpp" />
     <ClCompile Include="RavenDB_9676Test.cpp" />

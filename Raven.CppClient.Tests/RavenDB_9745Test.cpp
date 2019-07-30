@@ -50,7 +50,6 @@ namespace RavenDB_9745Test_ns
 				"}";
 
 			store("key", ravendb::client::documents::indexes::FieldStorage::YES);
-
 		}
 	};
 }
