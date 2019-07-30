@@ -10,7 +10,10 @@ namespace ravendb::client::json
 
 	std::string JsonOperation::add_index_field_path(const std::string& field_path, size_t position)
 	{
-		return field_path_combine(field_path, std::to_string(position));
+		//return field_path_combine(field_path, std::to_string(position));
+		std::ostringstream output{};
+		output << field_path << "[" << position << "]";
+		return output.str();
 	}
 
 	bool JsonOperation::compare_values(const nlohmann::json& old_prop, const nlohmann::json& new_prop)

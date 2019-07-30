@@ -62,7 +62,7 @@ namespace ravendb::client::documents::session
 		{
 			throw_entity_not_in_session();
 		}
-		const auto metadata = static_cast<const nlohmann::json::object_t&>(document->metadata);
+		const auto metadata = (document->metadata);
 		if(auto it = metadata.find(constants::documents::metadata::ATTACHMENTS);
 			it == metadata.end())
 		{
@@ -71,9 +71,9 @@ namespace ravendb::client::documents::session
 		else
 		{
 			std::vector<documents::operations::attachments::AttachmentName> results{};
-			results.reserve(it->second.size());
+			results.reserve(it.value().size());
 
-			for(const auto& attachment : it->second)
+			for(const auto& attachment : it.value())
 			{
 				results.emplace_back(attachment.get<documents::operations::attachments::AttachmentName>());
 			}

@@ -45,10 +45,6 @@ namespace ravendb::client::documents::session::operations::lazy
 	template <typename T>
 	void LazyQueryOperation<T>::handle_response(std::shared_ptr<const queries::QueryResult> query_result)
 	{
-		if (!query_result)
-		{
-			return;
-		}
 		_query_operation->ensure_is_acceptable_and_save_result(query_result);
 		for(const auto& event : _after_query_executed)
 		{

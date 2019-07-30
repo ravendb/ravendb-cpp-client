@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <typeinfo>
 #include <atomic>
+#include "MetadataAsDictionary.h"
 #include "BatchOptions.h"
 #include "SessionInfo.h"
 #include "DocumentsById.h"
@@ -18,6 +19,7 @@
 #include "utils.h"
 #include "GenerateEntityIdOnTheClient.h"
 #include "EventHandler.h"
+#include "AfterSaveChangesEventArgs.h"
 
 namespace ravendb::client
 {
@@ -43,7 +45,6 @@ namespace ravendb::client
 			enum class TransactionMode;
 			class EntityToJson;
 			struct SessionOptions;
-			struct IMetadataDictionary;
 			struct DocumentsChanges;
 			class AdvancedSessionExtentionBase;
 
@@ -111,19 +112,45 @@ namespace ravendb::client::documents::session
 
 		static const int32_t DEFAULT_MAX_NUMBER_OF_REQUESTS_PER_SESSION = 30;
 
-		struct  SaveChangesData
+		struct SaveChangesData
 		{
+			class ActionsToRunOnSuccess
+			{
+			private:
+				const std::shared_ptr<InMemoryDocumentSessionOperations> _session;
+				std::vector<std::string> _documents_by_id_to_remove{};
+				std::vector<std::shared_ptr<void>> _documents_by_entity_to_remove{};
+				std::vector<std::pair<std::shared_ptr<DocumentInfo>, nlohmann::json>> _documents_infos_to_update{};
+
+				//TODO private ClusterTransactionOperationsBase _clusterTransactionOperations;
+				bool _clear_deleted_entities{};
+
+			public:
+				explicit ActionsToRunOnSuccess(std::shared_ptr<InMemoryDocumentSessionOperations> session);
+
+				void remove_document_by_id(std::string id);
+
+				void remove_document_by_entity(std::shared_ptr<void> entity);
+
+				//TODO public void clearClusterTransactionOperations(ClusterTransactionOperationsBase clusterTransactionOperations) {
+				//_clusterTransactionOperations = clusterTransactionOperations;
+				//}
+
+				void update_entity_document_info(std::shared_ptr<DocumentInfo> document_info, nlohmann::json document);
+
+				void clear_session_state_after_successful_save_changes();
+
+				void clear_deleted_entities();
+			};
+
 			std::list<std::shared_ptr<commands::batches::CommandDataBase>> deferred_commands{};
 			std::unordered_map<in_memory_document_session_operations::IdTypeAndName, std::shared_ptr<commands::batches::CommandDataBase>> deferred_commands_map{};
-			std::list< std::shared_ptr<commands::batches::CommandDataBase>> session_commands{};
+			std::list<std::shared_ptr<commands::batches::CommandDataBase>> session_commands{};
 			std::vector<std::shared_ptr<void>> entities{};
 			std::optional<commands::batches::BatchOptions> options{};
+			std::shared_ptr<ActionsToRunOnSuccess> on_success{};
 
-			explicit SaveChangesData(std::shared_ptr<InMemoryDocumentSessionOperations> session)
-				: deferred_commands(session->_deferred_commands)
-				, deferred_commands_map(session->_deferred_commands_map)
-				, options(session->_save_changes_options)
-			{}
+			explicit SaveChangesData(std::shared_ptr<InMemoryDocumentSessionOperations> session);
 		};
 
 		class IndexesWaitOptsBuilder
@@ -267,7 +294,7 @@ namespace ravendb::client::documents::session
 		void set_transaction_mode(TransactionMode mode);
 
 		template<typename T>
-		std::shared_ptr<IMetadataDictionary> get_metadata_for(std::shared_ptr<T> entity) const;
+		std::shared_ptr<json::MetadataAsDictionary> get_metadata_for(std::shared_ptr<T> entity) const;
 
 		//TODO template<typename T> std::shared_ptr<IMetadataDictionary> get_counters_for(std::shared_ptr<T> entity)
 
@@ -380,6 +407,8 @@ namespace ravendb::client::documents::session
 
 		bool check_if_already_included(const std::vector<std::string>& ids, const std::vector<std::string>& includes);
 
+		void on_after_save_changes_invoke(const AfterSaveChangesEventArgs& after_save_changes_events_args);
+
 	protected:
 		InMemoryDocumentSessionOperations(std::shared_ptr<DocumentStoreBase> document_store,/* UUID id,*/ SessionOptions options);
 
@@ -411,13 +440,13 @@ namespace ravendb::client::documents::session
 			std::shared_ptr<conventions::DocumentConventions> conventions);
 
 	private:
-		std::shared_ptr<IMetadataDictionary> get_metadata_for_internal(std::shared_ptr<void> entity) const;
+		std::shared_ptr<json::MetadataAsDictionary> get_metadata_for_internal(std::type_index type, std::shared_ptr<void> entity) const;
 
-		std::optional<std::string> get_change_vector_for_internal(std::shared_ptr<void> entity) const;
+		std::optional<std::string> get_change_vector_for_internal(std::type_index type, std::shared_ptr<void> entity) const;
 
-		std::optional<impl::DateTimeOffset> get_last_modified_for_internal(std::shared_ptr<void> entity) const;
+		std::optional<impl::DateTimeOffset> get_last_modified_for_internal(std::type_index type, std::shared_ptr<void> entity) const;
 
-		std::shared_ptr<DocumentInfo> get_document_info(std::shared_ptr<void> entity) const;
+		std::shared_ptr<DocumentInfo> get_document_info(std::type_index type, std::shared_ptr<void> entity) const;
 
 		std::optional<std::string> get_document_id_internal(std::shared_ptr<void> entity) const;
 
@@ -457,33 +486,33 @@ namespace ravendb::client::documents::session
 	};
 
 	template<typename T>
-	inline std::shared_ptr<IMetadataDictionary> InMemoryDocumentSessionOperations::get_metadata_for(std::shared_ptr<T> entity) const
+	std::shared_ptr<json::MetadataAsDictionary> InMemoryDocumentSessionOperations::get_metadata_for(std::shared_ptr<T> entity) const
 	{
 		if (!entity)
 		{
 			throw std::invalid_argument("Entity cannot be empty");
 		}
-		return get_metadata_for_internal(std::static_pointer_cast<void>(entity));
+		return get_metadata_for_internal(typeid(T), std::static_pointer_cast<void>(entity));
 	}
 
 	template<typename T>
-	inline std::optional<std::string> InMemoryDocumentSessionOperations::get_change_vector_for(std::shared_ptr<T> entity) const
+	std::optional<std::string> InMemoryDocumentSessionOperations::get_change_vector_for(std::shared_ptr<T> entity) const
 	{
 		if (!entity)
 		{
 			throw std::invalid_argument("Entity cannot be null");
 		}
-		return get_change_vector_for_internal(std::static_pointer_cast<void>(entity));
+		return get_change_vector_for_internal(typeid(T), std::static_pointer_cast<void>(entity));
 	}
 
 	template<typename T>
-	inline std::optional<impl::DateTimeOffset> InMemoryDocumentSessionOperations::get_last_modified_for(std::shared_ptr<T> entity) const
+	std::optional<impl::DateTimeOffset> InMemoryDocumentSessionOperations::get_last_modified_for(std::shared_ptr<T> entity) const
 	{
 		if (!entity)
 		{
 			throw std::invalid_argument("Entity cannot be null");
 		}
-		return get_last_modified_for_internal(std::static_pointer_cast<void>(entity));
+		return get_last_modified_for_internal(typeid(T), std::static_pointer_cast<void>(entity));
 	}
 
 	template<typename T>
@@ -567,7 +596,7 @@ namespace ravendb::client::documents::session
 	template<typename T>
 	void InMemoryDocumentSessionOperations::ignore_changes_for(std::shared_ptr<T> entity)
 	{
-		get_document_info(std::static_pointer_cast<void>(entity))->ignore_changes = true;
+		get_document_info(typeid(T), std::static_pointer_cast<void>(entity))->ignore_changes = true;
 	}
 
 	template<typename T>

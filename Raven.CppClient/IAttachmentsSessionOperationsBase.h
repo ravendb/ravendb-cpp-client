@@ -1,9 +1,5 @@
 #pragma once
-
-namespace ravendb::client::documents::operations::attachments
-{
-	struct AttachmentName;
-}
+#include "AttachmentName.h"
 
 namespace ravendb::client::documents::session
 {

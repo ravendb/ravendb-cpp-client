@@ -4,15 +4,15 @@
 #include "DocumentConventions.h"
 #include <optional>
 
-//The Id field named 'ID_FIELD_NAME' should be of the type std::string or std::optional<std::string>
+//The Id field named 'ID_FIELD_NAME' should be of the types std::string or std::optional<std::string>
 #define REGISTER_ID_PROPERTY_FOR(TYPE, ID_FIELD_NAME)\
 do\
 {\
-	ravendb::client::documents::conventions::DocumentConventions::add_entity_id_helper(typeid(TYPE), EntityIdHelper(\
+	ravendb::client::documents::conventions::DocumentConventions::add_entity_id_helper(typeid(TYPE), ravendb::client::EntityIdHelper(\
 		[](std::type_index type, std::shared_ptr<void> entity)->std::optional<std::string>\
 	{\
 		auto typed_entity = std::static_pointer_cast<TYPE>(entity);\
-		if (!entity)\
+		if (!typed_entity)\
 		{\
 			throw std::invalid_argument("'entity' is empty or of incompatible type");\
 		}\
@@ -32,7 +32,7 @@ do\
 		[](std::type_index type, std::shared_ptr<void> entity, const std::string& id)->bool\
 	{\
 		auto typed_entity = std::static_pointer_cast<TYPE>(entity);\
-		if (!entity)\
+		if (!typed_entity)\
 		{\
 			throw std::invalid_argument("'entity' is empty or of incompatible type");\
 		}\

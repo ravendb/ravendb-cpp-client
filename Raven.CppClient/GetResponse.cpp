@@ -31,7 +31,7 @@ namespace ravendb::client::documents::commands::multi_get
 
 		get_val_from_json(j, "Headers", gr.headers);
 		if (auto it = j.find("Result");
-			it != j.end())
+			it != j.end() && !it->is_null())
 		{
 			gr.result.emplace(it->dump());
 		}

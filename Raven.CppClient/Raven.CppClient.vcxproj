@@ -161,6 +161,7 @@
     <ClInclude Include="AbstractMultiMapIndexCreationTask.h" />
     <ClInclude Include="AddDatabaseNodeOperation.h" />
     <ClInclude Include="AdvancedSessionExtentionBase.h" />
+    <ClInclude Include="AfterSaveChangesEventArgs.h" />
     <ClInclude Include="AllTopologyNodesDownException.h" />
     <ClInclude Include="AttachmentDetails.h" />
     <ClInclude Include="AttachmentDoesNotExistException.h" />
@@ -178,6 +179,8 @@
     <ClInclude Include="BatchOperation.h" />
     <ClInclude Include="BatchOptions.h" />
     <ClInclude Include="BatchPatchCommandData.h" />
+    <ClInclude Include="BeforeDeleteEventArgs.h" />
+    <ClInclude Include="BeforeStoreEventArgs.h" />
     <ClInclude Include="BuildNumber.h" />
     <ClInclude Include="BulkInsertAbortedException.h" />
     <ClInclude Include="BulkInsertProtocolViolationException.h" />
@@ -236,6 +239,7 @@
     <ClInclude Include="EventHandler.h" />
     <ClInclude Include="EventHelper.h" />
     <ClInclude Include="ExceptionDispatcher.h" />
+    <ClInclude Include="ExplainQueryCommand.h" />
     <ClInclude Include="ExplanationOptions.h" />
     <ClInclude Include="Explanations.h" />
     <ClInclude Include="ExplanationToken.h" />
@@ -308,6 +312,7 @@
     <ClInclude Include="IVoidServerOperation.h" />
     <ClInclude Include="JavaScriptException.h" />
     <ClInclude Include="JavaScriptParseException.h" />
+    <ClInclude Include="JsonExtensions.h" />
     <ClInclude Include="Lazy.h" />
     <ClInclude Include="LazyLoaderWithInclude.h" />
     <ClInclude Include="LazyLoadOperation.h" />
@@ -319,6 +324,7 @@
     <ClInclude Include="LicenseActivationException.h" />
     <ClInclude Include="LoadStartingWithOperation.h" />
     <ClInclude Include="LoadToken.h" />
+    <ClInclude Include="MetadataDictionaryArray.h" />
     <ClInclude Include="MethodCall.h" />
     <ClInclude Include="MillisToTimespanConverter.h" />
     <ClInclude Include="ConcurrencyCheckMode.h" />
@@ -396,7 +402,6 @@
     <ClInclude Include="LoadOperation.h" />
     <ClInclude Include="MaintenanceOperationExecutor.h" />
     <ClInclude Include="MetadataAsDictionary.h" />
-    <ClInclude Include="IMetadataDictionary.h" />
     <ClInclude Include="MoreLikeThisBase.h" />
     <ClInclude Include="MoreLikeThisOptions.h" />
     <ClInclude Include="MoreLikeThisScope.h" />
@@ -534,6 +539,7 @@
     <ClInclude Include="TransactionMode.h" />
     <ClInclude Include="TrueToken.h" />
     <ClInclude Include="UnsuccessfulRequestException.h" />
+    <ClInclude Include="UpdateDatabaseOperation.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="VoidRavenCommand.h" />
     <ClInclude Include="WhereOperator.h" />
@@ -551,6 +557,7 @@
     <ClCompile Include="AddDatabaseNodeOperation.cpp" />
     <ClCompile Include="AdvancedSessionExtentionBase.cpp" />
     <ClCompile Include="AdvancedSessionOperations.cpp" />
+    <ClCompile Include="AfterSaveChangesEventArgs.cpp" />
     <ClCompile Include="AllTopologyNodesDownException.cpp" />
     <ClCompile Include="AttachmentDetails.cpp" />
     <ClCompile Include="AttachmentDoesNotExistException.cpp" />
@@ -564,6 +571,8 @@
     <ClCompile Include="BatchCommandResult.cpp" />
     <ClCompile Include="BatchOperation.cpp" />
     <ClCompile Include="BatchPatchCommandData.cpp" />
+    <ClCompile Include="BeforeDeleteEventArgs.cpp" />
+    <ClCompile Include="BeforeStoreEventArgs.cpp" />
     <ClCompile Include="BuildNumber.cpp" />
     <ClCompile Include="BulkInsertAbortedException.cpp" />
     <ClCompile Include="BulkInsertProtocolViolationException.cpp" />
@@ -617,6 +626,7 @@
     <ClCompile Include="EntityIdHelper.cpp" />
     <ClCompile Include="EventArgs.cpp" />
     <ClCompile Include="ExceptionDispatcher.cpp" />
+    <ClCompile Include="ExplainQueryCommand.cpp" />
     <ClCompile Include="ExplanationOptions.cpp" />
     <ClCompile Include="Explanations.cpp" />
     <ClCompile Include="GetAttachmentOperation.cpp" />
@@ -668,9 +678,11 @@
     <ClCompile Include="InvalidQueryException.cpp" />
     <ClCompile Include="JavaScriptException.cpp" />
     <ClCompile Include="JavaScriptParseException.cpp" />
+    <ClCompile Include="JsonExtensions.cpp" />
     <ClCompile Include="LicenseActivationException.cpp" />
     <ClCompile Include="LoadOperation.cpp" />
     <ClCompile Include="LoadStartingWithOperation.cpp" />
+    <ClCompile Include="MetadataDictionaryArray.cpp" />
     <ClCompile Include="MoreLikeThisOptions.cpp" />
     <ClCompile Include="MoreLikeThisScope.cpp" />
     <ClCompile Include="MoveAttachmentCommandData.cpp" />
@@ -748,6 +760,7 @@
     <ClCompile Include="ToggleDatabasesStateOperation.cpp" />
     <ClCompile Include="TrueToken.cpp" />
     <ClCompile Include="UnsuccessfulRequestException.cpp" />
+    <ClCompile Include="UpdateDatabaseOperation.cpp" />
     <ClCompile Include="WhereToken.cpp" />
     <ClCompile Include="WktCriteria.cpp" />
     <ClCompile Include="WktField.cpp" />

@@ -5,6 +5,7 @@
 #include "User.h"
 #include "AdvancedSessionOperations.h"
 #include "MetadataAsDictionary.h"
+#include "MetadataDictionaryArray.h"
 #include "AttachmentResult.h"
 #include "DeleteAttachmentOperation.h"
 #include "DeleteCommandData.h"
@@ -59,13 +60,11 @@ namespace ravendb::client::tests::client::attachments
 			auto session = store->open_session();
 
 			auto user = session.load<infrastructure::entities::User>("users/1");
-			auto metadata = session.advanced().get_metadata_for(user);
+			auto& metadata = *session.advanced().get_metadata_for(user);
 
-			ASSERT_EQ("HasAttachments", std::any_cast<std::string>(
-				metadata->get_dictionary().at(constants::documents::metadata::FLAGS)));
+			ASSERT_EQ("HasAttachments", metadata.get_as<std::string>(constants::documents::metadata::FLAGS));
 
-			auto attachments = std::any_cast<std::vector<std::any>>(
-				metadata->get_dictionary().at(constants::documents::metadata::ATTACHMENTS));
+			const auto& attachments = metadata.get_as_array(constants::documents::metadata::ATTACHMENTS);
 
 			ASSERT_EQ(3, attachments.size());
 
@@ -74,12 +73,9 @@ namespace ravendb::client::tests::client::attachments
 			size_t counter{ 0 };
 			for(const auto& name : names)
 			{
-				auto&& attachment = std::static_pointer_cast<documents::session::IMetadataDictionary>(
-					std::any_cast<std::shared_ptr<json::MetadataAsDictionary>>(
-					attachments[counter++]));
+				const auto& attachment = attachments.get_as_dict(counter++);
 
-				ASSERT_EQ(name, std::any_cast<std::string>(
-					attachment->get_dictionary().at("Name")));
+				ASSERT_EQ(name, attachment.get_as<std::string>("Name"));
 			}
 		}
 	}
@@ -205,13 +201,11 @@ namespace ravendb::client::tests::client::attachments
 			auto session = store->open_session();
 
 			auto user = session.load<infrastructure::entities::User>("users/1");
-			auto metadata = session.advanced().get_metadata_for(user);
+			auto& metadata = *session.advanced().get_metadata_for(user);
 
-			ASSERT_EQ("HasAttachments", std::any_cast<std::string>(
-				metadata->get_dictionary().at(constants::documents::metadata::FLAGS)));
+			ASSERT_EQ("HasAttachments", metadata.get_as<std::string>(constants::documents::metadata::FLAGS));
 
-			auto attachments = std::any_cast<std::vector<std::any>>(
-				metadata->get_dictionary().at(constants::documents::metadata::ATTACHMENTS));
+			auto& attachments = metadata.get_as_array(constants::documents::metadata::ATTACHMENTS);
 
 			ASSERT_EQ(2, attachments.size());
 
@@ -252,13 +246,11 @@ namespace ravendb::client::tests::client::attachments
 			auto session = store->open_session();
 
 			auto user = session.load<infrastructure::entities::User>("users/1");
-			auto metadata = session.advanced().get_metadata_for(user);
+			auto& metadata = *session.advanced().get_metadata_for(user);
 
-			ASSERT_EQ("HasAttachments", std::any_cast<std::string>(
-				metadata->get_dictionary().at(constants::documents::metadata::FLAGS)));
+			ASSERT_EQ("HasAttachments", metadata.get_as<std::string>(constants::documents::metadata::FLAGS));
 
-			auto attachments = std::any_cast<std::vector<std::any>>(
-				metadata->get_dictionary().at(constants::documents::metadata::ATTACHMENTS));
+			auto& attachments = metadata.get_as_array(constants::documents::metadata::ATTACHMENTS);
 
 			ASSERT_EQ(1, attachments.size());
 

@@ -9,6 +9,19 @@ namespace ravendb::client::tests::infrastructure::entities
 		std::string firstName;
 		std::string surname;
 		std::string email;
+
+
+		friend bool operator==(const Contact& lhs, const Contact& rhs)
+		{
+			return lhs.firstName == rhs.firstName
+				&& lhs.surname == rhs.surname
+				&& lhs.email == rhs.email;
+		}
+
+		friend bool operator!=(const Contact& lhs, const Contact& rhs)
+		{
+			return !(lhs == rhs);
+		}
 	};
 
 	inline void to_json(nlohmann::json& j, const Contact& c)

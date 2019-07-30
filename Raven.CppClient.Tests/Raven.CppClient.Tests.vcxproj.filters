@@ -210,6 +210,45 @@
     <ClCompile Include="RavenDB_12169Test.cpp">
       <Filter>ravendb.client.tests\test\issues</Filter>
     </ClCompile>
+    <ClCompile Include="RavenDB_6558Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_9587Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_10566Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_9745Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_10638Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_10641Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_10929Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_12790Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_13034Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_11649Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_11552Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_11058Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
+    <ClCompile Include="RavenDB_8328Test.cpp">
+      <Filter>ravendb.client.tests\test\issues</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
