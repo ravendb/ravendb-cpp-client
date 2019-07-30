@@ -21,6 +21,7 @@
 #include "SetIndexesPriorityOperation.h"
 #include "GetTermsOperation.h"
 #include "ExplainQueryCommand.h"
+#include "Post.h"
 
 namespace ravendb::client::tests::client::indexing
 {
@@ -35,6 +36,7 @@ namespace ravendb::client::tests::client::indexing
 		static void SetUpTestCase()
 		{
 			REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
+			REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::Post, id);
 		}
 
 		class Users_ByName : public documents::indexes::AbstractIndexCreationTask
@@ -64,6 +66,26 @@ namespace ravendb::client::tests::client::indexing
 				SET_DEFAULT_INDEX_NAME();
 
 				map = "from user in docs.users select new { user.Name }";
+			}
+		};
+
+		class Posts_ByTitleAndDesc : public documents::indexes::AbstractIndexCreationTask
+		{
+		public:
+			~Posts_ByTitleAndDesc() override = default;
+			Posts_ByTitleAndDesc()
+			{
+				SET_DEFAULT_INDEX_NAME();
+
+				map = "from p in docs.Posts select new { p.title, p.desc }";
+				using namespace ravendb::client::documents::indexes;
+				index("title", FieldIndexing::SEARCH);
+				store("title", FieldStorage::YES);
+				analyze("title", "Lucene.Net.Analysis.SimpleAnalyzer");
+
+				index("desc", FieldIndexing::SEARCH);
+				store("desc", FieldStorage::YES);
+				analyze("desc", "Lucene.Net.Analysis.SimpleAnalyzer");
 			}
 		};
 	};
@@ -370,9 +392,58 @@ namespace ravendb::client::tests::client::indexing
 		ASSERT_FALSE(explanations->at(0).reason.empty());
 	}
 
-	//TODO implement | waiting for query/moreLikeThis
-	//TEST_F(IndexesFromClientTest, MoreLikeThis)
-	//{
-	//	auto store = get_document_store(TEST_NAME);
-	//}
+	//TODO waiting for moreLikeThis implementation
+	TEST_F(IndexesFromClientTest, DISABLED_MoreLikeThis)
+	{
+		auto store = get_document_store(TEST_NAME);
+
+		{
+			auto session = store->open_session();
+
+			auto post1 = std::make_shared<infrastructure::entities::Post>();
+			post1->id = "posts/1";
+			post1->title = "doduck";
+			post1->desc = "prototype";
+			session.store(post1);
+
+			auto post2 = std::make_shared<infrastructure::entities::Post>();
+			post2->id = "posts/2";
+			post2->title = "doduck";
+			post2->desc = "prototype your idea";
+			session.store(post2);
+
+			auto post3 = std::make_shared<infrastructure::entities::Post>();
+			post3->id = "posts/3";
+			post3->title = "doduck";
+			post3->desc = "love programming";
+			session.store(post3);
+
+			auto post4 = std::make_shared<infrastructure::entities::Post>();
+			post4->id = "posts/4";
+			post4->title = "We do";
+			post4->desc = "prototype";
+			session.store(post4);
+
+			auto post5 = std::make_shared<infrastructure::entities::Post>();
+			post5->id = "posts/5";
+			post5->title = "We love";
+			post5->desc = "challange";
+			session.store(post5);
+
+			session.save_changes();
+		}
+
+		Posts_ByTitleAndDesc().execute(store);
+		wait_for_indexing(store);
+
+		{
+			auto session = store->open_session();
+
+			auto options = documents::queries::more_like_this::MoreLikeThisOptions();
+			options.minimum_document_frequency = 1;
+			options.minimum_term_frequency = 0;
+
+
+		}
+	}
 }
