@@ -23,7 +23,7 @@ namespace ravendb::client::tests::client
 		}
 	};
 
-	TEST_F(CompactTest, CanCompactDatabase)
+	/*TEST_F(CompactTest, CanCompactDatabase)
 	{
 		auto store = get_document_store(TEST_NAME);
 
@@ -44,5 +44,5 @@ namespace ravendb::client::tests::client
 		auto operation = store->maintenance()->server()->send_async(documents::operations::CompactDatabaseOperation(compact_settings));
 
 		operation->wait_for_completion();
-	}
+	}*/
 }

@@ -1,4 +1,4 @@
-https://a.sashatim125test.development.run:8085
+https://a.cpp-client-test.ravendb.run
 c:\work\User\User.crt
 c:\work\User\User.key
 
