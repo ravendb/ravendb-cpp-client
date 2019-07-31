@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "ConnectionDetailsHolder.h"
 #include <fstream>
+#include <filesystem>
+#include <finally.hpp>
+
+namespace fs = std::filesystem;
 
 namespace ravendb::client::tests::infrastructure
 {
@@ -10,10 +14,39 @@ namespace ravendb::client::tests::infrastructure
 	{
 		//open definitions file
 		std::ifstream def_file(def_file_name);
-		if (!def_file)
+		if (!def_file) //if we didn't find the file at it's path, first look at the same folder as executing assembly
+		{
+			auto filename = fs::path(def_file_name).filename();
+			def_file = std::ifstream(filename.string());
+
+			if(!def_file) //if we didn't find the config at the same file as executing assembly, try environment variables
+			{
+				//try to find the path from environment variable
+				char* value = nullptr;
+				size_t sz = 0;
+				auto _ = finally([value] { if(value != nullptr) free(value); });
+
+				if (_dupenv_s(&value, &sz, filename.string().c_str()) != 0 || value == nullptr)
+				{
+					throw std::runtime_error(std::string("Failed to get the value for environment variable ") + filename.string());		    
+				}
+
+				if(value != nullptr && sz > 0)
+				{
+					def_file = std::ifstream(value);
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Failed to get the value for environment variable ") + filename.string());
+				}
+			}
+		}
+
+		if(!def_file)
 		{
 			throw std::runtime_error(std::string("Can't open ") + def_file_name);
 		}
+
 		if (!std::getline(def_file, url))
 		{
 			throw std::runtime_error(std::string("Can't read url from ") + def_file_name);
