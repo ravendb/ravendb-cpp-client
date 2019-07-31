@@ -216,6 +216,7 @@ namespace ravendb::client::tests::issues
 		ASSERT_TRUE(changes_paths.size() == 1 && changes_paths.at(0).empty());
 	}
 
+	////For now commented because the compiler crashes when I try to compile this test
 	//TEST_F(RavenDB_11649Test, WhatChanged_WhenInnerPropertyInArrayChanged_ShouldReturnWithRelevantPath)
 	//{
 	//	auto store = get_document_store(TEST_NAME);
@@ -312,6 +313,7 @@ namespace ravendb::client::tests::issues
 		ASSERT_TRUE(changes_paths.size() == 1 && changes_paths.at(0) == "innerClassMatrix[0][0]");
 	}
 
+	////For now commented because the compiler crashes when I try to compile this test
 	//TEST_F(RavenDB_11649Test, WhatChanged_WhenAllNamedAPropertiesChanged_ShouldReturnDifferentPaths)
 	//{
 	//	auto store = get_document_store(TEST_NAME);
