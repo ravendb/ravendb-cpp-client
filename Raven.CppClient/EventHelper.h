@@ -20,7 +20,7 @@ namespace ravendb::client::primitives
 	{
 		for(const auto& delegate : delegates)
 		{
-			delegate.handle(sender, event);
+			delegate.handle(&sender, event);
 		}
 	}
 

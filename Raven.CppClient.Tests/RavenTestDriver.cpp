@@ -131,8 +131,8 @@ namespace ravendb::client::tests::driver
 
 		store->initialize();
 
-		store->add_after_close_listener(std::function<void(const int&, const primitives::VoidArgs&)>(
-			[store](const int&, const primitives::EventArgs&)
+		store->add_after_close_listener(std::function<void(const documents::DocumentStore*, const primitives::VoidArgs&)>(
+			[store](const documents::DocumentStore*, const primitives::EventArgs&)
 		{
 			if(document_stores.find(store) == document_stores.end())
 			{
