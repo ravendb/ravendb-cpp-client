@@ -29,8 +29,8 @@ namespace ravendb::client::tests::issues
 
 		auto name = std::shared_ptr<std::string>();
 
-		store->add_after_save_changes_listener(std::function<void(const int&, const documents::session::AfterSaveChangesEventArgs&)>(
-			[&](const int&, const documents::session::AfterSaveChangesEventArgs& event)
+		store->add_after_save_changes_listener(std::function<void(const documents::DocumentStore*, const documents::session::AfterSaveChangesEventArgs&)>(
+			[&](const documents::DocumentStore*, const documents::session::AfterSaveChangesEventArgs& event)
 		{
 			name = std::make_shared<std::string>(
 				event.get_document_metadata()->get_as<std::string>("Name"));

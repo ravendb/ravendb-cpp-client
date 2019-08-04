@@ -116,7 +116,7 @@ namespace ravendb::client::documents
 			return;
 		}
 
-		primitives::EventHelper::invoke(before_close, *this, primitives::EventArgs::EMPTY);
+		primitives::EventHelper::invoke(before_close, this, primitives::EventArgs::EMPTY);
 
 		//TODO implement the rest
 
@@ -131,7 +131,7 @@ namespace ravendb::client::documents
 
 		disposed = true;
 
-		primitives::EventHelper::invoke(after_close, *this, primitives::EventArgs::EMPTY);
+		primitives::EventHelper::invoke(after_close, this, primitives::EventArgs::EMPTY);
 
 		for(auto& [db, re] : _request_executors)
 		{
