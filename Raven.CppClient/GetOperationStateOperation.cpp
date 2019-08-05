@@ -40,7 +40,7 @@ namespace ravendb::client::documents::operations
 		{
 			return;
 		}
-		_result = std::make_shared<ResultType>(response->get<ResultType>());
+		_result = std::make_shared<ResultType>(response.value());
 	}
 
 	bool GetOperationStateOperation::GetOperationStateCommand::is_read_request() const
