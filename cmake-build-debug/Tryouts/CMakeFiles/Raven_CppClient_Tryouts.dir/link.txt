@@ -1,1 +1,0 @@
-/usr/bin/c++  -g   CMakeFiles/Raven_CppClient_Tryouts.dir/pch.cpp.o CMakeFiles/Raven_CppClient_Tryouts.dir/Tryouts.cpp.o  -o Raven_CppClient_Tryouts -Wl,-rpath,/home/alexander/RavenDB_Client/raven-cpp-client/cmake-build-debug/Raven.CppClient ../Raven.CppClient/libRaven_CppClient.so -lstdc++fs -lcurl -lssl -lcrypto -lpthread 
