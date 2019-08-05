@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef _MSC_VER 
+#if __cplusplus == 201703L
 #include <filesystem>
 #else
 #include <experimental/filesystem>
@@ -18,7 +18,7 @@ namespace ravendb::client::impl
 
 		//full path including the filename
 		//optional , may be empty
-#ifdef _MSC_VER 
+#if __cplusplus == 201703L
 		std::filesystem::path ca_path{};
 #else
         std::experimental::filesystem::path ca_path{};
