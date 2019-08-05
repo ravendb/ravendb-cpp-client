@@ -43,6 +43,11 @@ namespace ravendb::client::documents::operations
 		{
 			auto status = fetch_operation_status();
 
+			if(!status)
+			{
+				throw std::runtime_error("Could not retrieve the operation status from the server");
+			}
+
 			std::string operation_status{};
 			impl::utils::json_utils::get_val_from_json(*status, "Status", operation_status);
 
@@ -50,11 +55,13 @@ namespace ravendb::client::documents::operations
 			{
 				return;
 			}
-			else if(operation_status == "Cancelled")
+
+			if(operation_status == "Cancelled")
 			{
 				throw primitives::OperationCancelledException();
 			}
-			else if(operation_status == "Faulted")
+
+			if(operation_status == "Faulted")
 			{
 				OperationExceptionResult exception_result{};
 				impl::utils::json_utils::get_val_from_json(*status, "Result", exception_result);
@@ -63,10 +70,8 @@ namespace ravendb::client::documents::operations
 
 				std::rethrow_exception(exceptions::ExceptionDispatcher::get(schema, exception_result.status_code));
 			}
-			else
-			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(500));
-			}
+			
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
 	}
 }

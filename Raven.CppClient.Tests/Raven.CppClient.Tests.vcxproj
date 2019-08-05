@@ -100,7 +100,6 @@
     <ClCompile Include="IndexOperationsTest.cpp" />
     <ClCompile Include="JavaScriptIndexTest.cpp" />
     <ClCompile Include="LoadAllStartingWith.cpp" />
-    <ClCompile Include="MichaelsTest.cpp" />
     <ClCompile Include="PatchTest.cpp" />
     <ClCompile Include="PromoteDatabaseTest.cpp" />
     <ClCompile Include="PutDocumentCommandTest.cpp" />
