@@ -845,6 +845,9 @@
     <ClCompile Include="NotImplementedException.cpp">
       <Filter>ravendb.client\exceptions</Filter>
     </ClCompile>
+    <ClCompile Include="GetTypeProjectionFields.cpp">
+      <Filter>ravendb.client\impl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VoidRavenCommand.h">
@@ -2033,6 +2036,9 @@
     </ClInclude>
     <ClInclude Include="NotImplementedException.h">
       <Filter>ravendb.client\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="GetTypeProjectionFields.h">
+      <Filter>ravendb.client\impl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
