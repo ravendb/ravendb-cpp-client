@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "GetCppClassName.h"
-#include <shared_mutex>
 
 namespace ravendb::client::impl::utils
 {
@@ -10,6 +9,13 @@ namespace ravendb::client::impl::utils
 #ifdef _WIN32
 	std::string GetCppClassName::_get_class_name_impl(std::type_index type)
 	{
+		auto lock = std::unique_lock(_classes_names_mutex);
+		if (auto it = _classes_names.find(type);
+			it != _classes_names.end())
+		{
+			return it->second;
+		}
+
 		std::string_view extended_win_class_name = type.name();
 
 		if(extended_win_class_name.find("class ") == 0)
@@ -22,10 +28,9 @@ namespace ravendb::client::impl::utils
 		}
 
 		std::string win_class_name = extended_win_class_name.data();
-		{
-			auto lock = std::unique_lock(_classes_names_mutex);
-			_classes_names.insert_or_assign(type, win_class_name);
-		}
+		
+		_classes_names.emplace(type, win_class_name);
+
 		return win_class_name;
 	}
 #endif
@@ -35,6 +40,13 @@ namespace ravendb::client::impl::utils
 
 	std::string GetCppClassName::_get_class_name_impl(std::type_index type)
 	{
+		auto lock = std::unique_lock(_classes_names_mutex);
+		if (auto it = _classes_names.find(type);
+			it != _classes_names.end())
+		{
+			return it->second;
+		}
+
 		const char* mangled_class_name = type.name();
 
 		int status{};
@@ -48,10 +60,9 @@ namespace ravendb::client::impl::utils
 			msg << "demangling of " << mangled_class_name << " failed";
 			throw std::invalid_argument(msg.str());
 		}
-		{
-			auto lock = std::unique_lock(_classes_names_mutex);
-			_classes_names.insert_or_assign(type, demangled_class_name);
-		}
+		
+		_classes_names.emplace(type, demangled_class_name);
+
 		return demangled_class_name;
 	}
 #endif

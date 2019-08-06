@@ -4,6 +4,7 @@
 #include "SpatialCriteriaFactory.h"
 #include "MoreLikeThisUsingDocument.h"
 #include "GroupByDocumentQuery.h"
+#include "GetTypeProjectionFields.h"
 
 namespace ravendb::client::documents::session
 {
@@ -401,20 +402,7 @@ namespace ravendb::client::documents::session
 	template <typename TProjection>
 	std::shared_ptr<IDocumentQuery<TProjection, DocumentQuery<TProjection>>> DocumentQuery<T>::select_fields()
 	{
-		static_assert(std::is_default_constructible_v<TProjection>, "'TProjection' must be default construclible "
-			"in order for this query to work");
-
-		nlohmann::json sample = TProjection();
-
-		std::vector<std::string> fields{};
-		if(sample.is_object())
-		{
-			fields.reserve(sample.size());		
-			for(const auto& item : sample.items())
-			{
-				fields.push_back(item.key());
-			}
-		}
+		const auto& fields = impl::utils::GetTypeProjectionFields::get_projection_fields<TProjection>();
 
 		return select_fields<TProjection>(queries::QueryData(fields, fields));
 	}

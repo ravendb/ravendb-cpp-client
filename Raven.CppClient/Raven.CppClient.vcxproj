@@ -273,6 +273,7 @@
     <ClInclude Include="GetServerWideOperationStateOperation.h" />
     <ClInclude Include="GetStatisticsOperation.h" />
     <ClInclude Include="GetTcpInfoCommand.h" />
+    <ClInclude Include="GetTypeProjectionFields.h" />
     <ClInclude Include="GroupBy.h" />
     <ClInclude Include="GroupByCountToken.h" />
     <ClInclude Include="GroupByDocumentQuery.h" />
@@ -667,6 +668,7 @@
     <ClCompile Include="GetStatisticsOperation.cpp" />
     <ClCompile Include="GetTcpInfoCommand.cpp" />
     <ClCompile Include="GetTermsOperation.cpp" />
+    <ClCompile Include="GetTypeProjectionFields.cpp" />
     <ClCompile Include="GroupBy.cpp" />
     <ClCompile Include="HeadAttachmentCommand.cpp" />
     <ClCompile Include="HeadDocumentCommand.cpp" />
