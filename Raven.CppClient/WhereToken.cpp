@@ -150,7 +150,7 @@ namespace ravendb::client::documents::session::tokens
 			writer << ")";
 			break;
 		default:
-			throw std::invalid_argument("");
+			throw std::invalid_argument("'where_operator' is of unknown type");
 		}
 	}
 

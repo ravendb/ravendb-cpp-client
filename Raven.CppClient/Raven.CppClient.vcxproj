@@ -435,6 +435,7 @@
     <ClInclude Include="NodeStatus.h" />
     <ClInclude Include="NoLeaderException.h" />
     <ClInclude Include="NonUniqueObjectException.h" />
+    <ClInclude Include="NotImplementedException.h" />
     <ClInclude Include="OpenSubclauseToken.h" />
     <ClInclude Include="Operation.h" />
     <ClInclude Include="OperationCancelledException.h" />
@@ -552,6 +553,7 @@
     <ClInclude Include="TransactionMode.h" />
     <ClInclude Include="TrueToken.h" />
     <ClInclude Include="UnsuccessfulRequestException.h" />
+    <ClInclude Include="UnsupportedOperationException.h" />
     <ClInclude Include="UpdateDatabaseOperation.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="VoidRavenCommand.h" />
@@ -706,6 +708,7 @@
     <ClCompile Include="NodeStatus.cpp" />
     <ClCompile Include="NoLeaderException.cpp" />
     <ClCompile Include="NonUniqueObjectException.cpp" />
+    <ClCompile Include="NotImplementedException.cpp" />
     <ClCompile Include="Operation.cpp" />
     <ClCompile Include="OperationExceptionResult.cpp" />
     <ClCompile Include="OperationExecutor.cpp" />
@@ -773,6 +776,7 @@
     <ClCompile Include="ToggleDatabasesStateOperation.cpp" />
     <ClCompile Include="TrueToken.cpp" />
     <ClCompile Include="UnsuccessfulRequestException.cpp" />
+    <ClCompile Include="UnsupportedOperationException.cpp" />
     <ClCompile Include="UpdateDatabaseOperation.cpp" />
     <ClCompile Include="WhereToken.cpp" />
     <ClCompile Include="WktCriteria.cpp" />

@@ -34,7 +34,7 @@ namespace ravendb::client::documents::queries::spatial
 			where_operator = session::tokens::WhereOperator::SPATIAL_INTERSECTS;
 			break;
 		default:
-			throw std::invalid_argument("");
+			throw std::invalid_argument("'_relation' is of unknown type");
 		}
 
 		return session::tokens::WhereToken::create(where_operator, std::move(field_name), {},

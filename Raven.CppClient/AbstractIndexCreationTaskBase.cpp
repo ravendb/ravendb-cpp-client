@@ -105,43 +105,39 @@ namespace ravendb::client::documents::indexes
 		std::shared_ptr<conventions::DocumentConventions> conventions_param,
 		std::optional<std::string> database)
 	{
-		auto old_conventions = get_conventions();
-
-		try
+		struct OldConventionsRestore
 		{
-			if (conventions_param)
-			{
-				set_conventions(conventions_param);
-			}
-			else if(get_conventions())
-			{}
-			else
-			{
-				set_conventions(store->get_conventions());
-			}
+			AbstractIndexCreationTaskBase* outer_this;
+			std::shared_ptr<conventions::DocumentConventions> old_conventions;
 
-			auto index_definition = create_index_definition();
-			index_definition.name = get_index_name();
+			~OldConventionsRestore(){ outer_this->set_conventions(old_conventions); }
+		} old_conventions_restore{this, get_conventions()};
 
-			if(lock_mode)
-			{
-				index_definition.lock_mode = *lock_mode;
-			}
-			if(priority)
-			{
-				index_definition.priority = *priority;
-			}
-
-			store->maintenance()
-				->for_database(database ? *database : store->get_database())
-				->send(operations::indexes::PutIndexesOperation({ index_definition }));
+		if (conventions_param)
+		{
+			set_conventions(conventions_param);
 		}
-		catch (...)
+		else if(get_conventions())
+		{}
+		else
 		{
-			set_conventions(old_conventions);
-			throw;
+			set_conventions(store->get_conventions());
 		}
 
-		set_conventions(old_conventions);
+		auto index_definition = create_index_definition();
+		index_definition.name = get_index_name();
+
+		if(lock_mode)
+		{
+			index_definition.lock_mode = *lock_mode;
+		}
+		if(priority)
+		{
+			index_definition.priority = *priority;
+		}
+
+		store->maintenance()
+			->for_database(database ? *database : store->get_database())
+			->send(operations::indexes::PutIndexesOperation({ index_definition }));
 	}
 }

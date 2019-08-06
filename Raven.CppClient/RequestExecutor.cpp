@@ -201,34 +201,6 @@ namespace ravendb::client::http
 
 		_scheduler->schedule_task_immediately([task]()->void { (*task)(); });
 		return task->get_future().share();
-
-		//GetDatabaseTopologyCommand getTopology{};
-
-		//std::ostringstream errors;
-
-		//for (const auto& url : _initial_urls)
-		//{
-		//	std::shared_ptr<Topology> result;
-		//	try
-		//	{
-		//		auto server_node = ServerNode(url, _database_name, "?");
-		//		result = execute_internal<Topology>(server_node, getTopology);
-		//	}
-		//	catch (RavenError& re)
-		//	{
-		//		errors << re.what() << '\n';
-		//		if (re.get_error_type() == RavenError::ErrorType::DATABASE_DOES_NOT_EXIST)
-		//		{
-		//			throw RavenError(errors.str(), RavenError::ErrorType::DATABASE_DOES_NOT_EXIST);
-		//		}
-		//		continue;
-		//	}
-		//	// success
-		//	std::atomic_store(&_topology, result);
-		//	return;
-		//}
-
-		//throw RavenError(errors.str(), RavenError::ErrorType::GENERIC);
 	}
 
 	void RequestExecutor::dispose_all_failed_nodes_timers()
