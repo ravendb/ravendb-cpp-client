@@ -702,7 +702,7 @@ namespace ravendb::client::http
 		case ReadBalanceBehavior::FASTEST_NODE:
 			return _node_selector->get_fastest_node();
 		default:
-			throw std::invalid_argument("");
+			throw std::invalid_argument("Unknown ReadBalanceBehavior");
 		}
 	}
 
@@ -871,7 +871,8 @@ namespace ravendb::client::http
 						}
 						catch (...)
 						{
-							std::throw_with_nested(std::runtime_error(""));
+							std::throw_with_nested(std::runtime_error("Received unsuccessful response from a single node. "
+							"Look into the nested exception for details."));
 						}
 					}
 					throw exceptions::AllTopologyNodesDownException(

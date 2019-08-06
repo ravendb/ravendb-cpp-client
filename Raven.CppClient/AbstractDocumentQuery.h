@@ -1815,7 +1815,7 @@ namespace ravendb::client::documents::session
 			where_operator = tokens::WhereOperator::SPATIAL_INTERSECTS;
 			break;
 		default:
-			throw std::invalid_argument("");
+			throw std::invalid_argument("argument 'relation' is of unknown type");
 		}
 
 		tokens.push_back(tokens::WhereToken::create(where_operator, valid_field_name, {},

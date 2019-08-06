@@ -315,7 +315,7 @@ namespace ravendb::client::json
 				}
 				break;
 			default:
-				throw std::invalid_argument("");
+				throw std::invalid_argument("'new_prop.type()' has unknown value");
 
 			}
 		}
