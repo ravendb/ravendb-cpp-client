@@ -18,8 +18,6 @@ namespace ravendb::client::impl::utils
 
 #endif
 
-	std::string new_guid();
-
 	//expects SSL_CTX* in sslctx_void and const CertificateDetails* in cert_details_void
 	CURLcode sslctx_function(CURL*, void *sslctx_void, void *cert_details_void);
 

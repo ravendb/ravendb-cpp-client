@@ -1,35 +1,68 @@
 #include "pch.h"
 #include "ConnectionDetailsHolder.h"
 #include <fstream>
-#include <filesystem>
-#include <finally.hpp>
+#include <algorithm> 
+#include <cctype>
+#include <locale>
 
-namespace fs = std::filesystem;
+#ifdef _MSC_VER
+	#include <filesystem>
+#else
+	#include <experimental/filesystem>
+#endif
+
+#include <finally.hpp>
 
 namespace ravendb::client::tests::infrastructure
 {
+	static inline void rtrim(std::string &s, char trimDelimiter) 
+	{
+		s.erase(std::find_if(s.rbegin(), s.rend(), [trimDelimiter](int ch) { return ch != trimDelimiter; }).base(), s.end());
+	}
+
 	ConnectionDetailsHolder::~ConnectionDetailsHolder() = default;
 
 	ConnectionDetailsHolder::ConnectionDetailsHolder(const std::string& def_file_name, bool has_certificate = true)
 	{
 		//open definitions file
-		std::ifstream def_file(def_file_name);
+		std::ifstream def_file;
+		
+		try
+		{
+			def_file = std::ifstream(def_file_name, std::ios::in);
+		}
+		catch(const std::exception& e) //in Linux this would throw exception if the file doesn't exist
+		{
+			std::cout << "Failed to open " + def_file_name + ". Most likely, it was not found... (reason: " + e.what() + ")" <<std::endl;
+		}
+
 		if (!def_file) //if we didn't find the file at it's path, first look at the same folder as executing assembly
 		{
-			auto filename = fs::path(def_file_name).filename();
-			def_file = std::ifstream(filename.string());
-
+            #ifdef _MSC_VER                                                                                                         
+			auto filename = std::filesystem::path(def_file_name).filename();
+            #else
+            auto filename = std::experimental::filesystem::path(def_file_name).filename();                                          
+			#endif
+			def_file = std::ifstream(filename.string()); //try to get at the same folder as the executable
 			if(!def_file) //if we didn't find the config at the same file as executing assembly, try environment variables
 			{
 				//try to find the path from environment variable
 				char* value = nullptr;
 				size_t sz = 0;
-				auto _ = finally([value] { if(value != nullptr) free(value); });
+				auto _ = finally([value] { if(value != nullptr) free(value); });				
 
-				if (_dupenv_s(&value, &sz, filename.string().c_str()) != 0 || value == nullptr)
-				{
-					throw std::runtime_error(std::string("Failed to get the value for environment variable ") + filename.string());		    
-				}
+				#ifdef _MSC_VER
+					if (_dupenv_s(&value, &sz, filename.string().c_str()) != 0 || value == nullptr)
+					{
+						throw std::runtime_error(std::string("Failed to get th e value for environment variable ") + filename.string());		    
+					}
+				#else
+					value = getenv(filename.string().c_str());
+					if (value == nullptr)
+					{
+						throw std::runtime_error(std::string("Failed to get the value for environment variable ") + filename.string());		    
+					}
+				#endif
 
 				if(value != nullptr && sz > 0)
 				{
@@ -52,20 +85,25 @@ namespace ravendb::client::tests::infrastructure
 			throw std::runtime_error(std::string("Can't read url from ") + def_file_name);
 		}
 
+		rtrim(url, '\r');
+
 		if (!has_certificate)
 		{
 			return;
 		}
+
 		//get certificate
 		std::string cert_file_name;
 		if (!std::getline(def_file, cert_file_name) || cert_file_name.empty())
 		{
 			throw std::runtime_error(std::string("Can't read certificate file name from ") + def_file_name);
 		}
+
+		rtrim(cert_file_name, '\r');
 		std::ifstream cert_file(cert_file_name);
 		if (!cert_file)
-		{
-			throw std::runtime_error(std::string("Can't open ") + cert_file_name);
+		{			
+			throw std::runtime_error(std::string("Failed to open certificate file at: ") + cert_file_name);
 		}
 		{
 			std::stringstream stream;
@@ -78,10 +116,13 @@ namespace ravendb::client::tests::infrastructure
 		{
 			throw std::runtime_error(std::string("Can't read key file name from ") + def_file_name);
 		}
+
+		rtrim(key_file_name, '\r');
+		
 		std::ifstream key_file(key_file_name);
 		if (!key_file)
 		{
-			throw std::runtime_error(std::string("Can't open ") + key_file_name);
+			throw std::runtime_error(std::string("Failed to open key file at: ") + key_file_name);
 		}
 		{
 			std::stringstream stream;

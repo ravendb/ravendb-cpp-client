@@ -380,3 +380,5 @@ cmake-build-release/*
 out/
 External/
 external/
+*.crt
+*.key
