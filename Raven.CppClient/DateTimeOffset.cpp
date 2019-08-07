@@ -103,7 +103,7 @@ namespace ravendb::client::impl
 #ifdef __STDC_LIB_EXT1__
 					std::sscanf_s
 #else
-#if __cplusplus == 201703L
+#if _MSC_VER
 					sscanf_s
 #else
 					std::sscanf

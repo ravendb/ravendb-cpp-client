@@ -60,8 +60,27 @@ if(NOT WIN32)
 	target_link_libraries(Raven_CppClient_Tests PRIVATE stdc++fs)
 endif()
 
-enable_testing()
-
 include(GoogleTest)
 gtest_discover_tests(Raven_CppClient_Tests)  
 
+
+if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/secured_re.txt)
+	message("Copying config file secured_re.txt from ${CMAKE_SOURCE_DIR}/${CONFIG_DIR}/ to ${CMAKE_CURRENT_BINARY_DIR}/")
+	add_custom_command(                                                                                                                                                                                                                                                                    TARGET Raven_CppClient_Tests POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy
+				${CMAKE_SOURCE_DIR}/${CONFIG_DIR}/secured_re.txt
+				${CMAKE_CURRENT_BINARY_DIR}/secured_re.txt)
+else()
+	message("Using config file secured_re.txt at ${CMAKE_CURRENT_BINARY_DIR}/")
+endif()
+
+if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/unsecured_re.txt)	
+	message("Copying config file unsecured_re.txt from ${CMAKE_SOURCE_DIR}/${CONFIG_DIR}/ to ${CMAKE_CURRENT_BINARY_DIR}/")
+	add_custom_command(
+			TARGET Raven_CppClient_Tests POST_BUILD
+					COMMAND ${CMAKE_COMMAND} -E copy
+						${CMAKE_SOURCE_DIR}/${CONFIG_DIR}/unsecured_re.txt
+						${CMAKE_CURRENT_BINARY_DIR}/unsecured_re.txt)
+else()
+	message("Using config file unsecured_re.txt at ${CMAKE_CURRENT_BINARY_DIR}/")
+endif()    
