@@ -2022,6 +2022,9 @@
     <ClInclude Include="JsonExtensions.h">
       <Filter>ravendb.client\extensions</Filter>
     </ClInclude>
+    <ClInclude Include="finally.hpp">
+      <Filter>ravendb.client</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ravendb.client">

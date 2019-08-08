@@ -28,7 +28,6 @@
 
 #include "raven_cpp_client.h"
 
-
 namespace
 {
 	//using fiddler + verbose

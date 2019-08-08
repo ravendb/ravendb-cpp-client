@@ -320,9 +320,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="ravendb.client.tests">
       <UniqueIdentifier>{c51acc5f-7362-496b-ae4d-8a61ddf03933}</UniqueIdentifier>
     </Filter>
@@ -422,5 +419,8 @@
     <Filter Include="ravendb.client.tests\test\issues">
       <UniqueIdentifier>{1c222a05-b44d-40f8-bfe4-ef67d6864df4}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
