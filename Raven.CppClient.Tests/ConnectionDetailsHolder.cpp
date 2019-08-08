@@ -5,13 +5,6 @@
 #include <cctype>
 #include <locale>
 
-#ifdef _MSC_VER
-	#include <filesystem>
-	using namespace std::filesystem;
-#else
-	#include <experimental/filesystem>
-	using namespace std::experimental::filesystem;
-#endif
 
 #include <finally.hpp>
 
@@ -24,7 +17,7 @@ namespace ravendb::client::tests::infrastructure
 
 	ConnectionDetailsHolder::~ConnectionDetailsHolder() = default;
 
-	void ConnectionDetailsHolder::GetEnvVariableValue(char*& value, size_t& sz, std::filesystem::path& filename)
+	void ConnectionDetailsHolder::GetEnvVariableValue(char*& value, size_t& sz, path& filename)
 	{
 #ifdef _MSC_VER
 		if (_dupenv_s(&value, &sz, filename.string().c_str()) != 0 || value == nullptr)
