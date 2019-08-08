@@ -3,7 +3,7 @@ project(RavenDBCppClient)
 include(CTest) 
 
 set(CMAKE_CXX_STANDARD 17)
-
+ 
 if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "/MTd /Zi /Ob0 /Od /RTC1")
 	set(CMAKE_CXX_FLAGS_RELEASE "/MT /O2 /Ob2 /DNDEBUG")	
@@ -25,7 +25,7 @@ message(STATUS "xxhash_cpp include dir: ${xxhash_cpp_SOURCE_DIR}/xxhash")
 list(APPEND CMAKE_INCLUDE_PATH "${xxhash_cpp_SOURCE_DIR}/xxhash")
  
 add_subdirectory(Raven.CppClient)
-
+ 
 #choose if buildings tryouts
 option(BUILD_TRYOUTS "Build the Tryouts" OFF)
 if(BUILD_TRYOUTS)
@@ -54,7 +54,7 @@ endif()
 if(UNIX)
     set(USER_HOME_DIRECTORY $ENV{HOME})
 endif()
- 
+
 
 if(CMAKE_INSTALL_PREFIX EQUAL "")
     set(CMAKE_INSTALL_PREFIX ${USER_HOME_DIRECTORY}/RavenDBCppClient CACHE PATH "destination directory" FORCE)
