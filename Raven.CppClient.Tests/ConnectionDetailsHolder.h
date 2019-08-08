@@ -1,6 +1,14 @@
 #pragma once
 #include "CertificateDetails.h"
 
+#ifdef _MSC_VER
+	#include <filesystem>
+	using namespace std::filesystem;
+#else
+	#include <experimental/filesystem>
+	using namespace std::experimental::filesystem;
+#endif
+
 namespace ravendb::client::tests::infrastructure
 {
 	class ConnectionDetailsHolder
@@ -12,7 +20,7 @@ namespace ravendb::client::tests::infrastructure
 	public:
 		~ConnectionDetailsHolder();
 
-		void GetEnvVariableValue(char*& value, size_t& sz, std::filesystem::path& filename);
+		void GetEnvVariableValue(char*& value, size_t& sz, path& filename);
 
 		ConnectionDetailsHolder(const std::string& def_file_name, bool has_certificate);
 
