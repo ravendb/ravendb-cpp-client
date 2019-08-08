@@ -7,8 +7,10 @@
 
 #ifdef _MSC_VER
 	#include <filesystem>
+	using namespace std::filesystem;
 #else
 	#include <experimental/filesystem>
+	using namespace std::experimental::filesystem;
 #endif
 
 #include <finally.hpp>
@@ -21,6 +23,22 @@ namespace ravendb::client::tests::infrastructure
 	}
 
 	ConnectionDetailsHolder::~ConnectionDetailsHolder() = default;
+
+	void ConnectionDetailsHolder::GetEnvVariableValue(char*& value, size_t& sz, std::filesystem::path& filename)
+	{
+#ifdef _MSC_VER
+		if (_dupenv_s(&value, &sz, filename.string().c_str()) != 0 || value == nullptr)
+		{
+			throw std::runtime_error(std::string("Failed to get th e value for environment variable ") + filename.string());
+		}
+#else
+		value = getenv(filename.string().c_str());
+		if (value == nullptr)
+		{
+			throw std::runtime_error(std::string("Failed to get the value for environment variable ") + filename.string());
+		}
+#endif
+	}
 
 	ConnectionDetailsHolder::ConnectionDetailsHolder(const std::string& def_file_name, bool has_certificate = true)
 	{
@@ -38,11 +56,8 @@ namespace ravendb::client::tests::infrastructure
 
 		if (!def_file) //if we didn't find the file at it's path, first look at the same folder as executing assembly
 		{
-            #ifdef _MSC_VER                                                                                                         
-			auto filename = std::filesystem::path(def_file_name).filename();
-            #else
-            auto filename = std::experimental::filesystem::path(def_file_name).filename();                                          
-			#endif
+			auto filename = path(def_file_name).filename();
+
 			def_file = std::ifstream(filename.string()); //try to get at the same folder as the executable
 			if(!def_file) //if we didn't find the config at the same file as executing assembly, try environment variables
 			{
@@ -51,18 +66,7 @@ namespace ravendb::client::tests::infrastructure
 				size_t sz = 0;
 				auto _ = finally([value] { if(value != nullptr) free(value); });				
 
-				#ifdef _MSC_VER
-					if (_dupenv_s(&value, &sz, filename.string().c_str()) != 0 || value == nullptr)
-					{
-						throw std::runtime_error(std::string("Failed to get th e value for environment variable ") + filename.string());		    
-					}
-				#else
-					value = getenv(filename.string().c_str());
-					if (value == nullptr)
-					{
-						throw std::runtime_error(std::string("Failed to get the value for environment variable ") + filename.string());		    
-					}
-				#endif
+				GetEnvVariableValue(value, sz, filename);
 
 				if(value != nullptr && sz > 0)
 				{

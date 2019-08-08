@@ -43,8 +43,6 @@ target_include_directories(Raven_CppClient_Tests PRIVATE
     ${gtest_SOURCE_DIR} 
     ${CMAKE_CURRENT_SOURCE_DIR})
 
-#add_dependencies(Raven_CppClient_Tests Raven_CppClient)
-
 target_link_libraries(Raven_CppClient_Tests PRIVATE 
     GTest::gtest 
     GTest::gtest_main 
@@ -62,7 +60,6 @@ endif()
 
 include(GoogleTest)
 gtest_discover_tests(Raven_CppClient_Tests)  
-
 
 if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/secured_re.txt)
 	message("Copying config file secured_re.txt from ${CMAKE_SOURCE_DIR}/${CONFIG_DIR}/ to ${CMAKE_CURRENT_BINARY_DIR}/")

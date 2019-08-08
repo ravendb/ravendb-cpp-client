@@ -12,6 +12,8 @@ namespace ravendb::client::tests::infrastructure
 	public:
 		~ConnectionDetailsHolder();
 
+		void GetEnvVariableValue(char*& value, size_t& sz, std::filesystem::path& filename);
+
 		ConnectionDetailsHolder(const std::string& def_file_name, bool has_certificate);
 
 		const impl::CertificateDetails& get_certificate_details() const;
