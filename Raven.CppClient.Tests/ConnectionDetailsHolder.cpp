@@ -17,22 +17,6 @@ namespace ravendb::client::tests::infrastructure
 
 	ConnectionDetailsHolder::~ConnectionDetailsHolder() = default;
 
-	void ConnectionDetailsHolder::GetEnvVariableValue(char*& value, size_t& sz, path& filename)
-	{
-#ifdef _MSC_VER
-		if (_dupenv_s(&value, &sz, filename.string().c_str()) != 0 || value == nullptr)
-		{
-			throw std::runtime_error(std::string("Failed to get th e value for environment variable ") + filename.string());
-		}
-#else
-		value = getenv(filename.string().c_str());
-		if (value == nullptr)
-		{
-			throw std::runtime_error(std::string("Failed to get the value for environment variable ") + filename.string());
-		}
-#endif
-	}
-
 	ConnectionDetailsHolder::ConnectionDetailsHolder(const std::string& def_file_name, bool has_certificate = true)
 	{
 		//open definitions file
@@ -40,6 +24,12 @@ namespace ravendb::client::tests::infrastructure
 		
 		try
 		{
+			auto def_path = absolute(def_file_name).string();
+
+#ifdef _DEBUG
+			std::cerr << "Look for config file at: " + def_path << std::endl;
+#endif
+
 			def_file = std::ifstream(def_file_name, std::ios::in);
 		}
 		catch(const std::exception& e) //in Linux this would throw exception if the file doesn't exist
@@ -49,7 +39,7 @@ namespace ravendb::client::tests::infrastructure
 
 		if (!def_file) //if we didn't find the file at it's path, first look at the same folder as executing assembly
 		{
-			auto filename = path(def_file_name).stem();
+			auto filename = path(def_file_name).filename();
 
 			def_file = std::ifstream(filename.string()); //try to get at the same folder as the executable
 			if(!def_file) //if we didn't find the config at the same file as executing assembly, try environment variables
@@ -58,12 +48,15 @@ namespace ravendb::client::tests::infrastructure
 
 				//try to find the path from environment variable
 				char* value = nullptr;
-				size_t sz = 0;
 				auto _ = finally([value] { if(value != nullptr) free(value); });				
 
-				GetEnvVariableValue(value, sz, filename);
+				value = getenv(path(def_file_name).stem().string().c_str());
+				if (value == nullptr)
+				{
+					throw std::runtime_error(std::string("Failed to get the value for environment variable ") + filename.string());
+				}
 
-				if(value != nullptr && sz > 0)
+				if(value != nullptr)
 				{
 					def_file = std::ifstream(value);
 				}

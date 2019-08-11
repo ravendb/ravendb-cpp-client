@@ -19,7 +19,7 @@ endif()
  
 include(cmake/vcpkg_config.cmake)
 include(cmake/xxhash.cmake)
-   
+    
 message(STATUS "xxhash_cpp include dir: ${xxhash_cpp_SOURCE_DIR}/xxhash")
 
 list(APPEND CMAKE_INCLUDE_PATH "${xxhash_cpp_SOURCE_DIR}/xxhash")
@@ -31,7 +31,7 @@ option(BUILD_TRYOUTS "Build the Tryouts" OFF)
 if(BUILD_TRYOUTS)
     add_subdirectory(Tryouts) 
 endif()
-
+  
 #choose if building tests
 option(BUILD_TESTS "Build the Tests" ON)
 if(BUILD_TESTS)
