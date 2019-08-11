@@ -382,3 +382,5 @@ External/
 external/
 *.crt
 *.key
+/Raven.CppClient.Tests/win_ctest_output.txt
+/Raven.CppClient.Tests/Testing/Temporary/CTestCostData.txt

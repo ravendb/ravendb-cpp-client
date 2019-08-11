@@ -44,16 +44,18 @@ namespace ravendb::client::tests::infrastructure
 		}
 		catch(const std::exception& e) //in Linux this would throw exception if the file doesn't exist
 		{
-			std::cout << "Failed to open " + def_file_name + ". Most likely, it was not found... (reason: " + e.what() + ")" <<std::endl;
+			std::cerr << "Failed to open " + def_file_name + ". Most likely, it was not found... (reason: " + e.what() + ")" <<std::endl;
 		}
 
 		if (!def_file) //if we didn't find the file at it's path, first look at the same folder as executing assembly
 		{
-			auto filename = path(def_file_name).filename();
+			auto filename = path(def_file_name).stem();
 
 			def_file = std::ifstream(filename.string()); //try to get at the same folder as the executable
 			if(!def_file) //if we didn't find the config at the same file as executing assembly, try environment variables
 			{
+				std::cerr << "Failed to find the config file at " + filename.string() + ", so now will try to fetch the path from environment variables" << std::endl;
+
 				//try to find the path from environment variable
 				char* value = nullptr;
 				size_t sz = 0;
@@ -74,7 +76,7 @@ namespace ravendb::client::tests::infrastructure
 
 		if(!def_file)
 		{
-			throw std::runtime_error(std::string("Can't open ") + def_file_name);
+			throw std::runtime_error(std::string("Failed to open the file ") + def_file_name);
 		}
 
 		if (!std::getline(def_file, url))
