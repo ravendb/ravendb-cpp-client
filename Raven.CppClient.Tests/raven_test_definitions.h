@@ -5,12 +5,12 @@
 namespace ravendb::client::tests::infrastructure
 {
 #ifdef _WIN32
-	constexpr char UNSECURED_RE_DETAILS_FILE_NAME[] = "../win_re_config/unsecured_re.txt";
-	constexpr char SECURED_RE_DETAILS_FILE_NAME[] = "../win_re_config/secured_re.txt";
+	constexpr char UNSECURED_RE_DETAILS_FILE_NAME[] = "unsecured_re.txt";
+	constexpr char SECURED_RE_DETAILS_FILE_NAME[] = "secured_re.txt";
 #endif
 #ifdef  __unix__
-    constexpr char UNSECURED_RE_DETAILS_FILE_NAME[] = "../../linux_re_config/unsecured_re.txt";
-	constexpr char SECURED_RE_DETAILS_FILE_NAME[] = "../../linux_re_config/secured_re.txt";
+    constexpr char UNSECURED_RE_DETAILS_FILE_NAME[] = "unsecured_re.txt";
+	constexpr char SECURED_RE_DETAILS_FILE_NAME[] = "secured_re.txt";
 #endif
 
 #define TEST_NAME (ravendb::client::impl::utils::GetCppClassName::get_simple_class_name(typeid(decltype(*this))))
