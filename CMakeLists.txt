@@ -59,15 +59,17 @@ endif()
 if(CMAKE_INSTALL_PREFIX EQUAL "")
     set(CMAKE_INSTALL_PREFIX ${USER_HOME_DIRECTORY}/RavenDBCppClient CACHE PATH "destination directory" FORCE)
 endif()
-
-#FILE(GLOB include_files Raven.CppClient/*.h)
-#FILE(GLOB external_include_files external/*)
-#FILE(GLOB ca_bundle_files ca_bundle/*)
+ 
+FILE(GLOB include_files Raven.CppClient/*.h)
+FILE(GLOB ca_bundle_files ca_bundle/*)
 
 #FILE(GLOB HELLO_WORLD_APP ./hello_world.cpp)
 
-#install(TARGETS Raven_CppClient LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
-#install(FILES ${include_files} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
-#install(FILES ${external_include_files} DESTINATION ${CMAKE_INSTALL_PREFIX}/external)
-#install(FILES ${ca_bundle_files} DESTINATION ${CMAKE_INSTALL_PREFIX}/ca_bundle)
+message("Library install path: ${CMAKE_INSTALL_PREFIX}/lib")
+message("Headers install path: ${CMAKE_INSTALL_PREFIX}/include")
+message("Bundle install path: ${CMAKE_INSTALL_PREFIX}/ca_bundle")
+
+install(FILES ${include_files} DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+install(FILES ${ca_bundle_files} DESTINATION ${CMAKE_INSTALL_PREFIX}/ca_bundle)
 #install(FILES ${HELLO_WORLD_APP} DESTINATION ${CMAKE_INSTALL_PREFIX}/)
+#install(FILES ${external_include_files} DESTINATION ${CMAKE_INSTALL_PREFIX}/external)

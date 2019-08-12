@@ -64,3 +64,6 @@ target_link_libraries(Raven_CppClient OpenSSL::SSL OpenSSL::Crypto ${CURL_LIBRAR
 
 target_compile_definitions(Raven_CppClient_shared PUBLIC DEFAULT_CA_BUNDLE_PATH="../../ca_bundle/ca-bundle.crt")
 target_compile_definitions(Raven_CppClient_static PUBLIC DEFAULT_CA_BUNDLE_PATH="../../ca_bundle/ca-bundle.crt")
+
+install(TARGETS Raven_CppClient_static ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(TARGETS Raven_CppClient_shared LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
