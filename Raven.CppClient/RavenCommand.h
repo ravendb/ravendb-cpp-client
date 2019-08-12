@@ -12,6 +12,7 @@
 #include "Constants.h"
 #include "HttpCache.h"
 #include "HttpExtensions.h"
+#include "UnsupportedOperationException.h"
 
 namespace ravendb::client::http
 {
@@ -131,7 +132,7 @@ namespace ravendb::client::http
 		{
 			std::rethrow_exception(e);
 		}
-		catch (std::exception& ex)
+		catch (const std::exception& ex)
 		{
 			std::throw_with_nested(std::runtime_error("Response is invalid : " + std::string(ex.what())));
 		}
@@ -148,10 +149,8 @@ namespace ravendb::client::http
 		case RavenCommandResponseType::EMPTY:
 		case RavenCommandResponseType::RAW:
 			throw_invalid_response();
-		case RavenCommandResponseType::OBJECT:
-			//TODO
-			//throw new UnsupportedOperationException(responseType.name() + " command must override the setResponse method which expects response with the following type: " + responseType);
-			throw std::runtime_error("The command must override the 'set_response'"
+		case RavenCommandResponseType::OBJECT:	
+			throw exceptions::UnsupportedOperationException("The command must override the 'set_response'"
 				" method which expects response with the following type: OBJECT");
 		}
 	}
@@ -217,9 +216,7 @@ namespace ravendb::client::http
 	template <typename TResult>
 	void RavenCommand<TResult>::set_response_raw(const impl::CurlResponse& response)
 	{
-		//TODO
-		//throw new UnsupportedOperationException("When " + responseType + " is set to Raw then please override this method to handle the response. ")
-		throw std::runtime_error("When 'response_type' is set to RAW then please override this method to handle the response.");
+		throw exceptions::UnsupportedOperationException("When 'response_type' is set to RAW then please override this method to handle the response.");
 	}
 
 	template<typename TResult>

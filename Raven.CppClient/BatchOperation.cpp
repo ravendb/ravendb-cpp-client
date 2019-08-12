@@ -8,6 +8,7 @@
 #include "PatchStatus.h"
 #include "RequestExecutor.h"
 #include "AfterSaveChangesEventArgs.h"
+#include "NotImplementedException.h"
 
 namespace ravendb::client::documents::session::operations
 {
@@ -91,8 +92,8 @@ namespace ravendb::client::documents::session::operations
 			case commands::batches::CommandType::COMPARE_EXCHANGE_DELETE:
 				break;
 			default:
-				throw std::runtime_error("Command " + nlohmann::json(type).get<std::string>() +
-					"is not supported");
+				throw std::runtime_error("Command " + nlohmann::json(type).dump() +
+					" is not supported");
 			}
 		}
 
@@ -140,13 +141,13 @@ namespace ravendb::client::documents::session::operations
 				break;
 			case commands::batches::CommandType::COUNTERS:
 				//TODO handle_counters(batch_result);
-				throw std::runtime_error("not implemented");
+				throw exceptions::NotImplementedException();
 				break;
 			case commands::batches::CommandType::BATCH_PATCH:
 				break;
 			default:
-				throw std::runtime_error("Command " + nlohmann::json(type).get<std::string>() +
-					"is not supported");
+				throw std::runtime_error("Command " + nlohmann::json(type).dump() +
+					" is not supported");
 			}
 		}
 		finalize_result();
@@ -454,7 +455,8 @@ namespace ravendb::client::documents::session::operations
 			return field;
 		}
 		throw_missing_field(type, field_name);
-		return {};//disabling warning : shouldn't get here
+
+		throw std::runtime_error("Disabling a warning : shouldn't get here.");
 	}
 
 	int64_t BatchOperation::get_long_field(const nlohmann::json& j, commands::batches::CommandType type,
@@ -466,7 +468,8 @@ namespace ravendb::client::documents::session::operations
 			return field;
 		}
 		throw_missing_field(type, field_name);
-		return {};//disabling warning : shouldn't get here
+
+		throw std::runtime_error("Disabling a warning : shouldn't get here.");
 	}
 
 	void BatchOperation::throw_missing_field(commands::batches::CommandType type, const std::string& field_name)

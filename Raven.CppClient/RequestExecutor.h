@@ -400,7 +400,7 @@ namespace ravendb::client::http
 
 		auto tasks = std::vector<std::shared_ptr<std::shared_future<IndexAndResponse>>>(nodes.size());
 
-		for(int32_t i = 0; i < nodes.size(); ++i)
+		for(int32_t i = 0; i < int32_t(nodes.size()); ++i)
 		{
 			++number_of_server_requests;
 
@@ -431,10 +431,10 @@ namespace ravendb::client::http
 			}
 		}
 
-		while(number_of_failed_tasks < tasks.size())
+		while(number_of_failed_tasks < int32_t(tasks.size()))
 		{
 			int32_t i = 0;
-			for(; i < tasks.size(); ++i)
+			for(; i < int32_t(tasks.size()); ++i)
 			{
 				if(!tasks[i])
 				{
@@ -461,7 +461,7 @@ namespace ravendb::client::http
 					tasks[i].reset();
 				}
 			}
-			if(i < tasks.size())
+			if(i < int32_t(tasks.size()))
 			{
 				break;
 			}
@@ -702,7 +702,7 @@ namespace ravendb::client::http
 		case ReadBalanceBehavior::FASTEST_NODE:
 			return _node_selector->get_fastest_node();
 		default:
-			throw std::invalid_argument("");
+			throw std::invalid_argument("Unknown ReadBalanceBehavior");
 		}
 	}
 
@@ -871,7 +871,8 @@ namespace ravendb::client::http
 						}
 						catch (...)
 						{
-							std::throw_with_nested(std::runtime_error(""));
+							std::throw_with_nested(std::runtime_error("Received unsuccessful response from a single node. "
+							"Look into the nested exception for details."));
 						}
 					}
 					throw exceptions::AllTopologyNodesDownException(

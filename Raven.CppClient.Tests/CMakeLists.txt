@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.13)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -43,8 +43,6 @@ target_include_directories(Raven_CppClient_Tests PRIVATE
     ${gtest_SOURCE_DIR} 
     ${CMAKE_CURRENT_SOURCE_DIR})
 
-#add_dependencies(Raven_CppClient_Tests Raven_CppClient)
-
 target_link_libraries(Raven_CppClient_Tests PRIVATE 
     GTest::gtest 
     GTest::gtest_main 
@@ -63,24 +61,36 @@ endif()
 include(GoogleTest)
 gtest_discover_tests(Raven_CppClient_Tests)  
 
-
-if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/secured_re.txt)
-	message("Copying config file secured_re.txt from ${CMAKE_SOURCE_DIR}/${CONFIG_DIR}/ to ${CMAKE_CURRENT_BINARY_DIR}/")
-	add_custom_command(                                                                                                                                                                                                                                                                    TARGET Raven_CppClient_Tests POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy
-				${CMAKE_SOURCE_DIR}/${CONFIG_DIR}/secured_re.txt
-				${CMAKE_CURRENT_BINARY_DIR}/secured_re.txt)
+if(WIN32)
+	set(CONFIG_DIR_NAME "win_re_config")
 else()
-	message("Using config file secured_re.txt at ${CMAKE_CURRENT_BINARY_DIR}/")
+	set(CONFIG_DIR_NAME "linux_re_config")
 endif()
 
-if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/unsecured_re.txt)	
-	message("Copying config file unsecured_re.txt from ${CMAKE_SOURCE_DIR}/${CONFIG_DIR}/ to ${CMAKE_CURRENT_BINARY_DIR}/")
+message("Checking config file existence at ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_DIR_NAME}/")
+
+if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_DIR_NAME}/secured_re.txt)
+	message("Copying config file secured_re.txt from ${CMAKE_SOURCE_DIR}/${CONFIG_DIR_NAME}/ to ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_DIR_NAME}")
 	add_custom_command(
 			TARGET Raven_CppClient_Tests POST_BUILD
-					COMMAND ${CMAKE_COMMAND} -E copy
-						${CMAKE_SOURCE_DIR}/${CONFIG_DIR}/unsecured_re.txt
-						${CMAKE_CURRENT_BINARY_DIR}/unsecured_re.txt)
+			COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/${CONFIG_DIR_NAME}/secured_re.txt ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_DIR_NAME})
 else()
-	message("Using config file unsecured_re.txt at ${CMAKE_CURRENT_BINARY_DIR}/")
+	message("Using config file secured_re.txt at ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_DIR_NAME}")
+endif()
+
+if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_DIR_NAME}/unsecured_re.txt)	
+	message("Copying config file unsecured_re.txt from ${CMAKE_SOURCE_DIR}/${CONFIG_DIR_NAME}/ to ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_DIR_NAME}")
+	add_custom_command(
+			TARGET Raven_CppClient_Tests POST_BUILD
+					COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/${CONFIG_DIR_NAME}/unsecured_re.txt ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_DIR_NAME})					
+else()
+	message("Using config file unsecured_re.txt at ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_DIR_NAME}")
 endif()    
+
+if(WIN32)
+	execute_process(COMMAND setx secured_re ${CMAKE_SOURCE_DIR}/${CONFIG_DIR_NAME}/secured_re.txt)
+	execute_process(COMMAND setx unsecured_re ${CMAKE_SOURCE_DIR}/${CONFIG_DIR_NAME}/unsecured_re.txt)
+else()
+	execute_process(COMMAND export secured_re=\"${CMAKE_SOURCE_DIR}/${CONFIG_DIR_NAME}/secured_re.txt\")
+	execute_process(COMMAND export unsecured_re=\"${CMAKE_SOURCE_DIR}/${CONFIG_DIR_NAME}/unsecured_re.txt\")
+endif()

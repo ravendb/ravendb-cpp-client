@@ -1650,9 +1650,9 @@ namespace ravendb::client::documents::session
 	template <typename T>
 	void AbstractDocumentQuery<T>::complete_construction()
 	{
-		_add_after_query_executed_listener([shared_this = _weak_this.lock()](const queries::QueryResult& query_result)
+		_add_after_query_executed_listener([weak_this = _weak_this](const queries::QueryResult& query_result)
 		{
-			if(shared_this)
+			if(auto shared_this = weak_this.lock())
 			{
 				shared_this->update_stats_highlightings_and_explanations(query_result);
 			}
@@ -1815,7 +1815,7 @@ namespace ravendb::client::documents::session
 			where_operator = tokens::WhereOperator::SPATIAL_INTERSECTS;
 			break;
 		default:
-			throw std::invalid_argument("");
+			throw std::invalid_argument("argument 'relation' is of unknown type");
 		}
 
 		tokens.push_back(tokens::WhereToken::create(where_operator, valid_field_name, {},

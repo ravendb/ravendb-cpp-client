@@ -13,8 +13,8 @@ namespace ravendb::client::serverwide::operations
 				store->get_scheduler(), store->get_conventions(),
 				store->get_before_perform(), store->get_after_perform()))
 	{
-		store->add_after_close_listener(std::function<void(const int&, const primitives::EventArgs&)>(
-			[re = _request_executor](const int&, const primitives::EventArgs&)
+		store->add_after_close_listener(std::function<void(const documents::DocumentStore*, const primitives::EventArgs&)>(
+			[re = _request_executor](const documents::DocumentStore*, const primitives::EventArgs&)
 		{
 			re->close();
 		}));

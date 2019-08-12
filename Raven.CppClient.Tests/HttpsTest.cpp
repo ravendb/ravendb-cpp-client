@@ -36,6 +36,5 @@ namespace ravendb::client::tests::client
 			auto user = session.load<infrastructure::entities::User>(user_id);
 			ASSERT_TRUE(user);
 		}
-
 	}
 }

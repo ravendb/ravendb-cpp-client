@@ -5,11 +5,6 @@
 #include <cctype>
 #include <locale>
 
-#ifdef _MSC_VER
-	#include <filesystem>
-#else
-	#include <experimental/filesystem>
-#endif
 
 #include <finally.hpp>
 
@@ -29,42 +24,39 @@ namespace ravendb::client::tests::infrastructure
 		
 		try
 		{
+			auto def_path = absolute(def_file_name).string();
+
+#ifdef _DEBUG
+			std::cerr << "Look for config file at: " + def_path << std::endl;
+#endif
+
 			def_file = std::ifstream(def_file_name, std::ios::in);
 		}
 		catch(const std::exception& e) //in Linux this would throw exception if the file doesn't exist
 		{
-			std::cout << "Failed to open " + def_file_name + ". Most likely, it was not found... (reason: " + e.what() + ")" <<std::endl;
+			std::cerr << "Failed to open " + def_file_name + ". Most likely, it was not found... (reason: " + e.what() + ")" <<std::endl;
 		}
 
 		if (!def_file) //if we didn't find the file at it's path, first look at the same folder as executing assembly
 		{
-            #ifdef _MSC_VER                                                                                                         
-			auto filename = std::filesystem::path(def_file_name).filename();
-            #else
-            auto filename = std::experimental::filesystem::path(def_file_name).filename();                                          
-			#endif
+			auto filename = path(def_file_name).filename();
+
 			def_file = std::ifstream(filename.string()); //try to get at the same folder as the executable
 			if(!def_file) //if we didn't find the config at the same file as executing assembly, try environment variables
 			{
+				std::cerr << "Failed to find the config file at " + filename.string() + ", so now will try to fetch the path from environment variables" << std::endl;
+
 				//try to find the path from environment variable
 				char* value = nullptr;
-				size_t sz = 0;
 				auto _ = finally([value] { if(value != nullptr) free(value); });				
 
-				#ifdef _MSC_VER
-					if (_dupenv_s(&value, &sz, filename.string().c_str()) != 0 || value == nullptr)
-					{
-						throw std::runtime_error(std::string("Failed to get th e value for environment variable ") + filename.string());		    
-					}
-				#else
-					value = getenv(filename.string().c_str());
-					if (value == nullptr)
-					{
-						throw std::runtime_error(std::string("Failed to get the value for environment variable ") + filename.string());		    
-					}
-				#endif
+				value = getenv(path(def_file_name).stem().string().c_str());
+				if (value == nullptr)
+				{
+					throw std::runtime_error(std::string("Failed to get the value for environment variable ") + filename.string());
+				}
 
-				if(value != nullptr && sz > 0)
+				if(value != nullptr)
 				{
 					def_file = std::ifstream(value);
 				}
@@ -77,7 +69,7 @@ namespace ravendb::client::tests::infrastructure
 
 		if(!def_file)
 		{
-			throw std::runtime_error(std::string("Can't open ") + def_file_name);
+			throw std::runtime_error(std::string("Failed to open the file ") + def_file_name);
 		}
 
 		if (!std::getline(def_file, url))

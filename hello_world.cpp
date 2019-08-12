@@ -1,4 +1,3 @@
-
 #include "raven_cpp_client.h"
 
 int main()
