@@ -384,3 +384,17 @@ external/
 *.key
 /Raven.CppClient.Tests/win_ctest_output.txt
 /Raven.CppClient.Tests/Testing/Temporary/CTestCostData.txt
+/Raven.CppClient/CMakeFiles/Raven_CppClient_shared.dir/
+/Raven.CppClient/CMakeFiles/Raven_CppClient_static.dir/
+/Raven.CppClient.Tests/CMakeFiles/Raven_CppClient_Tests.dir/
+/Raven.CppClient/CMakeFiles/Raven_CppClient.dir/
+/Raven.CppClient.Tests/CMakeFiles/
+/DartConfiguration.tcl
+/Raven.CppClient.Tests/linux_re_config
+/Raven.CppClient/CMakeFiles/
+/Raven.CppClient.Tests/Raven_CppClient_Tests
+/Raven.CppClient.Tests/*.cmake
+/RavenDBCppClient.cbp
+/report.xml
+/Raven.CppClient.Tests/secured_re.txt
+/Raven.CppClient.Tests/unsecured_re.txt
