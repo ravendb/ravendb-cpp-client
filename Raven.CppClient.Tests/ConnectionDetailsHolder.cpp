@@ -49,7 +49,7 @@ namespace ravendb::client::tests::infrastructure
 				//try to find the path from environment variable
 				char* value = nullptr;
 				auto _ = finally([&] { if(value != nullptr) free(value); });				
-
+				 
 				value = getenv(path(def_file_name).stem().string().c_str());
 				if (value == nullptr)
 				{
