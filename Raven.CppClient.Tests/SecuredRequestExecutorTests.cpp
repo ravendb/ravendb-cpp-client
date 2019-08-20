@@ -4,43 +4,53 @@
 #include "GetDocumentsCommand.h"
 #include "PutDocumentCommand.h"
 #include "DeleteDocumentCommand.h"
+#include "RavenTestDriver.h"
+#include "raven_test_definitions.h"
 
 namespace ravendb::client::tests::old_tests
 {
-	class SecuredRequestExecutorTests : public ::testing::Test
+	class SecuredRequestExecutorTests : public driver::RavenTestDriver
 	{
 	protected:
-		inline static std::shared_ptr<definitions::RequestExecutorScope> test_suite_executor{};
-
+		inline static std::shared_ptr<documents::DocumentStore> document_store{};
+		inline static bool is_faulted;
+		inline static std::string why_faulted;
 		static const infrastructure::entities::User example_user;
-
-		static void SetUpTestCase()
-		{
-			test_suite_executor = definitions::GET_SECURED_REQUEST_EXECUTOR();
-		}
-
-		static void TearDownTestCase()
-		{
-			test_suite_executor.reset();
-		}
 
 		void SetUp() override//create sample document
 		{
-			nlohmann::json j = example_user;
+			try
+			{
+				document_store = get_secured_document_store(TEST_NAME);
+			}
+			catch(const std::runtime_error& e)
+			{
+				is_faulted = true;
+				why_faulted = std::string(e.what());
+			}
+
+			if(is_faulted)
+				FAIL() << why_faulted;
+
+			const nlohmann::json j = example_user;
 			documents::commands::PutDocumentCommand cmd(example_user.id, {}, j);
-			test_suite_executor->get().execute(cmd);
+			document_store->get_request_executor()->execute(cmd);
 		}
 
 		void TearDown() override //delete sample document
 		{
-			documents::commands::DeleteDocumentCommand cmd(example_user.id);
-			test_suite_executor->get().execute(cmd);
+			if(!is_faulted)
+			{
+				documents::commands::DeleteDocumentCommand cmd(example_user.id);
+				document_store->get_request_executor()->execute(cmd);
+				document_store.reset();
+			}
 		}
 
-		bool does_document_exist(const std::string& doc_id)
+		static bool does_document_exist(const std::string& doc_id)
 		{
 			documents::commands::GetDocumentsCommand cmd(doc_id, {}, true);
-			test_suite_executor->get().execute(cmd);
+			document_store->get_request_executor()->execute(cmd);
 			auto res = cmd.get_result();
 
 			return res && !res->results.empty() && !res->results[0].is_null();
@@ -49,16 +59,15 @@ namespace ravendb::client::tests::old_tests
 
 	const infrastructure::entities::User SecuredRequestExecutorTests::example_user{ "users/1", "Alexander", "Timoshenko", "Israel", 0, 38 };
 
-
 	TEST_F(SecuredRequestExecutorTests, CanGetDocument)
 	{
 		ASSERT_TRUE(does_document_exist(example_user.id));
 
 		documents::commands::GetDocumentsCommand cmd(example_user.id, {}, false);
-		test_suite_executor->get().execute(cmd);
+		document_store->get_request_executor()->execute(cmd);
 		auto res = cmd.get_result();
 
-		infrastructure::entities::User check_user = res->results[0].get<infrastructure::entities::User>();
+		const auto check_user = res->results[0].get<infrastructure::entities::User>();
 		ASSERT_EQ(example_user, check_user);
 	}
 
@@ -67,7 +76,7 @@ namespace ravendb::client::tests::old_tests
 		ASSERT_TRUE(does_document_exist(example_user.id));
 
 		documents::commands::DeleteDocumentCommand cmd(example_user.id);
-		test_suite_executor->get().execute(cmd);
+		document_store->get_request_executor()->execute(cmd);
 
 		ASSERT_FALSE(does_document_exist(example_user.id));
 	}
