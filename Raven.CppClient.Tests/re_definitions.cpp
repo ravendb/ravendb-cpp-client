@@ -5,6 +5,9 @@
 #include "ConnectionDetailsHolder.h"
 #include "raven_test_definitions.h"
 #include "TasksExecutor.h"
+#include "TasksScheduler.h"
+#include "RequestExecutor.h"
+
 
 namespace ravendb::client::tests::definitions
 {
@@ -16,7 +19,11 @@ namespace ravendb::client::tests::definitions
 		ravendb::client::serverwide::DatabaseRecord rec{};
 		rec.database_name = _db_name;
 		serverwide::operations::CreateDatabaseOperation op(rec);
-		server_wide_req_exec->execute(*op.get_command(server_wide_req_exec->get_conventions()));
+		
+		auto document_conventions = server_wide_req_exec->get_conventions();
+		auto command = op.get_command(document_conventions);
+
+		server_wide_req_exec->execute(*command);
 
 		_executor = get_raw_request_executor(_db_name, is_secured, use_fiddler);
 	}
@@ -78,9 +85,15 @@ namespace ravendb::client::tests::definitions
 		std::experimental::filesystem::path path(file);
 		std::ostringstream name;
 		name << path.filename().replace_extension().string() << "_" << line << "_" << counter;
-		return is_secured ?
-			std::make_shared<RequestExecutorScope>(name.str(), true, use_fiddler) :
-			std::make_shared<RequestExecutorScope>(name.str(), false, use_fiddler);
+		try{
+			return is_secured ?
+				std::make_shared<RequestExecutorScope>(name.str(), true, use_fiddler) :
+				std::make_shared<RequestExecutorScope>(name.str(), false, use_fiddler);
+		}
+		catch(std::exception& e)
+		{
+			std::throw_with_nested(std::runtime_error(std::string("Failed to get request executor. Reason:") + e.what()));
+		}
 	}
 
 }
