@@ -1,6 +1,8 @@
 #pragma once
 #include "CertificateDetails.h"
 #include "RequestExecutor.h"
+#include "TasksExecutor.h"
+#include "TasksScheduler.h"
 
 namespace ravendb::client::tests::definitions
 {

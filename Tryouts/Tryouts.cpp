@@ -1,5 +1,6 @@
 
 #include "pch.h"
+#include <gtest/gtest_prod.h>
 //#include <curl/curl.h>
 //#include <thread>
 //#include <DatabaseRecord.h>
@@ -27,6 +28,16 @@
 //#include "CompactDatabaseOperation.h"
 
 #include "raven_cpp_client.h"
+
+namespace ravendb {
+	namespace client {
+		namespace tests {
+			namespace issues {
+				class RavenDB_10929Test;
+			}
+		}
+	}
+}
 
 namespace
 {
@@ -77,15 +88,15 @@ static void thread_work(std::shared_ptr<ravendb::client::documents::DocumentStor
 
 int main()
 {
-	using namespace ravendb::client;
+
 
 	//REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
 
-	auto store = documents::DocumentStore::create();
+	/*auto store = documents::DocumentStore::create();
 	store->set_urls({ "http://10.0.0.92:8080" });
 	store->set_before_perform(set_for_fiddler);
 	store->set_database("TEST_DB");
-	store->initialize();
+	store->initialize();*/
 
 	//auto conventions = documents::conventions::DocumentConventions::create();
 	//conventions->set_read_balance_behavior(http::ReadBalanceBehavior::NONE);
@@ -190,12 +201,12 @@ int main()
 	//store->maintenance()->server()->send(serverwide::operations::CreateDatabaseOperation(dr));
 
 
-	auto cs = serverwide::CompactSettings();
-	cs.database_name = "TEST_DB";
-	cs.documents = true;
+	//auto cs = serverwide::CompactSettings();
+	//cs.database_name = "TEST_DB";
+	//cs.documents = true;
 
-	auto command = store->maintenance()->server()->send(documents::operations::CompactDatabaseOperation(cs));
-	
+	//auto command = store->maintenance()->server()->send(documents::operations::CompactDatabaseOperation(cs));
+	//
 
 	std::cout << "Bye" << std::endl;
 }

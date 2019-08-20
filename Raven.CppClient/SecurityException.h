@@ -3,7 +3,7 @@
 
 namespace ravendb::client::exceptions::security
 {
-	class SecurityException : RavenException
+	class SecurityException : public RavenException
 	{
 	public:
 		~SecurityException() override = default;

@@ -16,7 +16,7 @@ if(WIN32)
 else()
 	set(PROJECT_DEPENDENCIES curl nlohmann-json openssl gtest zlib pthreads libuuid)
 endif()
- 
+
 include(cmake/vcpkg_config.cmake)
 include(cmake/xxhash.cmake)
     
@@ -27,7 +27,7 @@ list(APPEND CMAKE_INCLUDE_PATH "${xxhash_cpp_SOURCE_DIR}/xxhash")
 add_subdirectory(Raven.CppClient)
  
 #choose if buildings tryouts
-option(BUILD_TRYOUTS "Build the Tryouts" OFF)
+option(BUILD_TRYOUTS "Build the Tryouts" ON)
 if(BUILD_TRYOUTS)
     add_subdirectory(Tryouts) 
 endif()

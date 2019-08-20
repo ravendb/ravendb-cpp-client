@@ -39,11 +39,10 @@ namespace ravendb::client::documents::session::operations
 
 	void BatchOperation::set_result(const json::BatchCommandResult& result)
 	{
-		auto session = _session.lock();
-
+		const auto session = _session.lock();
 		static const auto get_command_type = [](const nlohmann::json::object_t& batch_result)
 		{
-			auto type_it = batch_result.find("Type");
+			const auto type_it = batch_result.find("Type");
 			if (type_it == batch_result.end() || !type_it->second.is_string())
 			{
 				return commands::batches::CommandType::NONE;
@@ -78,22 +77,22 @@ namespace ravendb::client::documents::session::operations
 				continue;//OK ?
 			}
 
-			auto type = get_command_type(batch_result);
+			const auto type = get_command_type(batch_result);
 
 			switch (type)
 			{
-			case commands::batches::CommandType::PUT:
-				handle_put(i, batch_result, false);
-				break;
-			case commands::batches::CommandType::DELETE_:
-				handle_delete(batch_result);
-				break;
-			case commands::batches::CommandType::COMPARE_EXCHANGE_PUT:
-			case commands::batches::CommandType::COMPARE_EXCHANGE_DELETE:
-				break;
-			default:
-				throw std::runtime_error("Command " + nlohmann::json(type).dump() +
-					" is not supported");
+				case commands::batches::CommandType::PUT:
+					handle_put(i, batch_result, false);
+					break;
+				case commands::batches::CommandType::DELETE_:
+					handle_delete(batch_result);
+					break;
+				case commands::batches::CommandType::COMPARE_EXCHANGE_PUT:
+				case commands::batches::CommandType::COMPARE_EXCHANGE_DELETE:
+					break;
+				default:
+					throw std::runtime_error("Command " + nlohmann::json(type).dump() +
+						" is not supported");
 			}
 		}
 
