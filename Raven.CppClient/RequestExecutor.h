@@ -503,7 +503,7 @@ namespace ravendb::client::http
 			{
 				std::ostringstream msg{};
 				msg << "Forbidden access to " << chosen_node->database << "@" << chosen_node->url << ", " <<
-					curl_ref.method << " " << curl_ref.url;
+					curl_ref.method << ", response output: " << response.output.str() << curl_ref.url;
 				throw exceptions::security::AuthorizationException(msg.str());
 			}
 		case HttpStatus::SC_GONE:// request not relevant for the chosen node - the database has been moved to a different one
@@ -519,7 +519,7 @@ namespace ravendb::client::http
 			if (!command.is_failed_with_node(chosen_node))
 			{
 				std::ostringstream msg{};
-				msg << "Request to " << curl_ref.url << " (" << curl_ref.method << ") is not relevant for this node anymore.";
+				msg << "Request to " << curl_ref.url << " (" << curl_ref.method << ") is not relevant for this node anymore. Reason: " << response.output.str();
 				command.get_failed_nodes().insert_or_assign(chosen_node, std::make_exception_ptr(
 					exceptions::UnsuccessfulRequestException(msg.str())));
 			}
@@ -634,16 +634,16 @@ namespace ravendb::client::http
 			}
 			catch (const std::exception& exception)
 			{
-				schema.message = exception.what();
+				schema.message = std::string(exception.what()) + " (response output: " + response.output.str() + ")";
 			}
 		}
 		std::ostringstream error{};
 		error << "An exception occurred while contacting " << curl_ref.url << ".\r\n";
 		if (!response.error.empty())
 		{
-			error << "With Curl error: " << response.error << ".";
+			error << "With Curl error: " << response.error << ". ";
 		}
-		schema.error = error.str();
+		schema.error = error.str() + "(response output: " + response.output.str() + ")";
 
 		command.get_failed_nodes().insert_or_assign(chosen_node, exceptions::ExceptionDispatcher::get(schema,
 			static_cast<int32_t>(HttpStatus::SC_SERVICE_UNAVAILABLE), e));
