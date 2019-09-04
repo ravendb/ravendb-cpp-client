@@ -1,5 +1,5 @@
-https://a.cpp-client-test.ravendb.run
-~/User.crt
-~/User.key
+https://a.cpp-test-linux.development.run
+/home/michael/User.crt
+/home/michael/User.key
 
 User
