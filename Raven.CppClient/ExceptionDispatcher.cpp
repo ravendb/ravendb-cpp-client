@@ -115,6 +115,15 @@ namespace ravendb::client::exceptions
 			return nullptr;
 		}
 
+
+        std::string errorMessage;
+		if(message.empty()) {
+            errorMessage = schema.message + ", server stack trace: " + schema.error ;
+        }
+		else {
+            errorMessage = message + ". Server error: " + schema.message  + ", server stack trace: " + schema.error;
+        }
+
 		const auto type_contains = [&](const std::string& type_name)-> bool
 		{
 			return type_as_string.find(type_name) != std::string::npos;
@@ -122,230 +131,230 @@ namespace ravendb::client::exceptions
 
 		if(type_contains("System.TimeoutException"))
 		{
-			return make_exception(TimeoutException(message), inner);
+			return make_exception(TimeoutException(errorMessage), inner);
 		}
 
 		if (type_contains("RavenException"))
 		{
-			return make_exception(RavenException(message), inner);
+			return make_exception(RavenException(errorMessage), inner);
 		}
 		if (type_contains("AllTopologyNodesDownException"))
 		{
-			return make_exception(AllTopologyNodesDownException(message), inner);
+			return make_exception(AllTopologyNodesDownException(errorMessage), inner);
 		}
 		if (type_contains("BadRequestException"))
 		{
-			return make_exception(BadRequestException(message), inner);
+			return make_exception(BadRequestException(errorMessage), inner);
 		}
 		if (type_contains("BadResponseException"))
 		{
-			return make_exception(BadResponseException(message), inner);
+			return make_exception(BadResponseException(errorMessage), inner);
 		}
 		if (type_contains("ClientVersionMismatchException"))
 		{
-			return make_exception(ClientVersionMismatchException(message), inner);
+			return make_exception(ClientVersionMismatchException(errorMessage), inner);
 		}
 		if (type_contains("ConcurrencyException"))
 		{
-			return make_exception(ConcurrencyException(message), inner);
+			return make_exception(ConcurrencyException(errorMessage), inner);
 		}
 		if (type_contains("InvalidQueryException"))
 		{
-			return make_exception(InvalidQueryException(message), inner);
+			return make_exception(InvalidQueryException(errorMessage), inner);
 		}
 		if (type_contains("TimeoutException"))
 		{
-			return make_exception(TimeoutException(message), inner);
+			return make_exception(TimeoutException(errorMessage), inner);
 		}
 		if (type_contains("UnsuccessfulRequestException"))
 		{
-			return make_exception(UnsuccessfulRequestException(message), inner);
+			return make_exception(UnsuccessfulRequestException(errorMessage), inner);
 		}
 		////
 		if (type_contains("AttachmentDoesNotExistException"))
 		{
-			return make_exception(attachments::AttachmentDoesNotExistException(message), inner);
+			return make_exception(attachments::AttachmentDoesNotExistException(errorMessage), inner);
 		}
 		////
 		if (type_contains("ChangeProcessingException"))
 		{
-			return make_exception(changes::ChangeProcessingException(message), inner);
+			return make_exception(changes::ChangeProcessingException(errorMessage), inner);
 		}
 		////
 		if (type_contains("CommandExecutionException"))
 		{
-			return make_exception(cluster::CommandExecutionException(message), inner);
+			return make_exception(cluster::CommandExecutionException(errorMessage), inner);
 		}
 		if (type_contains("NodeIsPassiveException"))
 		{
-			return make_exception(cluster::NodeIsPassiveException(message), inner);
+			return make_exception(cluster::NodeIsPassiveException(errorMessage), inner);
 		}
 		if (type_contains("NoLeaderException"))
 		{
-			return make_exception(cluster::NoLeaderException(message), inner);
+			return make_exception(cluster::NoLeaderException(errorMessage), inner);
 		}
 		////
 		if (type_contains("LicenseActivationException"))
 		{
-			return make_exception(commercial::LicenseActivationException(message), inner);
+			return make_exception(commercial::LicenseActivationException(errorMessage), inner);
 		}
 		////
 		if (type_contains("CompilationException"))
 		{
-			return make_exception(compilation::CompilationException(message), inner);
+			return make_exception(compilation::CompilationException(errorMessage), inner);
 		}
 		////
 		if (type_contains("DatabaseConcurrentLoadTimeoutException"))
 		{
-			return make_exception(database::DatabaseConcurrentLoadTimeoutException(message), inner);
+			return make_exception(database::DatabaseConcurrentLoadTimeoutException(errorMessage), inner);
 		}
 		if (type_contains("DatabaseDisabledException"))
 		{
-			return make_exception(database::DatabaseDisabledException(message), inner);
+			return make_exception(database::DatabaseDisabledException(errorMessage), inner);
 		}
 		if (type_contains("DatabaseDoesNotExistException"))
 		{
-			return make_exception(database::DatabaseDoesNotExistException(message), inner);
+			return make_exception(database::DatabaseDoesNotExistException(errorMessage), inner);
 		}
 		if (type_contains("DatabaseLoadFailureException"))
 		{
-			return make_exception(database::DatabaseLoadFailureException(message), inner);
+			return make_exception(database::DatabaseLoadFailureException(errorMessage), inner);
 		}
 		if (type_contains("DatabaseLoadTimeoutException"))
 		{
-			return make_exception(database::DatabaseLoadTimeoutException(message), inner);
+			return make_exception(database::DatabaseLoadTimeoutException(errorMessage), inner);
 		}
 		if (type_contains("DatabaseNotRelevantException"))
 		{
-			return make_exception(database::DatabaseNotRelevantException(message), inner);
+			return make_exception(database::DatabaseNotRelevantException(errorMessage), inner);
 		}
 		if (type_contains("DatabaseSchemaErrorException"))
 		{
-			return make_exception(database::DatabaseSchemaErrorException(message), inner);
+			return make_exception(database::DatabaseSchemaErrorException(errorMessage), inner);
 		}
 		////
 		if (type_contains("DocumentConflictException"))
 		{
-			return make_exception(documents::DocumentConflictException::from_message(message), inner);
+			return make_exception(documents::DocumentConflictException::from_message(errorMessage), inner);
 		}
 		if (type_contains("DocumentDoesNotExistException"))
 		{
-			return make_exception(documents::DocumentDoesNotExistException(message), inner);
+			return make_exception(documents::DocumentDoesNotExistException(errorMessage), inner);
 		}
 		////
 		if (type_contains("BulkInsertAbortedException"))
 		{
-			return make_exception(documents::bulkinsert::BulkInsertAbortedException(message), inner);
+			return make_exception(documents::bulkinsert::BulkInsertAbortedException(errorMessage), inner);
 		}
 		if (type_contains("BulkInsertProtocolViolationException"))
 		{
-			return make_exception(documents::bulkinsert::BulkInsertProtocolViolationException(message), inner);
+			return make_exception(documents::bulkinsert::BulkInsertProtocolViolationException(errorMessage), inner);
 		}
 		////
 		if (type_contains("IndexCompilationException"))
 		{
-			return make_exception(documents::compilation::IndexCompilationException(message), inner);
+			return make_exception(documents::compilation::IndexCompilationException(errorMessage), inner);
 		}
 		////
 		if (type_contains("CounterOverflowException"))
 		{
-			return make_exception(documents::counters::CounterOverflowException(message), inner);
+			return make_exception(documents::counters::CounterOverflowException(errorMessage), inner);
 		}
 		////
 		if (type_contains("IndexAlreadyExistException"))
 		{
-			return make_exception(documents::indexes::IndexAlreadyExistException(message), inner);
+			return make_exception(documents::indexes::IndexAlreadyExistException(errorMessage), inner);
 		}
 		if (type_contains("IndexCreationException"))
 		{
-			return make_exception(documents::indexes::IndexCreationException(message), inner);
+			return make_exception(documents::indexes::IndexCreationException(errorMessage), inner);
 		}
 		if (type_contains("IndexDeletionException"))
 		{
-			return make_exception(documents::indexes::IndexDeletionException(message), inner);
+			return make_exception(documents::indexes::IndexDeletionException(errorMessage), inner);
 		}
 		if (type_contains("IndexDoesNotExistException"))
 		{
-			return make_exception(documents::indexes::IndexDoesNotExistException(message), inner);
+			return make_exception(documents::indexes::IndexDoesNotExistException(errorMessage), inner);
 		}
 		if (type_contains("IndexInvalidException"))
 		{
-			return make_exception(documents::indexes::IndexInvalidException(message), inner);
+			return make_exception(documents::indexes::IndexInvalidException(errorMessage), inner);
 		}
 		////
 		if (type_contains("JavaScriptException"))
 		{
-			return make_exception(documents::patching::JavaScriptException(message), inner);
+			return make_exception(documents::patching::JavaScriptException(errorMessage), inner);
 		}
 		if (type_contains("JavaScriptParseException"))
 		{
-			return make_exception(documents::patching::JavaScriptParseException(message), inner);
+			return make_exception(documents::patching::JavaScriptParseException(errorMessage), inner);
 		}
 		////
 		if (type_contains("RevisionsDisabledException"))
 		{
-			return make_exception(documents::revisions::RevisionsDisabledException(message), inner);
+			return make_exception(documents::revisions::RevisionsDisabledException(errorMessage), inner);
 		}
 		////
 		if (type_contains("NonUniqueObjectException"))
 		{
-			return make_exception(documents::session::NonUniqueObjectException(message), inner);
+			return make_exception(documents::session::NonUniqueObjectException(errorMessage), inner);
 		}
 		////
 		if (type_contains("SubscriberErrorException"))
 		{
-			return make_exception(documents::subscriptions::SubscriberErrorException(message), inner);
+			return make_exception(documents::subscriptions::SubscriberErrorException(errorMessage), inner);
 		}
 		if (type_contains("SubscriptionChangeVectorUpdateConcurrencyException"))
 		{
-			return make_exception(documents::subscriptions::SubscriptionChangeVectorUpdateConcurrencyException(message), inner);
+			return make_exception(documents::subscriptions::SubscriptionChangeVectorUpdateConcurrencyException(errorMessage), inner);
 		}
 		if (type_contains("SubscriptionClosedException"))
 		{
-			return make_exception(documents::subscriptions::SubscriptionClosedException(message), inner);
+			return make_exception(documents::subscriptions::SubscriptionClosedException(errorMessage), inner);
 		}
 		if (type_contains("SubscriptionDoesNotBelongToNodeException"))
 		{
-			return make_exception(documents::subscriptions::SubscriptionDoesNotBelongToNodeException(message), inner);
+			return make_exception(documents::subscriptions::SubscriptionDoesNotBelongToNodeException(errorMessage), inner);
 		}
 		if (type_contains("SubscriptionDoesNotExistException"))
 		{
-			return make_exception(documents::subscriptions::SubscriptionDoesNotExistException(message), inner);
+			return make_exception(documents::subscriptions::SubscriptionDoesNotExistException(errorMessage), inner);
 		}
 		if (type_contains("SubscriptionInUseException"))
 		{
-			return make_exception(documents::subscriptions::SubscriptionInUseException(message), inner);
+			return make_exception(documents::subscriptions::SubscriptionInUseException(errorMessage), inner);
 		}
 		if (type_contains("SubscriptionInvalidStateException"))
 		{
-			return make_exception(documents::subscriptions::SubscriptionInvalidStateException(message), inner);
+			return make_exception(documents::subscriptions::SubscriptionInvalidStateException(errorMessage), inner);
 		}
 		////
 		if (type_contains("RouteNotFoundException"))
 		{
-			return make_exception(routing::RouteNotFoundException(message), inner);
+			return make_exception(routing::RouteNotFoundException(errorMessage), inner);
 		}
 		////
 		if (type_contains("AuthenticationException"))
 		{
-			return make_exception(security::AuthenticationException(message), inner);
+			return make_exception(security::AuthenticationException(errorMessage), inner);
 		}
 		if (type_contains("AuthorizationException"))
 		{
-			return make_exception(security::AuthorizationException(message), inner);
+			return make_exception(security::AuthorizationException(errorMessage), inner);
 		}
 		if (type_contains("CertificateNameMismatchException"))
 		{
-			return make_exception(security::CertificateNameMismatchException(message), inner);
+			return make_exception(security::CertificateNameMismatchException(errorMessage), inner);
 		}
 		if (type_contains("SecurityException"))
 		{
-			return make_exception(security::SecurityException(message), inner);
+			return make_exception(security::SecurityException(errorMessage), inner);
 		}
 		////
 		if (type_contains("ServerLoadFailureException"))
 		{
-			return make_exception(server::ServerLoadFailureException(message), inner);
+			return make_exception(server::ServerLoadFailureException(errorMessage), inner);
 		}
 
 		return nullptr;
