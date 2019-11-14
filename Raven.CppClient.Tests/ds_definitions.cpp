@@ -9,6 +9,21 @@
 #include "ConnectionDetailsHolder.h"
 #include "raven_test_definitions.h"
 
+#ifndef __has_include
+  static_assert(false, "__has_include not supported");
+#else
+#  if __has_include(<filesystem>)
+#    include <filesystem>
+     namespace fs = std::filesystem;
+#  elif __has_include(<experimental/filesystem>)
+#    include <experimental/filesystem>
+     namespace fs = std::experimental::filesystem;
+#  elif __has_include(<boost/filesystem.hpp>)
+#    include <boost/filesystem.hpp>
+     namespace fs = boost::filesystem;
+#  endif
+#endif
+
 namespace ravendb::client::tests::definitions
 {	
 	DocumentStoreScope::DocumentStoreScope(const std::string& db_name, bool is_secured, bool use_fiddler)
@@ -66,7 +81,7 @@ namespace ravendb::client::tests::definitions
 	std::shared_ptr<DocumentStoreScope> DocumentStoreScope::get_document_store(
 		const std::string& file, int line, int counter, bool is_secured, bool use_fiddler)
 	{
-		std::experimental::filesystem::path path(file);
+		fs::path path(file);
 		std::ostringstream name;
 		name << path.filename().replace_extension().string() << "_" << line << "_" << counter;
 		return is_secured ?

@@ -9,6 +9,21 @@
 #include "RequestExecutor.h"
 
 
+#ifndef __has_include
+  static_assert(false, "__has_include not supported");
+#else
+#  if __has_include(<filesystem>)
+#    include <filesystem>
+     namespace fs = std::filesystem;
+#  elif __has_include(<experimental/filesystem>)
+#    include <experimental/filesystem>
+     namespace fs = std::experimental::filesystem;
+#  elif __has_include(<boost/filesystem.hpp>)
+#    include <boost/filesystem.hpp>
+     namespace fs = boost::filesystem;
+#  endif
+#endif
+
 namespace ravendb::client::tests::definitions
 {
 	RequestExecutorScope::RequestExecutorScope(std::string db_name, bool is_secured, bool use_fiddler)
@@ -82,7 +97,7 @@ namespace ravendb::client::tests::definitions
 	std::shared_ptr<RequestExecutorScope> RequestExecutorScope::get_request_executor_with_db(
 		const std::string& file, int line, int counter, bool is_secured, bool use_fiddler)
 	{
-		std::experimental::filesystem::path path(file);
+		fs::path path(file);
 		std::ostringstream name;
 		name << path.filename().replace_extension().string() << "_" << line << "_" << counter;
 		try{
