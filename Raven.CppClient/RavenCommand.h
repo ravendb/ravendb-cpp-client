@@ -2,7 +2,7 @@
 #include <curl/curl.h>
 #include <optional>
 #include <sstream>
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 #include "ServerNode.h"
 #include "CurlHandlesHolder.h"
 #include "CurlResponse.h"

@@ -5,7 +5,8 @@
 #include "IndexType.h"
 #include "IndexConfiguration.h"
 #include "IndexFieldOptions.h"
-#include "json.hpp"
+#include "nlohmann/json.hpp"
+
 
 namespace ravendb::client::documents::indexes
 {

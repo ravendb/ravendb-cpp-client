@@ -3,7 +3,8 @@
 #include "FieldIndexing.h"
 #include "FieldTermVector.h"
 #include "SpatialOptions.h"
-#include "json.hpp"
+#include "nlohmann/json.hpp"
+
 
 namespace ravendb::client::documents::indexes
 {
