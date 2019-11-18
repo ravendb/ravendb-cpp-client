@@ -1,6 +1,6 @@
 #pragma once
 #include "CompareStringsLessThanIgnoreCase.h"
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 namespace ravendb::client::documents::commands::multi_get
 {

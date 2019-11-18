@@ -1,6 +1,6 @@
 #pragma once
 #include "ReadBalanceBehavior.h"
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 namespace ravendb::client::documents::operations::configuration
 {

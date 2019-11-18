@@ -1,6 +1,6 @@
 #pragma once
 #include "CommandDataBase.h"
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 namespace ravendb::client::documents::commands::batches
 {
