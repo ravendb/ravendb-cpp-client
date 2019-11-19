@@ -286,7 +286,7 @@ namespace ravendb::client::http
 
 			topology_update->get();
 		}
-		catch (...)
+		catch (std::exception& e)
 		{
 			{
 				auto lock = std::unique_lock(_common_mutex);
