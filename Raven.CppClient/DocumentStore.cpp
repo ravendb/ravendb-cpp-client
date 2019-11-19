@@ -155,7 +155,7 @@ namespace ravendb::client::documents
 		assert_initialized();
 		ensure_not_closed();
 
-		auto session_impl = session::DocumentSessionImpl::create(_weak_this.lock(), options);
+		const auto session_impl = session::DocumentSessionImpl::create(_weak_this.lock(), options);
 
 		register_events(*session_impl);
 		after_session_created(session_impl);
