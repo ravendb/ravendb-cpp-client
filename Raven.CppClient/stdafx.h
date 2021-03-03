@@ -8,8 +8,11 @@
 #include "targetver.h"
 
 #include "json.hpp"
-#include "xxhash.hpp"
-
+#ifdef PPC
+    #include "xxhash.h"
+#else
+    #include "xxhash.hpp"
+#endif
 
 
 // CURL

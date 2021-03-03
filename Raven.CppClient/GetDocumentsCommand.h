@@ -2,7 +2,11 @@
 #include "stdafx.h"
 #include "RavenCommand.h"
 #include "GetDocumentsResult.h"
-#include "xxhash.hpp"
+#ifdef PPC
+       	#include "xxhash.h"
+#else
+       	#include "xxhash.hpp"
+#endif
 
 namespace ravendb::client::documents::commands
 {
@@ -74,12 +78,11 @@ namespace ravendb::client::documents::commands
 	template <typename ConstIterator>
 	uint64_t GetDocumentsCommand::calculate_docs_ids_hash(ConstIterator begin, ConstIterator end)
 	{
-		xxh::hash_state_t<64> hash_stream;
+		XXH64_state_t* const state = XXH64_createState();
 		for (ConstIterator it = begin; it != end; ++it)
 		{
-			hash_stream.update(*it);
+			XXH64_update(state, (*it).c_str(), (*it).size());
 		}
-
-		return hash_stream.digest();
+		return XXH64_digest(state);
 	}
 }

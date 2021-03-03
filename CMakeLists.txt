@@ -18,12 +18,16 @@ else()
 endif()
  
 include(cmake/vcpkg_config.cmake)
-include(cmake/xxhash.cmake)
-    
-message(STATUS "xxhash_cpp include dir: ${xxhash_cpp_SOURCE_DIR}/xxhash")
+if(PPC)
+       	include(cmake/xxHash.cmake)
+        list(APPEND CMAKE_INCLUDE_PATH "${xxhash_cpp_SOURCE_DIR}")
+	link_directories(${xxhash_cpp_SOURCE_DIR})
+        add_compile_definitions(PPC)
+else()
+	include(cmake/xxhash.cmake)
+	list(APPEND CMAKE_INCLUDE_PATH "${xxhash_cpp_SOURCE_DIR}/xxhash")
+endif()
 
-list(APPEND CMAKE_INCLUDE_PATH "${xxhash_cpp_SOURCE_DIR}/xxhash")
- 
 add_subdirectory(Raven.CppClient)
  
 #choose if buildings tryouts

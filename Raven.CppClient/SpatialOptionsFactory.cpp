@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "SpatialOptionsFactory.h"
-#include "xxhash.hpp"
+#ifdef PPC
+       	#include "xxhash.h"
+#else
+       	#include "xxhash.hpp"
+#endif
 
 namespace ravendb::client::documents::indexes::spatial
 {
@@ -119,14 +123,12 @@ namespace ravendb::client::documents::indexes::spatial
 
 	std::size_t SpatialOptionsFactory::SpatialBounds::hash_code() const
 	{
-		xxh::hash_state_t<64> hash_stream;
-		
-		hash_stream.update(&maxX, sizeof(maxX));
-		hash_stream.update(&maxY, sizeof(maxY));
-		hash_stream.update(&minX, sizeof(minX));
-		hash_stream.update(&minY, sizeof(minY));
-		
-		return hash_stream.digest();
+		XXH64_state_t* const state = XXH64_createState();
+		XXH64_update(state, &maxX, 1);
+		XXH64_update(state, &maxY, 1);
+		XXH64_update(state, &minX, 1);
+		XXH64_update(state, &minY, 1);
+		return (XXH64_digest(state));
 	}
 
 	bool operator==(const SpatialOptionsFactory::SpatialBounds& lhs, const SpatialOptionsFactory::SpatialBounds& rhs)

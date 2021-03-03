@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "IndexQuery.h"
-#include "xxhash.hpp"
+#ifdef PPC
+       	#include "xxhash.h"
+#else
+       	#include "xxhash.hpp"
+#endif
 
 namespace ravendb::client::documents::queries
 {
@@ -11,11 +15,9 @@ namespace ravendb::client::documents::queries
 
 	std::string IndexQuery::get_query_hash() const
 	{
-		xxh::hash_state_t<64> hash_stream;
-
-		hash_stream.update(nlohmann::json(*this).dump());
-
-		return std::to_string(hash_stream.digest());
+		XXH64_state_t* const state = XXH64_createState();
+		XXH64_update(state, nlohmann::json(*this).dump().c_str(), nlohmann::json(*this).dump().size());
+		return std::to_string(XXH64_digest(state));
 	}
 
 	void to_json(nlohmann::json& j, const IndexQuery& iq)

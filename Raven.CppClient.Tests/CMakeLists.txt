@@ -52,6 +52,12 @@ target_link_libraries(Raven_CppClient_Tests PRIVATE
     ${CURL_LIBRARIES} 
     Threads::Threads)
 
+if(PPC)
+	target_link_libraries(Raven_CppClient_Tests PRIVATE
+		xxhash
+	)
+endif()
+
 target_link_directories(Raven_CppClient_Tests PRIVATE ${CMAKE_LIBRARY_PATH})
 
 if(NOT WIN32)
