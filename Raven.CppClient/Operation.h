@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "json.hpp"
 #include "RavenCommand.h"
+#include "nlohmann/json.hpp"
 
 namespace ravendb::client
 {

@@ -6,13 +6,14 @@
 #pragma once
 
 #include "targetver.h"
-
 #include "json.hpp"
 #ifdef PPC
     #include "xxhash.h"
 #else
     #include "xxhash.hpp"
 #endif
+#include "nlohmann/json.hpp"
+#include "xxhash.hpp"
 
 
 // CURL

@@ -2,7 +2,8 @@
 #include "SpatialFieldType.h"
 #include "SpatialSearchStrategy.h"
 #include "SpatialUnits.h"
-#include "json.hpp"
+#include "nlohmann/json.hpp"
+
 
 namespace ravendb::client::documents::indexes::spatial
 {

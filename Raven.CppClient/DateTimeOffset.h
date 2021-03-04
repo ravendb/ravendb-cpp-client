@@ -1,7 +1,7 @@
 #pragma once
 #include <ctime>
 #include <ostream>
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 namespace ravendb::client::impl
 {

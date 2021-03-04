@@ -28,8 +28,8 @@ namespace ravendb::client::impl
 
 	Inflector::FillRules::FillRules()
 	{
-		add_plural("(.*)$", "$1s");
-		add_plural("(.*)s$", "$1s");
+        add_plural("$", "s");
+        add_plural("s$", "$1s");
 		add_plural("(ax|test)is$", "$1es");
 		add_plural("(octop|vir)us$", "$1i");
 		add_plural("(alias|status)$", "$1es");

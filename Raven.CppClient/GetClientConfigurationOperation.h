@@ -3,7 +3,7 @@
 #include "IMaintenanceOperation.h"
 #include "RavenCommand.h"
 #include "ServerNode.h"
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 namespace ravendb::client::documents::operations::configuration
 {

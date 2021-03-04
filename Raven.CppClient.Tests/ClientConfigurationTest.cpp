@@ -65,16 +65,17 @@ namespace ravendb::client::tests::client::documents::operations::configuration
 		auto save_operation = 
 			ravendb::client::documents::operations::configuration::PutClientConfigurationOperation(configuration_to_save);
 		store->maintenance()->send(save_operation);
-		
-		auto operation = ravendb::client::documents::operations::configuration::GetClientConfigurationOperation();
-		auto result = store->maintenance()->send(operation);
+
+		const auto operation = ravendb::client::documents::operations::configuration::GetClientConfigurationOperation();
+		const auto result = store->maintenance()->send(operation);
 
 		ASSERT_NE(result->etag, 0);
 
 		auto new_configuration = result->configuration;
 
 		ASSERT_TRUE(new_configuration.has_value());
-		ASSERT_GT(new_configuration->etag, configuration_to_save.etag);
+		ASSERT_NE(new_configuration->etag, configuration_to_save.etag); //after RavenDB-13737, the etag on save would be ignored 
+		ASSERT_EQ(1, new_configuration->etag);
 		ASSERT_TRUE(new_configuration->disabled);
 		ASSERT_EQ(80, new_configuration->max_number_of_requests_per_session);
 		ASSERT_EQ(http::ReadBalanceBehavior::FASTEST_NODE, new_configuration->read_balance_behaviour);
