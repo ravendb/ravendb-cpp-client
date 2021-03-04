@@ -1,10 +1,6 @@
 #include "stdafx.h"
 #include "SpatialOptionsFactory.h"
-#ifdef PPC
-       	#include "xxhash.h"
-#else
-       	#include "xxhash.hpp"
-#endif
+#include "xxhash.h"
 
 namespace ravendb::client::documents::indexes::spatial
 {
