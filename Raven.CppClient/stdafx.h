@@ -7,13 +7,9 @@
 
 #include "targetver.h"
 #include "json.hpp"
-#ifdef PPC
-    #include "xxhash.h"
-#else
-    #include "xxhash.hpp"
-#endif
+#include "xxhash.h"
 #include "nlohmann/json.hpp"
-#include "xxhash.hpp"
+#include "xxhash.h"
 
 
 // CURL

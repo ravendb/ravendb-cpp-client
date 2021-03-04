@@ -2,11 +2,7 @@
 #include "stdafx.h"
 #include "RavenCommand.h"
 #include "GetDocumentsResult.h"
-#ifdef PPC
-       	#include "xxhash.h"
-#else
-       	#include "xxhash.hpp"
-#endif
+#include "xxhash.h"
 
 namespace ravendb::client::documents::commands
 {
