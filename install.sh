@@ -294,6 +294,9 @@ function install_ravendb_build()
 {
 	MAINSTR="${C_L_CYAN}Installing ${C_L_MAGENTA}RavenDB Client..."
 	print_state_msg "${MAINSTR}" "Preparing.."
+	if [[ ! -d  "${TMP_CLIENT}/${BUILDDIR}"]]; then
+		mkdir ${TMP_CLIENT}/${BUILDDIR}
+	fi
 	pushd ${TMP_CLIENT}/${BUILDDIR} >> ${LOG} 2>&1
 	cmake -DCMAKE_INSTALL_PREFIX=${RVN_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release .. >> ${LOG} 2>&1
 	cmake --build . --target install >> ${LOG} 2>&1 &
