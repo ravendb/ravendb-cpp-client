@@ -7,7 +7,7 @@ fi
 RVN_INSTALL_PREFIX=${CURDIR}/CppClientOut
 RVN_GIT_PATH="https://github.com/ravendb/raven-cpp-client.git"
 CMAKE_GIT_PATH="https://github.com/Kitware/CMake"
-PKGS=( git gcc g++ libcurl4-openssl-dev libssl-dev xxhash make libcurl zip unzip tar)
+PKGS=( git gcc g++ libcurl4-openssl-dev libssl-dev xxhash make libcurl4 zip unzip tar)
 LOG=${CURDIR}/~build.log
 echo $(date) > ${LOG}
 TMP_CMAKE="temp_cmake"
