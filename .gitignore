@@ -398,3 +398,5 @@ external/
 /report.xml
 /Raven.CppClient.Tests/secured_re.txt
 /Raven.CppClient.Tests/unsecured_re.txt
+Tryouts/CMakeFiles/*
+Tryouts/Raven_CppClient_Tryouts
