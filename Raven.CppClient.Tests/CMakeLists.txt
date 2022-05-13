@@ -49,14 +49,9 @@ target_link_libraries(Raven_CppClient_Tests PRIVATE
     Raven_CppClient 
     OpenSSL::SSL 
     OpenSSL::Crypto 
-    ${CURL_LIBRARIES} 
+	CURL::libcurl
+	xxhash
     Threads::Threads)
-
-if(PPC)
-	target_link_libraries(Raven_CppClient_Tests PRIVATE
-		xxhash
-	)
-endif()
 
 target_link_directories(Raven_CppClient_Tests PRIVATE ${CMAKE_LIBRARY_PATH})
 
@@ -98,11 +93,10 @@ if(WIN32)
 	execute_process(COMMAND setx unsecured_re ${CMAKE_SOURCE_DIR}/${CONFIG_DIR_NAME}/unsecured_re.txt)
 else()
 	message("Executing: export secured_re=${CMAKE_SOURCE_DIR}/${CONFIG_DIR_NAME}/secured_re.txt")
-message("Executing: export unsecured_re=${CMAKE_SOURCE_DIR}/${CONFIG_DIR_NAME}/unsecured_re.txt")
+    message("Executing: export unsecured_re=${CMAKE_SOURCE_DIR}/${CONFIG_DIR_NAME}/unsecured_re.txt")
 
 	execute_process(COMMAND export secured_re=${CMAKE_SOURCE_DIR}/${CONFIG_DIR_NAME}/secured_re.txt)
 	execute_process(COMMAND export echo 'secured_re=${CMAKE_SOURCE_DIR}/${CONFIG_DIR_NAME}/secured_re.txt' >> ~/.bashrc)
 	execute_process(COMMAND export unsecured_re=${CMAKE_SOURCE_DIR}/${CONFIG_DIR_NAME}/unsecured_re.txt)
 	execute_process(COMMAND export echo 'unsecured_re=${CMAKE_SOURCE_DIR}/${CONFIG_DIR_NAME}/unsecured_re.txt' >> ~/.bashrc)
-
 endif()
