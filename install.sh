@@ -7,7 +7,7 @@ fi
 RVN_INSTALL_PREFIX=${CURDIR}/CppClientOut
 RVN_GIT_PATH="https://github.com/ravendb/raven-cpp-client.git"
 CMAKE_GIT_PATH="https://github.com/Kitware/CMake"
-PKGS=( git gcc g++ libcurl4-openssl-dev libssl-dev xxhash make libcurl4 zip unzip tar)
+PKGS=( git gcc g++ libcurl4-openssl-dev libssl-dev xxhash make ninja-build zip unzip tar zlib1g-dev pkg-config)
 LOG=${CURDIR}/~build.log
 echo $(date) > ${LOG}
 TMP_CMAKE="temp_cmake"
@@ -16,6 +16,11 @@ BUILDDIR="cmake-build-release"
 PERFORM_APT_UPGRADE=0
 SUDO="sudo"
 CLONE_RAVENDB=0
+
+# enable building on ARM
+export VCPKG_FORCE_SYSTEM_BINARIES=1
+
+
 function print_usage() {
 	echo "Usage: ${0} [ OPTIONS ]"
 	echo "       OPTIONS:"
