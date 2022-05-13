@@ -7,8 +7,8 @@ fi
 RVN_INSTALL_PREFIX=${CURDIR}/CppClientOut
 RVN_GIT_PATH="https://github.com/ravendb/raven-cpp-client.git"
 CMAKE_GIT_PATH="https://github.com/Kitware/CMake"
-PKGS=( git gcc g++ libcurl4-openssl-dev libssl-dev make )
-LOG=${CURDIR}/install_cpp_client.log
+PKGS=( git gcc g++ libcurl4-openssl-dev libssl-dev xxhash make libcurl zip unzip tar)
+LOG=${CURDIR}/~build.log
 echo $(date) > ${LOG}
 TMP_CMAKE="temp_cmake"
 TMP_CLIENT=${PWD}
@@ -107,9 +107,9 @@ function print_welcome_and_test_sudo()
 	echo ""
 	echo "Logging into file: ${LOG}"
 	if [ ${PERFORM_APT_UPGRADE} -eq 1 ]; then
-		echo -e "${T_BLINK}Note: 'apt upgrade' will be performed${NT}${NC}"
+		echo -e "${T_BLINK}Note: 'apt-get upgrade' will be performed${NT}${NC}"
 	else
-		echo "Note: 'apt upgrade' will be skipped. Run again with --apt-upgrade to include upgrade operation."
+		echo "Note: 'apt-get upgrade' will be skipped. Run again with --apt-upgrade to include upgrade operation."
 	fi
 	if [ "${SUDO}" == "" ]; then
 		echo "Note: Skipping sudo command"
@@ -121,8 +121,8 @@ function print_welcome_and_test_sudo()
 
 function install_packages()
 {
-	MAINSTR="${C_L_CYAN}Performing ${C_L_MAGENTA}apt update${C_L_GRAY}..."
-	${SUDO} /bin/bash -c "apt update" >> ${LOG} 2>&1 &
+	MAINSTR="${C_L_CYAN}Performing ${C_L_MAGENTA}apt-get update${C_L_GRAY}..."
+	${SUDO} /bin/bash -c "apt-get update" >> ${LOG} 2>&1 &
         PID=$!
 	progress_show_and_wait ${PID} "Updating..." "${MAINSTR}"
 	if [ ${STATUS} -eq 0 ]; then
@@ -134,8 +134,8 @@ function install_packages()
 	fi
 
 	if [ ${PERFORM_APT_UPGRADE} -eq 1 ]; then
-		MAINSTR="${C_L_CYAN}Performing ${C_L_MAGENTA}apt upgrade -y (non interactive)${C_L_GRAY}..."
-		${SUDO} /bin/bash -c "DEBIAN_FRONTEND=noninteractive apt upgrade -y" >> ${LOG} 2>&1 &
+		MAINSTR="${C_L_CYAN}Performing ${C_L_MAGENTA}apt-get upgrade -y (non interactive)${C_L_GRAY}..."
+		${SUDO} /bin/bash -c "DEBIAN_FRONTEND=noninteractive apt-get upgrade -y" >> ${LOG} 2>&1 &
 		PID=$!
 		progress_show_and_wait ${PID} "Upgrading.." "${MAINSTR}"
 		if [ ${STATUS} -eq 0 ]; then
@@ -151,7 +151,7 @@ function install_packages()
 	for pkg in ${PKGS[@]}; do
 		MAINSTR="${C_L_CYAN}Installing ${C_L_MAGENTA}${pkg}${C_L_GRAY}..."
 		print_state_msg "${MAINSTR}" "Install ..."
-		${SUDO} /bin/bash -c "DEBIAN_FRONTEND=noninteractive apt install -y ${pkg}" >> ${LOG} 2>&1
+		${SUDO} /bin/bash -c "DEBIAN_FRONTEND=noninteractive apt-get install -y ${pkg}" >> ${LOG} 2>&1
 		STATUS=$?
 		if [ ${STATUS} -eq 0 ]; then
 			print_state_installed "${MAINSTR}" "Successfully installed."
@@ -214,7 +214,7 @@ function install_cmake()
 	if [ ${VER_OK} -eq 1 ]; then
 		print_state_installed "${MAINSTR}" "Already installed ${C_CYAN}${CMAKE_VERSION}"
 	elif [ ${APT_VER_OK} -eq 1 ]; then
-		${SUDO} /bin/bash -c "apt install -y cmake" >> ${LOG} 2>&1 &
+		${SUDO} /bin/bash -c "apt-get install -y cmake" >> ${LOG} 2>&1 &
 		PID=$!
 		progress_show_and_wait ${PID} "Working ..." "${MAINSTR}" 
 		if [ ${STATUS} -eq 0 ]; then
@@ -275,7 +275,7 @@ function install_cmake()
 # install ravendb client
 function install_ravendb_clone()
 { 
-	MAINSTR="Installing ${C_L_MAGENTA}RavenDB Client..."
+	MAINSTR="Cloning ${C_L_MAGENTA}RavenDB Client..."
 	print_state_msg "${MAINSTR}" "Cleaning..."
 	if [ -d ${TMP_CLIENT} ]; then
 		rm -rf ${TMP_CLIENT} >> ${LOG} 2>&1
@@ -294,9 +294,7 @@ function install_ravendb_build()
 {
 	MAINSTR="${C_L_CYAN}Installing ${C_L_MAGENTA}RavenDB Client..."
 	print_state_msg "${MAINSTR}" "Preparing.."
-	if [[ ! -d  "${TMP_CLIENT}/${BUILDDIR}"]]; then
-		mkdir ${TMP_CLIENT}/${BUILDDIR}
-	fi
+	mkdir -p ${TMP_CLIENT}/${BUILDDIR}
 	pushd ${TMP_CLIENT}/${BUILDDIR} >> ${LOG} 2>&1
 	cmake -DCMAKE_INSTALL_PREFIX=${RVN_INSTALL_PREFIX} -DCMAKE_BUILD_TYPE=Release .. >> ${LOG} 2>&1
 	cmake --build . --target install >> ${LOG} 2>&1 &
