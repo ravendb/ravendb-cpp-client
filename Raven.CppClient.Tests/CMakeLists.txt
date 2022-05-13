@@ -60,7 +60,7 @@ if(NOT WIN32)
 endif()
 
 include(GoogleTest)
-gtest_discover_tests(Raven_CppClient_Tests)  
+# gtest_discover_tests(Raven_CppClient_Tests)  
 
 if(WIN32)
 	set(CONFIG_DIR_NAME "win_re_config")
