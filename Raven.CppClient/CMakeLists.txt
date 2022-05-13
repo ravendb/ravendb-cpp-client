@@ -5,6 +5,10 @@ set(CMAKE_CXX_STANDARD 17)
 FILE(GLOB_RECURSE RAVEN_HEADERS FOLLOW_SYMLINKS *.h)
 FILE(GLOB_RECURSE RAVEN_CPPS FOLLOW_SYMLINKS *.cpp)
 
+file(GLOB_RECURSE REMOVE_CMAKE "CMakeFiles/*")
+list(REMOVE_ITEM RAVEN_CPPS ${REMOVE_CMAKE})
+
+
 find_package(ZLIB REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
@@ -60,7 +64,7 @@ if(WIN32)
 	target_link_libraries(Raven_CppClient "Rpcrt4.lib")	
 endif()
 
-target_link_libraries(Raven_CppClient OpenSSL::SSL OpenSSL::Crypto ${CURL_LIBRARIES})
+target_link_libraries(Raven_CppClient OpenSSL::SSL OpenSSL::Crypto CURL::libcurl xxhash)
 
 target_compile_definitions(Raven_CppClient_shared PUBLIC DEFAULT_CA_BUNDLE_PATH="../../ca_bundle/ca-bundle.crt")
 target_compile_definitions(Raven_CppClient_static PUBLIC DEFAULT_CA_BUNDLE_PATH="../../ca_bundle/ca-bundle.crt")
