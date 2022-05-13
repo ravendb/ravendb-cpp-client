@@ -1,212 +1,66 @@
 
-#include "pch.h"
-#include <gtest/gtest_prod.h>
-//#include <curl/curl.h>
-//#include <thread>
-//#include <DatabaseRecord.h>
-//#include <CreateDatabaseOperation.h>
-//#include "DocumentStore.h"
-//#include "DocumentSession.h"
-//#include "User.h"
-//#include "GetDatabaseTopologyCommand.h"
-//#include "EntityIdHelperUtil.h"
-//#include "GetNextOperationIdCommand.h"
-//#include "TasksExecutor.h"
-//#include "GetDatabaseNamesOperation.h"
-//#include "RavenException.h"
-//#include "ConnectionDetailsHolder.h"
-//#include "MaintenanceOperationExecutor.h"
-//#include "PutAttachmentOperation.h"
-//#include "CompareStringsEqualIgnoreCase.h"
-//#include "HeadAttachmentCommand.h"
-//#include "DeleteAttachmentOperation.h"
-//#include "PutDocumentCommand.h"
-//#include "GetAttachmentOperation.h"
-//#include "AdvancedSessionOperations.h"
-//#include "GetDetailedStatisticsOperation.h"
-//#include "CompactSettings.h"
-//#include "CompactDatabaseOperation.h"
-
 #include "raven_cpp_client.h"
 
-namespace ravendb {
-	namespace client {
-		namespace tests {
-			namespace issues {
-				class RavenDB_10929Test;
-			}
+namespace tryouts::entities
+{
+	struct User
+	{
+		std::string id{};
+		std::string name{};
+		std::string lastName{};
+		std::string addressId{};
+		int32_t count{};
+		int32_t age{};
+
+		friend bool operator==(const User &lhs, const User &rhs)
+		{
+			return // lhs.id == rhs.id
+				lhs.name == rhs.name && lhs.lastName == rhs.lastName && lhs.addressId == rhs.addressId && lhs.count == rhs.count && lhs.age == rhs.age;
 		}
-	}
-}
+	};
 
-namespace
-{
-	//using fiddler + verbose
-	void set_for_fiddler(CURL* curl)
+	inline void to_json(nlohmann::json &j, const User &u)
 	{
-		curl_easy_setopt(curl, CURLOPT_PROXY, "127.0.0.1:8888");
-		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+		using ravendb::client::impl::utils::json_utils::set_val_to_json;
+
+		set_val_to_json(j, "name", u.name);
+		set_val_to_json(j, "lastName", u.lastName);
+		set_val_to_json(j, "addressId", u.addressId);
+		set_val_to_json(j, "count", u.count);
+		set_val_to_json(j, "age", u.age);
 	}
 
-	void set_for_verbose(CURL* curl)
+	inline void from_json(const nlohmann::json &j, User &u)
 	{
-		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-	}
-}
+		using ravendb::client::impl::utils::json_utils::get_val_from_json;
 
-//static void work()
-//{
-//	static std::atomic_int32_t session_id{ 0 };
-//
-//	auto conventions = ravendb::client::documents::conventions::DocumentConventions::create();
-//	conventions->set_read_balance_behavior(ravendb::client::http::ReadBalanceBehavior::ROUND_ROBIN);
-//	conventions->freeze();
-//	auto executor = ravendb::client::http::RequestExecutor::create({ "http://127.0.0.1:8080" }, "Test",
-//		{}, std::make_shared<ravendb::client::impl::TasksScheduler>(std::make_shared<ravendb::client::impl::TasksExecutor>()),
-//		conventions, set_for_fiddler);
-//
-//	auto session_info = ravendb::client::documents::session::SessionInfo{session_id++};
-//
-//	for (auto i = 0; i < 100; ++i)
-//	{
-//		auto cmd = ravendb::client::serverwide::operations::GetDatabaseNamesOperation(0, 20).get_command(conventions);
-//		executor->execute(*cmd, session_info);
-//		std::this_thread::sleep_for(std::chrono::seconds(10));
-//	}
-//}
-
-static void thread_work(std::shared_ptr<ravendb::client::documents::DocumentStore> store, int i)
-{
-	auto cmd = ravendb::client::documents::commands::GetDocumentsCommand(i*10, 10);
-	
-	for (auto j = 0; j < 500; ++j)
-	{
-		store->get_request_executor()->execute(cmd);
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		get_val_from_json(j, "name", u.name);
+		get_val_from_json(j, "lastName", u.lastName);
+		get_val_from_json(j, "addressId", u.addressId);
+		get_val_from_json(j, "count", u.count);
+		get_val_from_json(j, "age", u.age);
 	}
 }
 
 int main()
 {
 
+	REGISTER_ID_PROPERTY_FOR(tryouts::entities::User, id);
 
-	//REGISTER_ID_PROPERTY_FOR(ravendb::client::tests::infrastructure::entities::User, id);
+	auto store = ravendb::client::documents::DocumentStore::create();
+	store->set_urls({"http://live-test.ravendb.net"});
+	store->set_database("cpp");
+	store->initialize();
 
-	/*auto store = documents::DocumentStore::create();
-	store->set_urls({ "http://10.0.0.92:8080" });
-	store->set_before_perform(set_for_fiddler);
-	store->set_database("TEST_DB");
-	store->initialize();*/
+	{
+		auto session = store->open_session();
+		auto user = std::make_shared<tryouts::entities::User>();
+		user->name = "Arava";
+		user->age = 13;
+		user->count = 1;
+		session.store(user);
+		session.save_changes();
+	}
 
-	//auto conventions = documents::conventions::DocumentConventions::create();
-	//conventions->set_read_balance_behavior(http::ReadBalanceBehavior::NONE);
-	//conventions->freeze();
-	//auto executor = http::RequestExecutor::create({ "http://127.0.0.1:8080" }, "Test",
-	//	{}, std::make_shared<impl::TasksScheduler>(std::make_shared<impl::TasksExecutor>(4)), 
-	//	conventions, set_for_verbose);
-
-	//for (auto i = 0; i < 100; ++i)
-	//{
-	//	auto cmd = serverwide::operations::GetDatabaseNamesOperation(0, 20).get_command(conventions);
-	//	executor->execute(*cmd);
-	//	std::this_thread::sleep_for(std::chrono::seconds(10));
-	//}
-
-	//std::thread threads[3];
-	//for(auto& thread : threads)
-	//{
-	//	thread = std::thread(work);
-	//}
-	//for (auto& thread : threads)
-	//{
-	//	thread.join();
-	//}
-
-//	store->get_conventions()->set_max_http_cache_size(1024*10);
-//	store->initialize();
-//
-//    {
-//        auto session = store->open_session();
-//        auto user = std::make_shared<tests::infrastructure::entities::User>();
-//        user->name = "Alexander";
-//        session.store(user);
-//        session.save_changes();
-//    }
-
-//	constexpr auto NUM_OF_THREADS = 10;
-//	std::vector<std::thread> threads{};
-//	threads.reserve(NUM_OF_THREADS);
-//	for(auto i = 0; i< NUM_OF_THREADS; ++i)
-//	{
-//		threads.emplace_back(thread_work, store, i);
-//	}
-//
-//	for(auto& thread : threads)
-//	{
-//		thread.join();
-//	}
-
-
-	//std::stringstream str{};
-	//for (auto i = 0; i < 20000; ++i)
-	//{
-	//	str << "ab Cd$" << 123;
-	//}
-
-	//auto cmd1 = documents::operations::attachments::PutAttachmentOperation("users/1", "file1.txt",
-	//	str, "ASCII").get_command(
-	//		store, store->get_conventions(), store->get_request_executor()->get_cache());
-
-	//store->get_request_executor()->execute(*cmd1);
-
-	////auto command = documents::operations::attachments::PutAttachmentOperation("users/1", "file1.txt",
-	////	file1, nullptr, "ASCII").get_command(
-	////		store, store->get_conventions(), store->get_request_executor()->get_cache());
-
-	////store->get_request_executor()->execute(*command);
-
-	//auto cmd2 = documents::commands::HeadAttachmentCommand("users/1", "file.txt");
-	//store->get_request_executor()->execute(cmd2);
-
-
-	//auto cmd3 = documents::operations::attachments::GetAttachmentOperation("users/1", "file1.txt",
-	//	documents::attachments::AttachmentType::DOCUMENT).get_command(store,
-	//		store->get_conventions(), store->get_request_executor()->get_cache());
-	//store->get_request_executor()->execute(*cmd3);
-
-	//std::ostringstream res{};
-
-	//res << cmd3->get_result()->get_data().rdbuf();
-
-	//std::cout << (res.str() == str.str() ? "----OK----" : "There is a problem ...") << std::endl;
-
-	////auto cmd4 = documents::operations::attachments::DeleteAttachmentOperation("users/1", "file1.txt")
-	////	.get_command(store, store->get_conventions(), store->get_request_executor()->get_cache());
-	////store->get_request_executor()->execute(*cmd4);
-
-
-	//auto session = store->open_session();
-	//auto user = session.load<tests::infrastructure::entities::User>("users/1");
-
-	//auto has_attachment = session.advanced().attachments()->exists("users/1", "file1.txt");
-
-	//auto att = session.advanced().attachments()->get_attachment("users/1", "file1.txt");
-
-	/*auto command = documents::operations::GetDetailedStatisticsOperation().get_command(store->get_conventions());
-	store->get_request_executor()->execute(*command);
-	auto res = command->get_result();*/
-
-	//auto dr = serverwide::DatabaseRecord();
-	//dr.database_name = "TEST_DB";
-	//store->maintenance()->server()->send(serverwide::operations::CreateDatabaseOperation(dr));
-
-
-	//auto cs = serverwide::CompactSettings();
-	//cs.database_name = "TEST_DB";
-	//cs.documents = true;
-
-	//auto command = store->maintenance()->server()->send(documents::operations::CompactDatabaseOperation(cs));
-	//
-
-	std::cout << "Bye" << std::endl;
+	return 0;
 }
